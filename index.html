@@ -21,7 +21,8 @@
             overflow: hidden;
             position: relative;
         }
-        /* خلفية النجوم التفاعلية */
+
+        /* خلفية النجوم المتحركة */
         #spaceCanvas {
             position: absolute;
             top: 0;
@@ -30,7 +31,8 @@
             height: 100%;
             z-index: 1;
         }
-        /* هالة كونية متحركة خلف البطاقة */
+
+        /* هالة كورية متحركة خلف البوابة */
         .cosmic-glow {
             position: absolute;
             width: 450px;
@@ -41,36 +43,43 @@
             z-index: 2;
             animation: pulseNebula 8s infinite alternate ease-in-out;
         }
+
         @keyframes pulseNebula {
             0% { transform: scale(0.8) translate(-20px, -20px); opacity: 0.5; }
             100% { transform: scale(1.2) translate(20px, 20px); opacity: 0.9; }
         }
-        /* بطاقة الزجاج المتقدمة (Glassmorphism) */
+
+        /* حاوية الزجاج المتقدمة (Glassmorphism) */
         .container {
             position: relative;
             z-index: 3;
             width: 90%;
-            max-width: 550px;
+            max-width: 420px;
+            height: 90vh;
+            max-height: 850px;
             background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 30px;
-            padding: 50px 30px;
+            padding: 30px 20px;
             text-align: center;
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            animation: slideUp 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        /* الأفاتار المتوهج بنبض نيون */
+
+        .screen { display: none; flex: 1; flex-direction: column; height: 100%; overflow: hidden; text-align: right; }
+        .screen.active { display: flex; }
+
+        /* تفاصيل البوابة الأصلية */
+        .gateway-screen { align-items: center; justify-content: center; text-align: center; }
         .avatar {
-            width: 110px;
-            height: 110px;
-            margin: 0 auto 25px;
-            background: linear-gradient(135deg, #ff007f, #7928ca, #00dfd8);
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #ff007f, #7928ca, #00ffcc);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -80,148 +89,311 @@
             animation: avatarGlow 4s infinite alternate;
         }
         @keyframes avatarGlow {
-            0% { transform: rotate(0deg) scale(1); box-shadow: 0 0 30px rgba(121, 40, 202, 0.6); }
-            100% { transform: rotate(5deg) scale(1.05); box-shadow: 0 0 60px rgba(255, 0, 127, 0.8); }
+            0% { transform: scale(1); box-shadow: 0 0 30px rgba(255,0,127,0.5); }
+            100% { transform: scale(1.05); box-shadow: 0 0 50px rgba(0,255,204,0.7); }
         }
-        /* عنوان ناري متدرج */
+
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            background: linear-gradient(to right, #60a5fa, #c084fc, #f472b6, #38bdf8);
+            color: #ec4899;
+            margin-bottom: 12px;
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #ff007f, #7928ca, #00ffcc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-weight: 900;
-            letter-spacing: -1px;
         }
-        /* وصف ذو طابع مستقبلي */
-        p {
-            color: #cbd5e1;
-            font-size: 1.15rem;
-            line-height: 1.9;
-            margin-bottom: 35px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+
+        .gateway-desc {
+            color: #b4a7d6;
+            font-size: 13px;
+            margin-bottom: 25px;
+            line-height: 1.6;
         }
-        /* مجموعة الأزرار المستقبلية */
-        .btn-group {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+
         .btn {
-            position: relative;
-            display: inline-block;
-            padding: 14px 32px;
-            border-radius: 50px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            font-size: 1.05rem;
-            overflow: hidden;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+            width: 100%;
+            padding: 13px;
+            margin: 8px 0;
+            border-radius: 25px;
+            border: none;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
             color: white;
-            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, #ff007f, #7928ca);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 5px 20px rgba(121, 40, 202, 0.4);
+            transition: 0.2s;
         }
-        .btn-primary:hover {
-            transform: translateY(-5px) scale(1.03);
-            box-shadow: 0 15px 40px rgba(236, 72, 153, 0.7);
+        .btn:hover { transform: scale(1.02); }
+
+        .system-footer {
+            margin-top: 15px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.4);
+            text-align: center;
         }
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            color: #f1f5f9;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
+
+        /* واجهة التطبيق الداخلية (الهيدر والغرف) */
+        .app-header {
+            padding: 12px 15px;
+            background: rgba(23, 13, 43, 0.8);
+            border-bottom: 1px solid rgba(121, 40, 202, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 15px 15px 0 0;
         }
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-5px) scale(1.03);
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
+
+        .hub-content { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+        .room-card {
+            background: rgba(21, 12, 36, 0.7);
+            border: 1px solid rgba(121, 40, 202, 0.3);
+            padding: 14px;
+            border-radius: 14px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s;
         }
-        /* تذييل الصفحة */
-        .footer {
-            margin-top: 45px;
-            font-size: 0.9rem;
-            color: #64748b;
-            letter-spacing: 1px;
-        }
+        .room-card:hover { border-color: #00ffcc; box-shadow: 0 0 15px rgba(0,255,204,0.2); }
+
+        /* الشات */
+        .chat-view { display: none; flex-direction: column; height: 100%; }
+        .msg-box { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.4; word-break: break-word; }
+        .msg.received { background: rgba(27, 18, 48, 0.8); align-self: flex-start; border: 1px solid rgba(121, 40, 202, 0.3); }
+        .msg.sent { background: linear-gradient(135deg, #ff007f, #7928ca); align-self: flex-end; }
+        .msg img { width: 100%; max-width: 200px; border-radius: 8px; margin-top: 5px; }
+
+        .input-bar { padding: 10px; background: rgba(23, 13, 43, 0.9); border-top: 1px solid rgba(121, 40, 202, 0.3); display: flex; align-items: center; gap: 8px; }
+        .input-bar input { flex: 1; background: #0b0710; border: 1px solid #7928ca; padding: 8px 12px; border-radius: 20px; color: #fff; outline: none; font-size: 13px; }
+        .action-btn { background: none; border: none; font-size: 18px; cursor: pointer; color: #00ffcc; }
+        .send-btn { background: #ff007f; border: none; color: white; padding: 8px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+
+        /* سطر الأوامر (Terminal) */
+        .terminal-box { flex: 1; background: #050208; padding: 12px; font-family: monospace; font-size: 11px; color: #00ffcc; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+        .term-input-bar { display: flex; background: #0b0710; padding: 8px; border-top: 1px solid #7928ca; }
+        .term-input-bar input { flex: 1; background: transparent; border: none; color: #00ffcc; font-family: monospace; outline: none; font-size: 12px; }
+
+        /* شريط التنقل السفلي */
+        .bottom-nav { display: flex; justify-content: space-around; background: rgba(18, 9, 34, 0.9); border-top: 1px solid rgba(121, 40, 202, 0.3); padding: 8px 0; border-radius: 0 0 15px 15px; }
+        .nav-item { text-align: center; color: #8878a6; font-size: 11px; cursor: pointer; }
+        .nav-item.active { color: #ff007f; }
+        .nav-item div { font-size: 16px; }
     </style>
 </head>
 <body>
 
-    <!-- الخلفية الكونية الحية -->
-    <canvas id="spaceCanvas"></canvas>
     <div class="cosmic-glow"></div>
+    <canvas id="spaceCanvas"></canvas>
 
-    <!-- البطاقة الرئيسية -->
     <div class="container">
-        <div class="avatar">🌌</div>
-        <h1>لافي منير</h1>
-        <p>هنا حيث يلتقي الخيال بالبرمجة العميقة. تم بناء هذه البوابة خصيصاً لتتحدى المألوف وتقدم تجربة بصرية لا توصف.</p>
-        <div class="btn-group">
-            <a href="https://github.com/wwwmounirmp-hue" target="_blank" class="btn btn-primary">استكشف GitHub 🚀</a>
-            <a href="#" class="btn btn-secondary">البوابة المركزية ✨</a>
+        
+        <!-- 1. شاشة البوابة الفضائية الأصلية -->
+        <div id="screen-gateway" class="screen active gateway-screen" style="display: flex;">
+            <div class="avatar">🌌</div>
+            <h1>لافي منير</h1>
+            <p class="gateway-desc">
+                هنا حيث يلتقي الخيال بالبرمجة العميقة. تم بناء هذه البوابة خصيصاً لتتحدى المألوف وتتقدم تجربة بصرية لا توصف.
+            </p>
+            <a href="https://github.com/wwwmounirmp-hue/lafi-munir" target="_blank" class="btn" style="background:rgba(255,255,255,0.05); border:1px solid #00ffcc; color:#00ffcc;">
+                استكشف 🚀 GitHub
+            </a>
+            <button class="btn" onclick="enterApp()">
+                البوابة المركزية ✨
+            </button>
+            <div class="system-footer">SYSTEM ONLINE • LAFI MUNIR 2026</div>
         </div>
-        <div class="footer">
-            SYSTEM ONLINE • LAFI MUNIR 2026
+
+        <!-- 2. شاشة التطبيق الداخلي -->
+        <div id="screen-app" class="screen">
+            <div class="app-header">
+                <span id="app-title" style="font-weight: bold; color: #00ffcc; font-size: 14px;">🌐 الغرف السيادية</span>
+                <span onclick="goHome()" style="cursor: pointer; font-size: 16px;">🏠</span>
+            </div>
+
+            <!-- قائمة الغرف -->
+            <div id="tab-rooms" class="screen active hub-content" style="display: flex;">
+                <div class="room-card" onclick="openRoom('غرفة لافي العامة (73094)')">
+                    <div>
+                        <h4 style="color:#fff; font-size:14px;">🌐 غرفة لافي العامة</h4>
+                        <p style="color:#a090c0; font-size:11px;">مراسلة فورية، تفاعل ومشاركة صور</p>
+                    </div>
+                    <span style="color:#00ffcc; font-size:12px;">انضمام ➔</span>
+                </div>
+                <div class="room-card" onclick="openRoom('قاعة السيبربانك والذكاء الاصطناعي')">
+                    <div>
+                        <h4 style="color:#fff; font-size:14px;">⚡ قاعة السيبربانك</h4>
+                        <p style="color:#a090c0; font-size:11px;">الأكواد، الأفكار الرقمية والتحكم</p>
+                    </div>
+                    <span style="color:#00ffcc; font-size:12px;">انضمام ➔</span>
+                </div>
+            </div>
+
+            <!-- نافذة الشات الفعلي -->
+            <div id="tab-chat" class="chat-view">
+                <div class="msg-box" id="msg-container">
+                    <div class="msg received">أهلاً بك في النظام السيادي الآمن. أرسل نصوص أو صور بحرية تامة!</div>
+                </div>
+                <div class="input-bar">
+                    <label class="action-btn">
+                        📷
+                        <input type="file" accept="image/*" style="display: none;" onchange="sendImage(event)">
+                    </label>
+                    <input type="text" id="msg-input" placeholder="اكتب رسالة..." autocomplete="off">
+                    <button class="send-btn" onclick="sendMsg()">إرسال</button>
+                </div>
+            </div>
+
+            <!-- نافذة سطر الأوامر (Terminal) -->
+            <div id="tab-terminal" class="screen" style="display: none; flex-direction: column; height: 100%;">
+                <div class="terminal-box" id="term-logs">
+                    <div>[SYSTEM] Lafi Munir Sovereign Kernel v3.0 Online.</div>
+                    <div>[INFO] Type 'help' to see commands.</div>
+                </div>
+                <div class="term-input-bar">
+                    <span style="color: #ff007f; margin-left: 6px;">❯</span>
+                    <input type="text" id="term-input" placeholder="اكتب أمراً..." onkeydown="handleTerminal(event)">
+                </div>
+            </div>
+
+            <!-- شريط التنقل السفلي -->
+            <div class="bottom-nav">
+                <div class="nav-item active" onclick="switchNav('rooms', this)"><div>🌐</div>الغرف</div>
+                <div class="nav-item" onclick="switchNav('terminal', this)"><div>💻</div>التيرمينال</div>
+            </div>
         </div>
+
     </div>
 
-    <!-- كود الجسيمات الكونية المتحركة (JavaScript) -->
     <script>
+        // خلفية النجوم المتحركة
         const canvas = document.getElementById('spaceCanvas');
         const ctx = canvas.getContext('2d');
-
         let stars = [];
-        const numStars = 120;
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         }
-
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        for (let i = 0; i < numStars; i++) {
+        for(let i=0; i<80; i++) {
             stars.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                radius: Math.random() * 1.8,
+                radius: Math.random() * 1.5,
                 alpha: Math.random(),
-                speed: Math.random() * 0.4 + 0.1
+                speed: Math.random() * 0.2 + 0.05
             });
         }
 
-        function animate() {
+        function drawStars() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#ffffff';
-
             stars.forEach(star => {
                 ctx.globalAlpha = star.alpha;
                 ctx.beginPath();
                 ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
                 ctx.fill();
-
                 star.y -= star.speed;
-                if (star.y < 0) {
-                    star.y = canvas.height;
-                    star.x = Math.random() * canvas.width;
-                }
-
-                // وميض النجوم الخفيف
-                star.alpha += (Math.random() - 0.5) * 0.05;
-                if (star.alpha < 0.1) star.alpha = 0.1;
-                if (star.alpha > 1) star.alpha = 1;
+                if(star.y < 0) star.y = canvas.height;
             });
+            requestAnimationFrame(drawStars);
+        }
+        drawStars();
 
-            requestAnimationFrame(animate);
+        // التبديل بين الشاشات
+        function enterApp() {
+            document.getElementById('screen-gateway').style.display = 'none';
+            document.getElementById('screen-app').style.display = 'flex';
         }
 
-        animate();
+        function goHome() {
+            document.getElementById('screen-app').style.display = 'none';
+            document.getElementById('screen-gateway').style.display = 'flex';
+        }
+
+        function openRoom(name) {
+            document.getElementById('app-title').innerText = name;
+            document.getElementById('tab-rooms').style.display = 'none';
+            document.getElementById('tab-terminal').style.display = 'none';
+            document.getElementById('tab-chat').style.display = 'flex';
+        }
+
+        function switchNav(tab, el) {
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+
+            document.getElementById('tab-chat').style.display = 'none';
+            document.getElementById('tab-rooms').style.display = 'none';
+            document.getElementById('tab-terminal').style.display = 'none';
+
+            if(tab === 'rooms') {
+                document.getElementById('tab-rooms').style.display = 'flex';
+                document.getElementById('app-title').innerText = '🌐 الغرف السيادية';
+            } else if(tab === 'terminal') {
+                document.getElementById('tab-terminal').style.display = 'flex';
+                document.getElementById('app-title').innerText = '💻 سطر الأوامر السيادي';
+            }
+        }
+
+        function sendMsg() {
+            const input = document.getElementById('msg-input');
+            if(input.value.trim() === '') return;
+            const box = document.getElementById('msg-container');
+            const div = document.createElement('div');
+            div.className = 'msg sent';
+            div.innerText = input.value;
+            box.appendChild(div);
+            input.value = '';
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function sendImage(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const box = document.getElementById('msg-container');
+                const div = document.createElement('div');
+                div.className = 'msg sent';
+                div.innerHTML = `صورة:<br><img src="${evt.target.result}">`;
+                box.appendChild(div);
+                box.scrollTop = box.scrollHeight;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function handleTerminal(e) {
+            if(e.key === 'Enter') {
+                const input = document.getElementById('term-input');
+                const logs = document.getElementById('term-logs');
+                const val = input.value.trim();
+                if(!val) return;
+
+                logs.innerHTML += `<div>❯ ${val}</div>`;
+                if(val === 'help') {
+                    logs.innerHTML += `<div style="color:#00ffcc;">Commands: status, clear, about</div>`;
+                } else if(val === 'status') {
+                    logs.innerHTML += `<div style="color:#ff007f;">STATUS: SOVEREIGN SYSTEM ONLINE 2026</div>`;
+                } else if(val === 'clear') {
+                    logs.innerHTML = '';
+                } else {
+                    logs.innerHTML += `<div style="color:#ff4444;">Unknown command. Type 'help'.</div>`;
+                }
+                input.value = '';
+                logs.scrollTop = logs.scrollHeight;
+            }
+        }
     </script>
 </body>
 </html>
