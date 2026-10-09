@@ -44,6 +44,10 @@
             background: rgba(18, 8, 38, 0.95); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
             border-left: 1px solid rgba(0, 242, 254, 0.4); border-right: 1px solid rgba(0, 242, 254, 0.4);
             display: flex; flex-direction: column; overflow: hidden;
+            transition: box-shadow 0.5s ease;
+        }
+        .container.connected-aura {
+            box-shadow: 0 0 40px rgba(0, 242, 254, 0.5), inset 0 0 30px rgba(255, 0, 127, 0.2);
         }
 
         .screen { display: none !important; flex: 1; flex-direction: column; height: 100%; overflow: hidden; }
@@ -87,13 +91,16 @@
         }
         .btn:hover { transform: scale(1.02); }
 
-        .system-footer { margin-top: 15px; font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.5); text-align: center; }
+        .system-footer { margin-top: 15px; font-size: 10px; letter-spacing: 1.5px; color: rgba(255,255,255,0.6); text-align: center; }
 
         .live-room-content { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at center, #1e0a3c 0%, #0d0221 100%); position: relative; height: 100%; }
         .room-top-bar { padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; background: rgba(20, 10, 40, 0.85); backdrop-filter: blur(10px); z-index: 5; border-bottom: 1px solid rgba(0,242,254,0.3); }
         
         .videos-container { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
-        #remoteVideo { width: 100%; height: 100%; object-fit: cover; background: #080112; }
+        #remoteVideo { width: 100%; height: 100%; object-fit: cover; background: #080112; cursor: pointer; transition: 0.3s; }
+        #remoteVideo.fullscreen-mode {
+            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; object-fit: contain; background: #000;
+        }
         #localVideo {
             position: absolute; top: 15px; left: 15px; width: 100px; height: 140px; object-fit: cover;
             border-radius: 14px; border: 2px solid #00f2fe; background: #190028; z-index: 10;
@@ -161,7 +168,7 @@
     <div class="cinematic-moon" id="cinematicMoon"></div>
     <canvas id="spaceCanvas"></canvas>
 
-    <div class="container">
+    <div class="container" id="mainContainer">
         
         <!-- شاشة البوابة -->
         <div id="screen-gateway" class="screen active gateway-screen">
@@ -179,7 +186,7 @@
             <a href="https://github.com/wwwmounirmp-hue/lafi-munir" target="_blank" class="btn" style="background: linear-gradient(135deg, rgba(30,15,60,0.9), rgba(60,20,90,0.9)); border: 1px solid rgba(0,242,254,0.4);">
                 استكشف 🚀 GitHub
             </a>
-            <div class="system-footer">STARDUST MEMORY P2P • 2026</div>
+            <div class="system-footer">STARDUST MEMORY P2P • 2026<br><span style="color:#00f2fe;">صُنع بعشق في سماء السيادة الرقمية 🌌</span></div>
         </div>
 
         <!-- شاشة الاتصال داخل الغرفة -->
@@ -191,7 +198,7 @@
                 </div>
 
                 <div class="videos-container">
-                    <video id="remoteVideo" autoplay playsinline></video>
+                    <video id="remoteVideo" autoplay playsinline ondblclick="toggleRemoteFullscreen()"></video>
                     <video id="localVideo" autoplay playsinline muted></video>
                     
                     <div id="stardustMemoryLayer"></div>
@@ -214,6 +221,90 @@
 
     </div>
 
+    <script>
+        let ambientAudioCtx = null;
+        let ambientOscillator = null;
+
+        function playCosmicSound(type = 'chime') {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+
+                if (type === 'chime') {
+                    const notes = [528, 659.25, 783.99, 1046.5];
+                    notes.forEach((freq, index) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, ctx.currentTime + index * 0.1);
+
+                        gain.gain.setValueAtTime(0.05, ctx.currentTime + index * 0.1);
+                        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + index * 0.1 + 1.2);
+
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+
+                        osc.start(ctx.currentTime + index * 0.1);
+                        osc.stop(ctx.currentTime + index * 0.1 + 1.2);
+                    });
+                } else if (type === 'sparkle') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(880, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.3);
+
+                    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.4);
+                }
+            } catch (e) {
+                console.log("Audio Context prevented");
+            }
+        }
+
+        function startAmbientDrone() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                ambientAudioCtx = new AudioContext();
+                ambientOscillator = ambientAudioCtx.createOscillator();
+                const gainNode = ambientAudioCtx.createGain();
+
+                ambientOscillator.type = 'sine';
+                ambientOscillator.frequency.setValueAtTime(110, ambientAudioCtx.currentTime);
+
+                gainNode.gain.setValueAtTime(0.015, ambientAudioCtx.currentTime);
+
+                ambientOscillator.connect(gainNode);
+                gainNode.connect(ambientAudioCtx.destination);
+                ambientOscillator.start();
+            } catch (e) {
+                console.log("Ambient audio blocked");
+            }
+        }
+
+        function stopAmbientDrone() {
+            if (ambientOscillator) {
+                try { ambientOscillator.stop(); } catch(e) {}
+            }
+            if (ambientAudioCtx) {
+                try { ambientAudioCtx.close(); } catch(e) {}
+            }
+        }
+
+        function toggleRemoteFullscreen() {
+            const remoteVid = document.getElementById('remoteVideo');
+            remoteVid.classList.toggle('fullscreen-mode');
+        }
+    </script>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, push, onChildAdded, remove, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -233,7 +324,15 @@
             const roomRef = ref(db, `rooms_v3/${roomName}/peers`);
             const stardustRef = ref(db, `rooms_v3/${roomName}/stardust`);
 
-            peer = new Peer();
+            // تكوين هندسي آمن مع خوادم STUN متعددة وموثوقة لتجاوز جدران الحماية
+            peer = new Peer({
+                config: {
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:global.stun.twilio.com:3478' }
+                    ]
+                }
+            });
 
             peer.on('open', (id) => {
                 document.getElementById('roomTitleDisplay').innerText = `الغرفة: ${roomName} • متصل 🟢`;
@@ -268,6 +367,10 @@
                 call.answer(stream);
                 handleCall(call);
             });
+
+            peer.on('error', (err) => {
+                console.error("PeerJS Error:", err);
+            });
         };
 
         window.sendStardustToCloud = function(roomName, text) {
@@ -284,6 +387,7 @@
             call.on('stream', (remoteStream) => {
                 document.getElementById('remoteVideo').srcObject = remoteStream;
                 document.getElementById('cinematicMoon').classList.add('pulse');
+                document.getElementById('mainContainer').classList.add('connected-aura');
                 setTimeout(() => document.getElementById('cinematicMoon').classList.remove('pulse'), 1000);
             });
             call.on('close', () => {
@@ -294,6 +398,9 @@
         window.cleanupRoom = function() {
             if(myPeerRef) {
                 remove(myPeerRef);
+            }
+            if(peer) {
+                peer.destroy();
             }
         }
     </script>
@@ -312,6 +419,12 @@
                 return;
             }
 
+            if(typeof playCosmicSound === 'function') {
+                playCosmicSound('chime');
+            }
+
+            startAmbientDrone();
+
             document.getElementById('screen-gateway').classList.remove('active');
             document.getElementById('screen-app').classList.add('active');
 
@@ -329,8 +442,9 @@
                 });
         }
 
+        // فحص أمني آمن لمسارات peerConnection لمنع أي انهيار عند مشاركة الشاشة
         async function toggleScreenShare() {
-            if (!currentCall) {
+            if (!currentCall || !currentCall.peerConnection) {
                 alert("يجب أن تكون في مكالمة نشطة لمشاركة الشاشة.");
                 return;
             }
@@ -342,9 +456,13 @@
                     screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
                     const screenTrack = screenStream.getVideoTracks()[0];
 
-                    originalVideoTrack = globalStream.getVideoTracks()[0];
+                    if (globalStream && globalStream.getVideoTracks().length > 0) {
+                        originalVideoTrack = globalStream.getVideoTracks()[0];
+                    }
 
-                    const sender = currentCall.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+                    const senders = currentCall.peerConnection.getSenders ? currentCall.peerConnection.getSenders() : [];
+                    const sender = senders.find(s => s.track && s.track.kind === 'video');
+                    
                     if (sender) {
                         await sender.replaceTrack(screenTrack);
                     }
@@ -376,14 +494,17 @@
                     screenStream.getTracks().forEach(t => t.stop());
                 }
 
-                if (originalVideoTrack && currentCall) {
-                    const sender = currentCall.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+                if (originalVideoTrack && currentCall && currentCall.peerConnection) {
+                    const senders = currentCall.peerConnection.getSenders ? currentCall.peerConnection.getSenders() : [];
+                    const sender = senders.find(s => s.track && s.track.kind === 'video');
                     if (sender) {
                         await sender.replaceTrack(originalVideoTrack);
                     }
                 }
 
-                document.getElementById('localVideo').srcObject = globalStream;
+                if (globalStream) {
+                    document.getElementById('localVideo').srcObject = globalStream;
+                }
 
             } catch (err) {
                 console.error("خطأ عند إيقاف مشاركة الشاشة:", err);
@@ -421,23 +542,42 @@
             const text = input.value.trim();
             if(!text) return;
 
+            if(typeof playCosmicSound === 'function') {
+                playCosmicSound('sparkle');
+            }
+
             if(window.sendStardustToCloud) {
                 window.sendStardustToCloud(currentRoomName, text);
             }
             input.value = '';
         }
 
+        // تنظيف هندسي نظيف للوسائط والـ Streams لمنع تسريب الذاكرة (Memory Leaks) وإضاءة الكاميرا
         function goHome() {
+            stopAmbientDrone();
+            
             if(window.cleanupRoom) {
                 window.cleanupRoom();
             }
+
             if(globalStream) {
                 globalStream.getTracks().forEach(t => t.stop());
+                globalStream = null;
             }
+
             if(screenStream) {
                 screenStream.getTracks().forEach(t => t.stop());
+                screenStream = null;
             }
-            location.reload();
+
+            // انتقال سلس ونظيف
+            document.getElementById('screen-app').classList.remove('active');
+            document.getElementById('screen-gateway').classList.add('active');
+            document.getElementById('mainContainer').classList.remove('connected-aura');
+            
+            setTimeout(() => {
+                location.reload();
+            }, 300);
         }
 
         function toggleMic() {
