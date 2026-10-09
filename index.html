@@ -151,16 +151,16 @@
 
         .call-controls {
             padding: 15px; background: rgba(15, 5, 30, 0.9); backdrop-filter: blur(10px);
-            display: flex; justify-content: center; gap: 15px; align-items: center; z-index: 10;
+            display: flex; justify-content: center; gap: 12px; align-items: center; z-index: 10;
         }
         .control-icon-btn {
-            width: 45px; height: 45px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.1); color: #fff; font-size: 16px;
+            width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1); color: #fff; font-size: 15px;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: 0.2s;
         }
         .control-icon-btn.active { background: #ff0844; border-color: #ff0844; box-shadow: 0 0 20px rgba(255,8,68,0.6); }
-        .hangup-btn { background: linear-gradient(135deg, #ff0844, #ffb199); border: none; width: 52px; height: 52px; font-size: 18px; box-shadow: 0 6px 20px rgba(255,8,68,0.5); }
+        .hangup-btn { background: linear-gradient(135deg, #ff0844, #ffb199); border: none; width: 48px; height: 48px; font-size: 16px; box-shadow: 0 6px 20px rgba(255,8,68,0.5); }
     </style>
 </head>
 <body>
@@ -175,7 +175,7 @@
             <div class="avatar-box"><div class="avatar-inner">🌌</div></div>
             <h1>لافي منير</h1>
             <p class="gateway-desc">
-                الشبكة السيادية الحية المزودة بخاصية "الصدى النجمي للذاكرة الكونية" ومشاركة الشاشة. تواصل وخلّد أثرك للأبد.
+                الشبكة السيادية الحية المزودة بخاصية "الصدى النجمي للذاكرة الكونية"، التسجيل المحلي، ومشاركة الشاشة. تواصل وخلّد أثرك للأبد.
             </p>
             
             <input type="text" id="roomInput" class="room-input" placeholder="اكتب اسم أو رقم الغرفة (مثال: lafi-room-1)" value="lafi-room-1">
@@ -193,8 +193,8 @@
         <div id="screen-app" class="screen">
             <div class="live-room-content">
                 <div class="room-top-bar">
-                    <span id="roomTitleDisplay" style="font-size:12px; font-weight:bold; color:#00f2fe;">الغرفة: جاري الاتصال... 🌐</span>
-                    <span onclick="goHome()" style="cursor:pointer; font-size:14px; color:#ff0844; font-weight:bold;">✕ خروج</span>
+                    <span id="roomTitleDisplay" style="font-size:11px; font-weight:bold; color:#00f2fe;">الغرفة: جاري الاتصال... 🌐</span>
+                    <span onclick="goHome()" style="cursor:pointer; font-size:13px; color:#ff0844; font-weight:bold;">✕ خروج</span>
                 </div>
 
                 <div class="videos-container">
@@ -212,9 +212,10 @@
 
                 <div class="call-controls">
                     <button class="control-icon-btn" id="micBtn" onclick="toggleMic()" title="كتم الصوت">🎤</button>
-                    <button class="control-icon-btn" id="screenShareBtn" onclick="toggleScreenShare()" title="مشاركة الشاشة">💻</button>
-                    <button class="control-icon-btn hangup-btn" onclick="goHome()" title="إنهاء المكالمة">📞</button>
                     <button class="control-icon-btn" id="camBtn" onclick="toggleCam()" title="الكاميرا">📷</button>
+                    <button class="control-icon-btn" id="screenShareBtn" onclick="toggleScreenShare()" title="مشاركة الشاشة">💻</button>
+                    <button class="control-icon-btn" id="recordBtn" onclick="toggleRecording()" title="تسجيل الجلسة محلياً">🔴</button>
+                    <button class="control-icon-btn hangup-btn" onclick="goHome()" title="إنهاء المكالمة">📞</button>
                 </div>
             </div>
         </div>
@@ -224,6 +225,9 @@
     <script>
         let ambientAudioCtx = null;
         let ambientOscillator = null;
+        let statsInterval = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
 
         function playCosmicSound(type = 'chime') {
             try {
@@ -303,6 +307,72 @@
             const remoteVid = document.getElementById('remoteVideo');
             remoteVid.classList.toggle('fullscreen-mode');
         }
+
+        // مراقبة جودة الاتصال لحظياً عبر WebRTC stats
+        function monitorConnectionQuality(call) {
+            if (!call || !call.peerConnection) return;
+            statsInterval = setInterval(async () => {
+                try {
+                    const stats = await call.peerConnection.getStats();
+                    stats.forEach(report => {
+                        if (report.type === 'inbound-rtp' && report.kind === 'video') {
+                            const display = document.getElementById('roomTitleDisplay');
+                            if (display) {
+                                if (report.packetsLost > 15) {
+                                    display.innerText = `الغرفة: متذبذب 🟡`;
+                                } else {
+                                    display.innerText = `الغرفة: ممتاز 🟢`;
+                                }
+                            }
+                        }
+                    });
+                } catch(e) {}
+            }, 4000);
+        }
+
+        // ميزة التسجيل المحلي للجلسة (MediaRecorder API)
+        function toggleRecording() {
+            const btn = document.getElementById('recordBtn');
+            if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+                if (!globalStream) {
+                    alert("لا توجد وسائط نشطة للتسجيل.");
+                    return;
+                }
+                recordedChunks = [];
+                try {
+                    mediaRecorder = new MediaRecorder(globalStream, { mimeType: 'video/webm;codecs=vp9,opus' });
+                } catch(e) {
+                    try { mediaRecorder = new MediaRecorder(globalStream); } catch(err) {
+                        alert("التسجيل غير مدعوم في هذا المتصفح.");
+                        return;
+                    }
+                }
+
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) recordedChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `lafi-munir-recording-${Date.now()}.webm`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                };
+
+                mediaRecorder.start();
+                btn.classList.add('active');
+                alert("بدأ تسجيل الجلسة محلياً بأمان ✨");
+            } else {
+                mediaRecorder.stop();
+                btn.classList.remove('active');
+                alert("تم إيقاف التسجيل وحفظ ملف الفيديو على جهازك 📥");
+            }
+        }
     </script>
 
     <script type="module">
@@ -324,7 +394,6 @@
             const roomRef = ref(db, `rooms_v3/${roomName}/peers`);
             const stardustRef = ref(db, `rooms_v3/${roomName}/stardust`);
 
-            // تكوين هندسي آمن مع خوادم STUN متعددة وموثوقة لتجاوز جدران الحماية
             peer = new Peer({
                 config: {
                     iceServers: [
@@ -367,10 +436,6 @@
                 call.answer(stream);
                 handleCall(call);
             });
-
-            peer.on('error', (err) => {
-                console.error("PeerJS Error:", err);
-            });
         };
 
         window.sendStardustToCloud = function(roomName, text) {
@@ -389,6 +454,9 @@
                 document.getElementById('cinematicMoon').classList.add('pulse');
                 document.getElementById('mainContainer').classList.add('connected-aura');
                 setTimeout(() => document.getElementById('cinematicMoon').classList.remove('pulse'), 1000);
+                
+                // تشغيل مراقب جودة الاتصال
+                monitorConnectionQuality(call);
             });
             call.on('close', () => {
                 goHome();
@@ -396,12 +464,9 @@
         }
 
         window.cleanupRoom = function() {
-            if(myPeerRef) {
-                remove(myPeerRef);
-            }
-            if(peer) {
-                peer.destroy();
-            }
+            if(statsInterval) clearInterval(statsInterval);
+            if(myPeerRef) remove(myPeerRef);
+            if(peer) peer.destroy();
         }
     </script>
 
@@ -442,7 +507,6 @@
                 });
         }
 
-        // فحص أمني آمن لمسارات peerConnection لمنع أي انهيار عند مشاركة الشاشة
         async function toggleScreenShare() {
             if (!currentCall || !currentCall.peerConnection) {
                 alert("يجب أن تكون في مكالمة نشطة لمشاركة الشاشة.");
@@ -552,10 +616,13 @@
             input.value = '';
         }
 
-        // تنظيف هندسي نظيف للوسائط والـ Streams لمنع تسريب الذاكرة (Memory Leaks) وإضاءة الكاميرا
         function goHome() {
             stopAmbientDrone();
             
+            if(mediaRecorder && mediaRecorder.state !== 'inactive') {
+                try { mediaRecorder.stop(); } catch(e) {}
+            }
+
             if(window.cleanupRoom) {
                 window.cleanupRoom();
             }
@@ -570,7 +637,6 @@
                 screenStream = null;
             }
 
-            // انتقال سلس ونظيف
             document.getElementById('screen-app').classList.remove('active');
             document.getElementById('screen-gateway').classList.add('active');
             document.getElementById('mainContainer').classList.remove('connected-aura');
