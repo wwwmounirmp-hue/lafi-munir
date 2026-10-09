@@ -41,14 +41,14 @@
 
         .container {
             position: relative; z-index: 3; width: 100%; max-width: 430px; height: 100vh;
-            background: rgba(18, 8, 38, 0.9); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            background: rgba(18, 8, 38, 0.95); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
             border-left: 1px solid rgba(0, 242, 254, 0.4); border-right: 1px solid rgba(0, 242, 254, 0.4);
             display: flex; flex-direction: column; overflow: hidden;
         }
 
-        /* نظام الشاشات المانع للتداخل */
-        .screen { display: none; flex: 1; flex-direction: column; height: 100%; overflow: hidden; }
-        .screen.active { display: flex; }
+        /* نظام فصل الشاشات المانع للتداخل نهائياً */
+        .screen { display: none !important; flex: 1; flex-direction: column; height: 100%; overflow: hidden; }
+        .screen.active { display: flex !important; }
 
         .gateway-screen { align-items: center; justify-content: center; text-align: center; padding: 30px; overflow-y: auto; }
         .avatar-box {
@@ -90,7 +90,8 @@
 
         .system-footer { margin-top: 15px; font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.5); text-align: center; }
 
-        .live-room { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at center, #1e0a3c 0%, #0d0221 100%); position: relative; }
+        /* شاشة الاتصال داخل الغرفة */
+        .live-room-content { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at center, #1e0a3c 0%, #0d0221 100%); position: relative; height: 100%; }
         .room-top-bar { padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; background: rgba(20, 10, 40, 0.85); backdrop-filter: blur(10px); z-index: 5; border-bottom: 1px solid rgba(0,242,254,0.3); }
         
         .videos-container { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
@@ -164,7 +165,7 @@
 
     <div class="container">
         
-        <!-- شاشة البوابة (تأخذ class active افتراضياً) -->
+        <!-- شاشة البوابة (تكون مفعلة وتظهر وحدها في البداية) -->
         <div id="screen-gateway" class="screen active gateway-screen">
             <div class="avatar-box"><div class="avatar-inner">🌌</div></div>
             <h1>لافي منير</h1>
@@ -183,37 +184,38 @@
             <div class="system-footer">STARDUST MEMORY P2P • 2026</div>
         </div>
 
-        <!-- شاشة الاتصال داخل الغرفة (مخفية افتراضياً وتظهر عند التفعيل) -->
-        <div id="screen-app" class="screen live-room">
-            <div class="room-top-bar">
-                <span id="roomTitleDisplay" style="font-size:12px; font-weight:bold; color:#00f2fe;">الغرفة: جاري الاتصال... 🌐</span>
-                <span onclick="goHome()" style="cursor:pointer; font-size:14px; color:#ff0844; font-weight:bold;">✕ خروج</span>
-            </div>
-
-            <div class="videos-container">
-                <video id="remoteVideo" autoplay playsinline></video>
-                <video id="localVideo" autoplay playsinline muted></video>
-                
-                <div id="stardustMemoryLayer"></div>
-                <div class="room-chat-overlay" id="roomChatOverlay"></div>
-
-                <div class="room-input-box">
-                    <input type="text" id="roomMsgInput" placeholder="أرسل رسالة تخلد في سماء الغرفة..." autocomplete="off">
-                    <button onclick="sendStardustMsg()">إرسال ✨</button>
+        <!-- شاشة الاتصال داخل الغرفة (مخفية كلياً ولا تظهر إلا عند تفعيلها) -->
+        <div id="screen-app" class="screen">
+            <div class="live-room-content">
+                <div class="room-top-bar">
+                    <span id="roomTitleDisplay" style="font-size:12px; font-weight:bold; color:#00f2fe;">الغرفة: جاري الاتصال... 🌐</span>
+                    <span onclick="goHome()" style="cursor:pointer; font-size:14px; color:#ff0844; font-weight:bold;">✕ خروج</span>
                 </div>
-            </div>
 
-            <div class="call-controls">
-                <button class="control-icon-btn" id="micBtn" onclick="toggleMic()" title="كتم الصوت">🎤</button>
-                <button class="control-icon-btn" id="screenShareBtn" onclick="toggleScreenShare()" title="مشاركة الشاشة">💻</button>
-                <button class="control-icon-btn hangup-btn" onclick="goHome()" title="إنهاء المكالمة">📞</button>
-                <button class="control-icon-btn" id="camBtn" onclick="toggleCam()" title="الكاميرا">📷</button>
+                <div class="videos-container">
+                    <video id="remoteVideo" autoplay playsinline></video>
+                    <video id="localVideo" autoplay playsinline muted></video>
+                    
+                    <div id="stardustMemoryLayer"></div>
+                    <div class="room-chat-overlay" id="roomChatOverlay"></div>
+
+                    <div class="room-input-box">
+                        <input type="text" id="roomMsgInput" placeholder="أرسل رسالة تخلد في سماء الغرفة..." autocomplete="off">
+                        <button onclick="sendStardustMsg()">إرسال ✨</button>
+                    </div>
+                </div>
+
+                <div class="call-controls">
+                    <button class="control-icon-btn" id="micBtn" onclick="toggleMic()" title="كتم الصوت">🎤</button>
+                    <button class="control-icon-btn" id="screenShareBtn" onclick="toggleScreenShare()" title="مشاركة الشاشة">💻</button>
+                    <button class="control-icon-btn hangup-btn" onclick="goHome()" title="إنهاء المكالمة">📞</button>
+                    <button class="control-icon-btn" id="camBtn" onclick="toggleCam()" title="الكاميرا">📷</button>
+                </div>
             </div>
         </div>
 
     </div>
 
-    <!-- كود الربط السحابي والتحكم بـ P2P و Screen Sharing -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, push, onChildAdded, remove, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -228,12 +230,10 @@
         let peer = null;
         let currentCall = null;
         let myPeerRef = null;
-        let activeRoomRef = null;
 
         window.initRoomP2P = function(roomName, stream) {
             const roomRef = ref(db, `rooms_v3/${roomName}/peers`);
             const stardustRef = ref(db, `rooms_v3/${roomName}/stardust`);
-            activeRoomRef = roomRef;
 
             peer = new Peer();
 
@@ -314,7 +314,7 @@
                 return;
             }
 
-            // تبديل الشاشات بشكل صحيح باستخدام نظام الفئات (Classes)
+            // إخفاء البوابة تماماً وتفعيل شاشة التطبيق
             document.getElementById('screen-gateway').classList.remove('active');
             document.getElementById('screen-app').classList.add('active');
 
