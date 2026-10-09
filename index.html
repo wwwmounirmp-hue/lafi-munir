@@ -41,7 +41,7 @@
 
         .container {
             position: relative; z-index: 3; width: 100%; max-width: 430px; height: 100vh;
-            background: rgba(18, 8, 38, 0.95); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            background: rgba(18, 8, 38, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border-left: 1px solid rgba(0, 242, 254, 0.4); border-right: 1px solid rgba(0, 242, 254, 0.4);
             display: flex; flex-direction: column; overflow: hidden;
             transition: box-shadow 0.5s ease;
@@ -93,22 +93,23 @@
 
         .system-footer { margin-top: 15px; font-size: 10px; letter-spacing: 1.5px; color: rgba(255,255,255,0.6); text-align: center; }
 
-        .live-room-content { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at center, #1e0a3c 0%, #0d0221 100%); position: relative; height: 100%; }
-        .room-top-bar { padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; background: rgba(20, 10, 40, 0.85); backdrop-filter: blur(10px); z-index: 5; border-bottom: 1px solid rgba(0,242,254,0.3); }
+        /* شاشة الغرفة الحية بترتيب عمودي مرن يمنع تداخل العناصر */
+        .live-room-content { flex: 1; display: flex; flex-direction: column; background: transparent; position: relative; height: 100%; overflow: hidden; }
+        .room-top-bar { padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; background: rgba(20, 10, 40, 0.9); backdrop-filter: blur(10px); z-index: 5; border-bottom: 1px solid rgba(0,242,254,0.3); flex-shrink: 0; }
         
-        .videos-container { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        .videos-container { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; min-height: 120px; }
         #remoteVideo { width: 100%; height: 100%; object-fit: cover; background: #080112; cursor: pointer; transition: 0.3s; }
         #remoteVideo.fullscreen-mode {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; object-fit: contain; background: #000;
         }
         #localVideo {
-            position: absolute; top: 15px; left: 15px; width: 100px; height: 140px; object-fit: cover;
-            border-radius: 14px; border: 2px solid #00f2fe; background: #190028; z-index: 10;
+            position: absolute; top: 12px; left: 12px; width: 90px; height: 130px; object-fit: cover;
+            border-radius: 12px; border: 2px solid #00f2fe; background: #190028; z-index: 10;
             box-shadow: 0 0 20px rgba(0,242,254,0.5);
         }
 
         #stardustMemoryLayer {
-            position: absolute; top: 70px; left: 15px; right: 15px; bottom: 80px;
+            position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px;
             pointer-events: none; z-index: 8; overflow: hidden;
         }
         .stardust-particle {
@@ -118,31 +119,47 @@
             border: 1px solid rgba(255,0,127,0.5);
         }
         @keyframes floatUp {
-            0% { transform: translateY(100px) scale(0.8); opacity: 0; }
+            0% { transform: translateY(80px) scale(0.8); opacity: 0; }
             20% { opacity: 1; }
-            100% { transform: translateY(-200px) scale(1.1); opacity: 0; }
+            100% { transform: translateY(-150px) scale(1.1); opacity: 0; }
+        }
+
+        /* لوحة سفلية تجمع الدردشة، حقل الإدخال وأزرار التحكم بشكل مرتب تماماً دون تداخل */
+        .room-bottom-panel {
+            background: rgba(12, 4, 25, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(0,242,254,0.3);
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 20;
+            flex-shrink: 0;
         }
 
         .room-chat-overlay {
-            position: absolute; bottom: 80px; left: 15px; right: 15px; max-height: 120px;
-            overflow-y: auto; z-index: 9; display: flex; flex-direction: column; gap: 4px; padding: 5px;
+            max-height: 80px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
             scrollbar-width: none;
         }
         .room-chat-overlay::-webkit-scrollbar { display: none; }
         .chat-bubble {
-            background: rgba(15, 5, 30, 0.75); backdrop-filter: blur(5px);
-            padding: 6px 12px; border-radius: 12px; font-size: 11px; border-right: 3px solid #00f2fe;
-            max-width: 80%; width: fit-content; color: #fff;
+            background: rgba(18, 8, 38, 0.85); backdrop-filter: blur(5px);
+            padding: 5px 10px; border-radius: 10px; font-size: 11px; border-right: 3px solid #00f2fe;
+            max-width: 85%; width: fit-content; color: #fff;
         }
         .chat-bubble span { color: #00f2fe; font-weight: bold; margin-left: 5px; }
 
         .room-input-box {
-            position: absolute; bottom: 10px; left: 15px; right: 15px; z-index: 10;
-            display: flex; gap: 8px; background: rgba(15, 5, 30, 0.9); padding: 8px; border-radius: 20px;
-            border: 1px solid rgba(0,242,254,0.3); backdrop-filter: blur(10px);
+            display: flex; gap: 8px; background: rgba(22, 8, 45, 0.95); padding: 6px 10px; border-radius: 18px;
+            border: 1px solid rgba(0,242,254,0.3); align-items: center;
         }
         .room-input-box input {
-            flex: 1; background: transparent; border: none; color: #fff; font-size: 12px; outline: none; padding: 0 8px;
+            flex: 1; background: transparent; border: none; color: #fff; font-size: 12px; outline: none; padding: 0 4px;
         }
         .room-input-box button {
             background: linear-gradient(135deg, #00f2fe, #ff007f); border: none; color: #fff;
@@ -150,17 +167,16 @@
         }
 
         .call-controls {
-            padding: 15px; background: rgba(15, 5, 30, 0.9); backdrop-filter: blur(10px);
-            display: flex; justify-content: center; gap: 12px; align-items: center; z-index: 10;
+            display: flex; justify-content: center; gap: 10px; align-items: center; padding-top: 2px;
         }
         .control-icon-btn {
-            width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.1); color: #fff; font-size: 15px;
+            width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1); color: #fff; font-size: 14px;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.2s;
         }
-        .control-icon-btn.active { background: #ff0844; border-color: #ff0844; box-shadow: 0 0 20px rgba(255,8,68,0.6); }
-        .hangup-btn { background: linear-gradient(135deg, #ff0844, #ffb199); border: none; width: 48px; height: 48px; font-size: 16px; box-shadow: 0 6px 20px rgba(255,8,68,0.5); }
+        .control-icon-btn.active { background: #ff0844; border-color: #ff0844; box-shadow: 0 0 15px rgba(255,8,68,0.6); }
+        .hangup-btn { background: linear-gradient(135deg, #ff0844, #ffb199); border: none; width: 44px; height: 44px; font-size: 15px; box-shadow: 0 4px 15px rgba(255,8,68,0.5); }
     </style>
 </head>
 <body>
@@ -200,22 +216,25 @@
                 <div class="videos-container">
                     <video id="remoteVideo" autoplay playsinline ondblclick="toggleRemoteFullscreen()"></video>
                     <video id="localVideo" autoplay playsinline muted></video>
-                    
                     <div id="stardustMemoryLayer"></div>
+                </div>
+
+                <!-- اللوحة السفلية المنظمة عمودياً لتجنب أي تداخل نهائياً -->
+                <div class="room-bottom-panel">
                     <div class="room-chat-overlay" id="roomChatOverlay"></div>
 
                     <div class="room-input-box">
                         <input type="text" id="roomMsgInput" placeholder="أرسل رسالة تخلد في سماء الغرفة..." autocomplete="off">
                         <button onclick="sendStardustMsg()">إرسال ✨</button>
                     </div>
-                </div>
 
-                <div class="call-controls">
-                    <button class="control-icon-btn" id="micBtn" onclick="toggleMic()" title="كتم الصوت">🎤</button>
-                    <button class="control-icon-btn" id="camBtn" onclick="toggleCam()" title="الكاميرا">📷</button>
-                    <button class="control-icon-btn" id="screenShareBtn" onclick="toggleScreenShare()" title="مشاركة الشاشة">💻</button>
-                    <button class="control-icon-btn" id="recordBtn" onclick="toggleRecording()" title="تسجيل الجلسة محلياً">🔴</button>
-                    <button class="control-icon-btn hangup-btn" onclick="goHome()" title="إنهاء المكالمة">📞</button>
+                    <div class="call-controls">
+                        <button class="control-icon-btn" id="micBtn" onclick="toggleMic()" title="كتم الصوت">🎤</button>
+                        <button class="control-icon-btn" id="camBtn" onclick="toggleCam()" title="الكاميرا">📷</button>
+                        <button class="control-icon-btn" id="screenShareBtn" onclick="toggleScreenShare()" title="مشاركة الشاشة">💻</button>
+                        <button class="control-icon-btn" id="recordBtn" onclick="toggleRecording()" title="تسجيل الجلسة محلياً">🔴</button>
+                        <button class="control-icon-btn hangup-btn" onclick="goHome()" title="إنهاء المكالمة">📞</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -308,7 +327,6 @@
             remoteVid.classList.toggle('fullscreen-mode');
         }
 
-        // مراقبة جودة الاتصال لحظياً عبر WebRTC stats
         function monitorConnectionQuality(call) {
             if (!call || !call.peerConnection) return;
             statsInterval = setInterval(async () => {
@@ -330,7 +348,6 @@
             }, 4000);
         }
 
-        // ميزة التسجيل المحلي للجلسة (MediaRecorder API)
         function toggleRecording() {
             const btn = document.getElementById('recordBtn');
             if (!mediaRecorder || mediaRecorder.state === 'inactive') {
@@ -455,7 +472,6 @@
                 document.getElementById('mainContainer').classList.add('connected-aura');
                 setTimeout(() => document.getElementById('cinematicMoon').classList.remove('pulse'), 1000);
                 
-                // تشغيل مراقب جودة الاتصال
                 monitorConnectionQuality(call);
             });
             call.on('close', () => {
@@ -591,7 +607,7 @@
                 const particle = document.createElement('div');
                 particle.className = 'stardust-particle';
                 particle.style.left = Math.random() * 70 + '%';
-                particle.style.top = (50 + Math.random() * 30) + '%';
+                particle.style.top = (30 + Math.random() * 40) + '%';
                 particle.innerText = `✨ ${text}`;
                 layer.appendChild(particle);
 
@@ -685,7 +701,7 @@
             });
         }
 
-        function drawStars() {
+        function drawStars` + `() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#ffffff';
             stars.forEach(star => {
