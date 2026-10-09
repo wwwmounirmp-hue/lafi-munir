@@ -46,7 +46,6 @@
             display: flex; flex-direction: column; overflow: hidden;
         }
 
-        /* نظام فصل الشاشات المانع للتداخل نهائياً */
         .screen { display: none !important; flex: 1; flex-direction: column; height: 100%; overflow: hidden; }
         .screen.active { display: flex !important; }
 
@@ -90,7 +89,6 @@
 
         .system-footer { margin-top: 15px; font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.5); text-align: center; }
 
-        /* شاشة الاتصال داخل الغرفة */
         .live-room-content { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at center, #1e0a3c 0%, #0d0221 100%); position: relative; height: 100%; }
         .room-top-bar { padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; background: rgba(20, 10, 40, 0.85); backdrop-filter: blur(10px); z-index: 5; border-bottom: 1px solid rgba(0,242,254,0.3); }
         
@@ -165,7 +163,7 @@
 
     <div class="container">
         
-        <!-- شاشة البوابة (تكون مفعلة وتظهر وحدها في البداية) -->
+        <!-- شاشة البوابة -->
         <div id="screen-gateway" class="screen active gateway-screen">
             <div class="avatar-box"><div class="avatar-inner">🌌</div></div>
             <h1>لافي منير</h1>
@@ -184,7 +182,7 @@
             <div class="system-footer">STARDUST MEMORY P2P • 2026</div>
         </div>
 
-        <!-- شاشة الاتصال داخل الغرفة (مخفية كلياً ولا تظهر إلا عند تفعيلها) -->
+        <!-- شاشة الاتصال داخل الغرفة -->
         <div id="screen-app" class="screen">
             <div class="live-room-content">
                 <div class="room-top-bar">
@@ -314,7 +312,6 @@
                 return;
             }
 
-            // إخفاء البوابة تماماً وتفعيل شاشة التطبيق
             document.getElementById('screen-gateway').classList.remove('active');
             document.getElementById('screen-app').classList.add('active');
 
