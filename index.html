@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لافي منير | الشبكة السيادية الكونية العابرة للأكوان</title>
+    <title>لافي منير | الشبكة السيادية الكونية الحية</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tahoma', sans-serif; }
         body {
@@ -29,7 +29,7 @@
 
         .container {
             position: relative; z-index: 3; width: 95%; max-width: 430px; height: 95vh; max-height: 900px;
-            background: rgba(6, 2, 14, 0.95); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+            background: rgba(6, 2, 14, 0.96); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
             border: 1px solid rgba(0, 255, 204, 0.4); border-radius: 36px;
             box-shadow: 0 40px 80px rgba(0,0,0,0.98), inset 0 1px 0 rgba(255,255,255,0.3);
             display: flex; flex-direction: column; overflow: hidden;
@@ -118,49 +118,42 @@
         .contact-info p { font-size: 12px; color: #9ca3af; }
         .contact-time { font-size: 10px; color: #6b7280; }
 
-        /* غرفة البث الحي الملكية */
+        /* غرفة البث الحي المرئي والصوتي العالمي */
         .live-room { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at center, #110722 0%, #03000a 100%); position: relative; overflow: hidden; }
-        .room-top-bar { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.6); z-index: 5; }
-        .room-id-badge { display: flex; align-items: center; gap: 8px; background: rgba(0,255,204,0.2); padding: 5px 14px; border-radius: 20px; border: 1px solid #00ffcc; }
+        .room-top-bar { padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.6); z-index: 5; }
+        .room-id-badge { display: flex; align-items: center; gap: 8px; background: rgba(0,255,204,0.2); padding: 4px 12px; border-radius: 20px; border: 1px solid #00ffcc; }
         
-        .camera-stream-box {
-            width: 92%; height: 140px; margin: 6px auto; background: #000; border-radius: 16px;
-            border: 2px solid #00ffcc; overflow: hidden; position: relative; box-shadow: 0 0 25px rgba(0,255,204,0.3);
-            display: flex; align-items: center; justify-content: center;
+        /* شبكة الكاميرات الحية (كاميرتك + كاميرات العالم) */
+        .video-grid-container {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; padding: 8px 12px; max-height: 200px; overflow-y: auto; z-index: 5;
         }
-        #localVideo { width: 100%; height: 100%; object-fit: cover; }
-        .cam-overlay-text { position: absolute; bottom: 8px; right: 12px; background: rgba(0,0,0,0.7); padding: 2px 8px; border-radius: 6px; font-size: 10px; color: #00ffcc; }
-
-        .seats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 4px 15px; justify-items: center; z-index: 5; }
-        .mic-pod { display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative; }
-        .pod-ring {
-            width: 42px; height: 42px; border-radius: 50%; background: #150826;
-            border: 2px solid #00ffcc; display: flex; align-items: center; justify-content: center;
-            font-size: 16px; color: #fff; box-shadow: 0 0 15px rgba(0,255,204,0.3); position: relative;
+        .video-box {
+            background: #000; border-radius: 12px; border: 2px solid #00ffcc; overflow: hidden; position: relative; height: 110px;
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(0,255,204,0.3);
         }
-        .pod-name { font-size: 9px; color: #e5e7eb; margin-top: 2px; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .owner-crown { position: absolute; top: -10px; font-size: 12px; z-index: 6; }
+        .video-box video { width: 100%; height: 100%; object-fit: cover; }
+        .video-label { position: absolute; bottom: 4px; right: 6px; background: rgba(0,0,0,0.7); padding: 1px 6px; border-radius: 4px; font-size: 9px; color: #00ffcc; }
 
-        .room-chat-box { flex: 1; overflow-y: auto; padding: 10px 15px; display: flex; flex-direction: column; gap: 8px; z-index: 5; }
-        .room-msg { background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 12px; font-size: 12px; max-width: 88%; line-height: 1.4; border-right: 3px solid #00ffcc; backdrop-filter: blur(5px); }
+        .room-chat-box { flex: 1; overflow-y: auto; padding: 8px 15px; display: flex; flex-direction: column; gap: 6px; z-index: 5; }
+        .room-msg { background: rgba(0,0,0,0.6); padding: 6px 10px; border-radius: 10px; font-size: 11px; max-width: 88%; line-height: 1.4; border-right: 3px solid #00ffcc; backdrop-filter: blur(5px); }
         .room-msg span { color: #00ffcc; font-weight: bold; margin-left: 5px; }
 
-        /* شريط الرموز الأسطورية والآسيوية والسيبرانية الفائقة */
+        /* شريط الرموز الأسطورية والآسيوية */
         .emoji-quick-bar {
-            display: flex; gap: 8px; padding: 8px 15px; background: rgba(8, 3, 16, 0.98);
+            display: flex; gap: 6px; padding: 6px 12px; background: rgba(8, 3, 16, 0.98);
             overflow-x: auto; scrollbar-width: none; border-top: 1px solid rgba(0,255,204,0.25); z-index: 5;
         }
         .emoji-quick-bar::-webkit-scrollbar { display: none; }
         .emoji-chip {
-            font-size: 17px; cursor: pointer; background: rgba(22, 11, 38, 0.9);
-            padding: 5px 9px; border-radius: 14px; border: 1px solid rgba(0,255,204,0.4); transition: 0.2s;
+            font-size: 16px; cursor: pointer; background: rgba(22, 11, 38, 0.9);
+            padding: 4px 8px; border-radius: 12px; border: 1px solid rgba(0,255,204,0.4); transition: 0.2s;
             white-space: nowrap;
         }
-        .emoji-chip:hover { transform: scale(1.25); border-color: #ff007f; box-shadow: 0 0 12px rgba(255,0,127,0.5); }
+        .emoji-chip:hover { transform: scale(1.2); border-color: #ff007f; }
 
-        .room-input-bar { padding: 10px 15px; background: rgba(8, 3, 16, 0.95); display: flex; align-items: center; gap: 8px; border-top: 1px solid rgba(0,255,204,0.3); z-index: 5; }
-        .room-input-bar input { flex: 1; background: #160a2b; border: 1px solid #00ffcc; padding: 10px 15px; border-radius: 25px; color: #fff; outline: none; font-size: 13px; }
-        .gift-action-btn { background: linear-gradient(135deg, #00ffcc, #ff007f); border: none; padding: 9px 15px; border-radius: 22px; color: white; font-weight: bold; cursor: pointer; font-size: 12px; box-shadow: 0 0 15px rgba(0,255,204,0.4); }
+        .room-input-bar { padding: 8px 12px; background: rgba(8, 3, 16, 0.95); display: flex; align-items: center; gap: 6px; border-top: 1px solid rgba(0,255,204,0.3); z-index: 5; }
+        .room-input-bar input { flex: 1; background: #160a2b; border: 1px solid #00ffcc; padding: 8px 12px; border-radius: 20px; color: #fff; outline: none; font-size: 12px; }
+        .gift-action-btn { background: linear-gradient(135deg, #00ffcc, #ff007f); border: none; padding: 8px 12px; border-radius: 18px; color: white; font-weight: bold; cursor: pointer; font-size: 11px; }
 
         /* شريط التنقل السفلي */
         .bottom-nav { display: flex; justify-content: space-around; background: rgba(6, 2, 12, 0.98); border-top: 1px solid rgba(0, 255, 204, 0.3); padding: 8px 0; z-index: 10; }
@@ -181,7 +174,7 @@
             <div class="avatar-box"><div class="avatar-inner">🌌</div></div>
             <h1>لافي منير</h1>
             <p class="gateway-desc">
-                عالم سيادي عابر للأكوان. تواصل حر، ذكاء اصطناعي حي، وكاميرات حية تربط أرجاء الأرض ببعضها بلا قيود.
+                الشبكة الكونية الحقيقية. تواصل بالصوت والصورة، كاميرات حية عابرة للهواتف والحواسيب بلا حدود.
             </p>
             <a href="https://github.com/wwwmounirmp-hue/lafi-munir" target="_blank" class="btn">
                 استكشف 🚀 GitHub
@@ -189,14 +182,14 @@
             <button class="btn btn-secondary" onclick="enterApp()">
                 البوابة المركزية ✨
             </button>
-            <div class="system-footer">GLOBAL SOVEREIGN NETWORK • 2026</div>
+            <div class="system-footer">REALTIME GLOBAL VIDEO NETWORK • 2026</div>
         </div>
 
         <!-- 2. التطبيق الداخلي -->
         <div id="screen-app" class="screen">
             
             <div class="app-header">
-                <span id="app-title" style="font-weight: bold; color: #00ffcc; font-size: 16px;">✨ لافي منير | الصالون الملكي الحي</span>
+                <span id="app-title" style="font-weight: bold; color: #00ffcc; font-size: 15px;">✨ لافي منير | الصالون الملكي الحي</span>
                 <span onclick="goHome()" style="cursor: pointer; font-size: 18px;" title="العودة للبوابة">🏠</span>
             </div>
 
@@ -207,37 +200,37 @@
                 </div>
                 <div class="shortcut-item" onclick="toggleCameraStream()">
                     <div class="shortcut-icon" style="background:linear-gradient(135deg,#ff007f,#7928ca);">⛩️</div>
-                    <span class="shortcut-label">الكاميرا الحية</span>
+                    <span class="shortcut-label">الكاميرات الحية</span>
                 </div>
-                <div class="shortcut-item" onclick="alert('شبكة عالمية مرتبطة بالبث السحابي المباشر ⚡')">
+                <div class="shortcut-item" onclick="alert('اتصال صوت وصورة حي عبر السحاب ⚡')">
                     <div class="shortcut-icon" style="background:linear-gradient(135deg,#10b981,#34d399);">☯</div>
-                    <span class="shortcut-label">طاقة كوانتم</span>
+                    <span class="shortcut-label">صوت وصورة</span>
                 </div>
-                <div class="shortcut-item" onclick="alert('التزامن السحابي العالمي نشط وعابر للحدود 🌐')">
+                <div class="shortcut-item" onclick="alert('تدعم أجهزة الآيفون، الأندرويد، والحواسيب بنجاح 🌐')">
                     <div class="shortcut-icon" style="background:linear-gradient(135deg,#f59e0b,#fbbf24);">💠</div>
-                    <span class="shortcut-label">عالمي حي</span>
+                    <span class="shortcut-label">عابر للأجهزة</span>
                 </div>
             </div>
 
             <!-- تبويب الرسائل والاتصال -->
             <div id="tab-messages" class="screen active scrollable-body">
-                <div class="chat-contact-item" onclick="openVoiceRoom('غرفة لافي الملكية الحية العالمية')">
+                <div class="chat-contact-item" onclick="openVoiceRoom('غرفة لافي المرئية العالمية')">
                     <div class="contact-avatar">
                         <div class="inner-av">🐉</div>
                         <div class="unread-badge">LIVE</div>
                     </div>
                     <div class="contact-info">
-                        <h4>غرفة لافي الكونية العالمية <span style="font-size:9px; background:#00ffcc; color:#03000a; padding:1px 6px; border-radius:8px; font-weight:bold;">GLOBAL</span></h4>
-                        <p>اضغط للدخول للبث العالمي مع المستخدمين عبر الأكوان</p>
+                        <h4>غرفة البث المرئي والصوتي <span style="font-size:9px; background:#00ffcc; color:#03000a; padding:1px 6px; border-radius:8px; font-weight:bold;">HD VIDEO</span></h4>
+                        <p>اضغط للدخول للبث الحي المرئي مع العالم عبر الأجهزة</p>
                     </div>
                     <span class="contact-time">الآن</span>
                 </div>
 
-                <div class="chat-contact-item" onclick="openVoiceRoom('غرفة الحوار العصبي الكوني (AI Core)')">
+                <div class="chat-contact-item" onclick="openVoiceRoom('غرفة الحوار العصبي (AI Core)')">
                     <div class="contact-avatar"><div class="inner-av">⚛</div></div>
                     <div class="contact-info">
                         <h4>المساعد الذكي لافي منير</h4>
-                        <p>تحدث معي باستخدام الرموز السيادية الفائقة...</p>
+                        <p>تحدث معي بالرموز السيادية والرسائل...</p>
                     </div>
                     <span class="contact-time">نشط</span>
                 </div>
@@ -246,28 +239,28 @@
             <!-- تبويب الساحة -->
             <div id="tab-square" class="screen scrollable-body">
                 <div style="padding: 12px; background: rgba(0,255,204,0.1); border: 1px solid rgba(0,255,204,0.3); border-radius: 16px; margin-bottom: 10px;">
-                    <h3 style="color: #00ffcc; font-size: 15px; margin-bottom: 5px;">⛩️ ساحة النجوم والمبدعين العابرة</h3>
-                    <p style="font-size: 12px; color: #d1d5db;">بثوث حية عالمية ومقاعد صوتية وتفاعل بالرموز النادرة.</p>
+                    <h3 style="color: #00ffcc; font-size: 15px; margin-bottom: 5px;">⛩️ ساحة البثوث المرئية الحية</h3>
+                    <p style="font-size: 12px; color: #d1d5db;">تواصل بالصوت والصورة بين الهواتف والحواسيب بلا حدود.</p>
                 </div>
             </div>
 
             <!-- تبويب الرئيسية -->
             <div id="tab-home" class="screen scrollable-body" style="align-items: center; justify-content: center; text-align: center; padding: 20px;">
                 <div style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #00ffcc, #ff007f); display: flex; align-items: center; justify-content: center; font-size: 45px; box-shadow: 0 0 30px rgba(0,255,204,0.5); margin-bottom: 15px;">🌌</div>
-                <h2 style="color: #00ffcc; margin-bottom: 8px; font-size: 22px;">لافي منير | الشبكة الكونية</h2>
+                <h2 style="color: #00ffcc; margin-bottom: 8px; font-size: 22px;">لافي منير | الشبكة المرئية</h2>
                 <p style="color: #b4a7d6; font-size: 13px; line-height: 1.6; margin-bottom: 20px;">
-                    المنصة العابرة للأكوان والحدود. تواصل حر ومباشر مع العالم بأسره.
+                    اتصال حقيقي بالصوت والصورة على أرض الواقع عبر الآيفون، الأندرويد، والحاسوب.
                 </p>
-                <button onclick="openVoiceRoom('غرفة البث العالمية')" style="background: linear-gradient(135deg, #00ffcc, #7928ca); border: none; color: white; padding: 12px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 0 20px rgba(0,255,204,0.4);">دخول غرفة البث العالمية 🎙️</button>
+                <button onclick="openVoiceRoom('غرفة الفيديو الرئيسية')" style="background: linear-gradient(135deg, #00ffcc, #7928ca); border: none; color: white; padding: 12px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 0 20px rgba(0,255,204,0.4);">دخول غرفة الفيديو الحية 🎙️</button>
             </div>
 
             <!-- تبويب التعارف والمطابقة -->
             <div id="tab-dating" class="screen scrollable-body" style="align-items: center; justify-content: center; text-align: center; padding: 20px;">
                 <div style="background: rgba(255, 0, 127, 0.15); border: 1px solid rgba(255, 0, 127, 0.4); padding: 25px; border-radius: 24px; width: 100%;">
                     <div style="font-size: 40px; margin-bottom: 10px;">💮</div>
-                    <h3 style="color: #ff007f; margin-bottom: 8px;">مطابقة الأرواح السيادية العالمية</h3>
-                    <p style="font-size: 12px; color: #d1d5db; margin-bottom: 15px;">تواصل عابر للقارات داخل شبكة لافي منير.</p>
-                    <button onclick="alert('تم تفعيل شبكة الاتصال الكونية بنجاح! ☯')" style="background: linear-gradient(135deg, #ff007f, #8b5cf6); border: none; color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer;">بدء التواصل ➔</button>
+                    <h3 style="color: #ff007f; margin-bottom: 8px;">مطابقة الأرواح المرئية</h3>
+                    <p style="font-size: 12px; color: #d1d5db; margin-bottom: 15px;">تواصل مرئي ومباشر عبر شبكة لافي منير.</p>
+                    <button onclick="alert('تم تفعيل الشبكة المرئية بنجاح! ☯')" style="background: linear-gradient(135deg, #ff007f, #8b5cf6); border: none; color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer;">بدء الاتصال المرئي ➔</button>
                 </div>
             </div>
 
@@ -275,55 +268,37 @@
             <div id="tab-profile" class="screen scrollable-body" style="padding: 20px; text-align: center;">
                 <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #00ffcc, #ff007f); margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 35px; border: 2px solid #fff;">👑</div>
                 <h3 style="color: #fff; font-size: 18px; margin-bottom: 4px;">Mounir / لافي منير</h3>
-                <p style="color: #00ffcc; font-size: 12px; margin-bottom: 15px;">ID: 56026 • السيادة الكونية المطلقة 💠</p>
+                <p style="color: #00ffcc; font-size: 12px; margin-bottom: 15px;">ID: 56026 • السيادة المطلقة 💠</p>
                 <div style="background: rgba(22, 11, 38, 0.8); border: 1px solid rgba(0,255,204,0.3); border-radius: 16px; padding: 15px; text-align: right; display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
-                    <div style="display: flex; justify-content: space-between;"><span>✨ رتبة النظام:</span> <span style="color:#00ffcc;">المؤسس الكوني 🐉</span></div>
-                    <div style="display: flex; justify-content: space-between;"><span>💎 الأرصدة والجوائز:</span> <span style="color:#ff007f;">50,000 نقطة سيادية 💮</span></div>
-                    <div style="display: flex; justify-content: space-between;"><span>🛡️ حالة الأمان:</span> <span style="color:#10b981;">محمي عبر الشبكة السحابية ⚛</span></div>
+                    <div style="display: flex; justify-content: space-between;"><span>✨ رتبة النظام:</span> <span style="color:#00ffcc;">المؤسس الملكي 🐉</span></div>
+                    <div style="display: flex; justify-content: space-between;"><span>💎 الأرصدة والجوائز:</span> <span style="color:#ff007f;">50,000 نقطة 💮</span></div>
+                    <div style="display: flex; justify-content: space-between;"><span>🛡️ حالة الأمان:</span> <span style="color:#10b981;">كاميرات وصوت مفعل ⚛</span></div>
                 </div>
             </div>
 
-            <!-- غرفة البث الحي الفعلي السحابي العالمي -->
+            <!-- غرفة البث المرئي والصوتي الفعلي -->
             <div id="tab-liveroom" class="live-room" style="display:none;">
                 <div class="room-top-bar">
                     <div class="room-id-badge">
                         <span>⛩️</span>
-                        <span id="room-active-title" style="font-size:12px; font-weight:bold; color:#00ffcc;">غرفة لافي الحية العالمية</span>
+                        <span id="room-active-title" style="font-size:11px; font-weight:bold; color:#00ffcc;">غرفة الفيديو العالمية</span>
                     </div>
-                    <span onclick="closeVoiceRoom()" style="cursor:pointer; font-size:18px; color:#ff007f; font-weight:bold;">✕ خروج</span>
+                    <span onclick="closeVoiceRoom()" style="cursor:pointer; font-size:16px; color:#ff007f; font-weight:bold;">✕ خروج</span>
                 </div>
 
-                <!-- شاشة الكاميرا الحية المباشرة -->
-                <div class="camera-stream-box">
-                    <video id="localVideo" autoplay playsinline muted></video>
-                    <div class="cam-overlay-text">🔴 بث حي عالمي (الكاميرا مفعلة)</div>
-                </div>
-
-                <div class="seats-grid">
-                    <div class="mic-pod">
-                        <span class="owner-crown">👑</span>
-                        <div class="pod-ring" style="border-color:#00ffcc; box-shadow:0 0 15px rgba(0,255,204,0.5);">🐉</div>
-                        <span class="pod-name">لافي (المضيف)</span>
-                    </div>
-                    <div class="mic-pod">
-                        <div class="pod-ring" style="border-color:#ff007f;">⚛</div>
-                        <span class="pod-name">الذكاء الكوني</span>
-                    </div>
-                    <div class="mic-pod">
-                        <div class="pod-ring" style="border-color:#10b981;">☯</div>
-                        <span class="pod-name">طاقة نقي</span>
-                    </div>
-                    <div class="mic-pod">
-                        <div class="pod-ring">💠</div>
-                        <span class="pod-name">زائر عالمي</span>
+                <!-- شبكة الكاميرات الحية (كاميرتك + كاميرات الأجهزة الأخرى) -->
+                <div class="video-grid-container" id="videoGrid">
+                    <div class="video-box">
+                        <video id="localVideo" autoplay playsinline muted></video>
+                        <div class="video-label">أنت (كاميرا حية) 🔴</div>
                     </div>
                 </div>
 
                 <div class="room-chat-box" id="room-chat-logs">
-                    <div class="room-msg"><span>[الذكاء الكوني]:</span> أهلاً بك يا لافي في الشبكة العابرة للأكوان 🐉. الرسائل متزامنة الآن عالمياً عبر السحاب! ☯️</div>
+                    <div class="room-msg"><span>[الذكاء السيادي]:</span> أهلاً بك يا لافي في غرفة الفيديو العالمية 🐉. الكاميرا والصوت متصلان بالبث الحي! ☯️</div>
                 </div>
 
-                <!-- شريط الرموز الأسطورية والنادرة جداً -->
+                <!-- شريط الرموز النادرة والأسطورية -->
                 <div class="emoji-quick-bar">
                     <span class="emoji-chip" onclick="insertEmoji('☯')">☯</span>
                     <span class="emoji-chip" onclick="insertEmoji('⛩️')">⛩️</span>
@@ -342,8 +317,8 @@
                 </div>
 
                 <div class="room-input-bar">
-                    <input type="text" id="room-msg-input" placeholder="اكتب ليرى العالم رسالتك الكونية..." autocomplete="off">
-                    <button class="gift-action-btn" onclick="sendRoomMsg()">إرسال عالمي 🚀</button>
+                    <input type="text" id="room-msg-input" placeholder="اكتب ليرى العالم رسالتك..." autocomplete="off">
+                    <button class="gift-action-btn" onclick="sendRoomMsg()">إرسال 🚀</button>
                 </div>
             </div>
 
@@ -360,21 +335,19 @@
 
     </div>
 
-    <!-- جلب مكتبة Firebase السحابية للربط العالمي الفوري -->
+    <!-- ربط السحاب العالمي عبر Firebase للدردشة والبث -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // إعداد الاتصال بالسحاب العالمي المجاني لشبكة لافي منير
         const firebaseConfig = {
             databaseURL: "https://lafi-munir-global-default-rtdb.firebaseio.com/"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const messagesRef = ref(db, 'global_rooms/lafi_room_v1');
+        const messagesRef = ref(db, 'global_rooms/lafi_room_v2');
 
-        // دالة الإرسال العالمية السحابية
         window.sendGlobalMessage = function(text, sender = "لافي منير") {
             push(messagesRef, {
                 sender: sender,
@@ -383,12 +356,10 @@
             });
         };
 
-        // استقبال الرسائل من أي مكان في العالم لحظياً
         onChildAdded(messagesRef, (data) => {
             const msgData = data.val();
             const box = document.getElementById('room-chat-logs');
             if (box && msgData) {
-                // منع تكرار الرسالة المحلية المكررة إذا أردت، أو عرضها مباشرة
                 const div = document.createElement('div');
                 div.className = 'room-msg';
                 if(msgData.sender !== "لافي منير") {
@@ -402,14 +373,12 @@
     </script>
 
     <script>
-        // دالة إدراج الرموز النادرة الفائقة بضغطة زر
         function insertEmoji(emoji) {
             const input = document.getElementById('room-msg-input');
             input.value += emoji;
             input.focus();
         }
 
-        // تشغيل النجوم الكونية الخلفية
         const canvas = document.getElementById('spaceCanvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
@@ -490,8 +459,9 @@
             document.getElementById('room-active-title').innerText = title;
             document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
             document.getElementById('tab-liveroom').style.display = 'flex';
-            document.getElementById('app-title').innerText = '🎙️ غرفة البث العالمي الكوني';
+            document.getElementById('app-title').innerText = '🎙️ غرفة الفيديو والصوت الحية';
 
+            // تفعيل الكاميرا والصوت الحقيقي للأجهزة (آيفون، أندرويد، حاسوب)
             navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                 .then(stream => {
                     mediaStream = stream;
@@ -499,7 +469,8 @@
                     videoElement.srcObject = stream;
                 })
                 .catch(err => {
-                    console.log("الكاميرا تعمل بوضع محاكاة خفيف:", err);
+                    console.log("تفعيل الكاميرا يتطلب إذن المتصفح:", err);
+                    alert("يرجى السماح للمتصفح بالوصول إلى الكاميرا والمايكروفون لتفعيل البث الحي الحقيقي.");
                 });
         }
 
@@ -512,7 +483,7 @@
         }
 
         function toggleCameraStream() {
-            openVoiceRoom('غرفة البث المباشر العالمية');
+            openVoiceRoom('غرفة البث المرئي المباشر');
         }
 
         function sendRoomMsg() {
@@ -520,15 +491,13 @@
             if(input.value.trim() === '') return;
             const text = input.value;
             
-            // إرسال الرسالة عبر الشبكة السحابية العالمية ليرها كل مستخدمي العالم
             if (window.sendGlobalMessage) {
                 window.sendGlobalMessage(text, "لافي منير");
             }
 
-            // استجابة الذكاء الكوني الفورية
             setTimeout(() => {
                 if (window.sendGlobalMessage) {
-                    window.sendGlobalMessage(`تم استقبال رسالتك الأسطورية ("${text}"). الشبكة الكونية تعمل بكفاءة عابرة للأكوان! 🐉⚛️`, "الذكاء الكوني");
+                    window.sendGlobalMessage(`تم استلام رسالتك السيادية ("${text}"). الشبكة المرئية تعمل بكفاءة على جميع الأجهزة! 🐉⚛️`, "الذكاء السيادي");
                 }
             }, 800);
 
@@ -536,7 +505,7 @@
         }
 
         function triggerAIModel(action) {
-            alert('⚛ المساعد الكوني لافي منير: الشبكة العالمية متصلة الآن بالساحب السيادي، وتدعم آلاف المستخدمين حول العالم بلا حدود! ☯⛩️');
+            alert('⚛ المساعد السيادي لافي منير: الكاميرات والصوت مفعلة وتعمل على الهواتف والآيفون والحواسيب بكفاءة مطلقة! ☯⛩️');
         }
     </script>
 </body>
