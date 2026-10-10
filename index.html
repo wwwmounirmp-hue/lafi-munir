@@ -5,447 +5,65 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لافي منير | منصة الاتصال والترجمة الجماعية السيادية</title>
 
-  <!-- مكتبة PeerJS -->
+  <meta name="theme-color" content="#0d0221">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="لافي منير">
+  
+  <link rel="manifest" href="./manifest.json">
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Tahoma, Arial, sans-serif;
-    }
-
-    body {
-      min-height: 100vh;
-      overflow: hidden;
-      color: #fff;
-      background: linear-gradient(135deg, #0d0221, #1a0033, #240046, #3c096c);
-      background-size: 300% 300%;
-      animation: cosmicAurora 12s ease infinite;
-    }
-
-    @keyframes cosmicAurora {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    #spaceCanvas {
-      position: fixed;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    .cinematic-moon {
-      position: fixed;
-      top: -40px;
-      left: 50%;
-      z-index: 2;
-      width: 220px;
-      height: 220px;
-      border-radius: 50%;
-      transform: translateX(-50%);
-      opacity: .9;
-      pointer-events: none;
-      background: radial-gradient(
-        circle at 30% 30%,
-        #fff 0%,
-        #00f2fe 35%,
-        #7928ca 70%,
-        #ff007f 100%
-      );
-      box-shadow:
-        0 0 80px rgba(0, 242, 254, .6),
-        0 0 140px rgba(255, 0, 127, .4);
-      transition: transform .3s ease;
-    }
-
-    .cinematic-moon.pulse {
-      transform: translateX(-50%) scale(1.08);
-    }
-
-    .container {
-      position: relative;
-      z-index: 3;
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      max-width: 430px;
-      height: 100vh;
-      margin: auto;
-      overflow: hidden;
-      background: rgba(18, 8, 38, .85);
-      border-left: 1px solid rgba(0, 242, 254, .4);
-      border-right: 1px solid rgba(0, 242, 254, .4);
-      backdrop-filter: blur(25px);
-      transition: box-shadow .5s ease;
-    }
-
-    .container.connected-aura {
-      box-shadow:
-        0 0 40px rgba(0, 242, 254, .5),
-        inset 0 0 30px rgba(255, 0, 127, .2);
-    }
-
-    .screen {
-      display: none;
-      flex: 1;
-      flex-direction: column;
-      height: 100%;
-      overflow: hidden;
-    }
-
-    .screen.active {
-      display: flex;
-    }
-
-    .gateway-screen {
-      align-items: center;
-      justify-content: center;
-      padding: 30px;
-      overflow-y: auto;
-      text-align: center;
-    }
-
-    .avatar-box {
-      width: 110px;
-      height: 110px;
-      margin: 0 auto 15px;
-      padding: 3px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #00f2fe, #7928ca, #ff007f);
-      box-shadow: 0 0 50px rgba(0, 242, 254, .7);
-      animation: avatarGlow 3s infinite alternate;
-    }
-
-    .avatar-inner {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background: #0c0614;
-      font-size: 45px;
-    }
-
-    @keyframes avatarGlow {
-      from {
-        transform: scale(1);
-        box-shadow: 0 0 30px rgba(0, 242, 254, .4);
-      }
-      to {
-        transform: scale(1.06);
-        box-shadow: 0 0 60px rgba(255, 0, 127, .7);
-      }
-    }
-
-    h1 {
-      margin-bottom: 8px;
-      color: #00f2fe;
-      font-size: 26px;
-      font-weight: 800;
-      background: linear-gradient(90deg, #00f2fe, #a855f7, #ff007f);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .gateway-desc {
-      margin-bottom: 20px;
-      color: #d8b4fe;
-      font-size: 12px;
-      line-height: 1.6;
-    }
-
-    .room-input {
-      width: 100%;
-      margin-bottom: 12px;
-      padding: 12px 16px;
-      outline: none;
-      border: 1px solid rgba(0, 242, 254, .4);
-      border-radius: 20px;
-      color: #fff;
-      background: rgba(25, 10, 50, .9);
-      font-size: 14px;
-      text-align: center;
-    }
-
-    .room-input:focus {
-      border-color: #ff007f;
-      box-shadow: 0 0 15px rgba(255, 0, 127, .4);
-    }
-
-    .btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      gap: 8px;
-      margin: 6px 0;
-      padding: 14px;
-      border: 0;
-      border-radius: 25px;
-      color: #fff;
-      background: linear-gradient(135deg, #00f2fe, #7928ca);
-      box-shadow: 0 5px 25px rgba(0, 242, 254, .4);
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: bold;
-      text-decoration: none;
-      transition: transform .2s ease;
-    }
-
-    .btn:hover {
-      transform: scale(1.02);
-    }
-
-    .system-footer {
-      margin-top: 15px;
-      color: rgba(255, 255, 255, .6);
-      font-size: 10px;
-      letter-spacing: 1.5px;
-      text-align: center;
-    }
-
-    .live-room-content {
-      position: relative;
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      height: 100%;
-      overflow: hidden;
-    }
-
-    .room-top-bar {
-      z-index: 5;
-      display: flex;
-      flex-shrink: 0;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 16px;
-      border-bottom: 1px solid rgba(0, 242, 254, .3);
-      background: rgba(20, 10, 40, .9);
-      backdrop-filter: blur(10px);
-    }
-
-    .videos-container {
-      position: relative;
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      min-height: 120px;
-      overflow-y: auto;
-      gap: 5px;
-    }
-
-    .remote-peer-video {
-      width: 100%;
-      height: 100%;
-      min-height: 180px;
-      background: #080112;
-      object-fit: cover;
-      border-bottom: 1px solid rgba(0, 242, 254, .2);
-    }
-
-    #localVideo {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      z-index: 10;
-      width: 90px;
-      height: 130px;
-      border: 2px solid #00f2fe;
-      border-radius: 12px;
-      background: #190028;
-      box-shadow: 0 0 20px rgba(0, 242, 254, .5);
-      object-fit: cover;
-    }
-
-    .seats-grid-overlay {
-      position: absolute;
-      top: 152px;
-      left: 12px;
-      right: 12px;
-      z-index: 15;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      pointer-events: none;
-    }
-
-    .seat-slot {
-      height: 40px;
-      border: 1px solid rgba(0, 242, 254, .4);
-      border-radius: 8px;
-      background: rgba(12, 4, 25, .75);
-      backdrop-filter: blur(5px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      color: #00f2fe;
-      font-weight: bold;
-    }
-
-    #stardustMemoryLayer {
-      position: absolute;
-      inset: 10px;
-      z-index: 8;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
-    .stardust-particle {
-      position: absolute;
-      padding: 4px 10px;
-      border: 1px solid rgba(255, 0, 127, .5);
-      border-radius: 12px;
-      color: #fff;
-      background: rgba(0, 242, 254, .8);
-      box-shadow: 0 0 10px rgba(0, 242, 254, .6);
-      animation: floatUp 6s linear forwards;
-      font-size: 11px;
-    }
-
-    @keyframes floatUp {
-      0% { opacity: 0; transform: translateY(80px) scale(.8); }
-      20% { opacity: 1; }
-      100% { opacity: 0; transform: translateY(-150px) scale(1.1); }
-    }
-
-    .room-bottom-panel {
-      z-index: 20;
-      display: flex;
-      flex-shrink: 0;
-      flex-direction: column;
-      gap: 8px;
-      padding: 10px 12px;
-      border-top: 1px solid rgba(0, 242, 254, .3);
-      background: rgba(12, 4, 25, .95);
-      backdrop-filter: blur(15px);
-    }
-
-    .room-chat-overlay {
-      display: flex;
-      flex-direction: column;
-      max-height: 80px;
-      gap: 4px;
-      overflow-y: auto;
-      scrollbar-width: none;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, Arial, sans-serif; }
+    body { min-height: 100vh; overflow: hidden; color: #fff; background: linear-gradient(135deg, #0d0221, #1a0033, #240046, #3c096c); background-size: 300% 300%; animation: cosmicAurora 12s ease infinite; }
+    @keyframes cosmicAurora { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    #spaceCanvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+    .cinematic-moon { position: fixed; top: -40px; left: 50%; z-index: 2; width: 220px; height: 220px; border-radius: 50%; transform: translateX(-50%); opacity: .9; pointer-events: none; background: radial-gradient(circle at 30% 30%, #fff 0%, #00f2fe 35%, #7928ca 70%, #ff007f 100%); box-shadow: 0 0 80px rgba(0, 242, 254, .6), 0 0 140px rgba(255, 0, 127, .4); transition: transform .3s ease; }
+    .cinematic-moon.pulse { transform: translateX(-50%) scale(1.08); }
+    .container { position: relative; z-index: 3; display: flex; flex-direction: column; width: 100%; max-width: 430px; height: 100vh; margin: auto; overflow: hidden; background: rgba(18, 8, 38, .85); border-left: 1px solid rgba(0, 242, 254, .4); border-right: 1px solid rgba(0, 242, 254, .4); backdrop-filter: blur(25px); transition: box-shadow .5s ease; }
+    .container.connected-aura { box-shadow: 0 0 40px rgba(0, 242, 254, .5), inset 0 0 30px rgba(255, 0, 127, .2); }
+    .screen { display: none; flex: 1; flex-direction: column; height: 100%; overflow: hidden; }
+    .screen.active { display: flex; }
+    .gateway-screen { align-items: center; justify-content: center; padding: 30px; overflow-y: auto; text-align: center; }
+    .avatar-box { width: 110px; height: 110px; margin: 0 auto 15px; padding: 3px; border-radius: 50%; background: linear-gradient(135deg, #00f2fe, #7928ca, #ff007f); box-shadow: 0 0 50px rgba(0, 242, 254, .7); animation: avatarGlow 3s infinite alternate; }
+    .avatar-inner { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 50%; background: #0c0614; font-size: 45px; }
+    @keyframes avatarGlow { from { transform: scale(1); box-shadow: 0 0 30px rgba(0, 242, 254, .4); } to { transform: scale(1.06); box-shadow: 0 0 60px rgba(255, 0, 127, .7); } }
+    h1 { margin-bottom: 8px; color: #00f2fe; font-size: 26px; font-weight: 800; background: linear-gradient(90deg, #00f2fe, #a855f7, #ff007f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .gateway-desc { margin-bottom: 20px; color: #d8b4fe; font-size: 12px; line-height: 1.6; }
+    .privacy-notice { margin-bottom: 15px; padding: 8px 10px; background: rgba(0, 242, 254, .08); border: 1px dashed rgba(0, 242, 254, .3); border-radius: 12px; color: #00f2fe; font-size: 10px; line-height: 1.4; text-align: right; }
+    .room-input { width: 100%; margin-bottom: 12px; padding: 12px 16px; outline: none; border: 1px solid rgba(0, 242, 254, .4); border-radius: 20px; color: #fff; background: rgba(25, 10, 50, .9); font-size: 14px; text-align: center; }
+    .room-input:focus { border-color: #ff007f; box-shadow: 0 0 15px rgba(255, 0, 127, .4); }
+    .btn { display: flex; align-items: center; justify-content: center; width: 100%; gap: 8px; margin: 6px 0; padding: 14px; border: 0; border-radius: 25px; color: #fff; background: linear-gradient(135deg, #00f2fe, #7928ca); box-shadow: 0 5px 25px rgba(0, 242, 254, .4); cursor: pointer; font-size: 14px; font-weight: bold; text-decoration: none; transition: transform .2s ease; }
+    .btn:hover { transform: scale(1.02); }
+    .system-footer { margin-top: 15px; color: rgba(255, 255, 255, .6); font-size: 10px; letter-spacing: 1.5px; text-align: center; }
+    .live-room-content { position: relative; display: flex; flex: 1; flex-direction: column; height: 100%; overflow: hidden; }
+    .room-top-bar { z-index: 5; display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid rgba(0, 242, 254, .3); background: rgba(20, 10, 40, .9); backdrop-filter: blur(10px); }
+    .videos-container { position: relative; display: flex; flex: 1; flex-direction: column; min-height: 120px; overflow-y: auto; gap: 5px; }
+    .remote-peer-video { width: 100%; height: 100%; min-height: 180px; background: #080112; object-fit: cover; border-bottom: 1px solid rgba(0, 242, 254, .2); }
+    #localVideo { position: absolute; top: 12px; left: 12px; z-index: 10; width: 90px; height: 130px; border: 2px solid #00f2fe; border-radius: 12px; background: #190028; box-shadow: 0 0 20px rgba(0, 242, 254, .5); object-fit: cover; }
+    .seats-grid-overlay { position: absolute; top: 152px; left: 12px; right: 12px; z-index: 15; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; pointer-events: none; }
+    .seat-slot { height: 40px; border: 1px solid rgba(0, 242, 254, .4); border-radius: 8px; background: rgba(12, 4, 25, .75); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; font-size: 10px; color: #00f2fe; font-weight: bold; }
+    #stardustMemoryLayer { position: absolute; inset: 10px; z-index: 8; overflow: hidden; pointer-events: none; }
+    .stardust-particle { position: absolute; padding: 4px 10px; border: 1px solid rgba(255, 0, 127, .5); border-radius: 12px; color: #fff; background: rgba(0, 242, 254, .8); box-shadow: 0 0 10px rgba(0, 242, 254, .6); animation: floatUp 6s linear forwards; font-size: 11px; }
+    @keyframes floatUp { 0% { opacity: 0; transform: translateY(80px) scale(.8); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(-150px) scale(1.1); } }
+    .room-bottom-panel { z-index: 20; display: flex; flex-shrink: 0; flex-direction: column; gap: 8px; padding: 10px 12px; border-top: 1px solid rgba(0, 242, 254, .3); background: rgba(12, 4, 25, .95); backdrop-filter: blur(15px); }
+    .room-chat-overlay { display: flex; flex-direction: column; max-height: 80px; gap: 4px; overflow-y: auto; scrollbar-width: none; }
     .room-chat-overlay::-webkit-scrollbar { display: none; }
-
-    .chat-bubble {
-      width: fit-content;
-      max-width: 85%;
-      padding: 5px 10px;
-      border-right: 3px solid #00f2fe;
-      border-radius: 10px;
-      color: #fff;
-      background: rgba(18, 8, 38, .85);
-      font-size: 11px;
-      overflow-wrap: anywhere;
-    }
-
+    .chat-bubble { width: fit-content; max-width: 85%; padding: 5px 10px; border-right: 3px solid #00f2fe; border-radius: 10px; color: #fff; background: rgba(18, 8, 38, .85); font-size: 11px; overflow-wrap: anywhere; }
     .chat-bubble span { margin-left: 5px; color: #00f2fe; font-weight: bold; }
-
-    .room-input-box {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 10px;
-      border: 1px solid rgba(0, 242, 254, .3);
-      border-radius: 18px;
-      background: rgba(22, 8, 45, .95);
-    }
-
-    .lang-selector {
-      padding: 4px;
-      outline: none;
-      border: 1px solid rgba(0, 242, 254, .4);
-      border-radius: 12px;
-      color: #00f2fe;
-      background: rgba(15, 5, 30, .9);
-      font-size: 10px;
-      cursor: pointer;
-    }
-
+    .room-input-box { display: flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid rgba(0, 242, 254, .3); border-radius: 18px; background: rgba(22, 8, 45, .95); }
+    .lang-selector { padding: 4px; outline: none; border: 1px solid rgba(0, 242, 254, .4); border-radius: 12px; color: #00f2fe; background: rgba(15, 5, 30, .9); font-size: 10px; cursor: pointer; }
     .lang-selector option { background: #120826; color: #fff; }
-
-    .translated-subtext {
-      display: block;
-      margin-top: 2px;
-      color: #00f2fe;
-      font-size: 10px;
-      opacity: .9;
-      border-top: 1px dashed rgba(0, 242, 254, .3);
-      padding-top: 2px;
-    }
-
-    .room-input-box input {
-      flex: 1;
-      padding: 0 4px;
-      outline: none;
-      border: none;
-      color: #fff;
-      background: transparent;
-      font-size: 12px;
-    }
-
-    .room-input-box button {
-      padding: 6px 12px;
-      border: none;
-      border-radius: 14px;
-      color: #fff;
-      background: linear-gradient(135deg, #00f2fe, #ff007f);
-      cursor: pointer;
-      font-size: 11px;
-      font-weight: bold;
-    }
-
-    .call-controls {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding-top: 2px;
-    }
-
-    .control-icon-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      border: 1px solid rgba(255, 255, 255, .2);
-      border-radius: 50%;
-      color: #fff;
-      background: rgba(255, 255, 255, .1);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
-      cursor: pointer;
-      font-size: 14px;
-      transition: .2s;
-    }
-
+    .translated-subtext { display: block; margin-top: 2px; color: #00f2fe; font-size: 10px; opacity: .9; border-top: 1px dashed rgba(0, 242, 254, .3); padding-top: 2px; }
+    .room-input-box input { flex: 1; padding: 0 4px; outline: none; border: none; color: #fff; background: transparent; font-size: 12px; }
+    .room-input-box button { padding: 6px 12px; border: none; border-radius: 14px; color: #fff; background: linear-gradient(135deg, #00f2fe, #ff007f); cursor: pointer; font-size: 11px; font-weight: bold; }
+    .call-controls { display: flex; align-items: center; justify-content: center; gap: 10px; padding-top: 2px; }
+    .control-icon-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 1px solid rgba(255, 255, 255, .2); border-radius: 50%; color: #fff; background: rgba(255, 255, 255, .1); box-shadow: 0 4px 12px rgba(0, 0, 0, .3); cursor: pointer; font-size: 14px; transition: .2s; }
     .control-icon-btn:hover { transform: scale(1.08); }
     .control-icon-btn.active { border-color: #ff0844; background: #ff0844; box-shadow: 0 0 15px rgba(255, 8, 68, .6); }
-
-    .hangup-btn {
-      width: 44px;
-      height: 44px;
-      border: none;
-      background: linear-gradient(135deg, #ff0844, #ffb199);
-      box-shadow: 0 4px 15px rgba(255, 8, 68, .5);
-      font-size: 15px;
-    }
-
-    @media (max-width: 430px) {
-      .container { max-width: 100%; border: none; }
-      .cinematic-moon { width: 170px; height: 170px; }
-    }
+    .hangup-btn { width: 44px; height: 44px; border: none; background: linear-gradient(135deg, #ff0844, #ffb199); box-shadow: 0 4px 15px rgba(255, 8, 68, .5); font-size: 15px; }
+    @media (max-width: 430px) { .container { max-width: 100%; border: none; } .cinematic-moon { width: 170px; height: 170px; } }
   </style>
 </head>
 
@@ -454,16 +72,16 @@
   <canvas id="spaceCanvas"></canvas>
 
   <main class="container" id="mainContainer">
-    <!-- شاشة البوابة -->
     <section id="screen-gateway" class="screen active gateway-screen">
       <div class="avatar-box"><div class="avatar-inner">🌌</div></div>
       <h1>لافي منير</h1>
-      <p class="gateway-desc">
-        غرفة اتصال صوتية ومرئية P2P جماعية مع محرك ترجمة ذكي للرسائل عابر للقارات، دردشة حية، ومشاركة شاشة.
-      </p>
+      <p class="gateway-desc">غرفة اتصال صوتية ومرئية P2P جماعية مع محرك ترجمة ذكي للرسائل، دردشة حية، ومشاركة شاشة.</p>
+
+      <div class="privacy-notice">
+        🔒 الاتصال الصوتي والمرئي مباشر بين الأجهزة (P2P) عبر HTTPS. تُستخدم Firebase لتنسيق الغرفة، وتُرسل النصوص إلى خدمة ترجمة خارجية. ملاحظة: هذه نسخة تجريبية (Beta)، وتعتمد حالياً على خوادم STUN العامة؛ قد تواجه صعوبة في الاتصال خلف بعض شبكات المحمول حتى يتم ربط خادم TURN حقيقي.
+      </div>
 
       <input type="text" id="roomInput" class="room-input" placeholder="اكتب اسم الغرفة" value="lafi-room-1" maxlength="80" autocomplete="off">
-
       <button class="btn" id="enterRoomBtn" type="button">دخول الغرفة الحية 🎙️</button>
       <a class="btn" href="https://github.com/wwwmounirmp-hue/lafi-munir" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, rgba(30,15,60,.9), rgba(60,20,90,.9)); border: 1px solid rgba(0,242,254,.4);">
         استكشف 🚀 GitHub
@@ -471,11 +89,10 @@
 
       <div class="system-footer">
         STARDUST SOVEREIGN CORE • 2026<br>
-        <span style="color:#00f2fe;">صُنع بعشق في سماء الاستقلالية البرمجية 🌌</span>
+        <span style="color:#00f2fe;">صُنع بعشق في سماء الاستقلالية البرمجية 🌌 (Beta Test Version)</span>
       </div>
     </section>
 
-    <!-- شاشة الاتصال والدردشة -->
     <section id="screen-app" class="screen">
       <div class="live-room-content">
         <header class="room-top-bar">
@@ -485,21 +102,17 @@
 
         <div class="videos-container" id="videosContainer">
           <video id="localVideo" autoplay playsinline muted></video>
-
-          <!-- شبكة المقاعد الصوتية الجماعية -->
           <div class="seats-grid-overlay">
             <div class="seat-slot">🎙️ مقعد 1</div>
             <div class="seat-slot">💺 مقعد 2</div>
             <div class="seat-slot">💺 مقعد 3</div>
             <div class="seat-slot">💺 مقعد 4</div>
           </div>
-
           <div id="stardustMemoryLayer"></div>
         </div>
 
         <div class="room-bottom-panel">
           <div class="room-chat-overlay" id="roomChatOverlay"></div>
-
           <div class="room-input-box">
             <select id="targetLangSelect" class="lang-selector" title="لغة الترجمة المستهدفة">
               <option value="ar">العربية 🇸🇦</option>
@@ -508,7 +121,6 @@
               <option value="fr">Français 🇫🇷</option>
               <option value="es">Español 🇪🇸</option>
             </select>
-
             <input type="text" id="roomMsgInput" placeholder="اكتب رسالتك لتعبر القارات... ✨" autocomplete="off" maxlength="500">
             <button id="sendMsgBtn" type="button">إرسال 🌍</button>
           </div>
@@ -528,6 +140,12 @@
   <script>
     'use strict';
 
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(console.error);
+      });
+    }
+
     window.appState = {
       globalStream: null,
       screenStream: null,
@@ -540,8 +158,10 @@
       myPeerRef: null,
       isEvaluating: false,
       statsIntervals: {},
+      reconnectTimer: null,
       isSharingScreen: false,
       isLeaving: false,
+      sessionId: 0,
       ambientAudioCtx: null,
       ambientOscillator: null,
       recordingStream: null,
@@ -552,6 +172,27 @@
     };
 
     window.resetRetryingPeers = () => {};
+
+    // نسخة احتياطية عامة لدالة التنظيف مع حراسة الخروج المبكر
+    window.cleanupRoom = async function () {
+      window.appState.isLeaving = true;
+
+      if (window.appState.reconnectTimer) {
+        clearInterval(window.appState.reconnectTimer);
+        window.appState.reconnectTimer = null;
+      }
+
+      Object.values(window.appState.peersCalls).forEach(call => {
+        try { call.close(); } catch (_) {}
+      });
+
+      window.appState.peersCalls = {};
+      window.appState.peer?.destroy();
+      window.appState.peer = null;
+      window.appState.myPeerRef = null;
+
+      window.appState.isLeaving = false;
+    };
 
     const $ = id => document.getElementById(id);
 
@@ -569,7 +210,6 @@
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (!AudioContext) return;
         const ctx = new AudioContext();
-
         if (type === 'chime') {
           [528, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
             const osc = ctx.createOscillator();
@@ -690,15 +330,10 @@
         .replace(/[.#$[\]/]/g, '-')
         .slice(0, 80);
 
-      if (!roomName) {
-        alert('أدخل اسم الغرفة');
-        return;
-      }
+      if (!roomName) { alert('أدخل اسم الغرفة'); return; }
+      if (!navigator.mediaDevices?.getUserMedia) { alert('المتصفح لا يدعم الوسائط'); return; }
 
-      if (!navigator.mediaDevices?.getUserMedia) {
-        alert('المتصفح لا يدعم الوسائط');
-        return;
-      }
+      const sessionId = ++window.appState.sessionId;
 
       Object.values(window.appState.peersCalls).forEach(call => call.close());
       window.appState.peersCalls = {};
@@ -711,24 +346,42 @@
 
       $('enterRoomBtn').disabled = true;
       showScreen('screen-app');
-      window.setRoomStatus('طلب إذن الميكروفون والكاميرا...');
+      window.setRoomStatus('انتظار المصادقة الآمنة...');
 
       try {
+        if (typeof window.waitForAuth === 'function') {
+          await window.waitForAuth();
+        }
+
+        if (window.appState.isLeaving || window.appState.sessionId !== sessionId) return;
+
         playCosmicSound('chime');
         startAmbientDrone();
+
+        window.appState.globalStream?.getTracks().forEach(track => track.stop());
+        window.appState.globalStream = null;
+
         window.appState.globalStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        
+        if (window.appState.isLeaving || window.appState.sessionId !== sessionId) {
+          window.appState.globalStream.getTracks().forEach(t => t.stop());
+          return;
+        }
+
         $('localVideo').srcObject = window.appState.globalStream;
         window.setRoomStatus(`الغرفة: ${roomName} • جاري الاتصال...`);
 
         if (typeof window.initRoomP2P === 'function') {
-          window.initRoomP2P(roomName, window.appState.globalStream);
+          window.initRoomP2P(roomName, window.appState.globalStream, sessionId);
         }
       } catch (err) {
-        console.error('Media error:', err);
-        alert('تعذر الوصول إلى الكاميرا أو الميكروفون.');
+        console.error('Room entry error:', err);
+        alert('تعذر الدخول للغرفة. تأكد من المصادقة وصلاحيات الكاميرا.');
         await goHome();
       } finally {
-        $('enterRoomBtn').disabled = false;
+        if (window.appState.sessionId === sessionId) {
+          $('enterRoomBtn').disabled = false;
+        }
       }
     }
 
@@ -749,7 +402,7 @@
 
     async function toggleScreenShare() {
       const activeCalls = Object.values(window.appState.peersCalls);
-      if (activeCalls.length === 0) { alert('يجب أن تكون في غرفة نشطة لمشاركة الشاشة.'); return; }
+      if (activeCalls.length === 0) { alert('يجب أن تكون في غرفة نشطة.'); return; }
       if (window.appState.isSharingScreen) { await stopScreenShare(); return; }
 
       try {
@@ -765,7 +418,6 @@
         $('localVideo').srcObject = window.appState.screenStream;
         window.appState.isSharingScreen = true;
         $('screenShareBtn').classList.add('active');
-
         screenTrack.addEventListener('ended', () => stopScreenShare(), { once: true });
       } catch (e) {
         console.error('Screen share error:', e);
@@ -800,36 +452,26 @@
     function createMixedRecordingStream() {
       const localVideo = $('localVideo');
       const remoteVideos = Array.from(document.querySelectorAll('.remote-peer-video'));
-
       const canvas = document.createElement('canvas');
-      canvas.width = 1280;
-      canvas.height = 720;
+      canvas.width = 1280; canvas.height = 720;
       const ctx = canvas.getContext('2d');
 
       function draw() {
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-
         if (remoteVideos.length > 0) {
           const totalRemotes = remoteVideos.length;
           const columns = Math.ceil(Math.sqrt(totalRemotes));
           const rows = Math.ceil(totalRemotes / columns);
           const width = canvas.width / columns;
           const height = canvas.height / rows;
-
           remoteVideos.forEach((video, index) => {
             if (video.readyState >= 2) {
-              const x = (index % columns) * width;
-              const y = Math.floor(index / columns) * height;
-              ctx.drawImage(video, x, y, width, height);
+              ctx.drawImage(video, (index % columns) * width, Math.floor(index / columns) * height, width, height);
             }
           });
         }
-
-        if (localVideo.readyState >= 2) {
-          ctx.drawImage(localVideo, 20, 20, 240, 150);
-        }
-
+        if (localVideo.readyState >= 2) ctx.drawImage(localVideo, 20, 20, 240, 150);
         window.appState.recordingAnimationId = requestAnimationFrame(draw);
       }
       draw();
@@ -842,186 +484,123 @@
       function addAudio(stream) {
         const track = stream?.getAudioTracks()?.[0];
         if (!track) return;
-        const source = audioContext.createMediaStreamSource(new MediaStream([track]));
-        source.connect(destination);
+        audioContext.createMediaStreamSource(new MediaStream([track])).connect(destination);
       }
 
       addAudio(window.appState.globalStream);
       remoteVideos.forEach(v => addAudio(v.srcObject));
 
-      window.appState.recordingStream = new MediaStream([
-        canvasStream.getVideoTracks()[0],
-        ...destination.stream.getAudioTracks()
-      ]);
+      window.appState.recordingStream = new MediaStream([canvasStream.getVideoTracks()[0], ...destination.stream.getAudioTracks()]);
       window.appState.recordingAudioContext = audioContext;
-
       return window.appState.recordingStream;
     }
 
     function toggleRecording() {
       const button = $('recordBtn');
-
-      if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) {
-        alert('التسجيل غير مدعوم في هذا المتصفح.');
-        return;
-      }
-
-      if (window.appState.mediaRecorder?.state === 'recording') {
-        window.appState.mediaRecorder.stop();
-        button.classList.remove('active');
-        return;
-      }
+      if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) { alert('غير مدعوم'); return; }
+      if (window.appState.mediaRecorder?.state === 'recording') { window.appState.mediaRecorder.stop(); button.classList.remove('active'); return; }
 
       const remoteVideos = document.querySelectorAll('.remote-peer-video');
-      if (!window.appState.globalStream || remoteVideos.length === 0) {
-        alert('يجب أن يكون هناك مشارك نشط في الغرفة لبدء التسجيل.');
-        return;
-      }
+      if (!window.appState.globalStream || remoteVideos.length === 0) { alert('يجب وجود مشارك آخر لتسجيل الجلسة.'); return; }
 
       try {
         const combinedStream = createMixedRecordingStream();
-        const mimeTypes = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
-        const mimeType = mimeTypes.find(type => MediaRecorder.isTypeSupported(type));
-
+        const mimeType = ['video/webm;codecs=vp9,opus', 'video/webm'].find(t => MediaRecorder.isTypeSupported(t));
         window.appState.recordedChunks = [];
-        window.appState.mediaRecorder = new MediaRecorder(
-          combinedStream,
-          mimeType ? { mimeType } : undefined
-        );
+        window.appState.mediaRecorder = new MediaRecorder(combinedStream, mimeType ? { mimeType } : undefined);
 
-        window.appState.recordingStopPromise = new Promise(resolve => {
-          window.appState.resolveRecordingStop = resolve;
-        });
-
-        window.appState.mediaRecorder.ondataavailable = event => {
-          if (event.data.size > 0) window.appState.recordedChunks.push(event.data);
-        };
-
+        window.appState.recordingStopPromise = new Promise(resolve => { window.appState.resolveRecordingStop = resolve; });
+        window.appState.mediaRecorder.ondataavailable = e => { if (e.data.size > 0) window.appState.recordedChunks.push(e.data); };
         window.appState.mediaRecorder.onstop = async () => {
           try {
-            if (window.appState.recordingAnimationId) {
-              cancelAnimationFrame(window.appState.recordingAnimationId);
-              window.appState.recordingAnimationId = null;
-            }
-
+            if (window.appState.recordingAnimationId) cancelAnimationFrame(window.appState.recordingAnimationId);
             if (window.appState.recordedChunks.length > 0) {
               const blob = new Blob(window.appState.recordedChunks, { type: 'video/webm' });
               const url = URL.createObjectURL(blob);
               const a = document.createElement('a');
-
-              a.href = url;
-              a.download = `lafi-munir-session-${Date.now()}.webm`;
-              document.body.appendChild(a);
-              a.click();
-
-              setTimeout(() => {
-                a.remove();
-                URL.revokeObjectURL(url);
-              }, 1000);
+              a.href = url; a.download = `lafi-munir-${Date.now()}.webm`;
+              document.body.appendChild(a); a.click();
+              setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 1000);
             }
-
             window.appState.recordingStream?.getTracks().forEach(t => t.stop());
-            if (window.appState.recordingAudioContext?.state !== 'closed') {
-              try { await window.appState.recordingAudioContext?.close(); } catch (_) {}
-            }
-
-            window.appState.recordingStream = null;
-            window.appState.recordingAudioContext = null;
-            window.appState.mediaRecorder = null;
+            const rc = window.appState.recordingAudioContext;
+            if (rc && rc.state !== 'closed') { try { await rc.close(); } catch(_) {} }
+            window.appState.recordingStream = null; window.appState.recordingAudioContext = null; window.appState.mediaRecorder = null;
             $('recordBtn').classList.remove('active');
           } finally {
-            const resolveStop = window.appState.resolveRecordingStop;
-            window.appState.resolveRecordingStop = null;
-            window.appState.recordingStopPromise = null;
-            resolveStop?.();
+            const rStop = window.appState.resolveRecordingStop;
+            window.appState.resolveRecordingStop = null; window.appState.recordingStopPromise = null;
+            rStop?.();
           }
         };
-
         window.appState.mediaRecorder.start();
         button.classList.add('active');
-        alert('بدء تسجيل الجلسة بنجاح ✨');
-      } catch (error) {
-        console.error('Recording error:', error);
-        alert('فشل بدء التسجيل.');
-      }
+        alert('بدء تسجيل الجلسة محلياً 🔴');
+      } catch (err) { console.error(err); alert('فشل بدء التسجيل.'); }
     }
 
     window.monitorConnectionQuality = function(call, targetPeerId) {
       if (!call?.peerConnection) return;
-      if (window.appState.statsIntervals[targetPeerId]) {
-        clearInterval(window.appState.statsIntervals[targetPeerId]);
-      }
+      if (window.appState.statsIntervals[targetPeerId]) clearInterval(window.appState.statsIntervals[targetPeerId]);
       window.appState.statsIntervals[targetPeerId] = setInterval(async () => {
         try {
           const stats = await call.peerConnection.getStats();
-          stats.forEach(report => {
-            if (report.type === 'inbound-rtp' && report.kind === 'video') {
-              const display = $('roomTitleDisplay');
-              if (display) {
-                display.textContent = report.packetsLost > 15 ? 'الغرفة: متذبذب 🟡' : 'الغرفة: ممتاز 🟢';
-              }
+          stats.forEach(r => {
+            if (r.type === 'inbound-rtp' && r.kind === 'video') {
+              const disp = $('roomTitleDisplay');
+              if (disp) disp.textContent = r.packetsLost > 15 ? 'الغرفة: متذبذب 🟡' : 'الغرفة: ممتاز 🟢';
             }
           });
-        } catch (_) {}
+        } catch(_) {}
       }, 4000);
     };
 
     async function stopRecordingSafely() {
-      const recorder = window.appState.mediaRecorder;
-      if (!recorder || recorder.state === 'inactive') return;
+      const rec = window.appState.mediaRecorder;
+      if (!rec || rec.state === 'inactive') return;
       try {
-        if (recorder.state === 'recording') recorder.stop();
-        await Promise.race([
-          window.appState.recordingStopPromise || Promise.resolve(),
-          new Promise(resolve => setTimeout(resolve, 2000))
-        ]);
+        if (rec.state === 'recording') rec.stop();
+        await Promise.race([window.appState.recordingStopPromise || Promise.resolve(), new Promise(r => setTimeout(r, 2000))]);
       } catch (e) { console.warn(e); }
     }
 
     async function goHome() {
       if (window.appState.isLeaving) return;
       window.appState.isLeaving = true;
+      ++window.appState.sessionId;
+
+      if (window.appState.reconnectTimer) {
+        clearInterval(window.appState.reconnectTimer);
+        window.appState.reconnectTimer = null;
+      }
 
       stopAmbientDrone();
       await stopRecordingSafely();
-
       if (typeof window.cleanupRoom === 'function') await window.cleanupRoom();
 
       Object.values(window.appState.statsIntervals).forEach(clearInterval);
       window.appState.statsIntervals = {};
       window.resetRetryingPeers?.();
       window.appState.currentRoomName = '';
-
       window.appState.recordingStream?.getTracks().forEach(t => t.stop());
 
-      if (window.appState.recordingAudioContext?.state !== 'closed') {
-        try {
-          await window.appState.recordingAudioContext.close();
-        } catch (_) {}
-      }
+      const rc = window.appState.recordingAudioContext;
+      if (rc && rc.state !== 'closed') { try { await rc.close(); } catch(_) {} }
 
-      window.appState.mediaRecorder = null;
-      window.appState.recordingStream = null;
-      window.appState.recordingAudioContext = null;
-      window.appState.recordingStopPromise = null;
-      window.appState.resolveRecordingStop = null;
-
-      window.appState.isSharingScreen = false;
-      window.appState.originalVideoTrack = null;
+      window.appState.mediaRecorder = null; window.appState.recordingStream = null; window.appState.recordingAudioContext = null;
+      window.appState.isSharingScreen = false; window.appState.originalVideoTrack = null;
       $('screenShareBtn').classList.remove('active');
 
       window.appState.globalStream?.getTracks().forEach(t => t.stop());
       window.appState.screenStream?.getTracks().forEach(t => t.stop());
-
-      window.appState.globalStream = null;
-      window.appState.screenStream = null;
-      window.appState.peersCalls = {};
+      window.appState.globalStream = null; window.appState.screenStream = null; window.appState.peersCalls = {};
 
       $('localVideo').srcObject = null;
       document.querySelectorAll('.remote-peer-video').forEach(v => v.remove());
       $('mainContainer').classList.remove('connected-aura');
-      $('cinematicMoon').classList.remove('pulse');$('roomChatOverlay').innerHTML = '';
+      $('cinematicMoon')?.classList.remove('pulse');$('roomChatOverlay').innerHTML = '';
       $('stardustMemoryLayer').innerHTML = '';$('recordBtn').classList.remove('active');
+      $('micBtn').classList.remove('active');$('camBtn').classList.remove('active');
 
       showScreen('screen-gateway');
       window.appState.isLeaving = false;
@@ -1039,31 +618,34 @@
     const ctx = canvas.getContext('2d');
     let stars = [];
     function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-    for (let i = 0; i < 70; i++) {
-      stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 1.5, alpha: Math.random(), speed: Math.random() * 0.1 + 0.02 });
-    }
+    window.addEventListener('resize', resizeCanvas); resizeCanvas();
+    for (let i = 0; i < 70; i++) { stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 1.5, alpha: Math.random(), speed: Math.random() * 0.1 + 0.02 }); }
     function drawStars() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = '#ffffff';
-      stars.forEach(s => {
-        ctx.globalAlpha = s.alpha;
-        ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2); ctx.fill();
-        s.y -= s.speed; if (s.y < 0) s.y = canvas.height;
-      });
+      stars.forEach(s => { ctx.globalAlpha = s.alpha; ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2); ctx.fill(); s.y -= s.speed; if (s.y < 0) s.y = canvas.height; });
       requestAnimationFrame(drawStars);
     }
     drawStars();
   </script>
 
-  <!-- Firebase & PeerJS Mesh Engine -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getDatabase, ref, push, set, remove, onChildAdded, onChildRemoved, onDisconnect, limitToLast, query, get, orderByChild } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = { databaseURL: "https://lafi-munir-global-default-rtdb.firebaseio.com/" };
-    const db = getDatabase(initializeApp(firebaseConfig));
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const $ = id => document.getElementById(id);
+
+    let authReady = signInAnonymously(auth).catch(err => {
+      console.error('Firebase Auth error:', err);
+      throw err;
+    });
+    window.waitForAuth = () => authReady;
 
     let unsubscribeRoom = null;
     let unsubscribeChat = null;
@@ -1088,14 +670,38 @@
       video.play().catch(e => console.warn(e));
     }
 
-    window.initRoomP2P = function (roomName, stream) {
-      if (unsubscribeRoom) unsubscribeRoom();
-      if (unsubscribeChat) unsubscribeChat();
-      if (unsubscribePeersRemoved) unsubscribePeersRemoved();
+    function clearActiveCalls() {
+      Object.values(window.appState.peersCalls).forEach(call => {
+        try { call.close(); } catch (_) {}
+      });
+
+      window.appState.peersCalls = {};
+      retryingPeers.clear();
+
+      Object.values(window.appState.statsIntervals).forEach(clearInterval);
+      window.appState.statsIntervals = {};
+
+      document.querySelectorAll('.remote-peer-video').forEach(video => {
+        video.srcObject = null;
+        video.remove();
+      });
+
+      $('mainContainer')?.classList.remove('connected-aura');$('cinematicMoon')?.classList.remove('pulse');
+    }
+
+    window.initRoomP2P = function (roomName, stream, activeSession) {
+      if (unsubscribeRoom) { unsubscribeRoom(); unsubscribeRoom = null; }
+      if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
+      if (unsubscribePeersRemoved) { unsubscribePeersRemoved(); unsubscribePeersRemoved = null; }
 
       if (window.appState.peer) {
         window.appState.peer.destroy();
         window.appState.peer = null;
+      }
+
+      if (window.appState.reconnectTimer) {
+        clearInterval(window.appState.reconnectTimer);
+        window.appState.reconnectTimer = null;
       }
 
       const roomPeersRef = ref(db, `rooms_v3/${roomName}/peers`);
@@ -1111,66 +717,211 @@
       });
       window.appState.peer = peer;
       let myPeerId = null;
+      let isReconnecting = false;
+      let reconnectAttempt = 0;
+      let reconnectTimer = null;
+
+      function startRoomWatchers() {
+        if (!unsubscribeRoom) {
+          unsubscribeRoom = onChildAdded(roomPeersRef, () => {
+            if (!window.appState.isLeaving && window.appState.sessionId === activeSession) evaluateAndConnectPeers();
+          });
+        }
+
+        if (!unsubscribePeersRemoved) {
+          unsubscribePeersRemoved = onChildRemoved(roomPeersRef, () => {
+            if (!window.appState.isLeaving && window.appState.sessionId === activeSession) evaluateAndConnectPeers();
+          });
+        }
+
+        if (!window.appState.reconnectTimer) {
+          window.appState.reconnectTimer = setInterval(() => {
+            if (!window.appState.isLeaving && window.appState.sessionId === activeSession) evaluateAndConnectPeers();
+          }, 5000);
+        }
+
+        if (!unsubscribeChat) {
+          let firstMsg = true;
+          unsubscribeChat = onChildAdded(messagesRef, snap => {
+            const msg = snap.val();
+            if (msg && !window.appState.isLeaving && window.appState.sessionId === activeSession) {
+              window.displayStardustMemory(
+                msg.sender || 'مستخدم',
+                msg.text,
+                firstMsg
+              );
+              firstMsg = false;
+            }
+          });
+        }
+      }
+
+      async function registerPeer(id) {
+        if (reconnectTimer) {
+          clearTimeout(reconnectTimer);
+          reconnectTimer = null;
+        }
+
+        isReconnecting = false;
+
+        if (window.appState.isLeaving || window.appState.sessionId !== activeSession) {
+          myPeerId = null;
+          return false;
+        }
+        myPeerId = id;
+
+        if (window.appState.myPeerRef) {
+          await remove(window.appState.myPeerRef).catch(() => {});
+          window.appState.myPeerRef = null;
+        }
+
+        if (window.appState.isLeaving || window.appState.sessionId !== activeSession) {
+          myPeerId = null;
+          return false;
+        }
+
+        const newRef = push(roomPeersRef);
+        await set(newRef, {
+          peerId: id,
+          createdAt: Date.now()
+        });
+
+        if (window.appState.isLeaving || window.appState.sessionId !== activeSession) {
+          await remove(newRef).catch(() => {});
+          window.appState.myPeerRef = null;
+          myPeerId = null;
+          return false;
+        }
+
+        window.appState.myPeerRef = newRef;
+
+        try {
+          await onDisconnect(newRef).remove();
+        } catch (error) {
+          await remove(newRef).catch(() => {});
+          window.appState.myPeerRef = null;
+          myPeerId = null;
+          throw error;
+        }
+
+        if (window.appState.isLeaving || window.appState.sessionId !== activeSession) {
+          await remove(newRef).catch(() => {});
+          window.appState.myPeerRef = null;
+          myPeerId = null;
+          return false;
+        }
+
+        window.setRoomStatus(`الغرفة: ${roomName} • متصل 🟢`);
+        
+        startRoomWatchers();
+        await evaluateAndConnectPeers();
+
+        if (window.appState.isLeaving || window.appState.sessionId !== activeSession) {
+          await remove(newRef).catch(() => {});
+          window.appState.myPeerRef = null;
+          myPeerId = null;
+          return false;
+        }
+
+        return true;
+      }
+
+      peer.on("disconnected", async () => {
+        if (
+          isReconnecting ||
+          window.appState.isLeaving ||
+          window.appState.sessionId !== activeSession
+        ) return;
+
+        const attempt = ++reconnectAttempt;
+        isReconnecting = true;
+        window.setRoomStatus("جاري إعادة الاتصال... 🟡");
+        clearActiveCalls();
+
+        const oldRef = window.appState.myPeerRef;
+        window.appState.myPeerRef = null;
+
+        if (oldRef) {
+          await remove(oldRef).catch(() => {});
+        }
+
+        if (
+          window.appState.isLeaving ||
+          window.appState.sessionId !== activeSession ||
+          peer.destroyed
+        ) {
+          isReconnecting = false;
+          return;
+        }
+
+        reconnectTimer = setTimeout(() => {
+          if (
+            attempt === reconnectAttempt &&
+            isReconnecting &&
+            !window.appState.isLeaving &&
+            window.appState.sessionId === activeSession
+          ) {
+            isReconnecting = false;
+          }
+        }, 10000);
+
+        peer.reconnect();
+      });
 
       function handleCall(call, targetPeerId) {
         window.appState.peersCalls[targetPeerId] = call;
 
         call.on("stream", remoteStream => {
+          if (window.appState.isLeaving || window.appState.sessionId !== activeSession) return;
           retryingPeers.delete(targetPeerId);
           addRemoteVideo(targetPeerId, remoteStream);
-          document.getElementById("cinematicMoon").classList.add("pulse");
-          document.getElementById("mainContainer").classList.add("connected-aura");
+          $('cinematicMoon')?.classList.add("pulse");
+          $('mainContainer')?.classList.add("connected-aura");
           window.monitorConnectionQuality(call, targetPeerId);
         });
 
         call.on("close", () => {
+          if (window.appState.sessionId !== activeSession) return;
           delete window.appState.peersCalls[targetPeerId];
           retryingPeers.delete(targetPeerId);
           document.getElementById(`remote-${targetPeerId}`)?.remove();
-
           if (window.appState.statsIntervals[targetPeerId]) {
             clearInterval(window.appState.statsIntervals[targetPeerId]);
             delete window.appState.statsIntervals[targetPeerId];
           }
-
           if (Object.keys(window.appState.peersCalls).length === 0) {
-            document.getElementById("mainContainer")?.classList.remove("connected-aura");
-            document.getElementById("cinematicMoon")?.classList.remove("pulse");
+            $('mainContainer')?.classList.remove("connected-aura");
+            $('cinematicMoon')?.classList.remove("pulse");
             window.setRoomStatus("الغرفة: بانتظار مشاركين 🟡");
           }
-
-          setTimeout(() => {
-            if (!window.appState.isLeaving) evaluateAndConnectPeers();
+          setTimeout(() => { 
+            if (!window.appState.isLeaving && window.appState.sessionId === activeSession) evaluateAndConnectPeers(); 
           }, 1000);
         });
 
         call.on("error", () => {
+          if (window.appState.sessionId !== activeSession) return;
           delete window.appState.peersCalls[targetPeerId];
           retryingPeers.delete(targetPeerId);
           document.getElementById(`remote-${targetPeerId}`)?.remove();
-          
           if (window.appState.statsIntervals[targetPeerId]) {
             clearInterval(window.appState.statsIntervals[targetPeerId]);
             delete window.appState.statsIntervals[targetPeerId];
           }
-
           call.close();
-
-          setTimeout(() => {
-            if (!window.appState.isLeaving) {
-              evaluateAndConnectPeers();
-            }
+          setTimeout(() => { 
+            if (!window.appState.isLeaving && window.appState.sessionId === activeSession) evaluateAndConnectPeers(); 
           }, 1000);
         });
       }
 
       async function evaluateAndConnectPeers() {
-        if (window.appState.isEvaluating || window.appState.isLeaving || !window.appState.peer || window.appState.peer.destroyed || !myPeerId) return;
+        if (window.appState.isEvaluating || window.appState.isLeaving || window.appState.sessionId !== activeSession || !window.appState.peer || window.appState.peer.destroyed || !myPeerId) return;
         window.appState.isEvaluating = true;
 
         try {
           const snapshot = await get(query(roomPeersRef, orderByChild('createdAt')));
-          if (!snapshot.exists() || window.appState.isLeaving) return;
+          if (!snapshot.exists() || window.appState.isLeaving || window.appState.sessionId !== activeSession) return;
 
           const peersData = snapshot.val();
           const myEntry = Object.values(peersData).find(p => p.peerId === myPeerId);
@@ -1178,14 +929,8 @@
 
           for (const key of Object.keys(peersData)) {
             const p = peersData[key];
-            if (
-              p.peerId !== myPeerId &&
-              p.createdAt < myEntry.createdAt &&
-              !window.appState.peersCalls[p.peerId] &&
-              !retryingPeers.has(p.peerId)
-            ) {
+            if (p.peerId !== myPeerId && p.createdAt < myEntry.createdAt && !window.appState.peersCalls[p.peerId] && !retryingPeers.has(p.peerId)) {
               retryingPeers.add(p.peerId);
-
               const call = peer.call(p.peerId, stream);
               handleCall(call, p.peerId);
             }
@@ -1195,74 +940,86 @@
       }
 
       peer.on("open", async id => {
-        myPeerId = id;
-        window.appState.myPeerRef = push(roomPeersRef);
-
         try {
-          await set(window.appState.myPeerRef, { peerId: myPeerId, createdAt: Date.now() });
-          await onDisconnect(window.appState.myPeerRef).remove();
-        } catch (e) {
-          window.setRoomStatus('خطأ في الاتصال بالخادم 🔴');
-          return;
-        }
-
-        window.setRoomStatus(`الغرفة: ${roomName} • متصل 🟢`);
-
-        unsubscribeRoom = onChildAdded(roomPeersRef, () => evaluateAndConnectPeers());
-        unsubscribePeersRemoved = onChildRemoved(roomPeersRef, () => evaluateAndConnectPeers());
-        await evaluateAndConnectPeers();
-
-        let firstMsg = true;
-        unsubscribeChat = onChildAdded(messagesRef, snap => {
-          const msg = snap.val();
-          if (msg) {
-            window.displayStardustMemory(msg.sender || 'مستخدم', msg.text, firstMsg);
-            firstMsg = false;
+          await registerPeer(id);
+        } catch (error) {
+          if (window.appState.sessionId === activeSession) {
+            console.error('Peer registration error:', error);
+            window.setRoomStatus('خطأ في تسجيل الاتصال 🔴');
           }
-        });
+        }
       });
 
       peer.on("call", call => {
-        if (window.appState.peersCalls[call.peer]) {
-          call.close();
-          return;
-        }
+        if (window.appState.isLeaving || window.appState.sessionId !== activeSession) { call.close(); return; }
+        if (window.appState.peersCalls[call.peer]) { call.close(); return; }
         call.answer(stream);
         handleCall(call, call.peer);
       });
 
-      peer.on("error", () => window.setRoomStatus("خطأ في شبكة P2P 🔴"));
+      peer.on("error", err => { 
+        if (window.appState.sessionId !== activeSession) return;
+        console.warn('Peer error:', err); 
+        window.setRoomStatus("تنبيه شبكة P2P 🟡"); 
+      });
+
+      const cleanupSession = activeSession;
+
+      // دالة التنظيف الكاملة المحمية ضد ظروف السباق (Race Conditions) أثناء الانتقال السريع
+      window.cleanupRoom = async function () {
+        if (window.appState.sessionId !== cleanupSession) return;
+
+        window.appState.isLeaving = true;
+        retryingPeers.clear();
+
+        if (reconnectTimer) {
+          clearTimeout(reconnectTimer);
+          reconnectTimer = null;
+        }
+
+        isReconnecting = false;
+        ++reconnectAttempt;
+
+        if (window.appState.reconnectTimer) {
+          clearInterval(window.appState.reconnectTimer);
+          window.appState.reconnectTimer = null;
+        }
+
+        if (unsubscribeRoom) { unsubscribeRoom(); unsubscribeRoom = null; }
+        if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
+        if (unsubscribePeersRemoved) { unsubscribePeersRemoved(); unsubscribePeersRemoved = null; }
+
+        Object.values(window.appState.statsIntervals).forEach(clearInterval);
+        window.appState.statsIntervals = {};
+
+        Object.values(window.appState.peersCalls).forEach(call => call.close());
+        window.appState.peersCalls = {};
+
+        if (window.appState.myPeerRef) {
+          await remove(window.appState.myPeerRef).catch(() => {});
+          window.appState.myPeerRef = null;
+        }
+
+        if (window.appState.sessionId !== cleanupSession) return;
+
+        window.appState.peer?.destroy();
+        window.appState.peer = null;
+
+        if (window.appState.sessionId === cleanupSession) {
+          window.appState.isLeaving = false;
+        }
+      };
     };
 
     window.sendStardustToCloud = async function (roomName, text) {
       try {
+        const uid = auth.currentUser?.uid || 'مستخدم';
         await push(ref(db, `rooms_v3/${roomName}/stardust`), {
-          sender: "لافي منير",
+          sender: `لافي (${uid.slice(0, 5)})`,
           text,
           timestamp: Date.now()
         });
       } catch (e) { console.error(e); }
-    };
-
-    window.cleanupRoom = async function () {
-      window.appState.isLeaving = true;
-      retryingPeers.clear();
-
-      if (unsubscribeRoom) { unsubscribeRoom(); unsubscribeRoom = null; }
-      if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
-      if (unsubscribePeersRemoved) { unsubscribePeersRemoved(); unsubscribePeersRemoved = null; }
-
-      Object.values(window.appState.statsIntervals).forEach(interval => clearInterval(interval));
-      window.appState.statsIntervals = {};
-
-      if (window.appState.myPeerRef) {
-        await remove(window.appState.myPeerRef).catch(() => {});
-        window.appState.myPeerRef = null;
-      }
-      Object.values(window.appState.peersCalls).forEach(call => call.close());
-      window.appState.peer?.destroy();
-      window.appState.peer = null;
-      window.appState.peersCalls = {};
     };
   </script>
 </body>
