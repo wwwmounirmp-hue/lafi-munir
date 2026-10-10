@@ -181,7 +181,6 @@
     </section>
   </main>
 
-  <!-- 🧠 المعمارية البرمجية المحصنة والمنظمة لكائنات النظام (OOP Engine) -->
   <script>
     'use strict';
 
@@ -200,21 +199,21 @@
         this.audioCtxSingleton = null;
       }
 
-      getAudioContext() {
+      async getAudioContext() {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return null;
         if (!this.audioCtxSingleton || this.audioCtxSingleton.state === 'closed') {
           this.audioCtxSingleton = new AudioCtx();
         }
         if (this.audioCtxSingleton.state === 'suspended') {
-          this.audioCtxSingleton.resume().catch(() => {});
+          await this.audioCtxSingleton.resume().catch(() => {});
         }
         return this.audioCtxSingleton;
       }
 
-      playTone(type) {
+      async playTone(type) {
         try {
-          const ctx = this.getAudioContext();
+          const ctx = await this.getAudioContext();
           if (!ctx || ctx.state !== 'running') return;
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
@@ -239,10 +238,10 @@
         } catch(e) {}
       }
 
-      startAmbient() {
+      async startAmbient() {
         try {
           this.stopAmbient();
-          const ctx = this.getAudioContext();
+          const ctx = await this.getAudioContext();
           if (!ctx) return;
           this.ambientOscillator = ctx.createOscillator();
           const gain = ctx.createGain();
@@ -265,13 +264,38 @@
         this.silentOscillator = null;
       }
 
-      purgeAll() {
+      async purgeAll() {
         this.stopAmbient();
         this.stopSilent();
+        
+        if (this.recordingAnimationId) {
+          cancelAnimationFrame(this.recordingAnimationId);
+          this.recordingAnimationId = null;
+        }
+
+        if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+          try { this.mediaRecorder.stop(); } catch(e) {}
+        }
+        this.mediaRecorder = null;
+        this.recordedChunks = [];
+
         this.globalStream?.getTracks().forEach(t => { try { t.stop(); } catch(e){} });
         this.screenStream?.getTracks().forEach(t => { try { t.stop(); } catch(e){} });
+        this.recordingStream?.getTracks().forEach(t => { try { t.stop(); } catch(e){} });
+        
         this.globalStream = null;
         this.screenStream = null;
+        this.recordingStream = null;
+
+        if (this.recordingAudioContext && this.recordingAudioContext.state !== 'closed') {
+          try { await this.recordingAudioContext.close(); } catch(e) {}
+        }
+        this.recordingAudioContext = null;
+
+        if (this.audioCtxSingleton && this.audioCtxSingleton.state !== 'closed') {
+          try { await this.audioCtxSingleton.close(); } catch(e) {}
+        }
+        this.audioCtxSingleton = null;
       }
     }
 
@@ -293,6 +317,15 @@
 
     let leaveOperation = 0;
     let cosmicExitTimeoutId = null;
+
+    async function stopRecordingSafely() {
+      const rec = window.cosmicMedia.mediaRecorder;
+      if (!rec || rec.state === 'inactive') return;
+      try {
+        if (rec.state === 'recording') rec.stop();
+        await new Promise(r => setTimeout(r, 500));
+      } catch (e) {}
+    }
 
     window.cosmicStationExit = async function() {
       if (window.appState.isLeaving) return;
@@ -317,7 +350,7 @@
       }
 
       try {
-        const ctx = window.cosmicMedia.getAudioContext();
+        const ctx = await window.cosmicMedia.getAudioContext();
         if (ctx) {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
@@ -339,6 +372,8 @@
             await stopScreenShare();
           }
 
+          await stopRecordingSafely();
+
           if (operation !== leaveOperation || window.appState.sessionId !== leavingSession) return;
 
           if (typeof window.cleanupRoom === 'function') {
@@ -351,7 +386,7 @@
           window.appState.statsIntervals = {};
           window.appState.currentRoomName = '';
           
-          window.cosmicMedia.purgeAll();
+          await window.cosmicMedia.purgeAll();
           window.appState.peersCalls = {};
 
           document.getElementById('localVideo').srcObject = null;
@@ -467,7 +502,7 @@
       }
 
       const hasTimestamp = typeof msg.timestamp === 'number';
-      const isMyMsg = msg.ownerUid && msg.ownerUid === window.authUserId && hasTimestamp && (Date.now() - msg.timestamp < 24 * 60 * 60 * 1000);
+      const isMyMsg = msg.ownerUid && window.authUserId && msg.ownerUid === window.authUserId && hasTimestamp && (Date.now() - msg.timestamp < 24 * 60 * 60 * 1000);
 
       if (isMyMsg) {
         const unsendBtn = document.createElement('button');
@@ -513,7 +548,7 @@
           await window.sendStardustToCloud(window.appState.currentRoomName, text, mediaUrl, mediaType);
           input.value = '';
         } catch (err) {
-          alert('تعذر إرسال الرسالة. تحقق من الاتصال.');
+          console.error(err);
         }
       }
     }
@@ -528,7 +563,7 @@
         window.setRoomStatus('جاري رفع الوسائط للسحابة... ⏳');
         const mediaUrl = await window.uploadMediaToStorage(file, window.appState.currentRoomName);
         const mediaType = file.type.startsWith('video') ? 'video' : 'image';
-        await sendStardustMsg(mediaUrl, mediaType, true); // تجاوز الـ Throttle فوراً للوسائط المرفوعة
+        await sendStardustMsg(mediaUrl, mediaType, true);
         window.setRoomStatus(window.getBaseRoomStatusText());
       } catch (err) {
         alert(err.message || 'تعذر رفع الملف للسحابة.');
@@ -544,13 +579,13 @@
         cosmicExitTimeoutId = null;
       }
 
-      const audioCtx = window.cosmicMedia.getAudioContext();
+      const audioCtx = await window.cosmicMedia.getAudioContext();
       if (!audioCtx) {
         alert('المتصفح يمنع تشغيل الصوت تلقائياً.');
         return;
       }
 
-      window.cosmicMedia.purgeAll();
+      await window.cosmicMedia.purgeAll();
 
       const roomName = $('roomInput').value
         .trim()
@@ -594,7 +629,7 @@
         window.cosmicMedia.silentOscillator = oscillator;
         window.cosmicMedia.globalStream = dst.stream;
 
-        window.cosmicMedia.startAmbient();
+        await window.cosmicMedia.startAmbient();
 
         $('localVideo').srcObject = null;
         window.setRoomStatus(window.getBaseRoomStatusText());
@@ -768,7 +803,6 @@
 
       const canvasStream = canvas.captureStream(30);
 
-      // تصحيح تسريب AudioContext عبر تدمير القديم قبل إنشاء الجديد
       if (window.cosmicMedia.recordingAudioContext && window.cosmicMedia.recordingAudioContext.state !== 'closed') {
         try { await window.cosmicMedia.recordingAudioContext.close(); } catch(e) {}
       }
@@ -876,7 +910,6 @@
     drawStars();
   </script>
 
-  <!-- 🌐 طبقة إدارة الاتصالات السحابية والـ P2P (Firebase & PeerJS Core) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -1134,8 +1167,12 @@
             if (p.peerId !== myPeerId && p.createdAt < myEntry.createdAt && !window.appState.peersCalls[p.peerId] && !retryingPeers.has(p.peerId)) {
               retryingPeers.add(p.peerId);
               const activeStreamToUse = (window.cosmicMedia.globalStream?.getTracks().length > 0) ? window.cosmicMedia.globalStream : stream;
-              const call = peer.call(p.peerId, activeStreamToUse);
-              handleCall(call, p.peerId);
+              try {
+                const call = peer.call(p.peerId, activeStreamToUse);
+                if (call) handleCall(call, p.peerId);
+              } catch (err) {
+                retryingPeers.delete(p.peerId);
+              }
             }
           }
         } catch (e) {} finally { window.appState.isEvaluating = false; }
@@ -1157,7 +1194,12 @@
         if (window.appState.sessionId !== activeSession) return;
         Object.values(window.appState.statsIntervals).forEach(clearInterval);
         window.appState.statsIntervals = {};
-        window.setRoomStatus("تنبيه شبكة المحطة 🟡");
+        
+        if (err.type === 'unavailable-id') {
+          window.setRoomStatus("معرف القطاع مستخدم في تبويب آخر 🟡");
+        } else {
+          window.setRoomStatus("تنبيه شبكة المحطة: " + (err.type || "خطأ"));
+        }
       });
 
       const cleanupSession = activeSession;
@@ -1243,7 +1285,6 @@
     };
   </script>
 
-  <!-- الأيقونة الهولوغرامية العائمة القابلة للسحب -->
   <div id="cosmicBubble" class="cosmic-bubble">
     🪐
     <div class="bubble-ripple"></div>
