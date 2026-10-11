@@ -985,8 +985,9 @@
       window.setRoomStatus('تهيئة المحطة الفضائية...');
 
       try {
-        if (typeof window.waitForAuth !== 'function') throw new Error('Firebase لم يجهز بعد.');
-        await window.waitForAuth();
+        if (typeof window.waitForAuth === 'function') {
+          await window.waitForAuth().catch(() => {});
+        }
         if (window.appState.isLeaving || window.appState.sessionId !== sessionId) return;
 
         const oscillator = audioCtx.createOscillator();
@@ -1473,28 +1474,41 @@
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
     const firebaseConfig = { databaseURL: "https://lafi-munir-global-default-rtdb.firebaseio.com/" };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
-    const storage = getStorage(app);
-    const $ = id => document.getElementById(id);
+    
+    let app, auth, db, storage;
+    window.authUserId = 'anon-' + Math.random().toString(36).substring(2, 9);
+    
+    let authReady = Promise.resolve();
+    try {
+      app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getDatabase(app);
+      storage = getStorage(app);
 
-    let authReady = signInAnonymously(auth).then(userCred => {
-      window.authUserId = userCred.user.uid;
-    }).catch(err => { throw err; });
+      authReady = signInAnonymously(auth).then(userCred => {
+        window.authUserId = userCred.user.uid;
+      }).catch(err => {
+        console.warn('Auth fallback active:', err);
+      });
+    } catch (e) {
+      console.warn('Firebase init skipped:', e);
+    }
+
     window.waitForAuth = () => authReady;
 
     window.setTypingInCloud = async function(roomName, uid) {
+      if (!db) return;
       try { await set(ref(db, `rooms_v3/${roomName}/typing/${uid}`), { timestamp: Date.now() }); } catch(e) {}
     };
     window.clearTypingInCloud = async function(roomName, uid) {
+      if (!db) return;
       try { await remove(ref(db, `rooms_v3/${roomName}/typing/${uid}`)); } catch(e) {}
     };
 
     window.uploadMediaToStorage = async function (file, roomName) {
-      await window.waitForAuth();
+      await window.waitForAuth().catch(() => {});
+      if (!storage) throw new Error('التخزين السحابي غير متوفر');
       const uid = window.authUserId;
-      if (!uid) throw new Error('المستخدم غير موثق');
       if (file.size > 15 * 1024 * 1024) throw new Error('الحد الأقصى 15 ميجابايت');
       const safeRoom = roomName.replace(/[^a-zA-Z0-9_-]/g, '-');
       const safeName = file.name.replace(/[^\w.\-]/g, '_');
@@ -1504,9 +1518,12 @@
     };
 
     window.sendStardustToCloud = async function (roomName, text, mediaUrl = '', mediaType = '') {
-      await window.waitForAuth();
+      await window.waitForAuth().catch(() => {});
+      if (!db) {
+        window.displayStardustMemory('local-' + Date.now(), { sender: $('nomadNameInput')?.value.trim() || 'عابر', text, mediaUrl, mediaType, timestamp: Date.now() });
+        return;
+      }
       const uid = window.authUserId;
-      if (!uid) throw new Error('المستخدم غير موثق');
       const customName = $('nomadNameInput')?.value.trim();
       const senderLabel = customName ? customName : `عابر-${uid.slice(0, 4)}`;
       await push(ref(db, `rooms_v3/${roomName}/stardust`), {
@@ -1515,7 +1532,8 @@
     };
 
     window.deleteStardustFromCloud = async function (roomName, msgKey) {
-      await window.waitForAuth();
+      if (!db) return;
+      await window.waitForAuth().catch(() => {});
       const uid = window.authUserId;
       const msgSnap = await get(ref(db, `rooms_v3/${roomName}/stardust/${msgKey}`));
       if (!msgSnap.exists() || msgSnap.val()?.ownerUid !== uid) throw new Error('غير مصرح');
@@ -1558,66 +1576,69 @@
       const uid = window.authUserId || 'anon';
       const currentNomadName = $('nomadNameInput')?.value.trim() || `عابر-${uid.slice(0, 4)}`;
 
-      const mediaRef = ref(db, `sectors_v1/${roomName}/cinemaState`);
-      let cinemaListener = onValue(mediaRef, (snap) => {
-        const data = snap.val();
-        const container = document.getElementById('cosmicCinemaContainer');
-        const stage = document.getElementById('mediaStage');
-        if (!data) { if (container) container.style.display = 'none'; if (stage) stage.innerHTML = ''; return; }
-        if (container) container.style.display = 'block';
-        if (stage) {
-          stage.innerHTML = '';
-          const badge = document.createElement('div');
-          badge.style.cssText = "position:absolute;top:5px;right:10px;z-index:10;font-size:11px;color:#00f2fe;background:rgba(0,0,0,0.6);padding:3px 8px;border-radius:4px;";
-          badge.textContent = `🎬 ${data.controller}`;
-          stage.appendChild(badge);
-          if (data.type === 'youtube' || data.type === 'vimeo') {
-            const iframe = document.createElement('iframe');
-            iframe.src = data.src;
-            iframe.style.cssText = "position:absolute;top:0;left:0;width:100%;height:100%;border:none;";
-            iframe.allowFullscreen = true;
-            stage.appendChild(iframe);
-          } else {
-            const video = document.createElement('video');
-            video.src = data.src; video.controls = true; video.autoplay = true;
-            video.style.cssText = "position:absolute;top:0;left:0;width:100%;height:100%;";
-            if (data.currentTime) video.currentTime = data.currentTime;
-            stage.appendChild(video);
+      let cinemaListener = null;
+      if (db) {
+        const mediaRef = ref(db, `sectors_v1/${roomName}/cinemaState`);
+        cinemaListener = onValue(mediaRef, (snap) => {
+          const data = snap.val();
+          const container = document.getElementById('cosmicCinemaContainer');
+          const stage = document.getElementById('mediaStage');
+          if (!data) { if (container) container.style.display = 'none'; if (stage) stage.innerHTML = ''; return; }
+          if (container) container.style.display = 'block';
+          if (stage) {
+            stage.innerHTML = '';
+            const badge = document.createElement('div');
+            badge.style.cssText = "position:absolute;top:5px;right:10px;z-index:10;font-size:11px;color:#00f2fe;background:rgba(0,0,0,0.6);padding:3px 8px;border-radius:4px;";
+            badge.textContent = `🎬 ${data.controller}`;
+            stage.appendChild(badge);
+            if (data.type === 'youtube' || data.type === 'vimeo') {
+              const iframe = document.createElement('iframe');
+              iframe.src = data.src;
+              iframe.style.cssText = "position:absolute;top:0;left:0;width:100%;height:100%;border:none;";
+              iframe.allowFullscreen = true;
+              stage.appendChild(iframe);
+            } else {
+              const video = document.createElement('video');
+              video.src = data.src; video.controls = true; video.autoplay = true;
+              video.style.cssText = "position:absolute;top:0;left:0;width:100%;height:100%;";
+              if (data.currentTime) video.currentTime = data.currentTime;
+              stage.appendChild(video);
+            }
           }
-        }
-      });
+        });
 
-      const broadcastBtn = $('broadcastCinemaBtn');
-      const cinemaInput = $('cinemaUrlInput');
-      if (broadcastBtn && cinemaInput) {
-        broadcastBtn.onclick = async () => {
-          const url = cinemaInput.value.trim();
-          if (!url) return;
-          let parsed;
-          try { parsed = new URL(url); } catch(e) { window.showSystemToast('رابط غير صالح', 'error'); return; }
-          const host = parsed.hostname.toLowerCase();
-          let type = null, src = null;
-          if (host.includes('youtube.com') || host === 'youtu.be') {
-            const m = url.match(/[?&]v=([^#&?]+)/) || url.match(/youtu\.be\/([^#&?]+)/);
-            if (m && m[1]) { type = 'youtube'; src = `https://www.youtube-nocookie.com/embed/${m[1]}?autoplay=1`; }
-          } else if (host.includes('vimeo.com')) {
-            const parts = parsed.pathname.split('/').filter(Boolean);
-            const vid = parts[parts.length - 1];
-            if (/^\d+$/.test(vid)) { type = 'vimeo'; src = `https://player.vimeo.com/video/${vid}?autoplay=1`; }
-          } else if (/\.(mp4|webm|ogg)$/i.test(parsed.pathname)) {
-            type = 'direct'; src = parsed.href;
-          }
-          if (!type) { window.showSystemToast('الرابط غير مدعوم', 'error'); return; }
-          try {
-            await set(mediaRef, { type, src, controller: currentNomadName, currentTime: 0, playState: true, timestamp: Date.now() });
-            cinemaInput.value = '';
-          } catch(e) { window.showSystemToast('تعذر البث', 'error'); }
-        };
+        const broadcastBtn = $('broadcastCinemaBtn');
+        const cinemaInput = $('cinemaUrlInput');
+        if (broadcastBtn && cinemaInput) {
+          broadcastBtn.onclick = async () => {
+            const url = cinemaInput.value.trim();
+            if (!url) return;
+            let parsed;
+            try { parsed = new URL(url); } catch(e) { window.showSystemToast('رابط غير صالح', 'error'); return; }
+            const host = parsed.hostname.toLowerCase();
+            let type = null, src = null;
+            if (host.includes('youtube.com') || host === 'youtu.be') {
+              const m = url.match(/[?&]v=([^#&?]+)/) || url.match(/youtu\.be\/([^#&?]+)/);
+              if (m && m[1]) { type = 'youtube'; src = `https://www.youtube-nocookie.com/embed/${m[1]}?autoplay=1`; }
+            } else if (host.includes('vimeo.com')) {
+              const parts = parsed.pathname.split('/').filter(Boolean);
+              const vid = parts[parts.length - 1];
+              if (/^\d+$/.test(vid)) { type = 'vimeo'; src = `https://player.vimeo.com/video/${vid}?autoplay=1`; }
+            } else if (/\.(mp4|webm|ogg)$/i.test(parsed.pathname)) {
+              type = 'direct'; src = parsed.href;
+            }
+            if (!type) { window.showSystemToast('الرابط غير مدعوم', 'error'); return; }
+            try {
+              await set(mediaRef, { type, src, controller: currentNomadName, currentTime: 0, playState: true, timestamp: Date.now() });
+              cinemaInput.value = '';
+            } catch(e) { window.showSystemToast('تعذر البث', 'error'); }
+          };
+        }
       }
 
-      const roomPeersRef = ref(db, `rooms_v3/${roomName}/peers`);
-      const messagesRef = query(ref(db, `rooms_v3/${roomName}/stardust`), limitToLast(50));
-      const typingRef = ref(db, `rooms_v3/${roomName}/typing`);
+      const roomPeersRef = db ? ref(db, `rooms_v3/${roomName}/peers`) : null;
+      const messagesRef = db ? query(ref(db, `rooms_v3/${roomName}/stardust`), limitToLast(50)) : null;
+      const typingRef = db ? ref(db, `rooms_v3/${roomName}/typing`) : null;
       const subscribedAt = Date.now();
 
       const turnConfig = await getTurnConfig();
@@ -1628,6 +1649,7 @@
       let myPeerId = null;
 
       function startWatchers() {
+        if (!roomPeersRef) return;
         if (!unsubscribeRoom) unsubscribeRoom = onChildAdded(roomPeersRef, (snap) => {
           const d = snap.val();
           if (d && d.name && d.peerId !== myPeerId) showPeerToast(`🟢 انضم <b>${d.name}</b>`);
@@ -1643,17 +1665,17 @@
             if (!window.appState.isLeaving && window.appState.sessionId === activeSession) evaluatePeers();
           }, 5000);
         }
-        if (!unsubscribeChat) unsubscribeChat = onChildAdded(messagesRef, snap => {
+        if (messagesRef && !unsubscribeChat) unsubscribeChat = onChildAdded(messagesRef, snap => {
           const msg = snap.val();
           if (msg && !window.appState.isLeaving && window.appState.sessionId === activeSession) {
             window.displayStardustMemory(snap.key, msg, !msg.timestamp || msg.timestamp < subscribedAt);
           }
         });
-        if (!unsubscribeChatRemoved) unsubscribeChatRemoved = onChildRemoved(messagesRef, snap => {
+        if (messagesRef && !unsubscribeChatRemoved) unsubscribeChatRemoved = onChildRemoved(messagesRef, snap => {
           const el = document.getElementById(`msg-${snap.key}`);
           if (el) el.remove();
         });
-        if (!unsubscribeTyping) unsubscribeTyping = onValue(typingRef, (snap) => {
+        if (typingRef && !unsubscribeTyping) unsubscribeTyping = onValue(typingRef, (snap) => {
           const d = snap.val() || {};
           const now = Date.now();
           const active = Object.entries(d).filter(([u, v]) => u !== window.authUserId && v?.timestamp && (now - v.timestamp) < 4000);
@@ -1664,12 +1686,14 @@
       async function registerPeer(id) {
         if (window.appState.isLeaving || window.appState.sessionId !== activeSession) return false;
         myPeerId = id;
-        if (window.appState.myPeerRef) { await remove(window.appState.myPeerRef).catch(()=>{}); window.appState.myPeerRef = null; }
-        const displayName = $('nomadNameInput')?.value.trim() || `عابر-${id.slice(0,4)}`;
-        const newRef = push(roomPeersRef);
-        await set(newRef, { peerId: id, name: displayName, createdAt: Date.now() });
-        window.appState.myPeerRef = newRef;
-        try { await onDisconnect(newRef).remove(); } catch(e) { await remove(newRef).catch(()=>{}); window.appState.myPeerRef = null; myPeerId = null; throw e; }
+        if (roomPeersRef) {
+          if (window.appState.myPeerRef) { await remove(window.appState.myPeerRef).catch(()=>{}); window.appState.myPeerRef = null; }
+          const displayName = $('nomadNameInput')?.value.trim() || `عابر-${id.slice(0,4)}`;
+          const newRef = push(roomPeersRef);
+          await set(newRef, { peerId: id, name: displayName, createdAt: Date.now() });
+          window.appState.myPeerRef = newRef;
+          try { await onDisconnect(newRef).remove(); } catch(e) {}
+        }
         window.setRoomStatus(window.getBaseRoomStatusText());
         startWatchers();
         await evaluatePeers();
@@ -1704,7 +1728,7 @@
       }
 
       async function evaluatePeers() {
-        if (isCleaningUp || window.appState.isEvaluating || window.appState.isLeaving || window.appState.sessionId !== activeSession || !window.appState.peer || window.appState.peer.destroyed || !myPeerId) return;
+        if (!roomPeersRef || isCleaningUp || window.appState.isEvaluating || window.appState.isLeaving || window.appState.sessionId !== activeSession || !window.appState.peer || window.appState.peer.destroyed || !myPeerId) return;
         window.appState.isEvaluating = true;
         try {
           const snapshot = await get(query(roomPeersRef, orderByChild('createdAt')));
@@ -1739,7 +1763,7 @@
         if (window.appState.sessionId !== cleanupSession) return;
         isCleaningUp = true;
         window.appState.retryingPeers.clear();
-        if (cinemaListener) { cinemaListener(); cinemaListener = null; }
+        if (cinemaListener) cinemaListener();
         if (window.appState.reconnectTimer) { clearInterval(window.appState.reconnectTimer); window.appState.reconnectTimer = null; }
         [unsubscribeRoom, unsubscribeChat, unsubscribeChatRemoved, unsubscribePeersRemoved, unsubscribeTyping].forEach(fn => fn && fn());
         unsubscribeRoom = unsubscribeChat = unsubscribeChatRemoved = unsubscribePeersRemoved = unsubscribeTyping = null;
@@ -1747,7 +1771,7 @@
         window.appState.statsIntervals = {};
         Object.values(window.appState.peersCalls).forEach(c => { try { c.close(); } catch(e){} });
         window.appState.peersCalls = {};
-        if (window.appState.myPeerRef) { await remove(window.appState.myPeerRef).catch(()=>{}); window.appState.myPeerRef = null; }
+        if (window.appState.myPeerRef && roomPeersRef) { await remove(window.appState.myPeerRef).catch(()=>{}); window.appState.myPeerRef = null; }
         window.appState.peer?.destroy();
         window.appState.peer = null;
       };
