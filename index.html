@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="لافي منير">
-  <meta name="description" content="محطة فضائية سيادية للتواصل الهولوغرامي العابر للنجوم">
+  <meta name="description" content="محطة فضائية سيادية للتواصل الهولوغرامي عابر للنجوم">
 
   <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" href="./icon-192.png">
@@ -48,6 +48,37 @@
       background: radial-gradient(circle at 30% 30%, #fff 0%, #00f2fe 35%, #7928ca 70%, #ff007f 100%); 
       box-shadow: 0 0 90px rgba(0, 242, 254, .7), 0 0 160px rgba(255, 0, 127, .5); 
       transition: transform .4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+      animation: moonBreath 6s ease-in-out infinite;
+    }
+    @keyframes moonBreath {
+      0%, 100% { box-shadow: 0 0 90px rgba(0, 242, 254, .7), 0 0 160px rgba(255, 0, 127, .5); }
+      50% { box-shadow: 0 0 110px rgba(0, 242, 254, .9), 0 0 200px rgba(255, 0, 127, .7); }
+    }
+    .cinematic-moon::before {
+      content: '';
+      position: absolute;
+      top: -30px; left: -30px;
+      width: calc(100% + 60px);
+      height: calc(100% + 60px);
+      border-radius: 50%;
+      border: 2px solid transparent;
+      border-top-color: rgba(0, 242, 254, 0.6);
+      border-right-color: rgba(255, 0, 127, 0.4);
+      animation: orbitRing 12s linear infinite;
+    }
+    .cinematic-moon::after {
+      content: '';
+      position: absolute;
+      top: -15px; left: -15px;
+      width: calc(100% + 30px);
+      height: calc(100% + 30px);
+      border-radius: 50%;
+      border: 1px dashed rgba(121, 40, 202, 0.5);
+      animation: orbitRing 18s linear infinite reverse;
+    }
+    @keyframes orbitRing {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
     .cinematic-moon.pulse { transform: translateX(-50%) scale(1.12); }
     
@@ -141,6 +172,11 @@
     .btn:hover { transform: scale(1.03); box-shadow: 0 8px 30px rgba(255, 0, 127, 0.6); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     
+    @keyframes loadingSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
     .system-footer { 
       margin-top: 12px; color: rgba(255, 255, 255, 0.6); 
       font-size: 9px; letter-spacing: 1.5px; text-align: center; 
@@ -230,6 +266,11 @@
       color: #fff; background: rgba(20, 8, 42, 0.9); 
       font-size: 11.5px; overflow-wrap: anywhere; 
       box-shadow: 0 0 15px rgba(0, 242, 254, 0.15); 
+      animation: bubbleIn 0.3s ease-out;
+    }
+    @keyframes bubbleIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     .chat-bubble span.sender-tag { 
       margin-left: 6px; color: #38bdf8; font-weight: bold; 
@@ -394,6 +435,23 @@
       overflow: hidden; z-index: 99998; 
     }
 
+    .touch-star {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff 0%, #00f2fe 50%, transparent 70%);
+      box-shadow: 0 0 15px #00f2fe, 0 0 25px rgba(0, 242, 254, 0.5);
+      animation: touchStarFade 1.2s ease-out forwards;
+    }
+    @keyframes touchStarFade {
+      0% { transform: scale(0.5); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.8; }
+      100% { transform: scale(0); opacity: 0; }
+    }
+
     @media (max-width: 430px) { 
       .container { max-width: 100%; border: none; } 
       .cinematic-moon { width: 175px; height: 175px; } 
@@ -418,7 +476,13 @@
       <input type="text" id="roomInput" class="room-input" placeholder="🌐 أدخل إحداثيات القطاع (اسم الغرفة)" value="lafi-room-1" maxlength="80" autocomplete="off">
       <input type="text" id="nomadNameInput" class="room-input" placeholder="👤 اسم العابر الفضائي (اختياري)" value="" maxlength="30" autocomplete="off">
       
-      <button class="btn" id="enterRoomBtn" type="button">دخول الغرفة الحية 🎙️</button>
+      <button class="btn" id="enterRoomBtn" type="button">
+        <span id="enterBtnText">دخول الغرفة الحية 🎙️</span>
+        <span id="enterBtnLoader" style="display:none;">
+          <span style="display:inline-block; animation: loadingSpin 1s linear infinite;">🌙</span>
+          جاري الاتصال...
+        </span>
+      </button>
       <a class="btn" href="https://github.com/wwwmounirmp-hue/lafi-munir" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, rgba(20,8,42,0.9), rgba(50,15,80,0.9)); border: 1px solid rgba(0,242,254,0.5);">
         استكشف 🚀 GitHub
       </a>
@@ -499,9 +563,6 @@
   <script>
     'use strict';
 
-    /* ============================================================
-       CosmicMediaEngine - محرك الوسائط
-       ============================================================ */
     class CosmicMediaEngine {
       constructor() {
         this.globalStream = null;
@@ -883,13 +944,32 @@
     async function enterRoom() {
       if (cosmicExitTimeoutId) { clearTimeout(cosmicExitTimeoutId); cosmicExitTimeoutId = null; }
 
+      const enterBtnText = $('enterBtnText');
+      const enterBtnLoader = $('enterBtnLoader');
+      const enterBtn = $('enterRoomBtn');
+      if (enterBtnText) enterBtnText.style.display = 'none';
+      if (enterBtnLoader) enterBtnLoader.style.display = 'inline-flex';
+      if (enterBtn) enterBtn.disabled = true;
+
       const audioCtx = await window.cosmicMedia.getAudioContext();
-      if (!audioCtx) { alert('المتصفح يمنع تشغيل الصوت تلقائياً.'); return; }
+      if (!audioCtx) { 
+        alert('المتصفح يمنع تشغيل الصوت تلقائياً.'); 
+        if (enterBtnText) enterBtnText.style.display = 'inline';
+        if (enterBtnLoader) enterBtnLoader.style.display = 'none';
+        if (enterBtn) enterBtn.disabled = false;
+        return; 
+      }
 
       await window.cosmicMedia.purgeAll();
 
       const roomName = $('roomInput').value.trim().replace(/[^a-zA-Z0-9\u0600-\u06FF_-]/g, '-').slice(0, 80).replace(/^-+|-+$/g, '');
-      if (!roomName) { alert('أدخل إحداثيات القطاع بشكل صحيح'); return; }
+      if (!roomName) { 
+        alert('أدخل إحداثيات القطاع بشكل صحيح'); 
+        if (enterBtnText) enterBtnText.style.display = 'inline';
+        if (enterBtnLoader) enterBtnLoader.style.display = 'none';
+        if (enterBtn) enterBtn.disabled = false;
+        return; 
+      }
 
       const sessionId = ++window.appState.sessionId;
 
@@ -901,7 +981,6 @@
       window.appState.isEvaluating = false;
       window.appState.currentRoomName = roomName;
 
-      $('enterRoomBtn').disabled = true;
       showScreen('screen-app');
       window.setRoomStatus('تهيئة المحطة الفضائية...');
 
@@ -931,7 +1010,11 @@
         showSystemToast(err.message || 'تعذر الدخول للمحطة.', 'error');
         await window.cosmicStationExit();
       } finally {
-        if (window.appState.sessionId === sessionId) $('enterRoomBtn').disabled = false;
+        if (window.appState.sessionId === sessionId) {
+          $('enterRoomBtn').disabled = false;
+          if (enterBtnText) enterBtnText.style.display = 'inline';
+          if (enterBtnLoader) enterBtnLoader.style.display = 'none';
+        }
       }
     }
 
@@ -962,6 +1045,7 @@
       if (existingAudio) {
         existingAudio.enabled = !existingAudio.enabled;
         $('micBtn').classList.toggle('active', existingAudio.enabled);
+        showSystemToast(existingAudio.enabled ? '🎙️ الميكروفون مفتوح' : '🔇 الميكروفون مكتوم', existingAudio.enabled ? 'success' : 'info');
         return;
       }
       try {
@@ -969,6 +1053,7 @@
         const newAudioTrack = micStream.getAudioTracks()[0];
         await replaceOrAddTrackSafely('audio', newAudioTrack);
         $('micBtn').classList.add('active');
+        showSystemToast('🎙️ الميكروفون مفتوح', 'success');
       } catch (e) { showSystemToast('يرجى السماح بالوصول للميكروفون.', 'error'); }
     }
 
@@ -979,6 +1064,7 @@
         existingVideo.enabled = !existingVideo.enabled;
         $('camBtn').classList.toggle('active', existingVideo.enabled);
         $('localVideo').srcObject = existingVideo.enabled ? new MediaStream([existingVideo]) : null;
+        showSystemToast(existingVideo.enabled ? '📸 الكاميرا مفتوحة' : '📷 الكاميرا مغلقة', existingVideo.enabled ? 'success' : 'info');
         return;
       }
       try {
@@ -988,6 +1074,7 @@
         await replaceOrAddTrackSafely('video', videoTrack);
         $('localVideo').srcObject = new MediaStream([videoTrack]);
         $('camBtn').classList.add('active');
+        showSystemToast('📸 الكاميرا مفتوحة', 'success');
       } catch (e) { showSystemToast('يرجى السماح بالوصول للكاميرا.', 'error'); }
     }
 
@@ -1006,6 +1093,7 @@
         $('localVideo').srcObject = window.cosmicMedia.screenStream;
         window.appState.isSharingScreen = true;
         $('screenShareBtn').classList.add('active');
+        showSystemToast('💻 جاري مشاركة الشاشة', 'success');
         screenTrack.addEventListener('ended', () => stopScreenShare(), { once: true });
       } catch (e) {
         window.cosmicMedia.screenStream?.getTracks().forEach(track => { try { track.stop(); } catch (e) {} });
@@ -1213,25 +1301,88 @@
     const canvas = $('spaceCanvas');
     const ctx2d = canvas.getContext('2d');
     let stars = [];
+    
     function resizeCanvas() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       stars = [];
-      for (let i = 0; i < 70; i++) {
-        stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 1.5, alpha: Math.random(), speed: Math.random() * 0.1 + 0.02 });
+      
+      for (let i = 0; i < 60; i++) {
+        stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 0.7 + 0.3, alpha: Math.random() * 0.5 + 0.3, speed: Math.random() * 0.05 + 0.01, layer: 'far' });
+      }
+      for (let i = 0; i < 40; i++) {
+        stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 1 + 0.5, alpha: Math.random() * 0.6 + 0.4, speed: Math.random() * 0.1 + 0.03, layer: 'mid' });
+      }
+      for (let i = 0; i < 20; i++) {
+        stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 1.8 + 0.8, alpha: Math.random() * 0.8 + 0.5, speed: Math.random() * 0.15 + 0.05, layer: 'near' });
       }
     }
-    window.addEventListener('resize', resizeCanvas); resizeCanvas();
+    
+    window.addEventListener('resize', resizeCanvas); 
+    resizeCanvas();
+    
+    let starTime = 0;
     function drawStars() {
       ctx2d.clearRect(0, 0, canvas.width, canvas.height);
-      ctx2d.fillStyle = '#ffffff';
+      starTime += 0.01;
+      
       stars.forEach(s => { 
-        ctx2d.globalAlpha = s.alpha; ctx2d.beginPath(); ctx2d.arc(s.x, s.y, s.radius, 0, Math.PI * 2); ctx2d.fill(); 
-        s.y -= s.speed; if (s.y < 0) s.y = canvas.height; 
+        ctx2d.globalAlpha = s.alpha * (0.7 + 0.3 * Math.sin(starTime + s.x));
+        ctx2d.fillStyle = s.layer === 'near' ? '#00f2fe' : '#ffffff';
+        ctx2d.beginPath(); 
+        ctx2d.arc(s.x, s.y, s.radius, 0, Math.PI * 2); 
+        ctx2d.fill(); 
+        
+        if (s.layer === 'near') {
+          ctx2d.globalAlpha = 0.3;
+          ctx2d.beginPath();
+          ctx2d.arc(s.x, s.y, s.radius * 2.5, 0, Math.PI * 2);
+          ctx2d.fill();
+        }
+        
+        s.y -= s.speed; 
+        if (s.y < -10) { 
+          s.y = canvas.height + 10; 
+          s.x = Math.random() * canvas.width;
+        } 
       });
+      
       requestAnimationFrame(drawStars);
     }
     drawStars();
+
+    (function initTouchStars() {
+      let lastSpawn = 0;
+      const SPAWN_INTERVAL = 80;
+      
+      function spawnStar(x, y) {
+        const now = Date.now();
+        if (now - lastSpawn < SPAWN_INTERVAL) return;
+        lastSpawn = now;
+        
+        const star = document.createElement('div');
+        star.className = 'touch-star';
+        star.style.left = (x - 4) + 'px';
+        star.style.top = (y - 4) + 'px';
+        document.body.appendChild(star);
+        
+        setTimeout(() => star.remove(), 1200);
+      }
+      
+      document.addEventListener('touchstart', (e) => {
+        const t = e.touches[0];
+        if (t) spawnStar(t.clientX, t.clientY);
+      }, { passive: true });
+      
+      document.addEventListener('touchmove', (e) => {
+        const t = e.touches[0];
+        if (t) spawnStar(t.clientX, t.clientY);
+      }, { passive: true });
+      
+      document.addEventListener('click', (e) => {
+        spawnStar(e.clientX, e.clientY);
+      });
+    })();
 
     async function stopRecordingSafely() {
       const rec = window.cosmicMedia.mediaRecorder;
@@ -1281,6 +1432,38 @@
       $('enterRoomBtn').disabled = false;
       window.appState.isLeaving = false;
     };
+
+    const bubble = $('cosmicBubble');
+    const mainContainer = $('mainContainer');
+    let isDragging = false;
+    let startX, startY, initialX, initialY;
+
+    bubble.addEventListener('pointerdown', (e) => {
+      isDragging = true;
+      startX = e.clientX; startY = e.clientY;
+      const rect = bubble.getBoundingClientRect();
+      initialX = rect.left; initialY = rect.top;
+      bubble.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+
+    bubble.addEventListener('pointermove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - startX, dy = e.clientY - startY;
+      let newX = Math.max(10, Math.min(window.innerWidth - bubble.offsetWidth - 10, initialX + dx));
+      let newY = Math.max(10, Math.min(window.innerHeight - bubble.offsetHeight - 10, initialY + dy));
+      bubble.style.left = `${newX}px`; bubble.style.top = `${newY}px`; bubble.style.bottom = 'auto';
+    });
+
+    bubble.addEventListener('pointerup', (e) => { isDragging = false; try { bubble.releasePointerCapture(e.pointerId); } catch(e){} });
+    bubble.addEventListener('pointercancel', (e) => { isDragging = false; try { bubble.releasePointerCapture(e.pointerId); } catch(e){} });
+
+    bubble.addEventListener('click', (e) => {
+      if (Math.abs(e.clientX - startX) < 5 && Math.abs(e.clientY - startY) < 5) {
+        mainContainer.classList.toggle('minimized-mode');
+        bubble.style.opacity = mainContainer.classList.contains('minimized-mode') ? '0.7' : '1';
+      }
+    });
   </script>
 
   <script type="module">
@@ -1375,7 +1558,6 @@
       const uid = window.authUserId || 'anon';
       const currentNomadName = $('nomadNameInput')?.value.trim() || `عابر-${uid.slice(0, 4)}`;
 
-      // Cinema Engine
       const mediaRef = ref(db, `sectors_v1/${roomName}/cinemaState`);
       let cinemaListener = onValue(mediaRef, (snap) => {
         const data = snap.val();
