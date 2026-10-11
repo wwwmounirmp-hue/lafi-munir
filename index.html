@@ -499,6 +499,9 @@
   <script>
     'use strict';
 
+    /* ============================================================
+       CosmicMediaEngine - محرك الوسائط
+       ============================================================ */
     class CosmicMediaEngine {
       constructor() {
         this.globalStream = null;
@@ -726,6 +729,8 @@
       }, 3000);
     }
     window.showSystemToast = showSystemToast;
+
+    const $ = id => document.getElementById(id);
 
     function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1200,14 +1205,10 @@
     }
     setupTypingIndicator();
 
-    $('enterRoomBtn').addEventListener('click', enterRoom);
-    $('sendMsgBtn').addEventListener('click', () => sendStardustMsg());
-    $('roomMsgInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendStardustMsg(); });
-    $('micBtn').addEventListener('click', toggleMic);
-    $('camBtn').addEventListener('click', toggleCam);
-    $('screenShareBtn').addEventListener('click', toggleScreenShare);
-    $('recordBtn').addEventListener('click', toggleRecording);
-    $('soundToggleBtn').addEventListener('click', toggleSounds);
+    $('enterRoomBtn').addEventListener('click', enterRoom);$('sendMsgBtn').addEventListener('click', () => sendStardustMsg());
+    $('roomMsgInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendStardustMsg(); });$('micBtn').addEventListener('click', toggleMic);
+    $('camBtn').addEventListener('click', toggleCam);$('screenShareBtn').addEventListener('click', toggleScreenShare);
+    $('recordBtn').addEventListener('click', toggleRecording);$('soundToggleBtn').addEventListener('click', toggleSounds);
 
     const canvas = $('spaceCanvas');
     const ctx2d = canvas.getContext('2d');
@@ -1240,118 +1241,52 @@
 
     window.cosmicStationExit = async function() {
       if (window.appState.isLeaving) return;
+      window.appState.isLeaving = true;
       const operation = ++leaveOperation;
       const leavingSession = window.appState.sessionId;
-      window.appState.isLeaving = true;
 
-      const moon = document.getElementById('cinematicMoon');
-      const container = document.getElementById('mainContainer');
-      if (moon) {
-        moon.style.transition = 'transform 0.6s cubic-bezier(0.77, 0, 0.175, 1), filter 0.6s ease';
-        moon.style.transform = 'translateX(-50%) scale(12)';
-        moon.style.filter = 'blur(30px) brightness(4)';
-      }
-      if (container) {
-        container.style.transition = 'all 0.6s ease';
-        container.style.transform = 'scale(0.1)';
-        container.style.opacity = '0';
-        container.style.filter = 'blur(15px)';
+      await stopRecordingSafely();
+
+      Object.values(window.appState.statsIntervals).forEach(clearInterval);
+      window.appState.statsIntervals = {};
+
+      if (window.appState.reconnectTimer) {
+        clearTimeout(window.appState.reconnectTimer);
+        window.appState.reconnectTimer = null;
       }
 
-      try {
-        const ctx = await window.cosmicMedia.getAudioContext();
-        if (ctx && window.cosmicMedia.soundsEnabled) {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(880, ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.8);
-          gain.gain.setValueAtTime(0.08, ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.8);
-          osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(); osc.stop(ctx.currentTime + 0.8);
-        }
-      } catch (e) {}
+      Object.values(window.appState.peersCalls).forEach(call => { try { call.close(); } catch(e){} });
+      window.appState.peersCalls = {};
 
-      if (cosmicExitTimeoutId) clearTimeout(cosmicExitTimeoutId);
+      if (window.appState.peer) {
+        try { window.appState.peer.destroy(); } catch(e){}
+        window.appState.peer = null;
+      }
 
-      cosmicExitTimeoutId = setTimeout(async () => {
-        try {
-          if (window.appState.isSharingScreen) await stopScreenShare();
-          await stopRecordingSafely();
-          if (operation !== leaveOperation || window.appState.sessionId !== leavingSession) return;
+      await window.cosmicMedia.purgeAll();
 
-          const cinemaInput = document.getElementById('cinemaUrlInput');
-          if (cinemaInput) cinemaInput.value = '';
-          const cinemaContainer = document.getElementById('cosmicCinemaContainer');
-          if (cinemaContainer) cinemaContainer.style.display = 'none';
+      document.querySelectorAll('.remote-peer-video').forEach(video => video.remove());
+      const chat = $('roomChatOverlay');
+      if (chat) chat.innerHTML = '';
 
-          if (window.cinemaEngine) { window.cinemaEngine.destroy(); window.cinemaEngine = null; }
-          if (typeof window.cleanupRoom === 'function') await window.cleanupRoom();
+      window.appState.currentRoomName = '';
+      window.appState.isSharingScreen = false;
+      window.appState.isStoppingScreen = false;
+      window.appState.retryingPeers.clear();
 
-          ++window.appState.sessionId;
-          Object.values(window.appState.statsIntervals).forEach(clearInterval);
-          window.appState.statsIntervals = {};
-          window.appState.currentRoomName = '';
-          await window.cosmicMedia.purgeAll();
-          window.appState.peersCalls = {};
+      $('micBtn').classList.remove('active');$('camBtn').classList.remove('active');
+      $('screenShareBtn').classList.remove('active');$('recordBtn').classList.remove('active');
 
-          document.getElementById('localVideo').srcObject = null;
-          document.querySelectorAll('.remote-peer-video').forEach(v => v.remove());
-          
-          if (moon) { moon.style.transform = 'translateX(-50%)'; moon.style.filter = 'none'; moon.style.transition = ''; }
-          if (container) { container.style.transform = 'none'; container.style.opacity = '1'; container.style.filter = 'none'; container.style.transition = ''; container.classList.remove('connected-aura'); }
-
-          document.getElementById('roomChatOverlay').innerHTML = '';
-          document.getElementById('stardustMemoryLayer').innerHTML = '';
-          document.getElementById('recordBtn')?.classList.remove('active');
-          document.getElementById('micBtn')?.classList.remove('active');
-          document.getElementById('camBtn')?.classList.remove('active');
-
-          showScreen('screen-gateway');
-        } finally {
-          if (operation === leaveOperation) window.appState.isLeaving = false;
-        }
-      }, 600);
+      showScreen('screen-gateway');
+      $('enterRoomBtn').disabled = false;
+      window.appState.isLeaving = false;
     };
-
-    const bubble = document.getElementById('cosmicBubble');
-    const mainContainer = document.getElementById('mainContainer');
-    let isDragging = false;
-    let startX, startY, initialX, initialY;
-
-    bubble.addEventListener('pointerdown', (e) => {
-      isDragging = true;
-      startX = e.clientX; startY = e.clientY;
-      const rect = bubble.getBoundingClientRect();
-      initialX = rect.left; initialY = rect.top;
-      bubble.setPointerCapture(e.pointerId);
-      e.preventDefault();
-    });
-
-    bubble.addEventListener('pointermove', (e) => {
-      if (!isDragging) return;
-      const dx = e.clientX - startX, dy = e.clientY - startY;
-      let newX = Math.max(10, Math.min(window.innerWidth - bubble.offsetWidth - 10, initialX + dx));
-      let newY = Math.max(10, Math.min(window.innerHeight - bubble.offsetHeight - 10, initialY + dy));
-      bubble.style.left = `${newX}px`; bubble.style.top = `${newY}px`; bubble.style.bottom = 'auto';
-    });
-
-    bubble.addEventListener('pointerup', (e) => { isDragging = false; try { bubble.releasePointerCapture(e.pointerId); } catch(e){} });
-    bubble.addEventListener('pointercancel', (e) => { isDragging = false; try { bubble.releasePointerCapture(e.pointerId); } catch(e){} });
-
-    bubble.addEventListener('click', (e) => {
-      if (Math.abs(e.clientX - startX) < 5 && Math.abs(e.clientY - startY) < 5) {
-        mainContainer.classList.toggle('minimized-mode');
-        bubble.style.opacity = mainContainer.classList.contains('minimized-mode') ? '0.7' : '1';
-      }
-    });
   </script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getDatabase, ref, push, set, remove, onChildAdded, onChildRemoved, onDisconnect, limitToLast, query, get, orderByChild, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, push, set, remove, onChildAdded, onChildRemoved, onDisconnect, limitToLast, query, get, orderByChild, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
     const firebaseConfig = { databaseURL: "https://lafi-munir-global-default-rtdb.firebaseio.com/" };
@@ -1366,207 +1301,6 @@
     }).catch(err => { throw err; });
     window.waitForAuth = () => authReady;
 
-    const ALLOWED_HOSTS = {
-      youtube: ['youtube.com', 'www.youtube.com', 'youtu.be', 'm.youtube.com', 'youtube-nocookie.com', 'www.youtube-nocookie.com'],
-      vimeo: ['vimeo.com', 'www.vimeo.com', 'player.vimeo.com']
-    };
-
-    class CosmicCinemaEngine {
-      constructor(database, roomSector, currentUserName) {
-        this.db = database;
-        this.sector = roomSector;
-        this.userName = currentUserName;
-        this.stage = document.getElementById('mediaStage');
-        if (!this.stage) throw new Error('mediaStage غير موجود');
-        
-        this.mediaRef = ref(this.db, `sectors_v1/${this.sector}/cinemaState`);
-        this.roomMetaRef = ref(this.db, `sectors_v1/${this.sector}/roomMeta`);
-        
-        this._lastBroadcast = 0;
-        this._isClaiming = false;
-        this.currentMediaEl = null;
-        this._syncInterval = null;
-        this._lastSrc = '';
-        this._lastDj = '';
-        
-        this._unsubMedia = null;
-        this._unsubRoomMeta = null;
-        this._djDisconnectRef = null;
-
-        this.initRoomMetaListener();
-        this.initListeners();
-      }
-
-      showToast(message, type = 'error') {
-        if (typeof window.showSystemToast === 'function') window.showSystemToast(message, type);
-      }
-
-      async initMasterControlSecure() {
-        if (this._isClaiming) return;
-        this._isClaiming = true;
-        try {
-          const result = await runTransaction(this.roomMetaRef, (currentMeta) => {
-            if (!currentMeta) return { djName: this.userName, djJoinedAt: Date.now() };
-            return currentMeta;
-          });
-          if (result.committed && result.snapshot.val()?.djName === this.userName) {
-            try {
-              this._djDisconnectRef = onDisconnect(this.roomMetaRef);
-              this._djDisconnectRef.remove().catch(() => { this._djDisconnectRef = null; });
-            } catch (e) { this._djDisconnectRef = null; }
-          }
-        } finally { this._isClaiming = false; }
-      }
-
-      initRoomMetaListener() {
-        this._unsubRoomMeta = onValue(this.roomMetaRef, (snap) => {
-          if (!snap.exists()) this.initMasterControlSecure();
-        });
-      }
-
-      validateAndSanitizeUrl(rawUrl) {
-        try {
-          const parsed = new URL(rawUrl);
-          const hostname = parsed.hostname.toLowerCase();
-
-          if (ALLOWED_HOSTS.youtube.includes(hostname)) {
-            const ytId = this.extractYouTubeId(rawUrl);
-            if (ytId) return { type: 'youtube', src: `https://www.youtube-nocookie.com/embed/${ytId}?enablejsapi=1&autoplay=1` };
-          }
-          if (ALLOWED_HOSTS.vimeo.includes(hostname)) {
-            const pathSegments = parsed.pathname.split('/').filter(Boolean);
-            const vimeoId = pathSegments[pathSegments.length - 1];
-            if (/^\d+$/.test(vimeoId)) return { type: 'vimeo', src: `https://player.vimeo.com/video/${vimeoId}?autoplay=1` };
-          }
-
-          const validExtensions = ['.mp4', '.webm', '.ogg'];
-          const hasValidExt = validExtensions.some(ext => parsed.pathname.toLowerCase().endsWith(ext));
-          if ((parsed.protocol === 'http:' || parsed.protocol === 'https:') && hasValidExt) {
-            return { type: 'direct', src: parsed.href };
-          }
-
-          this.showToast('⚠️ النطاق أو الصيغة غير مدعومة.', 'error');
-          return null;
-        } catch (e) {
-          this.showToast('❌ رابط غير صالح.', 'error');
-          return null;
-        }
-      }
-
-      extractYouTubeId(url) {
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-        const match = url.match(regExp);
-        return (match && match[2].length === 11) ? match[2] : null;
-      }
-
-      async broadcastMedia(rawUrl) {
-        const now = Date.now();
-        if (now - this._lastBroadcast < 2000) { this.showToast('⏳ ينتظر قليلاً قبل البث.', 'info'); return; }
-
-        const metaSnap = await get(this.roomMetaRef);
-        const roomMeta = metaSnap.val();
-        if (roomMeta && roomMeta.djName !== this.userName) {
-          this.showToast(`التحكم بيد العابر (${roomMeta.djName}).`, 'error');
-          return;
-        }
-
-        const sanitized = this.validateAndSanitizeUrl(rawUrl);
-        if (!sanitized) return;
-
-        const isVideoEl = this.currentMediaEl && this.currentMediaEl.tagName === 'VIDEO';
-        const currentTime = isVideoEl && typeof this.currentMediaEl.currentTime === 'number' ? this.currentMediaEl.currentTime : 0;
-        const isPlaying = isVideoEl ? !this.currentMediaEl.paused : true;
-
-        const mediaData = {
-          type: sanitized.type, src: sanitized.src,
-          controller: this.userName, currentTime: currentTime,
-          playState: isPlaying, timestamp: Date.now()
-        };
-
-        try { await set(this.mediaRef, mediaData); this._lastBroadcast = now; } catch (e) { this.showToast('❌ تعذر إرسال البث.', 'error'); }
-      }
-
-      startContinuousSync() {
-        if (this._syncInterval) clearInterval(this._syncInterval);
-        if (!this.currentMediaEl || this.currentMediaEl.tagName === 'IFRAME') return;
-        this._syncInterval = setInterval(() => {
-          if (this.currentMediaEl && typeof this.currentMediaEl.currentTime === 'number' && !this.currentMediaEl.paused) {
-            set(ref(this.db, `sectors_v1/${this.sector}/cinemaState/currentTime`), this.currentMediaEl.currentTime).catch(() => {});
-          }
-        }, 15000);
-      }
-
-      clearStageSafely() {
-        if (this._syncInterval) { clearInterval(this._syncInterval); this._syncInterval = null; }
-        if (this.currentMediaEl) {
-          if (typeof this.currentMediaEl.pause === 'function') this.currentMediaEl.pause();
-          if ('src' in this.currentMediaEl) this.currentMediaEl.src = '';
-          this.currentMediaEl = null;
-        }
-        if (this.stage) this.stage.replaceChildren();
-      }
-
-      destroy() {
-        if (this._syncInterval) { clearInterval(this._syncInterval); this._syncInterval = null; }
-        if (this._unsubMedia) { this._unsubMedia(); this._unsubMedia = null; }
-        if (this._unsubRoomMeta) { this._unsubRoomMeta(); this._unsubRoomMeta = null; }
-        if (this._djDisconnectRef) { this._djDisconnectRef.cancel().catch(() => {}); this._djDisconnectRef = null; }
-        this.clearStageSafely();
-      }
-
-      renderMediaSafely(data) {
-        this.clearStageSafely();
-        const elementsToAppend = [];
-        const badge = document.createElement('div');
-        badge.style.cssText = "position: absolute; top: 5px; right: 10px; z-index: 10; font-size: 11px; color: #00f2fe; background: rgba(0,0,0,0.6); padding: 3px 8px; border-radius: 4px; pointer-events: none;";
-        badge.textContent = `🎬 يتحكم بالسينما: ${data.controller}`;
-        elementsToAppend.push(badge);
-
-        if (data.type === 'youtube' || data.type === 'vimeo') {
-          const iframe = document.createElement('iframe');
-          iframe.src = data.src;
-          iframe.style.cssText = "position: absolute; top:0; left:0; width:100%; height:100%; border:none;";
-          iframe.allow = "autoplay; encrypted-media"; iframe.allowFullscreen = true;
-          this.currentMediaEl = iframe;
-          elementsToAppend.push(iframe);
-        } else {
-          const video = document.createElement('video');
-          video.src = data.src; video.controls = true; video.autoplay = true;
-          video.style.cssText = "position: absolute; top:0; left:0; width:100%; height:100%; border-radius: 12px;";
-          video.addEventListener('loadedmetadata', () => {
-            const serverTime = typeof data.currentTime === 'number' ? data.currentTime : 0;
-            if (!isNaN(serverTime) && Math.abs(video.currentTime - serverTime) > 2) video.currentTime = serverTime;
-            if (data.playState) video.play().catch(() => {});
-          });
-          video.addEventListener('ended', () => {
-            if (data.controller === this.userName) remove(this.mediaRef).catch(() => {});
-          });
-          this.currentMediaEl = video;
-          elementsToAppend.push(video);
-        }
-
-        if (this.stage) this.stage.replaceChildren(...elementsToAppend);
-        if (data.controller === this.userName && data.type === 'direct') this.startContinuousSync();
-      }
-
-      initListeners() {
-        this._unsubMedia = onValue(this.mediaRef, (snapshot) => {
-          const data = snapshot.val();
-          const container = document.getElementById('cosmicCinemaContainer');
-          if (!data) {
-            if (container) container.style.display = 'none';
-            this.clearStageSafely();
-            this._lastSrc = ''; this._lastDj = '';
-            return;
-          }
-          if (container) container.style.display = 'block';
-          if (this._lastSrc === data.src && this._lastDj === data.controller) return;
-          this._lastSrc = data.src; this._lastDj = data.controller;
-          this.renderMediaSafely(data);
-        });
-      }
-    }
-
     window.setTypingInCloud = async function(roomName, uid) {
       try { await set(ref(db, `rooms_v3/${roomName}/typing/${uid}`), { timestamp: Date.now() }); } catch(e) {}
     };
@@ -1578,12 +1312,11 @@
       await window.waitForAuth();
       const uid = window.authUserId;
       if (!uid) throw new Error('المستخدم غير موثق');
-      if (file.size > 15 * 1024 * 1024) throw new Error('الحد الأقصى للملف 15 ميجابايت');
-
+      if (file.size > 15 * 1024 * 1024) throw new Error('الحد الأقصى 15 ميجابايت');
       const safeRoom = roomName.replace(/[^a-zA-Z0-9_-]/g, '-');
       const safeName = file.name.replace(/[^\w.\-]/g, '_');
       const fileRef = storageRef(storage, `rooms_media/${safeRoom}/${uid}/${Date.now()}_${safeName}`);
-      await uploadBytes(fileRef, file, { contentType: file.type, cacheControl: 'private,max-age=0' });
+      await uploadBytes(fileRef, file, { contentType: file.type });
       return await getDownloadURL(fileRef);
     };
 
@@ -1593,7 +1326,6 @@
       if (!uid) throw new Error('المستخدم غير موثق');
       const customName = $('nomadNameInput')?.value.trim();
       const senderLabel = customName ? customName : `عابر-${uid.slice(0, 4)}`;
-
       await push(ref(db, `rooms_v3/${roomName}/stardust`), {
         ownerUid: uid, sender: senderLabel, text, mediaUrl, mediaType, timestamp: Date.now()
       });
@@ -1602,76 +1334,103 @@
     window.deleteStardustFromCloud = async function (roomName, msgKey) {
       await window.waitForAuth();
       const uid = window.authUserId;
-      if (!uid) throw new Error('المستخدم غير موثق');
       const msgSnap = await get(ref(db, `rooms_v3/${roomName}/stardust/${msgKey}`));
-      if (!msgSnap.exists() || msgSnap.val()?.ownerUid !== uid) throw new Error('غير مصرح لك بسحب هذه الرسالة.');
+      if (!msgSnap.exists() || msgSnap.val()?.ownerUid !== uid) throw new Error('غير مصرح');
       await remove(ref(db, `rooms_v3/${roomName}/stardust/${msgKey}`));
     };
 
-    let unsubscribeRoom = null;
-    let unsubscribeChat = null;
-    let unsubscribeChatRemoved = null;
-    let unsubscribePeersRemoved = null;
-    let unsubscribeTyping = null;
+    let unsubscribeRoom = null, unsubscribeChat = null, unsubscribeChatRemoved = null, unsubscribePeersRemoved = null, unsubscribeTyping = null;
 
     function addRemoteVideo(peerId, stream) {
       let video = document.getElementById(`remote-${peerId}`);
       if (!video) {
         video = document.createElement('video');
         video.id = `remote-${peerId}`;
-        video.autoplay = true; video.playsInline = true; video.controls = false;
+        video.autoplay = true; video.playsInline = true;
         video.className = 'remote-peer-video';
         document.getElementById('videosContainer').appendChild(video);
         window.cosmicMedia.playTone('join');
       }
       video.srcObject = stream;
-      video.play().catch(e => {});
+      video.play().catch(() => {});
     }
 
     async function getTurnConfig() {
-      return {
-        iceServers: [
-          { urls: "stun:stun.l.google.com:19302" },
-          { urls: "stun:stun1.l.google.com:19302" },
-          { urls: "turn:openrelay.metered.ca:80", username: "openrelayproject", credential: "openrelayproject" },
-          { urls: "turn:openrelay.metered.ca:443", username: "openrelayproject", credential: "openrelayproject" }
-        ]
-      };
+      return { iceServers: [
+        { urls: "stun:stun.l.google.com:19302" },
+        { urls: "stun:stun1.l.google.com:19302" },
+        { urls: "turn:openrelay.metered.ca:80", username: "openrelayproject", credential: "openrelayproject" },
+        { urls: "turn:openrelay.metered.ca:443", username: "openrelayproject", credential: "openrelayproject" }
+      ]};
     }
 
     window.initRoomP2P = async function (roomName, stream, activeSession) {
       let isCleaningUp = false;
-      if (unsubscribeRoom) { unsubscribeRoom(); unsubscribeRoom = null; }
-      if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
-      if (unsubscribeChatRemoved) { unsubscribeChatRemoved(); unsubscribeChatRemoved = null; }
-      if (unsubscribePeersRemoved) { unsubscribePeersRemoved(); unsubscribePeersRemoved = null; }
-      if (unsubscribeTyping) { unsubscribeTyping(); unsubscribeTyping = null; }
+      [unsubscribeRoom, unsubscribeChat, unsubscribeChatRemoved, unsubscribePeersRemoved, unsubscribeTyping].forEach(fn => fn && fn());
+      unsubscribeRoom = unsubscribeChat = unsubscribeChatRemoved = unsubscribePeersRemoved = unsubscribeTyping = null;
 
       if (window.appState.peer) { window.appState.peer.destroy(); window.appState.peer = null; }
       if (window.appState.reconnectTimer) { clearInterval(window.appState.reconnectTimer); window.appState.reconnectTimer = null; }
 
       const uid = window.authUserId || 'anon';
       const currentNomadName = $('nomadNameInput')?.value.trim() || `عابر-${uid.slice(0, 4)}`;
-      if (window.cinemaEngine) window.cinemaEngine.destroy();
-      window.cinemaEngine = new CosmicCinemaEngine(db, roomName, currentNomadName);
+
+      // Cinema Engine
+      const mediaRef = ref(db, `sectors_v1/${roomName}/cinemaState`);
+      let cinemaListener = onValue(mediaRef, (snap) => {
+        const data = snap.val();
+        const container = document.getElementById('cosmicCinemaContainer');
+        const stage = document.getElementById('mediaStage');
+        if (!data) { if (container) container.style.display = 'none'; if (stage) stage.innerHTML = ''; return; }
+        if (container) container.style.display = 'block';
+        if (stage) {
+          stage.innerHTML = '';
+          const badge = document.createElement('div');
+          badge.style.cssText = "position:absolute;top:5px;right:10px;z-index:10;font-size:11px;color:#00f2fe;background:rgba(0,0,0,0.6);padding:3px 8px;border-radius:4px;";
+          badge.textContent = `🎬 ${data.controller}`;
+          stage.appendChild(badge);
+          if (data.type === 'youtube' || data.type === 'vimeo') {
+            const iframe = document.createElement('iframe');
+            iframe.src = data.src;
+            iframe.style.cssText = "position:absolute;top:0;left:0;width:100%;height:100%;border:none;";
+            iframe.allowFullscreen = true;
+            stage.appendChild(iframe);
+          } else {
+            const video = document.createElement('video');
+            video.src = data.src; video.controls = true; video.autoplay = true;
+            video.style.cssText = "position:absolute;top:0;left:0;width:100%;height:100%;";
+            if (data.currentTime) video.currentTime = data.currentTime;
+            stage.appendChild(video);
+          }
+        }
+      });
 
       const broadcastBtn = $('broadcastCinemaBtn');
       const cinemaInput = $('cinemaUrlInput');
       if (broadcastBtn && cinemaInput) {
-        if (broadcastBtn._clickListener) broadcastBtn.removeEventListener('click', broadcastBtn._clickListener);
-        if (cinemaInput._enterListener) cinemaInput.removeEventListener('keydown', cinemaInput._enterListener);
-
-        const handleBroadcastAction = async () => {
-          if (!window.cinemaEngine) { window.showSystemToast('السينما غير جاهزة.', 'error'); return; }
+        broadcastBtn.onclick = async () => {
           const url = cinemaInput.value.trim();
           if (!url) return;
-          broadcastBtn.disabled = true;
-          try { await window.cinemaEngine.broadcastMedia(url); cinemaInput.value = ''; } finally { setTimeout(() => { broadcastBtn.disabled = false; }, 2000); }
+          let parsed;
+          try { parsed = new URL(url); } catch(e) { window.showSystemToast('رابط غير صالح', 'error'); return; }
+          const host = parsed.hostname.toLowerCase();
+          let type = null, src = null;
+          if (host.includes('youtube.com') || host === 'youtu.be') {
+            const m = url.match(/[?&]v=([^#&?]+)/) || url.match(/youtu\.be\/([^#&?]+)/);
+            if (m && m[1]) { type = 'youtube'; src = `https://www.youtube-nocookie.com/embed/${m[1]}?autoplay=1`; }
+          } else if (host.includes('vimeo.com')) {
+            const parts = parsed.pathname.split('/').filter(Boolean);
+            const vid = parts[parts.length - 1];
+            if (/^\d+$/.test(vid)) { type = 'vimeo'; src = `https://player.vimeo.com/video/${vid}?autoplay=1`; }
+          } else if (/\.(mp4|webm|ogg)$/i.test(parsed.pathname)) {
+            type = 'direct'; src = parsed.href;
+          }
+          if (!type) { window.showSystemToast('الرابط غير مدعوم', 'error'); return; }
+          try {
+            await set(mediaRef, { type, src, controller: currentNomadName, currentTime: 0, playState: true, timestamp: Date.now() });
+            cinemaInput.value = '';
+          } catch(e) { window.showSystemToast('تعذر البث', 'error'); }
         };
-        broadcastBtn._clickListener = handleBroadcastAction;
-        cinemaInput._enterListener = (e) => { if (e.key === 'Enter') { e.preventDefault(); handleBroadcastAction(); } };
-        broadcastBtn.addEventListener('click', broadcastBtn._clickListener);
-        cinemaInput.addEventListener('keydown', cinemaInput._enterListener);
       }
 
       const roomPeersRef = ref(db, `rooms_v3/${roomName}/peers`);
@@ -1686,150 +1445,127 @@
       window.appState.peer = peer;
       let myPeerId = null;
 
-      function startRoomWatchers() {
-        if (!unsubscribeRoom) {
-          unsubscribeRoom = onChildAdded(roomPeersRef, (snap) => {
-            const data = snap.val();
-            if (data && data.name && data.peerId !== myPeerId) showPeerToast(`🟢 انضم <b>${data.name}</b>`);
-            if (!window.appState.isLeaving && window.appState.sessionId === activeSession) evaluateAndConnectPeers();
-          });
-        }
-        if (!unsubscribePeersRemoved) {
-          unsubscribePeersRemoved = onChildRemoved(roomPeersRef, (snap) => {
-            const data = snap.val();
-            if (data && data.name) showPeerToast(`🔴 غادر <b>${data.name}</b>`);
-            if (!window.appState.isLeaving && window.appState.sessionId === activeSession) evaluateAndConnectPeers();
-          });
-        }
+      function startWatchers() {
+        if (!unsubscribeRoom) unsubscribeRoom = onChildAdded(roomPeersRef, (snap) => {
+          const d = snap.val();
+          if (d && d.name && d.peerId !== myPeerId) showPeerToast(`🟢 انضم <b>${d.name}</b>`);
+          if (!window.appState.isLeaving && window.appState.sessionId === activeSession) evaluatePeers();
+        });
+        if (!unsubscribePeersRemoved) unsubscribePeersRemoved = onChildRemoved(roomPeersRef, (snap) => {
+          const d = snap.val();
+          if (d && d.name) showPeerToast(`🔴 غادر <b>${d.name}</b>`);
+          if (!window.appState.isLeaving && window.appState.sessionId === activeSession) evaluatePeers();
+        });
         if (!window.appState.reconnectTimer) {
           window.appState.reconnectTimer = setInterval(() => {
-            if (!window.appState.isLeaving && window.appState.sessionId === activeSession) evaluateAndConnectPeers();
+            if (!window.appState.isLeaving && window.appState.sessionId === activeSession) evaluatePeers();
           }, 5000);
         }
-        if (!unsubscribeChat) {
-          unsubscribeChat = onChildAdded(messagesRef, snap => {
-            const msg = snap.val();
-            if (msg && !window.appState.isLeaving && window.appState.sessionId === activeSession) {
-              const isInitial = !msg?.timestamp || msg.timestamp < subscribedAt;
-              window.displayStardustMemory(snap.key, msg, isInitial);
-            }
-          });
-        }
-        if (!unsubscribeChatRemoved) {
-          unsubscribeChatRemoved = onChildRemoved(messagesRef, snap => {
-            const el = document.getElementById(`msg-${snap.key}`);
-            if (el) el.remove();
-          });
-        }
-        if (!unsubscribeTyping) {
-          unsubscribeTyping = onValue(typingRef, (snap) => {
-            const data = snap.val() || {};
-            const now = Date.now();
-            const activeTypers = Object.entries(data).filter(([u, val]) => u !== window.authUserId && val?.timestamp && (now - val.timestamp) < 4000);
-            const indicator = document.getElementById('typingIndicator');
-            if (indicator) indicator.classList.toggle('visible', activeTypers.length > 0);
-          });
-        }
+        if (!unsubscribeChat) unsubscribeChat = onChildAdded(messagesRef, snap => {
+          const msg = snap.val();
+          if (msg && !window.appState.isLeaving && window.appState.sessionId === activeSession) {
+            window.displayStardustMemory(snap.key, msg, !msg.timestamp || msg.timestamp < subscribedAt);
+          }
+        });
+        if (!unsubscribeChatRemoved) unsubscribeChatRemoved = onChildRemoved(messagesRef, snap => {
+          const el = document.getElementById(`msg-${snap.key}`);
+          if (el) el.remove();
+        });
+        if (!unsubscribeTyping) unsubscribeTyping = onValue(typingRef, (snap) => {
+          const d = snap.val() || {};
+          const now = Date.now();
+          const active = Object.entries(d).filter(([u, v]) => u !== window.authUserId && v?.timestamp && (now - v.timestamp) < 4000);
+          document.getElementById('typingIndicator')?.classList.toggle('visible', active.length > 0);
+        });
       }
 
       async function registerPeer(id) {
-        if (window.appState.isLeaving || window.appState.sessionId !== activeSession) { myPeerId = null; return false; }
+        if (window.appState.isLeaving || window.appState.sessionId !== activeSession) return false;
         myPeerId = id;
-        if (window.appState.myPeerRef) { await remove(window.appState.myPeerRef).catch(() => {}); window.appState.myPeerRef = null; }
-
-        const customName = $('nomadNameInput')?.value.trim();
-        const displayName = customName ? customName : `عابر-${id.slice(0, 4)}`;
+        if (window.appState.myPeerRef) { await remove(window.appState.myPeerRef).catch(()=>{}); window.appState.myPeerRef = null; }
+        const displayName = $('nomadNameInput')?.value.trim() || `عابر-${id.slice(0,4)}`;
         const newRef = push(roomPeersRef);
         await set(newRef, { peerId: id, name: displayName, createdAt: Date.now() });
         window.appState.myPeerRef = newRef;
-        try { await onDisconnect(newRef).remove(); } catch (error) { await remove(newRef).catch(() => {}); window.appState.myPeerRef = null; myPeerId = null; throw error; }
-
+        try { await onDisconnect(newRef).remove(); } catch(e) { await remove(newRef).catch(()=>{}); window.appState.myPeerRef = null; myPeerId = null; throw e; }
         window.setRoomStatus(window.getBaseRoomStatusText());
-        startRoomWatchers();
-        await evaluateAndConnectPeers();
+        startWatchers();
+        await evaluatePeers();
         return true;
       }
 
-      function cleanupCall(targetPeerId) {
-        window.appState.retryingPeers.delete(targetPeerId);
-        delete window.appState.peersCalls[targetPeerId];
-        if (window.appState.statsIntervals[targetPeerId]) {
-          clearInterval(window.appState.statsIntervals[targetPeerId]);
-          delete window.appState.statsIntervals[targetPeerId];
-        }
-        const videoEl = document.getElementById(`remote-${targetPeerId}`);
-        if (videoEl) { videoEl.remove(); window.cosmicMedia.playTone('leave'); }
+      function cleanupCall(id) {
+        window.appState.retryingPeers.delete(id);
+        delete window.appState.peersCalls[id];
+        if (window.appState.statsIntervals[id]) { clearInterval(window.appState.statsIntervals[id]); delete window.appState.statsIntervals[id]; }
+        const el = document.getElementById(`remote-${id}`);
+        if (el) { el.remove(); window.cosmicMedia.playTone('leave'); }
         if (document.querySelectorAll('.remote-peer-video').length === 0) {
-          $('mainContainer')?.classList.remove("connected-aura");
-          $('cinematicMoon')?.classList.remove("pulse");
+          document.getElementById('mainContainer')?.classList.remove("connected-aura");
+          document.getElementById('cinematicMoon')?.classList.remove("pulse");
           window.setRoomStatus("القطاع: بانتظار عابرين 🟡");
         }
       }
 
-      function handleCall(call, targetPeerId) {
-        window.appState.peersCalls[targetPeerId] = call;
-        call.on("stream", remoteStream => {
+      function handleCall(call, peerId) {
+        window.appState.peersCalls[peerId] = call;
+        call.on("stream", s => {
           if (window.appState.isLeaving || window.appState.sessionId !== activeSession || isCleaningUp) return;
-          window.appState.retryingPeers.delete(targetPeerId);
-          addRemoteVideo(targetPeerId, remoteStream);
-          $('cinematicMoon')?.classList.add("pulse");
-          $('mainContainer')?.classList.add("connected-aura");
-          window.monitorConnectionQuality(call, targetPeerId);
+          window.appState.retryingPeers.delete(peerId);
+          addRemoteVideo(peerId, s);
+          document.getElementById('cinematicMoon')?.classList.add("pulse");
+          document.getElementById('mainContainer')?.classList.add("connected-aura");
+          window.monitorConnectionQuality(call, peerId);
         });
-        call.on("close", () => { if (window.appState.sessionId !== activeSession || isCleaningUp) return; cleanupCall(targetPeerId); });
-        call.on("error", () => { if (window.appState.sessionId !== activeSession || isCleaningUp) return; cleanupCall(targetPeerId); try { call.close(); } catch (e) {} });
+        call.on("close", () => { if (window.appState.sessionId !== activeSession || isCleaningUp) return; cleanupCall(peerId); });
+        call.on("error", () => { if (window.appState.sessionId !== activeSession || isCleaningUp) return; cleanupCall(peerId); try { call.close(); } catch(e){} });
       }
 
-      async function evaluateAndConnectPeers() {
+      async function evaluatePeers() {
         if (isCleaningUp || window.appState.isEvaluating || window.appState.isLeaving || window.appState.sessionId !== activeSession || !window.appState.peer || window.appState.peer.destroyed || !myPeerId) return;
         window.appState.isEvaluating = true;
         try {
           const snapshot = await get(query(roomPeersRef, orderByChild('createdAt')));
           if (!snapshot.exists() || isCleaningUp) return;
-          const peersData = snapshot.val();
-          const myEntry = Object.values(peersData).find(p => p.peerId === myPeerId);
+          const data = snapshot.val();
+          const myEntry = Object.values(data).find(p => p.peerId === myPeerId);
           if (!myEntry) return;
-
-          for (const key of Object.keys(peersData)) {
-            const p = peersData[key];
+          for (const key of Object.keys(data)) {
+            const p = data[key];
             if (p.peerId !== myPeerId && p.createdAt < myEntry.createdAt && !window.appState.peersCalls[p.peerId] && !window.appState.retryingPeers.has(p.peerId)) {
               window.appState.retryingPeers.add(p.peerId);
-              const activeStreamToUse = (window.cosmicMedia.globalStream?.getTracks().length > 0) ? window.cosmicMedia.globalStream : stream;
               try {
-                const call = peer.call(p.peerId, activeStreamToUse);
+                const call = peer.call(p.peerId, window.cosmicMedia.globalStream || stream);
                 if (call) handleCall(call, p.peerId);
-              } catch (err) { window.appState.retryingPeers.delete(p.peerId); }
+              } catch(e) { window.appState.retryingPeers.delete(p.peerId); }
             }
           }
-        } catch (e) {} finally { window.appState.isEvaluating = false; }
+        } catch(e) {} finally { window.appState.isEvaluating = false; }
       }
 
-      peer.on("open", async id => { try { await registerPeer(id); } catch (error) { window.setRoomStatus('خطأ بالاتصال 🔴'); } });
+      peer.on("open", async id => { try { await registerPeer(id); } catch(e) { window.setRoomStatus('خطأ اتصال 🔴'); } });
       peer.on("call", call => {
         if (isCleaningUp || window.appState.isLeaving || window.appState.sessionId !== activeSession) { call.close(); return; }
         if (window.appState.peersCalls[call.peer]) { call.close(); return; }
-        const streamToAnswer = (window.cosmicMedia.globalStream?.getTracks().length > 0) ? window.cosmicMedia.globalStream : stream;
-        call.answer(streamToAnswer);
+        call.answer(window.cosmicMedia.globalStream || stream);
         handleCall(call, call.peer);
       });
+      peer.on("error", err => { if (window.appState.sessionId === activeSession) window.setRoomStatus('خطأ: ' + (err.type || err.message)); });
 
       const cleanupSession = activeSession;
       window.cleanupRoom = async function () {
         if (window.appState.sessionId !== cleanupSession) return;
         isCleaningUp = true;
         window.appState.retryingPeers.clear();
-        if (window.cinemaEngine) { window.cinemaEngine.destroy(); window.cinemaEngine = null; }
+        if (cinemaListener) { cinemaListener(); cinemaListener = null; }
         if (window.appState.reconnectTimer) { clearInterval(window.appState.reconnectTimer); window.appState.reconnectTimer = null; }
-        if (unsubscribeRoom) { unsubscribeRoom(); unsubscribeRoom = null; }
-        if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
-        if (unsubscribeChatRemoved) { unsubscribeChatRemoved(); unsubscribeChatRemoved = null; }
-        if (unsubscribePeersRemoved) { unsubscribePeersRemoved(); unsubscribePeersRemoved = null; }
-        if (unsubscribeTyping) { unsubscribeTyping(); unsubscribeTyping = null; }
+        [unsubscribeRoom, unsubscribeChat, unsubscribeChatRemoved, unsubscribePeersRemoved, unsubscribeTyping].forEach(fn => fn && fn());
+        unsubscribeRoom = unsubscribeChat = unsubscribeChatRemoved = unsubscribePeersRemoved = unsubscribeTyping = null;
         Object.values(window.appState.statsIntervals).forEach(clearInterval);
         window.appState.statsIntervals = {};
-        Object.values(window.appState.peersCalls).forEach(call => { try { call.close(); } catch (e) {} });
+        Object.values(window.appState.peersCalls).forEach(c => { try { c.close(); } catch(e){} });
         window.appState.peersCalls = {};
-        if (window.appState.myPeerRef) { await remove(window.appState.myPeerRef).catch(() => {}); window.appState.myPeerRef = null; }
+        if (window.appState.myPeerRef) { await remove(window.appState.myPeerRef).catch(()=>{}); window.appState.myPeerRef = null; }
         window.appState.peer?.destroy();
         window.appState.peer = null;
       };
