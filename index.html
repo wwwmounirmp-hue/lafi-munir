@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>لافي منير | المحطة الفضائية السيادية الكونية الأسطورية 🌌✨</title>
+  <title>لافي منير | المحطة الفضائية السيادية 🌌✨</title>
 
   <meta name="theme-color" content="#0d0221">
   <meta name="mobile-web-app-capable" content="yes">
@@ -12,7 +12,6 @@
 
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 
-  <!-- [حماية سيادية تامة] -->
   <script>
     (function SecurityShield() {
       document.addEventListener('contextmenu', e => e.preventDefault());
@@ -40,14 +39,14 @@
     #spaceCanvas { z-index: 0; }
     
     .cinematic-moon { 
-      position: fixed; top: -50px; left: 50%; z-index: 2; width: 220px; height: 220px; border-radius: 50%; 
-      transform: translateX(-50%); opacity: .95; pointer-events: none; 
+      position: fixed; top: -30px; left: 50%; z-index: 2; width: 180px; height: 180px; border-radius: 50%; 
+      transform: translateX(-50%); opacity: .9; pointer-events: none; 
       background: radial-gradient(circle at 30% 30%, #fff 0%, #00f2fe 35%, #7928ca 70%, #ff007f 100%); 
-      box-shadow: 0 0 90px rgba(0, 242, 254, .7), 0 0 160px rgba(255, 0, 127, .5); 
+      box-shadow: 0 0 70px rgba(0, 242, 254, .6), 0 0 130px rgba(255, 0, 127, .4); 
       animation: moonBreath 6s ease-in-out infinite;
     }
-    @keyframes moonBreath { 0%, 100% { box-shadow: 0 0 90px rgba(0, 242, 254, .7), 0 0 160px rgba(255, 0, 127, .5); transform: translateX(-50%) scale(1); } 50% { box-shadow: 0 0 130px rgba(0, 242, 254, 0.95), 0 0 220px rgba(255, 0, 127, 0.8); transform: translateX(-50%) scale(1.08); } }
-    .cinematic-moon.pulse { transform: translateX(-50%) scale(1.18); filter: hue-rotate(90deg); }
+    @keyframes moonBreath { 0%, 100% { box-shadow: 0 0 70px rgba(0, 242, 254, .6), 0 0 130px rgba(255, 0, 127, .4); transform: translateX(-50%) scale(1); } 50% { box-shadow: 0 0 110px rgba(0, 242, 254, 0.9), 0 0 180px rgba(255, 0, 127, 0.7); transform: translateX(-50%) scale(1.05); } }
+    .cinematic-moon.pulse { transform: translateX(-50%) scale(1.15); filter: hue-rotate(90deg); }
 
     .spacetime-rift {
       position: fixed; inset: 0; z-index: 9999; pointer-events: none; opacity: 0;
@@ -57,89 +56,63 @@
     .spacetime-rift.active { opacity: 1; animation: riftPulse 1s ease infinite alternate; }
     @keyframes riftPulse { 0% { transform: scale(1); filter: blur(0px); } 100% { transform: scale(1.02); filter: blur(2px); } }
     
+    /* [تعديل الواجهة لتكون واسعة وملء الشاشة بدون تقليص] */
     .container { 
-      position: relative; z-index: 3; display: flex; flex-direction: column; width: 100%; max-width: 430px; height: 100vh; margin: auto; 
-      overflow-y: auto; overflow-x: hidden; background: rgba(14, 5, 30, 0.88); 
-      border-left: 2px solid rgba(0, 242, 254, 0.5); border-right: 2px solid rgba(255, 0, 127, 0.5); backdrop-filter: blur(28px); 
+      position: relative; z-index: 3; display: flex; flex-direction: column; width: 100%; max-width: 650px; height: 100vh; margin: auto; 
+      overflow: hidden; background: rgba(12, 4, 26, 0.92); 
+      border-left: 1px solid rgba(0, 242, 254, 0.4); border-right: 1px solid rgba(255, 0, 127, 0.4); backdrop-filter: blur(24px); 
     }
-    .container.connected-aura { box-shadow: 0 0 60px rgba(0, 242, 254, 0.7), inset 0 0 40px rgba(255, 0, 127, 0.4); }
+    .container.connected-aura { box-shadow: 0 0 50px rgba(0, 242, 254, 0.5), inset 0 0 30px rgba(255, 0, 127, 0.3); }
     
     .screen { display: none; flex: 1; flex-direction: column; height: 100%; overflow: hidden; }
     .screen.active { display: flex; }
-    .gateway-screen { align-items: center; justify-content: center; padding: 25px; overflow-y: auto; text-align: center; }
+    .gateway-screen { align-items: center; justify-content: center; padding: 20px; overflow-y: auto; text-align: center; }
     
-    .avatar-box { width: 105px; height: 105px; margin: 0 auto 14px; padding: 3px; border-radius: 50%; background: linear-gradient(135deg, #00f2fe, #7928ca, #ff007f); box-shadow: 0 0 60px rgba(0, 242, 254, 0.8); }
-    .avatar-inner { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 50%; background: #080214; font-size: 42px; }
-    h1 { margin-bottom: 6px; font-size: 26px; font-weight: 900; background: linear-gradient(90deg, #00f2fe, #d946ef, #ff007f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .gateway-desc { margin-bottom: 15px; color: #e9d5ff; font-size: 11px; line-height: 1.6; }
-    .privacy-notice { margin-bottom: 14px; padding: 10px 12px; background: rgba(0, 242, 254, 0.08); border: 1px dashed rgba(0, 242, 254, 0.4); border-radius: 14px; color: #38bdf8; font-size: 9.5px; text-align: right; }
+    .avatar-box { width: 90px; height: 90px; margin: 0 auto 12px; padding: 3px; border-radius: 50%; background: linear-gradient(135deg, #00f2fe, #7928ca, #ff007f); box-shadow: 0 0 50px rgba(0, 242, 254, 0.7); }
+    .avatar-inner { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 50%; background: #080214; font-size: 36px; }
+    h1 { margin-bottom: 4px; font-size: 24px; font-weight: 900; background: linear-gradient(90deg, #00f2fe, #d946ef, #ff007f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .gateway-desc { margin-bottom: 12px; color: #e9d5ff; font-size: 10.5px; line-height: 1.5; }
+    .privacy-notice { margin-bottom: 12px; padding: 8px 10px; background: rgba(0, 242, 254, 0.08); border: 1px dashed rgba(0, 242, 254, 0.4); border-radius: 12px; color: #38bdf8; font-size: 9px; text-align: right; }
     
-    .room-input { width: 100%; margin-bottom: 10px; padding: 12px 16px; outline: none; border: 1px solid rgba(0, 242, 254, 0.4); border-radius: 22px; color: #fff; background: rgba(22, 8, 45, 0.9); font-size: 13px; text-align: center; user-select: text; }
-    .btn { display: flex; align-items: center; justify-content: center; width: 100%; gap: 8px; margin: 6px 0; padding: 13px; border: 0; border-radius: 25px; color: #fff; background: linear-gradient(135deg, #00f2fe, #7928ca, #ff007f); cursor: pointer; font-size: 13px; font-weight: bold; text-decoration: none; }
+    .room-input { width: 100%; margin-bottom: 8px; padding: 10px 14px; outline: none; border: 1px solid rgba(0, 242, 254, 0.4); border-radius: 18px; color: #fff; background: rgba(22, 8, 45, 0.9); font-size: 12px; text-align: center; user-select: text; }
+    .btn { display: flex; align-items: center; justify-content: center; width: 100%; gap: 6px; margin: 5px 0; padding: 11px; border: 0; border-radius: 20px; color: #fff; background: linear-gradient(135deg, #00f2fe, #7928ca, #ff007f); cursor: pointer; font-size: 12px; font-weight: bold; text-decoration: none; }
     
     .live-room-content { position: relative; display: flex; flex: 1; flex-direction: column; height: 100%; overflow: hidden; }
-    .room-top-bar { z-index: 5; display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid rgba(0, 242, 254, 0.3); background: rgba(18, 6, 35, 0.92); }
-    .videos-container { position: relative; display: flex; flex: 1; flex-direction: column; min-height: 180px; max-height: 35vh; overflow-y: auto; gap: 6px; }
+    .room-top-bar { z-index: 5; display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; border-bottom: 1px solid rgba(0, 242, 254, 0.3); background: rgba(18, 6, 35, 0.95); }
     
-    .remote-peer-video { 
-      width: 100%; height: 100%; min-height: 180px; background: #05010a; object-fit: cover; 
-      border-bottom: 1px solid rgba(0, 242, 254, 0.3); border-radius: 12px; position: relative; 
-      filter: drop-shadow(0 0 10px rgba(0,242,254,0.5)) contrast(110%);
-    }
-    .remote-peer-video::after {
-      content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0, 242, 254, 0.15) 50%);
-      background-size: 100% 4px; pointer-events: none; opacity: 0.6;
-    }
-    #localVideo { position: absolute; top: 12px; left: 12px; z-index: 10; width: 85px; height: 115px; border: 2px solid #00f2fe; border-radius: 14px; background: #140224; object-fit: cover; box-shadow: 0 0 20px rgba(0,242,254,0.6); }
+    /* [منطقة الفيديو الفسيحة والواضحة] */
+    .videos-container { position: relative; display: flex; flex: 1; flex-direction: column; min-height: 220px; max-height: 42vh; overflow-y: auto; gap: 4px; background: #05010a; }
+    .remote-peer-video { width: 100%; height: 100%; min-height: 220px; background: #05010a; object-fit: cover; border-bottom: 1px solid rgba(0, 242, 254, 0.3); border-radius: 10px; position: relative; }
+    #localVideo { position: absolute; top: 10px; left: 10px; z-index: 10; width: 75px; height: 105px; border: 2px solid #00f2fe; border-radius: 12px; background: #140224; object-fit: cover; box-shadow: 0 0 15px rgba(0,242,254,0.6); }
     
-    .seats-grid-overlay { position: absolute; top: 136px; left: 12px; right: 12px; z-index: 15; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; pointer-events: none; }
-    .seat-slot { 
-      height: 35px; border: 1px solid rgba(0,242,254,0.5); border-radius: 9px; 
-      background: rgba(10, 2, 22, 0.85); display: flex; align-items: center; justify-content: center; 
-      font-size: 9.5px; color: #38bdf8; font-weight: bold; 
-      animation: seatBreath 3s ease-in-out infinite; 
-    }
-    @keyframes seatBreath { 0%, 100% { border-color: rgba(0,242,254,0.4); box-shadow: inset 0 0 5px rgba(0,242,254,0.2); } 50% { border-color: rgba(255,0,127,0.8); box-shadow: inset 0 0 12px rgba(255,0,127,0.5); } }
+    .seats-grid-overlay { position: absolute; top: 125px; left: 10px; right: 10px; z-index: 15; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; pointer-events: none; }
+    .seat-slot { height: 28px; border: 1px solid rgba(0,242,254,0.4); border-radius: 7px; background: rgba(10, 2, 22, 0.85); display: flex; align-items: center; justify-content: center; font-size: 9px; color: #38bdf8; font-weight: bold; }
     
-    #cosmicCinemaContainer { display: none; position: relative; width: 100%; height: 200px; background: #000; border-radius: 12px; overflow: hidden; margin: 8px 0; border: 1px solid #00f2fe55; z-index: 12; }
+    #cosmicCinemaContainer { display: none; position: relative; width: 100%; height: 180px; background: #000; border-radius: 10px; overflow: hidden; margin: 6px 0; border: 1px solid #00f2fe55; z-index: 12; }
     #stardustMemoryLayer { position: absolute; inset: 10px; z-index: 8; overflow: hidden; pointer-events: none; }
 
-    .nomad-badge { display: inline-block; padding: 2px 6px; margin-right: 4px; background: linear-gradient(135deg, #7928ca, #ff007f); border-radius: 6px; font-size: 9px; color: #fff; font-weight: bold; vertical-align: middle; }
+    .nomad-badge { display: inline-block; padding: 2px 5px; margin-right: 3px; background: linear-gradient(135deg, #7928ca, #ff007f); border-radius: 5px; font-size: 8.5px; color: #fff; font-weight: bold; vertical-align: middle; }
 
-    .floating-mini-video {
-      position: absolute; top: 175px; left: 15px; width: 72px; height: 72px; z-index: 999; 
-      background: rgba(10, 2, 22, 0.95); border: 2px solid #ff007f; border-radius: 50%; 
-      box-shadow: 0 0 22px rgba(255, 0, 127, 0.8); cursor: grab; touch-action: none; 
-      display: flex; align-items: center; justify-content: center; overflow: visible; transition: transform 0.25s, width 0.3s, height 0.3s, border-radius 0.3s;
-    }
-    .floating-mini-video.expanded { width: 260px; height: 180px; border-radius: 16px; border-color: #00f2fe; }
-    .floating-mini-video video { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; pointer-events: none; }
-    .progress-ring { position: absolute; inset: -6px; border-radius: 50%; pointer-events: none; border: 2px solid rgba(0, 242, 254, 0.2); }
-    .floating-mini-video.expanded .progress-ring { display: none; }
-    .mini-action-btns { position: absolute; top: 6px; left: 6px; display: none; gap: 6px; z-index: 1000; }
-    .floating-mini-video.expanded .mini-action-btns { display: flex; }
-    .mini-btn { background: rgba(14, 5, 30, 0.9); color: #fff; border: 1px solid rgba(0, 242, 254, 0.6); border-radius: 50%; width: 24px; height: 24px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .virtual-gift { position: fixed; z-index: 99999; pointer-events: none; font-size: 35px; animation: giftFly 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+    @keyframes giftFly { 0% { transform: translate(0, 0) scale(0.5); opacity: 0; } 20% { opacity: 1; transform: translate(var(--tx1), var(--ty1)) scale(1.4); } 100% { transform: translate(var(--tx2), var(--ty2)) scale(0.3); opacity: 0; } }
+    .gift-trigger-btn { position: absolute; bottom: 8px; right: 8px; z-index: 20; width: 28px; height: 28px; background: linear-gradient(135deg, #ffd700, #ff8c00); border: 2px solid #fff; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
 
-    .virtual-gift { position: fixed; z-index: 99999; pointer-events: none; font-size: 40px; animation: giftFly 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-    @keyframes giftFly { 0% { transform: translate(0, 0) scale(0.5); opacity: 0; } 20% { opacity: 1; transform: translate(var(--tx1), var(--ty1)) scale(1.5); } 100% { transform: translate(var(--tx2), var(--ty2)) scale(0.3); opacity: 0; } }
-    .gift-trigger-btn { position: absolute; bottom: 10px; right: 10px; z-index: 20; width: 32px; height: 32px; background: linear-gradient(135deg, #ffd700, #ff8c00); border: 2px solid #fff; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+    .room-bottom-panel { z-index: 20; display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border-top: 1px solid rgba(0, 242, 254, 0.3); background: rgba(10, 2, 22, 0.96); }
+    .room-chat-overlay { display: flex; flex-direction: column; max-height: 110px; gap: 5px; overflow-y: auto; scrollbar-width: none; }
+    .chat-bubble { position: relative; width: fit-content; max-width: 88%; padding: 6px 10px; border-right: 3px solid #00f2fe; border-radius: 10px; color: #fff; background: rgba(20, 8, 42, 0.9); font-size: 11px; user-select: text; }
+    .chat-media { max-width: 100%; max-height: 140px; border-radius: 8px; margin-top: 4px; display: block; object-fit: cover; border: 1px solid rgba(0, 242, 254, 0.3); }
+    .translated-subtext { display: block; margin-top: 2px; color: #e879f9; font-size: 10px; border-top: 1px dashed rgba(232, 121, 249, 0.4); padding-top: 2px; }
 
-    .room-bottom-panel { z-index: 20; display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border-top: 1px solid rgba(0, 242, 254, 0.3); background: rgba(10, 2, 22, 0.96); }
-    .room-chat-overlay { display: flex; flex-direction: column; max-height: 130px; gap: 6px; overflow-y: auto; scrollbar-width: none; }
-    .chat-bubble { position: relative; width: fit-content; max-width: 85%; padding: 7px 11px; border-right: 3px solid #00f2fe; border-radius: 12px; color: #fff; background: rgba(20, 8, 42, 0.9); font-size: 11.5px; user-select: text; }
-    .chat-media { max-width: 100%; max-height: 160px; border-radius: 9px; margin-top: 5px; display: block; object-fit: cover; border: 1px solid rgba(0, 242, 254, 0.3); }
-    .translated-subtext { display: block; margin-top: 3px; color: #e879f9; font-size: 10.5px; border-top: 1px dashed rgba(232, 121, 249, 0.4); padding-top: 3px; }
-
-    .room-input-box { display: flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid rgba(0, 242, 254, 0.4); border-radius: 20px; background: rgba(18, 6, 38, 0.95); }
-    .lang-selector { max-width: 90px; padding: 4px 6px; outline: none; border: 1px solid rgba(0, 242, 254, 0.5); border-radius: 14px; color: #00f2fe; background: rgba(10, 2, 22, 0.95); font-size: 10px; cursor: pointer; font-weight: bold; }
-    .room-input-box input { flex: 1; padding: 0 6px; outline: none; border: none; color: #fff; background: transparent; font-size: 12.5px; user-select: text; }
-    .send-btn { padding: 7px 14px; border: none; border-radius: 16px; color: #fff; background: linear-gradient(135deg, #00f2fe, #ff007f); cursor: pointer; font-size: 11.5px; font-weight: bold; }
+    .room-input-box { display: flex; align-items: center; gap: 5px; padding: 5px 8px; border: 1px solid rgba(0, 242, 254, 0.4); border-radius: 16px; background: rgba(18, 6, 38, 0.95); }
+    .lang-selector { max-width: 80px; padding: 3px 5px; outline: none; border: 1px solid rgba(0, 242, 254, 0.5); border-radius: 10px; color: #00f2fe; background: rgba(10, 2, 22, 0.95); font-size: 9.5px; cursor: pointer; font-weight: bold; }
+    .room-input-box input { flex: 1; padding: 0 5px; outline: none; border: none; color: #fff; background: transparent; font-size: 12px; user-select: text; }
+    .send-btn { padding: 6px 12px; border: none; border-radius: 12px; color: #fff; background: linear-gradient(135deg, #00f2fe, #ff007f); cursor: pointer; font-size: 11px; font-weight: bold; }
     
-    .call-controls { display: flex; align-items: center; justify-content: center; gap: 8px; padding-top: 4px; flex-wrap: wrap; }
-    .control-icon-btn { display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border: 1px solid rgba(0, 242, 254, 0.4); border-radius: 50%; color: #fff; background: radial-gradient(circle, rgba(20, 8, 45, 0.9) 0%, rgba(8, 2, 18, 0.95) 100%); cursor: pointer; font-size: 16px; }
+    .call-controls { display: flex; align-items: center; justify-content: center; gap: 6px; padding-top: 2px; flex-wrap: wrap; }
+    .control-icon-btn { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border: 1px solid rgba(0, 242, 254, 0.4); border-radius: 50%; color: #fff; background: radial-gradient(circle, rgba(20, 8, 45, 0.9) 0%, rgba(8, 2, 18, 0.95) 100%); cursor: pointer; font-size: 15px; }
     .control-icon-btn.active { border-color: #ff0844; background: radial-gradient(circle, #ff0844 0%, #990022 100%); }
-    .hangup-btn { width: 46px; height: 46px; border: none; background: linear-gradient(135deg, #ff0844, #ffb199); font-size: 18px; }
-    .cosmic-bubble { position: fixed; bottom: 30px; left: 20px; width: 60px; height: 60px; background: radial-gradient(circle, rgba(0,242,254,0.9) 0%, rgba(121,40,202,0.9) 50%, rgba(255,0,127,0.9) 100%); border-radius: 50%; z-index: 99999; display: flex; align-items: center; justify-content: center; font-size: 26px; cursor: grab; }
+    .hangup-btn { width: 40px; height: 40px; border: none; background: linear-gradient(135deg, #ff0844, #ffb199); font-size: 16px; }
+    .cosmic-bubble { position: fixed; bottom: 20px; left: 15px; width: 50px; height: 50px; background: radial-gradient(circle, rgba(0,242,254,0.9) 0%, rgba(121,40,202,0.9) 50%, rgba(255,0,127,0.9) 100%); border-radius: 50%; z-index: 99999; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; box-shadow: 0 0 15px rgba(0,242,254,0.6); }
   </style>
 </head>
 
@@ -168,15 +141,15 @@
       <a class="btn" href="https://github.com/wwwmounirmp-hue/lafi-munir" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, rgba(20,8,42,0.9), rgba(50,15,80,0.9)); border: 1px solid rgba(0,242,254,0.5);">
         استكشف مستودع 🚀 GitHub
       </a>
-      <div class="system-footer" style="margin-top: 10px; color: rgba(255,255,255,0.6); font-size: 9px;">STARDUST SOVEREIGN CORE • 2026</div>
+      <div class="system-footer" style="margin-top: 8px; color: rgba(255,255,255,0.6); font-size: 8.5px;">STARDUST SOVEREIGN CORE • 2026</div>
     </section>
 
     <!-- شاشة التطبيق الحية -->
     <section id="screen-app" class="screen">
       <div class="live-room-content" id="liveRoomContent">
         <header class="room-top-bar">
-          <span id="roomTitleDisplay" style="font-size:11.5px; font-weight:bold; color:#00f2fe;">القطاع: جاري الربط... 🌐</span>
-          <button id="exitRoomBtn" type="button" onclick="window.cosmicStationExit()" style="border:0; color:#00f2fe; background:transparent; cursor:pointer; font-size:12px; font-weight:bold;">🌌 مغادرة المحطة</button>
+          <span id="roomTitleDisplay" style="font-size:11px; font-weight:bold; color:#00f2fe;">القطاع: جاري الربط... 🌐</span>
+          <button id="exitRoomBtn" type="button" onclick="window.cosmicStationExit()" style="border:0; color:#00f2fe; background:transparent; cursor:pointer; font-size:11px; font-weight:bold;">🌌 مغادرة المحطة</button>
         </header>
 
         <div class="videos-container" id="videosContainer">
@@ -192,15 +165,15 @@
         </div>
 
         <div class="room-bottom-panel">
-          <div style="display: flex; flex-direction: column; gap: 4px;">
-            <span style="font-size: 10px; color: #00f2fe; font-weight: bold;">🎬 سينما مشتركة (YouTube, Vimeo, MP4)</span>
-            <div style="display: flex; gap: 6px; align-items: center;">
-              <input type="text" id="cinemaUrlInput" placeholder="رابط YouTube أو فيديو وبث..." style="flex:1; padding: 6px 10px; background: rgba(20,8,42,0.9); border: 1px solid rgba(0,242,254,0.4); border-radius: 14px; color: #fff; font-size: 11px; outline: none;">
-              <button type="button" id="broadcastCinemaBtn" style="padding: 6px 12px; background: linear-gradient(135deg, #00f2fe, #7928ca); border: none; border-radius: 14px; color: #fff; font-size: 11.5px; font-weight: bold; cursor: pointer;">بث 🚀</button>
+          <div style="display: flex; flex-direction: column; gap: 3px;">
+            <span style="font-size: 9.5px; color: #00f2fe; font-weight: bold;">🎬 سينما مشتركة (YouTube, Vimeo, MP4)</span>
+            <div style="display: flex; gap: 5px; align-items: center;">
+              <input type="text" id="cinemaUrlInput" placeholder="رابط YouTube أو فيديو وبث..." style="flex:1; padding: 5px 8px; background: rgba(20,8,42,0.9); border: 1px solid rgba(0,242,254,0.4); border-radius: 12px; color: #fff; font-size: 10.5px; outline: none;">
+              <button type="button" id="broadcastCinemaBtn" style="padding: 5px 10px; background: linear-gradient(135deg, #00f2fe, #7928ca); border: none; border-radius: 12px; color: #fff; font-size: 11px; font-weight: bold; cursor: pointer;">بث 🚀</button>
             </div>
           </div>
 
-          <div class="typing-indicator" id="typingIndicator" style="display:none; font-size:10px; color:#00f2fe; padding:2px 8px;">✍️ أحد العابرين يكتب...</div>
+          <div class="typing-indicator" id="typingIndicator" style="display:none; font-size:9.5px; color:#00f2fe; padding:2px 6px;">✍️ أحد العابرين يكتب...</div>
           <div class="room-chat-overlay" id="roomChatOverlay"></div>
           
           <div class="room-input-box">
@@ -212,7 +185,7 @@
               <option value="de">🇩🇪 Deutsch</option>
             </select>
             <input type="file" id="mediaFileInput" accept="image/*,video/*" style="display:none;">
-            <button type="button" class="media-upload-btn" id="attachMediaBtn" style="background:transparent; border:none; color:#00f2fe; cursor:pointer; font-size:16px;">📎</button>
+            <button type="button" class="media-upload-btn" id="attachMediaBtn" style="background:transparent; border:none; color:#00f2fe; cursor:pointer; font-size:15px;">📎</button>
             <input type="text" id="roomMsgInput" placeholder="✨ أرسل رسالة أو اكتب @gemini للتحدث مع الذكاء..." autocomplete="off" maxlength="500">
             <button id="sendMsgBtn" class="send-btn" type="button">🌍 إرسال</button>
           </div>
@@ -230,12 +203,12 @@
     </section>
   </main>
 
-  <div id="cosmicBubble" class="cosmic-bubble">🪐</div>
+  <div id="cosmicBubble" class="cosmic-bubble" title="التبديل الكوني السريع">🪐</div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getDatabase, ref, push, set, remove, limitToLast, query, orderByChild, onValue, onChildAdded, onChildRemoved, get, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, push, set, remove, limitToLast, query, onValue, onChildAdded, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
     const firebaseConfig = { databaseURL: "https://lafi-munir-global-default-rtdb.firebaseio.com/" };
@@ -258,11 +231,20 @@
 
     function showSystemToast(msg) {
       const t = document.createElement('div');
-      t.style.cssText = "position:fixed;bottom:20px;right:20px;z-index:9999;background:#00f2fe;color:#000;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:bold;";
+      t.style.cssText = "position:fixed;bottom:20px;right:20px;z-index:9999;background:#00f2fe;color:#000;padding:8px 14px;border-radius:8px;font-size:11px;font-weight:bold;";
       t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3000);
     }
 
-    // [1. محرك المطر الرقمي Matrix Rain الفعلي عبر Canvas]
+    // [إضافة زر التبديل السريع عبر الفقاعة الكونية]
+    $('cosmicBubble').addEventListener('click', () => {
+      const panel = document.querySelector('.room-bottom-panel');
+      if (panel) {
+        panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
+        showSystemToast(panel.style.display === 'none' ? '🌌 وضع الرؤية الفضائية الخالصة' : '🛸 تم إظهار لوحة التحكم والدردشة');
+      }
+    });
+
+    // [المطر الرقمي Matrix Rain]
     const matrixCanvas = $('matrixCanvas');
     const mCtx = matrixCanvas.getContext('2d');
     function initMatrixRain() {
@@ -270,7 +252,7 @@
       const letters = "01ﻻفيMUNIROULAFI0101قمرنيزكفضاء";
       const fontSize = 14; const columns = matrixCanvas.width / fontSize;
       const drops = Array(Math.floor(columns)).fill(1);
-      function drawMatrix() {
+      setInterval(() => {
         mCtx.fillStyle = "rgba(7, 1, 20, 0.08)"; mCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
         mCtx.fillStyle = "#00f2fe"; mCtx.font = fontSize + "px monospace";
         for (let i = 0; i < drops.length; i++) {
@@ -279,18 +261,16 @@
           if (drops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) drops[i] = 0;
           drops[i]++;
         }
-      }
-      setInterval(drawMatrix, 33);
+      }, 33);
     }
     initMatrixRain();
 
-    // [2. محرك النجوم المتحركة المتألقة Stars Canvas]
+    // [النجوم المتحركة Stars Canvas]
     const spaceCanvas = $('spaceCanvas');
     const sCtx = spaceCanvas.getContext('2d');
-    let stars = [];
     function initStars() {
       spaceCanvas.width = window.innerWidth; spaceCanvas.height = window.innerHeight;
-      stars = Array.from({ length: 120 }, () => ({
+      const stars = Array.from({ length: 120 }, () => ({
         x: Math.random() * spaceCanvas.width, y: Math.random() * spaceCanvas.height,
         size: Math.random() * 2 + 0.5, speed: Math.random() * 0.4 + 0.1, alpha: Math.random()
       }));
@@ -300,8 +280,7 @@
         stars.forEach(s => {
           s.y -= s.speed; if (s.y < 0) s.y = spaceCanvas.height;
           s.alpha += (Math.random() - 0.5) * 0.05; if (s.alpha < 0.2) s.alpha = 0.2; if (s.alpha > 1) s.alpha = 1;
-          sCtx.globalAlpha = s.alpha;
-          sCtx.fillRect(s.x, s.y, s.size, s.size);
+          sCtx.globalAlpha = s.alpha; sCtx.fillRect(s.x, s.y, s.size, s.size);
         });
         requestAnimationFrame(drawStars);
       }
@@ -309,7 +288,6 @@
     }
     initStars();
 
-    // [3. محرك الترجمة الفورية عبر MyMemory]
     async function translateText(text, targetLang) {
       if (!text || targetLang === 'ar') return '';
       try {
@@ -319,19 +297,17 @@
       } catch (e) { return ''; }
     }
 
-    // [4. الوعي الكوني والتفاعل الكوني + التمزق الزمكاني]
     function triggerCosmicSentience(text) {
       const moon = $('cinematicMoon'); const rift =$('spacetimeRift');
       const lower = text.toLowerCase();
       if (lower.includes('حب') || lower.includes('love') || lower.includes('قمر')) {
         moon.classList.add('pulse'); setTimeout(() => moon.classList.remove('pulse'), 4000);
       }
-      if (lower.includes('تمزق') || lower.includes('انفجار') || lower.includes('rift') || lower.includes('طاقة')) {
+      if (lower.includes('تمزق') || lower.includes('انفجار') || lower.includes('rift')) {
         rift.classList.add('active'); setTimeout(() => rift.classList.remove('active'), 2500);
       }
     }
 
-    // [الذكاء الاصطناعي Gemini]
     async function queryGeminiAI(prompt) {
       const apiKey = window.appState.geminiApiKey || $('geminiApiKeyInput')?.value.trim();
       if (!apiKey) return "⚠️ أدخل مفتاح Google Gemini API في بوابة الدخول لتفعيل الوعي الاصطناعي.";
@@ -346,7 +322,6 @@
       } catch (e) { return "❌ خطأ في الاتصال بنواة Gemini."; }
     }
 
-    // [رفع الوسائط]
     window.uploadMediaToStorage = async function (file, roomName) {
       await window.waitForAuth().catch(() => {});
       if (!storage) throw new Error('التخزين السحابي غير متوفر');
@@ -361,22 +336,6 @@
       if (!db) { window.displayStardustMemory('local-' + Date.now(), { sender: senderLabel, text, mediaUrl, mediaType, timestamp: Date.now() }); return; }
       await push(ref(db, `stardust_rooms/${roomName}/stardust`), { ownerUid: window.authUserId, sender: senderLabel, text, mediaUrl, mediaType, timestamp: Date.now() });
     };
-
-    // [الهدايا الافتراضية]
-    function sendVirtualGift(targetX, targetY, giftSymbol = '🎁') {
-      const gift = document.createElement('div'); gift.className = 'virtual-gift'; gift.textContent = giftSymbol;
-      const startX = window.innerWidth / 2; const startY = window.innerHeight - 100;
-      gift.style.left = startX + 'px'; gift.style.top = startY + 'px';
-      gift.style.setProperty('--tx1', (targetX - startX) * 0.5 + 'px'); gift.style.setProperty('--ty1', (targetY - startY) * 0.5 - 100 + 'px');
-      gift.style.setProperty('--tx2', targetX - startX + 'px'); gift.style.setProperty('--ty2', targetY - startY + 'px');
-      document.body.appendChild(gift); setTimeout(() => gift.remove(), 2500);
-    }
-    function addGiftButtonToVideo(videoElement) {
-      if (videoElement.dataset.hasGiftBtn) return; videoElement.dataset.hasGiftBtn = 'true';
-      const giftBtn = document.createElement('button'); giftBtn.className = 'gift-trigger-btn'; giftBtn.textContent = '🎁';
-      giftBtn.onclick = (e) => { e.stopPropagation(); const rect = videoElement.getBoundingClientRect(); sendVirtualGift(rect.left + rect.width / 2, rect.top + rect.height / 2, '💖'); };
-      videoElement.parentElement.style.position = 'relative'; videoElement.parentElement.appendChild(giftBtn);
-    }
 
     window.displayStardustMemory = async function(msgKey, msg) {
       if (!msg) return; const chat = $('roomChatOverlay');
@@ -393,33 +352,15 @@
       const targetLang = $('targetLangSelect')?.value || 'ar';
       if (targetLang !== 'ar' && msg.text) {
         const translated = await translateText(msg.text, targetLang);
-        if (translated) {
-          bubble.innerHTML += `<span class="translated-subtext">🌐 (${targetLang.toUpperCase()}): ${translated}</span>`;
-        }
+        if (translated) bubble.innerHTML += `<span class="translated-subtext">🌐 (${targetLang.toUpperCase()}): ${translated}</span>`;
       }
 
       if (msg.mediaUrl) {
         if (msg.mediaType === 'image') bubble.innerHTML += `<img src="${msg.mediaUrl}" class="chat-media">`;
-        else if (msg.mediaType === 'video') {
-          bubble.innerHTML += `<video src="${msg.mediaUrl}" controls class="chat-media"></video>`;
-          const floatBtn = document.createElement('button'); floatBtn.className = 'btn'; floatBtn.style.cssText = 'padding:3px 8px; font-size:10px; margin-top:4px;';
-          floatBtn.textContent = '🪐 تشغيل كفيديو عائم'; floatBtn.onclick = () => spawnFloatingMiniVideo(msg.mediaUrl); bubble.appendChild(floatBtn);
-        }
+        else if (msg.mediaType === 'video') bubble.innerHTML += `<video src="${msg.mediaUrl}" controls class="chat-media"></video>`;
       }
       chat.appendChild(bubble); chat.scrollTop = chat.scrollHeight;
     };
-
-    function spawnFloatingMiniVideo(videoUrl) {
-      const existing = document.getElementById('activeFloatingMiniVideo'); if (existing) existing.remove();
-      const widget = document.createElement('div'); widget.className = 'floating-mini-video'; widget.id = 'activeFloatingMiniVideo';
-      const progressRing = document.createElement('div'); progressRing.className = 'progress-ring'; widget.appendChild(progressRing);
-      const actionsDiv = document.createElement('div'); actionsDiv.className = 'mini-action-btns';
-      const closeBtn = document.createElement('button'); closeBtn.className = 'mini-btn'; closeBtn.textContent = '✕';
-      closeBtn.onclick = (e) => { e.stopPropagation(); widget.remove(); }; actionsDiv.appendChild(closeBtn); widget.appendChild(actionsDiv);
-      const vid = document.createElement('video'); vid.src = videoUrl; vid.autoplay = true; vid.playsInline = true; vid.loop = true; widget.appendChild(vid);
-      widget.onclick = () => widget.classList.toggle('expanded');
-      document.getElementById('liveRoomContent').appendChild(widget);
-    }
 
     function addRemoteVideo(peerId, stream) {
       let video = document.getElementById(`remote-${peerId}`);
@@ -427,7 +368,6 @@
         video = document.createElement('video'); video.id = `remote-${peerId}`; video.autoplay = true; video.playsInline = true; video.className = 'remote-peer-video';
         if (window.appState.isMutedSounds) video.muted = true;
         $('videosContainer').appendChild(video);
-        addGiftButtonToVideo(video);
       }
       video.srcObject = stream; video.play().catch(() => {});
     }
@@ -439,9 +379,7 @@
       const roomPeersRef = db ? ref(db, `stardust_rooms/${roomName}/peers`) : null;
       const messagesRef = db ? query(ref(db, `stardust_rooms/${roomName}/stardust`), limitToLast(50)) : null;
 
-      if (messagesRef) {
-        onChildAdded(messagesRef, snap => { const msg = snap.val(); if (msg) window.displayStardustMemory(snap.key, msg); });
-      }
+      if (messagesRef) onChildAdded(messagesRef, snap => { const msg = snap.val(); if (msg) window.displayStardustMemory(snap.key, msg); });
 
       peer.on("open", async id => {
         myPeerId = id;
@@ -457,10 +395,7 @@
             const p = snap.val();
             if (p && p.peerId !== myPeerId && !window.appState.peersCalls[p.peerId]) {
               const call = peer.call(p.peerId, window.cosmicStream);
-              if (call) {
-                window.appState.peersCalls[p.peerId] = call;
-                call.on("stream", s => addRemoteVideo(p.peerId, s));
-              }
+              if (call) { window.appState.peersCalls[p.peerId] = call; call.on("stream", s => addRemoteVideo(p.peerId, s)); }
             }
           });
         }
@@ -491,7 +426,6 @@
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         window.cosmicStream = stream;
         $('localVideo').srcObject = stream;
-        addGiftButtonToVideo($('localVideo'));
         window.setRoomStatus(window.getBaseRoomStatusText());
         await window.initRoomP2P(roomName, stream, ++window.appState.sessionId);
       } catch (err) {
