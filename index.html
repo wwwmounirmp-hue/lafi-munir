@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>إبليس | IBLIS SOVEREIGN CORE ⚡</title>
+  <title>لافي منير | STARDUST SOVEREIGN CORE ⚡</title>
 
   <meta name="theme-color" content="#030008">
   <meta name="mobile-web-app-capable" content="yes">
@@ -18,9 +18,9 @@
     body {
       min-height: 100dvh; overflow: hidden; color: #00ff66;
       background: linear-gradient(135deg, #030008, #0a021a, #15002b, #030008);
-      background-size: 300% 300%; animation: iblisAurora 12s ease infinite;
+      background-size: 300% 300%; animation: stardustAurora 12s ease infinite;
     }
-    @keyframes iblisAurora {
+    @keyframes stardustAurora {
       0%, 100% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
     }
@@ -127,14 +127,15 @@
   <main class="container" id="mainContainer">
     <!-- بوابة الدخول -->
     <section id="screen-gateway" class="screen active gateway-screen">
-      <div class="avatar-box"><div class="avatar-inner">🔥</div></div>
-      <h1>مشروع إبليس</h1>
-      <p class="gateway-desc">IBLIS SOVEREIGN CORE • المنصة السيادية للربط الفوري ⚡</p>
+      <div class="avatar-box"><div class="avatar-inner">🪐</div></div>
+      <h1>لافي منير</h1>
+      <p class="gateway-desc">المحطة الفضائية السيادية • تواصل هولوجرافي عبر النجوم بأعلى معايير الاستقلالية والسرعة.</p>
 
       <input type="text" id="roomInput" class="room-input" value="lafi-room-1" autocomplete="off" placeholder="اسم الغرفة">
-      <input type="text" id="nomadNameInput" class="room-input" value="مشغل-إبليس" autocomplete="off" placeholder="اسم المشغل">
+      <input type="text" id="nomadNameInput" class="room-input" value="" autocomplete="off" placeholder="اسم العابر الفضائي (اختياري)">
 
-      <button class="btn" id="enterRoomBtn" type="button">دخول الغرفة الحية ⚡</button>
+      <button class="btn" id="enterRoomBtn" type="button">دخول الغرفة الحية 🎙️</button>
+      <button class="btn" onclick="window.open('https://github.com/wwwmounirmp-hue/lafi-munir', '_blank')" style="background: linear-gradient(135deg, #1f2937, #111827); border: 1px solid #00f2fe;">استكشف GitHub 🚀</button>
     </section>
 
     <!-- واجهة التشغيل الحية -->
@@ -142,7 +143,7 @@
       <div class="live-room-content">
         <header class="room-top-bar">
           <span id="roomTitleDisplay" style="font-size:11px; color:#00f2fe;">القطاع: جاري الاتصال... ⚡</span>
-          <button onclick="window.exitIblisNode()" style="border:0; color:#ff0055; background:transparent; cursor:pointer; font-weight:bold;">مغادرة ❌</button>
+          <button onclick="window.exitStardustNode()" style="border:0; color:#ff0055; background:transparent; cursor:pointer; font-weight:bold;">مغادرة المحطة ❌</button>
         </header>
 
         <div class="videos-container" id="videosContainer">
@@ -155,20 +156,20 @@
         </div>
 
         <div class="terminal-logs" id="terminalLogs">
-          <div>[SYSTEM]: تم تهيئة محرك إبليس بنجاح...</div>
+          <div>[SYSTEM]: تم تهيئة المحطة السيادية بنجاح...</div>
         </div>
 
         <div class="room-bottom-panel">
           <!-- شريط التحكم بالسينما -->
           <div class="room-input-box">
-            <input type="text" id="cinemaUrlInput" placeholder="رابط يوتيوب أو فيديو مباشر..." autocomplete="off">
-            <button id="broadcastCinemaBtn" type="button">بث سينما 🎬</button>
+            <input type="text" id="cinemaUrlInput" placeholder="أدخل الرابط هنا واضغط Enter أو بث..." autocomplete="off">
+            <button id="broadcastCinemaBtn" type="button">بث 🎬</button>
           </div>
 
           <div class="room-chat-overlay" id="roomChatOverlay"></div>
 
           <div class="room-input-box">
-            <input type="text" id="roomMsgInput" placeholder="أدخل رسالة أو أمر..." autocomplete="off">
+            <input type="text" id="roomMsgInput" placeholder="أرسل رسالة أو وسائط عابرة للقطاع..." autocomplete="off">
             <button id="sendMsgBtn" type="button">إرسال ⚡</button>
           </div>
 
@@ -194,7 +195,7 @@
       console.warn("Firebase Init Error");
     }
 
-    function logIblis(msg, type = 'info') {
+    function logStardust(msg, type = 'info') {
       const term = document.getElementById('terminalLogs');
       if (!term) return;
       const entry = document.createElement('div');
@@ -214,7 +215,7 @@
 
     function listenToCinema(room) {
       if (!db) return;
-      onValue(ref(db, `iblis_rooms/${room}/cinema`), (snap) => {
+      onValue(ref(db, `stardust_rooms/${room}/cinema`), (snap) => {
         const data = snap.val();
         const stage = document.getElementById('mediaStage');
         const container = document.getElementById('cosmicCinemaContainer');
@@ -237,14 +238,14 @@
       });
     }
 
-    async function enterIblisNode() {
+    async function enterStardustNode() {
       const room = document.getElementById('roomInput').value.trim() || 'lafi-room-1';
-      const username = document.getElementById('nomadNameInput').value.trim() || 'مشغل';
+      const username = document.getElementById('nomadNameInput').value.trim() || 'عابر';
       window.appState.roomName = room;
 
       showScreen('screen-app');
       listenToCinema(room);
-      logIblis(`جاري ربط القطاع: ${room}...`);
+      logStardust(`جاري ربط القطاع: ${room}...`);
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }).catch(() => null);
@@ -257,19 +258,19 @@
         window.appState.peer = peer;
 
         peer.on('open', async (id) => {
-          logIblis(`تم فتح معرّف النظام: ${id}`, 'success');
-          document.getElementById('roomTitleDisplay').textContent = `القطاع: ${room} (${username} 🟢)`;
+          logStardust(`تم فتح معرّف المحطة: ${id}`, 'success');
+          document.getElementById('roomTitleDisplay').textContent = `القطاع: ${room} - متصل كـ (${username})`;
 
           if (db) {
-            const peerRef = push(ref(db, `iblis_rooms/${room}/peers`));
+            const peerRef = push(ref(db, `stardust_rooms/${room}/peers`));
             await set(peerRef, { peerId: id, name: username, createdAt: Date.now() });
             window.appState.myPeerRef = peerRef;
             await onDisconnect(peerRef).remove();
 
-            onChildAdded(ref(db, `iblis_rooms/${room}/peers`), (snap) => {
+            onChildAdded(ref(db, `stardust_rooms/${room}/peers`), (snap) => {
               const data = snap.val();
               if (data && data.peerId !== id && !window.appState.calls[data.peerId]) {
-                logIblis(`استدعاء عقدة مجاورة: ${data.peerId}`);
+                logStardust(`استدعاء عقدة مجاورة: ${data.peerId}`);
                 const call = peer.call(data.peerId, window.appState.stream);
                 handleCall(call, data.peerId);
               }
@@ -283,7 +284,7 @@
         });
 
       } catch (err) {
-        logIblis(`خطأ في تشغيل العقدة: ${err.message}`, 'error');
+        logStardust(`خطأ في تشغيل المحطة: ${err.message}`, 'error');
       }
     }
 
@@ -299,7 +300,7 @@
           document.getElementById('videosContainer').appendChild(vid);
         }
         vid.srcObject = remoteStream;
-        logIblis(`تم استقبال بث من العقدة: ${peerId}`, 'success');
+        logStardust(`تم استقبال بث من العقدة: ${peerId}`, 'success');
       });
       call.on('close', () => {
         delete window.appState.calls[peerId];
@@ -307,18 +308,17 @@
       });
     }
 
-    window.exitIblisNode = async function() {
+    window.exitStardustNode = async function() {
       if (window.appState.myPeerRef) {
         await remove(window.appState.myPeerRef).catch(() => {});
       }
       if (window.appState.peer) window.appState.peer.destroy();
       if (window.appState.stream) window.appState.stream.getTracks().forEach(t => t.stop());
       showScreen('screen-gateway');
-      logIblis("تم قطع الاتصال.");
+      logStardust("تم قطع الاتصال.");
       location.reload();
     };
 
-    // التحكم بالصوت والكاميرا
     document.getElementById('micBtn').addEventListener('click', async () => {
       const stream = window.appState.stream;
       if (!stream) return;
@@ -326,7 +326,7 @@
       if (audioTrack) {
         audioTrack.enabled = !audioTrack.enabled;
         document.getElementById('micBtn').classList.toggle('active', !audioTrack.enabled);
-        logIblis(audioTrack.enabled ? '🎙️ الميكروفون مفتوح' : '🔇 الميكروفون مكتوم');
+        logStardust(audioTrack.enabled ? '🎙️ الميكروفون مفتوح' : '🔇 الميكروفون مكتوم');
       }
     });
 
@@ -337,13 +337,13 @@
       if (videoTrack) {
         videoTrack.enabled = !videoTrack.enabled;
         document.getElementById('camBtn').classList.toggle('active', !videoTrack.enabled);
-        logIblis(videoTrack.enabled ? '📸 الكاميرا مفتوحة' : '📷 الكاميرا مغلقة');
+        logStardust(videoTrack.enabled ? '📸 الكاميرا مفتوحة' : '📷 الكاميرا مغلقة');
       }
     });
 
-    document.getElementById('enterRoomBtn').addEventListener('click', enterIblisNode);
+    document.getElementById('enterRoomBtn').addEventListener('click', StardustNodeGateway);
+    function StardustNodeGateway() { enterStardustNode(); }
 
-    // دردشة النص
     document.getElementById('sendMsgBtn').addEventListener('click', () => {
       const input = document.getElementById('roomMsgInput');
       const txt = input.value.trim();
@@ -351,13 +351,12 @@
       const chat = document.getElementById('roomChatOverlay');
       const bubble = document.createElement('div');
       bubble.className = 'chat-bubble';
-      bubble.textContent = `[أنت]: ${txt}`;
+      bubble.textContent = `[عابر]: ${txt}`;
       chat.appendChild(bubble);
       chat.scrollTop = chat.scrollHeight;
       input.value = '';
     });
 
-    // السينما المشتركة
     document.getElementById('broadcastCinemaBtn')?.addEventListener('click', async () => {
       const url = document.getElementById('cinemaUrlInput').value.trim();
       if (!url || !db) return;
@@ -371,12 +370,12 @@
         } else if (/\.(mp4|webm|ogg)$/i.test(parsed.pathname)) {
           type = 'direct'; src = parsed.href;
         }
-      } catch(e) { logIblis('رابط غير صالح', 'error'); return; }
+      } catch(e) { logStardust('رابط غير صالح', 'error'); return; }
 
-      if (!type) { logIblis('رابط غير مدعوم', 'error'); return; }
+      if (!type) { logStardust('رابط غير مدعوم', 'error'); return; }
       const room = window.appState.roomName || 'lafi-room-1';
-      await set(ref(db, `iblis_rooms/${room}/cinema`), { type, src, timestamp: Date.now() });
-      logIblis('تم بث الوسائط للجميع 🎬', 'success');
+      await set(ref(db, `stardust_rooms/${room}/cinema`), { type, src, timestamp: Date.now() });
+      logStardust('تم بث الوسائط للجميع 🎬', 'success');
     });
   </script>
 </body>
