@@ -17,11 +17,9 @@
   <!-- [حماية ضد النسخ والسرقة - Anti-Copy & Anti-Inspection Script] -->
   <script>
     (function SecurityShield() {
-      // حظر زر الفأرة الأيمن وتحديد النصوص
       document.addEventListener('contextmenu', e => e.preventDefault());
       document.addEventListener('selectstart', e => e.preventDefault());
 
-      // حظر اختصارات الفحص أدوات المطورين
       document.addEventListener('keydown', e => {
         if (e.keyCode === 123 || 
            (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) || 
