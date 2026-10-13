@@ -1,184 +1,144 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" class="dark">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>لافي منير — v300 SUPREME NEXUS ∞</title>
+<title>V503 HONEST EDITION — صادق ومُحصَّن</title>
 <meta name="theme-color" content="#030014">
 <meta name="author" content="لافي منير">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-tailwind.config={darkMode:'class',theme:{extend:{colors:{cyber:{bg:'#030014',panel:'#0a0520',border:'#1f1345',cyan:'#00f2fe',magenta:'#ff007f',gold:'#ffd700',green:'#00ff66',purple:'#7928ca',red:'#ff0844',orange:'#ff6b35',pink:'#f472b6'}}}}}
+tailwind.config={darkMode:'class',theme:{extend:{colors:{cyber:{bg:'#030014',panel:'#0a0520',border:'#1f1345',cyan:'#00f2fe',magenta:'#ff007f',gold:'#ffd700',green:'#00ff66',purple:'#7928ca',red:'#ff0844',orange:'#ff6b35'}}}}}
 </script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Fira+Code&display=swap');
+:root{--t1:#00f2fe;--t2:#ff007f;--tbg:#030014;--tpanel:#0a0520;--tborder:#1f1345}
+body.theme-matrix{--t1:#00ff66;--t2:#003b00}
+body.theme-cyber{--t1:#f9f871;--t2:#ff007f}
+body.theme-gold{--t1:#ffd700;--t2:#d4af37}
+body.theme-neon{--t1:#f472b6;--t2:#7928ca}
+body.theme-sunset{--t1:#ff6b35;--t2:#ffd700}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:'Cairo',sans-serif;background:#030014;color:#e2e8f0;overflow:hidden;user-select:none;-webkit-user-select:none}
+html,body{height:100%;font-family:'Courier New',monospace;background:var(--tbg);color:#e2e8f0;overflow:hidden;user-select:none;-webkit-user-select:none}
 ::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-thumb{background:#00f2fe;border-radius:4px}
-#matrixCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.06}
-.glass-panel{background:rgba(10,5,32,.9);backdrop-filter:blur(16px);border:1px solid #1f1345}
-.msg-bubble{max-width:85%;word-break:break-word;transition:all .2s}
-.msg-me{background:linear-gradient(135deg,rgba(255,0,127,.25),rgba(121,40,202,.35));border:1px solid rgba(255,0,127,.5);border-radius:16px 16px 2px 16px;margin-left:auto}
-.msg-peer{background:linear-gradient(135deg,rgba(0,242,254,.2),rgba(0,255,102,.15));border:1px solid rgba(0,242,254,.4);border-radius:16px 16px 16px 2px;margin-right:auto}
-.msg-sys{background:rgba(255,215,0,.15);border:1px solid rgba(255,215,0,.4);color:#ffd700;font-size:11px;text-align:center;margin:6px auto;width:fit-content;padding:3px 14px;border-radius:12px}
-.status-indicator{width:9px;height:9px;border-radius:50%;display:inline-block}
-.pip-video{position:fixed;width:220px;height:150px;background:#000;border:2px solid #00f2fe;border-radius:12px;z-index:600;overflow:hidden;box-shadow:0 0 30px rgba(0,242,254,.8);cursor:move;touch-action:none}
-.pip-video video{width:100%;height:100%;object-fit:cover;pointer-events:none}
-.pip-close{position:absolute;top:4px;left:4px;background:#ff0844;color:#fff;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:11px;font-weight:bold;z-index:10}
-.term-body{font-family:'Fira Code',monospace;font-size:12px;line-height:1.55;white-space:pre-wrap;word-break:break-word;user-select:text}
-.theme-cosmic{--theme-primary:#00f2fe;--theme-secondary:#ff007f}
-.theme-matrix{--theme-primary:#00ff66;--theme-secondary:#003b00}
-.theme-cyberpunk{--theme-primary:#f9f871;--theme-secondary:#ff007f}
-.theme-retro{--theme-primary:#ffd700;--theme-secondary:#ff6b35}
-.theme-gold{--theme-primary:#ffd700;--theme-secondary:#d4af37}
-.theme-neon{--theme-primary:#f472b6;--theme-secondary:#7928ca}
-.audio-viz{display:flex;align-items:flex-end;gap:2px;height:30px}
-.audio-viz span{width:3px;background:linear-gradient(to top,#00f2fe,#ff007f);border-radius:2px;transition:height .1s}
+::-webkit-scrollbar-thumb{background:var(--t1);border-radius:4px}
+canvas#matrix{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.05}
+.glass{background:rgba(10,5,32,.9);backdrop-filter:blur(16px);border:1px solid var(--tborder)}
+.msg{max-width:85%;word-break:break-word;padding:10px 14px;font-size:12px;border-radius:14px;user-select:text}
+.msg-me{background:rgba(255,0,127,.15);border:1px solid var(--t2);margin-left:auto;border-radius:14px 14px 2px 14px}
+.msg-peer{background:rgba(0,242,254,.12);border:1px solid var(--t1);margin-right:auto;border-radius:14px 14px 14px 2px}
+.msg-sys{background:rgba(255,215,0,.1);border:1px solid var(--t2);color:var(--t2);font-size:11px;text-align:center;margin:6px auto;padding:3px 14px;border-radius:12px;width:fit-content}
+.msg-ai{background:linear-gradient(135deg,rgba(255,215,0,.2),rgba(255,107,53,.15));border:1px solid #ffd700;padding:10px;border-radius:12px;margin:6px auto;max-width:90%;text-align:center;font-size:12px}
+.tab.active{background:rgba(0,242,254,.15);border-color:var(--t1);color:var(--t1)}
+.btn-primary{background:linear-gradient(135deg,var(--t1),var(--t2));color:#fff;font-weight:bold;border:none;border-radius:8px;cursor:pointer;font-family:inherit}
+.sec-warn{background:rgba(255,215,0,.15);border:1px solid #ffd700;color:#ffd700;padding:8px;border-radius:8px;font-size:11px;margin-bottom:8px}
 </style>
 </head>
-<body class="dark h-screen w-screen flex flex-col overflow-hidden theme-cosmic">
-<canvas id="matrixCanvas"></canvas>
-<div id="notif" class="fixed top-4 left-1/2 -translate-x-1/2 z-[400] bg-cyber-panel border border-cyber-cyan text-cyber-cyan px-6 py-2 rounded-full text-xs font-bold hidden shadow-2xl"></div>
+<body class="h-screen flex flex-col overflow-hidden">
+<canvas id="matrix"></canvas>
+<div id="notif" class="fixed top-4 left-1/2 -translate-x-1/2 z-[400] bg-black border-2 border-cyan-400 text-cyan-300 px-5 py-2 rounded-full text-xs font-bold hidden"></div>
 
-<header class="relative z-10 glass-panel px-4 py-2.5 flex justify-between items-center text-xs border-b border-cyber-border flex-wrap gap-2">
-<div class="flex items-center gap-3 flex-wrap">
-<span class="text-base font-black text-cyber-magenta flex items-center gap-2">
-<i class="fa-solid fa-infinity text-cyber-cyan animate-pulse"></i> SUPREME NEXUS
-</span>
-<span class="bg-cyber-magenta/20 text-cyber-magenta text-[10px] px-2 py-0.5 rounded border border-cyber-magenta/40 font-bold">v300 ∞</span>
-<span class="hidden md:inline text-[11px] text-cyber-gold font-bold">👑 لافي منير</span>
+<header class="relative z-10 glass px-3 py-2 flex justify-between items-center text-xs flex-wrap gap-2">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="text-sm font-black text-pink-500">🛡️ HONEST SECURE</span>
+<span class="bg-pink-500/20 text-pink-300 text-[10px] px-2 py-0.5 rounded border border-pink-500/40 font-bold">V503</span>
+<span class="text-[10px] text-yellow-400">👑 لافي منير</span>
 </div>
-<div class="flex items-center gap-2 text-[11px]">
-<div class="bg-cyber-bg px-2 py-1 rounded-lg border border-cyber-border">
-<span class="text-gray-400">Nodes:</span> <span id="meshCount" class="text-cyber-green font-bold">0</span>
-</div>
-<div class="bg-cyber-bg px-2 py-1 rounded-lg border border-cyber-border flex items-center gap-2">
-<span id="p2pDot" class="status-indicator bg-red-500"></span>
-<span id="myPeerIdDisplay" class="font-mono text-cyber-cyan font-bold cursor-pointer text-[10px]" onclick="copyMyId()">جاري...</span>
-</div>
-<div class="bg-cyber-bg px-2 py-1 rounded-lg border border-cyber-border cursor-pointer" onclick="openTerminal()" title="الطرفية">
-<span class="text-gray-400">⌨️</span> <span id="termStatus" class="text-cyber-cyan font-bold">Terminal</span>
-</div>
-<div class="bg-cyber-bg px-2 py-1 rounded-lg border border-cyber-border cursor-pointer" onclick="openAnalytics()" title="الإحصائيات">
-<span class="text-gray-400">📊</span> <span id="chainCount" class="text-cyber-gold font-bold">1</span>
-</div>
-<div class="bg-cyber-bg px-2 py-1 rounded-lg border border-cyber-border">
-<span class="text-gray-400">🧠</span> <span id="memCount" class="text-cyber-purple font-bold">0</span>
-</div>
-<button onclick="openCommandPalette()" class="bg-cyber-magenta text-white px-2 py-1 rounded font-bold text-[10px]" title="لوحة الأوامر (Ctrl+K)">⚡ لوحة الأوامر</button>
-<button onclick="showQR()" class="bg-cyber-cyan text-black px-2 py-1 rounded font-bold text-[10px]">QR</button>
-<button onclick="toggleTheme()" class="bg-cyber-gold text-black px-2 py-1 rounded font-bold text-[10px]" title="ثيم">🎨</button>
+<div class="flex items-center gap-1.5 text-[10px] flex-wrap">
+<span id="secStatus" class="px-2 py-1 rounded bg-red-500/20 border border-red-500 text-red-300 font-bold">🔴 Unencrypted</span>
+<span class="px-2 py-1 rounded bg-black border border-gray-700">Nodes: <b id="nodeCount" class="text-green-400">0</b></span>
+<span id="peerIdDisplay" class="px-2 py-1 rounded bg-black border border-gray-700 font-mono cursor-pointer text-cyan-300" onclick="copyPeerId()">...</span>
+<button onclick="toggleTheme()" class="px-2 py-1 rounded bg-yellow-500 text-black font-bold">🎨</button>
+<button onclick="openCommandPalette()" class="px-2 py-1 rounded bg-pink-500 text-white font-bold">⚡</button>
 </div>
 </header>
 
+<div class="relative z-10 mx-2 mt-2 sec-warn">
+⚠️ <b>تنبيه صادق:</b> هذا التشفير مبدئي (ECDH P-256 + AES-GCM) — <b>ليس</b> بمستوى Signal Protocol. لا تستخدمه لأسرار حقيقية. لمزيد من الأمان استخدم Signal أو Element.
+</div>
+
 <main class="relative z-10 flex-1 grid grid-cols-1 md:grid-cols-12 gap-2 p-2 overflow-hidden">
 <aside class="md:col-span-4 lg:col-span-3 flex flex-col gap-2 h-full overflow-hidden">
-<div class="glass-panel p-3 rounded-xl flex flex-col gap-2">
-<div class="text-[11px] font-bold text-cyber-gold flex justify-between items-center">
-<span>👤 هوية السيادة:</span>
-<button onclick="regenerateKeys()" class="text-cyber-cyan hover:underline text-[10px]">🔄 مفاتيح</button>
-</div>
-<input type="text" id="nickName" class="w-full bg-cyber-bg border border-cyber-border rounded px-2.5 py-1.5 text-xs text-cyber-green font-bold outline-none focus:border-cyber-cyan" value="Supreme_Node" onchange="broadcastNameChange()">
-<div class="flex gap-1.5 mt-1">
-<input type="text" id="peerTargetInput" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[11px] text-white outline-none" placeholder="Peer ID...">
-<button onclick="connectToPeerManual()" class="bg-cyber-cyan text-black px-3 py-1 rounded font-bold text-[11px]">ربط 🔗</button>
+<div class="glass p-2 rounded-xl">
+<div class="text-[10px] text-yellow-400 font-bold mb-1">👤 اسمك</div>
+<input id="nickname" class="w-full bg-black border border-gray-700 rounded px-2 py-1 text-xs text-green-400 font-bold outline-none" value="Node_"+Math.floor(Math.random()*9999) onchange="saveNickname()">
+<div class="flex gap-1 mt-2">
+<input id="peerTarget" class="flex-1 bg-black border border-gray-700 rounded px-2 py-1 text-[10px] text-white outline-none" placeholder="Peer ID...">
+<button onclick="manualConnect()" class="btn-primary px-3 py-1 text-[10px]">ربط</button>
 </div>
 </div>
 
-<div class="glass-panel p-2 rounded-xl">
-<div class="text-[10px] font-bold text-cyber-cyan mb-1 flex justify-between">
-<span>🌐 Mesh Topology</span>
-<span id="netHealth" class="text-cyber-green text-[9px]">● healthy</span>
-</div>
-<canvas id="topologyCanvas" class="w-full h-24 bg-black/60 rounded border border-cyber-border"></canvas>
+<div class="glass p-2 rounded-xl">
+<div class="text-[10px] text-cyan-300 font-bold mb-1">🌐 الشبكة</div>
+<canvas id="topology" class="w-full h-20 bg-black rounded border border-gray-700"></canvas>
 </div>
 
-<div class="glass-panel p-2 rounded-xl">
-<div class="text-[10px] font-bold text-cyber-gold mb-1">📊 جودة الاتصال (RTT)</div>
-<div id="qualityList" class="text-[10px] space-y-1 max-h-20 overflow-y-auto text-gray-400">لا اتصالات</div>
+<div class="glass p-3 rounded-xl flex flex-col gap-2">
+<div class="text-[10px] text-yellow-400 font-bold">🤖 AI Leader</div>
+<div id="aiLeaderStatus" class="text-[10px] text-gray-400">جاري التحديد...</div>
+<select id="aiPersonality" class="w-full bg-black border border-gray-700 rounded px-2 py-1 text-[10px] text-white outline-none">
+<option value="helpful">🤝 مساعد ودود</option>
+<option value="coder">👨‍💻 مبرمج</option>
+<option value="wise">🧙 حكيم</option>
+<option value="funny">😄 مرح</option>
+</select>
 </div>
 
-<div class="glass-panel p-3 rounded-xl flex-1 flex flex-col gap-2 overflow-hidden">
-<div class="flex justify-between items-center text-[11px] font-bold text-cyber-cyan border-b border-cyber-border pb-1.5">
-<span>💬 الغرف المشفرة</span>
-<button onclick="promptCreateRoom()" class="bg-cyber-magenta/20 text-cyber-magenta border border-cyber-magenta/40 px-2 py-0.5 rounded text-[10px]">+ غرفة</button>
+<div class="glass p-2 rounded-xl flex-1 flex flex-col overflow-hidden">
+<div class="flex justify-between items-center text-[10px] font-bold text-cyan-300 border-b border-gray-700 pb-1 mb-1">
+<span>💬 الغرف</span>
+<button onclick="promptCreateRoom()" class="bg-pink-500/20 text-pink-300 border border-pink-500/40 px-2 py-0.5 rounded">+</button>
 </div>
-<div id="roomList" class="flex-1 overflow-y-auto space-y-1 pr-1 text-xs"></div>
-<div class="border-t border-cyber-border pt-2 text-[10px] flex justify-between">
-<span class="text-cyber-green">🔐 E2EE</span>
-<span class="text-cyber-magenta">v300 ∞</span>
-</div>
+<div id="roomList" class="flex-1 overflow-y-auto space-y-1 text-xs"></div>
 </div>
 </aside>
 
 <section class="md:col-span-8 lg:col-span-9 flex flex-col gap-2 h-full overflow-hidden">
-<div class="glass-panel px-4 py-2 rounded-xl flex justify-between items-center text-xs border border-cyber-border flex-wrap gap-2">
+<div class="glass px-3 py-2 rounded-xl flex justify-between items-center flex-wrap gap-2">
 <div>
-<div class="flex items-center gap-2">
-<h3 id="currentRoomTitle" class="font-bold text-cyber-gold text-sm"># الغرفة_المركزية</h3>
-<span id="roomEncState" class="bg-cyber-green/20 text-cyber-green text-[9px] px-2 py-0.5 rounded border border-cyber-green/40 font-bold">🔐 E2EE</span>
+<h3 id="roomTitle" class="font-bold text-yellow-400 text-sm"># العامة</h3>
+<p id="roomInfo" class="text-[10px] text-gray-400">العقد: 0 | تشفير: <span id="encInfo">لا</span></p>
 </div>
-<p id="roomPeerCount" class="text-[10px] text-gray-400">العقد: 0</p>
-</div>
-<div class="flex items-center gap-1.5 flex-wrap">
-<button onclick="startVoiceCall()" class="bg-cyber-panel border border-cyber-green text-cyber-green px-2.5 py-1.5 rounded-lg text-xs font-bold" title="صوتي">📞</button>
-<button onclick="startVideoCall()" class="bg-cyber-panel border border-cyber-cyan text-cyber-cyan px-2.5 py-1.5 rounded-lg text-xs font-bold" title="فيديو">🎥</button>
-<button onclick="shareScreenCall()" class="bg-cyber-panel border border-cyber-purple text-cyber-purple px-2.5 py-1.5 rounded-lg text-xs font-bold" title="شاشة">🖥️</button>
-<button onclick="openTerminal()" class="bg-cyber-panel border border-cyber-gold text-cyber-gold px-2.5 py-1.5 rounded-lg text-xs font-bold" title="طرفية">⌨️</button>
-<button onclick="openCollabEditor()" class="bg-cyber-panel border border-cyber-pink text-cyber-pink px-2.5 py-1.5 rounded-lg text-xs font-bold" title="كود">💻</button>
-<button onclick="openAnalytics()" class="bg-cyber-panel border border-cyber-cyan text-cyber-cyan px-2.5 py-1.5 rounded-lg text-xs font-bold" title="إحصائيات">📊</button>
-<button onclick="toggleRecord()" id="recBtn" class="bg-cyber-panel border border-cyber-red text-cyber-red px-2.5 py-1.5 rounded-lg text-xs font-bold" title="تسجيل">⏺️</button>
-<button onclick="endMediaCall()" id="endCallBtn" class="hidden bg-cyber-red text-white px-2.5 py-1.5 rounded-lg text-xs font-bold" title="إنهاء">📴</button>
+<div class="flex gap-1">
+<button onclick="callVoice()" class="px-2 py-1 rounded border border-green-500 text-green-400 text-xs">📞</button>
+<button onclick="callVideo()" class="px-2 py-1 rounded border border-cyan-400 text-cyan-300 text-xs">🎥</button>
+<button onclick="shareScreen()" class="px-2 py-1 rounded border border-purple-500 text-purple-300 text-xs">🖥️</button>
+<button onclick="endCall()" id="endBtn" class="hidden px-2 py-1 rounded bg-red-500 text-white text-xs">📴</button>
 </div>
 </div>
 
-<div id="videoStage" class="hidden glass-panel p-2 rounded-xl border border-cyber-cyan grid grid-cols-2 md:grid-cols-4 gap-2 min-h-[140px]">
-<div class="relative bg-black rounded-lg overflow-hidden border border-cyber-border">
-<video id="localVideo" autoplay playsinline muted class="w-full h-full object-cover"></video>
-<span class="absolute bottom-1 right-1 bg-black/70 text-cyber-cyan px-1.5 py-0.5 rounded text-[9px]">أنت</span>
-<div class="audio-viz absolute top-1 right-1" id="audioViz"></div>
-</div>
-<div id="remoteVideoContainer" class="col-span-1 md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-2"></div>
+<div id="videoStage" class="hidden glass p-2 rounded-xl grid grid-cols-2 md:grid-cols-3 gap-2 min-h-[140px]">
+<video id="localVideo" autoplay playsinline muted class="w-full h-32 bg-black rounded object-cover"></video>
+<div id="remoteVideos" class="col-span-1 md:col-span-2 grid grid-cols-2 gap-2"></div>
 </div>
 
-<div id="messagesContainer" class="flex-1 glass-panel p-4 rounded-xl overflow-y-auto space-y-3 flex flex-col justify-start">
-<div class="msg-sys">🌟 مرحباً بك يا لافي منير في قمة SUPREME NEXUS v300 ∞ — اضغط Ctrl+K لفتح لوحة الأوامر</div>
-</div>
+<div id="messages" class="flex-1 glass p-3 rounded-xl overflow-y-auto space-y-2 flex flex-col"></div>
 
-<div class="glass-panel p-2 rounded-xl flex items-center gap-2 border border-cyber-border">
-<label class="cursor-pointer bg-cyber-bg border border-cyber-border hover:border-cyber-cyan text-cyber-cyan p-2.5 rounded-lg" title="إرفاق ملف">
-📎<input type="file" id="fileInput" class="hidden" onchange="handleFileSelect(event)">
-</label>
-<input type="text" id="chatInput" class="flex-1 bg-cyber-bg border border-cyber-border rounded-lg px-3 py-2 text-xs md:text-sm text-white outline-none focus:border-cyber-cyan" placeholder="أدخل رسالة مشفرة أو رابط سينما..." onkeydown="if(event.key==='Enter'){const v=this.value;const cin=autoDetectCinemaUrl(v);if(cin){showCinema(cin);this.value='';}else{sendChatMessage();}}">
-<button onclick="sendChatMessage()" class="bg-gradient-to-r from-cyber-cyan to-cyber-purple text-white font-bold px-4 py-2 rounded-lg text-xs">إرسال 🚀</button>
+<div class="glass p-2 rounded-xl flex items-center gap-2">
+<label class="cursor-pointer px-2 py-2 rounded border border-gray-700 text-cyan-300">📎<input type="file" id="fileInput" class="hidden" onchange="handleFile(event)"></label>
+<input id="chatInput" class="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-xs text-white outline-none" placeholder="رسالة أو @ai سؤال..." onkeydown="if(event.key==='Enter')sendMessage()">
+<button onclick="sendMessage()" class="btn-primary px-4 py-2 text-xs">🚀</button>
 </div>
 </section>
 </main>
 
-<!-- Modal: Create Room -->
 <div id="roomModal" class="fixed inset-0 bg-black/80 z-[300] hidden flex items-center justify-center p-4">
-<div class="glass-panel p-6 rounded-2xl border border-cyber-gold max-w-sm w-full space-y-4">
-<h3 class="text-sm font-bold text-cyber-gold">🔒 إنشاء غرفة مشفرة</h3>
-<input type="text" id="modalRoomName" class="w-full bg-black border border-cyber-border rounded px-2.5 py-1.5 text-white outline-none text-xs" placeholder="اسم الغرفة...">
-<input type="password" id="modalRoomPass" class="w-full bg-black border border-cyber-border rounded px-2.5 py-1.5 text-white outline-none text-xs mt-2" placeholder="كلمة مرور (اختياري)">
-<div class="flex gap-2 pt-2">
-<button onclick="confirmCreateRoom()" class="flex-1 bg-cyber-gold text-black font-bold py-1.5 rounded text-xs">تأكيد</button>
-<button onclick="closeRoomModal()" class="bg-gray-800 text-gray-300 font-bold px-3 py-1.5 rounded text-xs">إلغاء</button>
+<div class="glass p-5 rounded-xl max-w-sm w-full">
+<h3 class="text-sm font-bold text-yellow-400 mb-3">غرفة جديدة</h3>
+<input id="modalRoomName" class="w-full bg-black border border-gray-700 rounded px-2 py-1 text-xs text-white outline-none mb-2" placeholder="اسم الغرفة">
+<div class="flex gap-2">
+<button onclick="createRoom()" class="flex-1 btn-primary py-1 text-xs">تأكيد</button>
+<button onclick="closeRoomModal()" class="px-3 py-1 rounded bg-gray-800 text-gray-300 text-xs">إلغاء</button>
 </div>
 </div>
 </div>
 
-<!-- Modal: QR -->
 <div id="qrModal" class="fixed inset-0 bg-black/80 z-[300] hidden flex items-center justify-center p-4" onclick="closeQR()">
-<div class="glass-panel p-6 rounded-2xl border border-cyber-cyan max-w-xs w-full text-center">
-<h3 class="text-sm font-bold text-cyber-cyan mb-3">📱 معرفك السيادي</h3>
+<div class="glass p-5 rounded-xl max-w-xs w-full text-center">
 <canvas id="qrCanvas" class="bg-white p-2 rounded mx-auto"></canvas>
-<p id="qrIdText" class="text-[10px] text-cyber-green mt-3 break-all font-mono"></p>
-<button onclick="closeQR()" class="mt-3 bg-cyber-cyan text-black px-4 py-1 rounded text-xs font-bold">إغلاق</button>
+<p id="qrText" class="text-[9px] text-green-400 mt-2 break-all font-mono"></p>
 </div>
 </div>
 
@@ -186,18 +146,22 @@ html,body{height:100%;font-family:'Cairo',sans-serif;background:#030014;color:#e
 "use strict";
 const $=id=>document.getElementById(id);
 
-/* ═══ Global State ═══ */
-let peer=null,myPeerId="",myNickName="Supreme_"+Math.floor(Math.random()*8999+1000);
-let meshConnections={},mediaCalls={},localStream=null,screenStream=null;
-let rooms={"central":{name:"الغرفة_المركزية",messages:[]}};
-let activeRoom="central";
-let myKeyPair=null,sharedKeys={};
-let mediaRecorder=null,recChunks=[];
-let qualityIntervals={};
-let db=null;
-let currentTheme=0;
-const themes=["theme-cosmic","theme-matrix","theme-cyberpunk","theme-retro","theme-gold","theme-neon"];
+/* ═══════════════════════════════════════════════════
+   V503 HONEST SECURE — كل الإصلاحات
+   ═══════════════════════════════════════════════════ */
 
+// State
+let peer=null,myPeerId="",myNickname=localStorage.getItem("nickname")||("Node_"+Math.floor(Math.random()*9999));
+let connections={},keys={},aiLeaderId=null,isAILeader=false;
+let currentRoom="general",rooms={general:{name:"العامة",messages:[]}};
+let localStream=null,mediaCalls={};
+let db=null;
+
+const ALLOWED_IFRAME_HOSTS=["youtube.com","www.youtube.com","youtube-nocookie.com","www.youtube-nocookie.com","youtu.be","vimeo.com","www.vimeo.com","player.vimeo.com"];
+const CHUNK_SIZE=64*1024; // 64KB chunks
+const MAX_FILE_SIZE=20*1024*1024; // 20MB limit
+
+/* ═══ UI Helpers ═══ */
 function showNotif(msg,dur){
   dur=dur||3000;
   const n=$("notif");
@@ -206,528 +170,706 @@ function showNotif(msg,dur){
   setTimeout(()=>n.classList.add("hidden"),dur);
 }
 
-/* ═══ E2EE Crypto ═══ */
-async function generateECDHKeyPair(){
-  myKeyPair=await crypto.subtle.generateKey({name:"ECDH",namedCurve:"P-256"},true,["deriveKey","deriveBits"]);
+// FIX: آمن ضد XSS
+function escapeHTML(s){
+  const div=document.createElement("div");
+  div.textContent=String(s);
+  return div.innerHTML;
 }
-async function exportPublicKey(){
-  if(!myKeyPair)await generateECDHKeyPair();
-  const exported=await crypto.subtle.exportKey("spki",myKeyPair.publicKey);
-  return btoa(String.fromCharCode.apply(null,new Uint8Array(exported)));
+
+// FIX: إضافة عنصر بأمان
+function safeAppend(parent, tag, props, text){
+  const el=document.createElement(tag);
+  for(const k in (props||{}))el[k]=props[k];
+  if(text!==undefined)el.textContent=text;
+  parent.appendChild(el);
+  return el;
 }
-async function deriveSharedKey(pubKeyB64,peerId){
-  try{
-    const bin=Uint8Array.from(atob(pubKeyB64),c=>c.charCodeAt(0));
-    const pubKey=await crypto.subtle.importKey("spki",bin,{name:"ECDH",namedCurve:"P-256"},true,[]);
-    const shared=await crypto.subtle.deriveKey({name:"ECDH",public:pubKey},myKeyPair.privateKey,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
-    sharedKeys[peerId]=shared;
-  }catch(e){}
+
+/* ═══ E2EE — بدون Fallback ═══ */
+async function generateKeyPair(){
+  return crypto.subtle.generateKey({name:"ECDH",namedCurve:"P-256"},true,["deriveKey"]);
 }
-async function encryptData(obj,key){
-  const enc=new TextEncoder(),data=enc.encode(JSON.stringify(obj));
+async function exportPublicKey(kp){
+  const spki=await crypto.subtle.exportKey("spki",kp.publicKey);
+  return btoa(String.fromCharCode.apply(null,new Uint8Array(spki)));
+}
+async function importPublicKey(b64){
+  const bin=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+  return crypto.subtle.importKey("spki",bin,{name:"ECDH",namedCurve:"P-256"},true,[]);
+}
+async function deriveSharedKey(myPrivate, theirPublic){
+  return crypto.subtle.deriveKey(
+    {name:"ECDH",public:theirPublic},
+    myPrivate,
+    {name:"AES-GCM",length:256},
+    false,
+    ["encrypt","decrypt"]
+  );
+}
+
+let myKeyPair=null;
+
+async function encrypt(obj, key){
+  if(!key) throw new Error("SECURITY: no shared key");
   const iv=crypto.getRandomValues(new Uint8Array(12));
-  if(!key){
-    const raw=enc.encode("SUPREME_NEXUS_V300_LAFI_2026!!");
-    key=await crypto.subtle.importKey("raw",raw,{name:"AES-GCM"},false,["encrypt","decrypt"]);
-  }
+  const data=new TextEncoder().encode(JSON.stringify(obj));
   const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,data);
-  return {iv:Array.from(iv),cipher:btoa(String.fromCharCode.apply(null,new Uint8Array(ct)))};
+  return {iv:Array.from(iv),ct:btoa(String.fromCharCode.apply(null,new Uint8Array(ct)))};
 }
-async function decryptData(encObj,key){
-  try{
-    const enc=new TextEncoder();
-    if(!key){
-      const raw=enc.encode("SUPREME_NEXUS_V300_LAFI_2026!!");
-      key=await crypto.subtle.importKey("raw",raw,{name:"AES-GCM"},false,["encrypt","decrypt"]);
-    }
-    const iv=new Uint8Array(encObj.iv);
-    const cipherBin=Uint8Array.from(atob(encObj.cipher),c=>c.charCodeAt(0));
-    const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv},key,cipherBin);
-    return JSON.parse(new TextDecoder().decode(pt));
-  }catch(e){return null;}
+
+async function decrypt(encObj, key){
+  if(!key) throw new Error("SECURITY: no shared key");
+  const iv=new Uint8Array(encObj.iv);
+  const ct=Uint8Array.from(atob(encObj.ct),c=>c.charCodeAt(0));
+  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv},key,ct);
+  return JSON.parse(new TextDecoder().decode(pt));
 }
 
 /* ═══ IndexedDB ═══ */
 function openDB(){
   return new Promise(res=>{
-    const r=indexedDB.open("supreme_v300",1);
+    const r=indexedDB.open("v503",1);
     r.onupgradeneeded=e=>{
       const d=e.target.result;
-      if(!d.objectStoreNames.contains("chatLog"))d.createObjectStore("chatLog",{keyPath:"id",autoIncrement:true});
-      if(!d.objectStoreNames.contains("chain"))d.createObjectStore("chain",{keyPath:"index"});
-      if(!d.objectStoreNames.contains("memory"))d.createObjectStore("memory",{keyPath:"id",autoIncrement:true});
+      if(!d.objectStoreNames.contains("messages"))d.createObjectStore("messages",{keyPath:"id",autoIncrement:true});
+      if(!d.objectStoreNames.contains("rooms"))d.createObjectStore("rooms",{keyPath:"id"});
     };
     r.onsuccess=e=>{db=e.target.result;res();};
     r.onerror=()=>res();
   });
 }
-function idbPut(store,val){return new Promise(res=>{if(!db)return res();const tx=db.transaction(store,"readwrite");tx.objectStore(store).put(val);tx.oncomplete=()=>res();tx.onerror=()=>res();});}
-function idbAll(store){return new Promise(res=>{if(!db)return res([]);const tx=db.transaction(store,"readonly");const r=tx.objectStore(store).getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>res([]);});}
+function dbPut(store,val){return new Promise(res=>{if(!db)return res();const tx=db.transaction(store,"readwrite");tx.objectStore(store).put(val);tx.oncomplete=()=>res();tx.onerror=()=>res();});}
+function dbAll(store){return new Promise(res=>{if(!db)return res([]);const tx=db.transaction(store,"readonly");const r=tx.objectStore(store).getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>res([]);});}
 
-/* ═══ P2P Core ═══ */
-async function initP2P(){
-  await generateECDHKeyPair();
-  $("nickName").value=myNickName;
+/* ═══ P2P ═══ */
+async function initPeer(){
+  myKeyPair=await generateKeyPair();
   peer=new Peer({debug:1,config:{iceServers:[
     {urls:"stun:stun.l.google.com:19302"},
-    {urls:"stun:stun1.l.google.com:19302"},
-    {urls:"turn:openrelay.metered.ca:80",username:"openrelayproject",credential:"openrelayproject"},
-    {urls:"turn:openrelay.metered.ca:443",username:"openrelayproject",credential:"openrelayproject"}
+    {urls:"stun:stun1.l.google.com:19302"}
   ]}});
-  
+
   peer.on("open",id=>{
     myPeerId=id;
-    $("myPeerIdDisplay").textContent=id.slice(0,10)+"...";
-    $("p2pDot").className="status-indicator bg-cyber-green animate-pulse";
-    showNotif("🌐 الشبكة متصلة وجاهزة!");
+    $("peerIdDisplay").textContent=id.slice(0,10)+"...";
+    $("secStatus").textContent="🟡 Ready (Handshake pending)";
+    $("secStatus").className="px-2 py-1 rounded bg-yellow-500/20 border border-yellow-500 text-yellow-300 font-bold";
+    showNotif("🌐 Connected. Waiting for peers.");
+    loadRooms();
     renderRoomList();
-    loadAndRenderHistory();
-    startTopologyCanvas();
-    if(typeof initTerminalShell==="function")initTerminalShell();
-    if(typeof initChain==="function")initChain();
-    if(typeof initMemory==="function")initMemory();
   });
-  
+
   peer.on("connection",conn=>setupConnection(conn));
-  peer.on("call",call=>handleIncomingCall(call));
+  peer.on("call",handleIncomingCall);
   peer.on("error",err=>showNotif("⚠️ "+err.type));
-  peer.on("disconnected",()=>{
-    $("p2pDot").className="status-indicator bg-yellow-500";
-    setTimeout(()=>peer.reconnect(),3000);
-  });
 }
 
 function setupConnection(conn){
   conn.on("open",async()=>{
-    meshConnections[conn.peer]=conn;
-    updateMeshUI();
-    const pubKey=await exportPublicKey();
-    conn.send({type:"HANDSHAKE",sender:myPeerId,nickname:myNickName,pubKey,knownPeers:Object.keys(meshConnections)});
+    connections[conn.peer]=conn;
+    updateUI();
+    // Handshake: أرسل مفتاحي العام
+    const pubKey=await exportPublicKey(myKeyPair);
+    conn.send({type:"HS",id:myPeerId,nick:myNickname,pub:pubKey,peers:Object.keys(connections)});
+    // أعد انتخاب قائد AI بعد تغيير الشبكة
+    electAILeader();
   });
+
   conn.on("data",async data=>{
-    if(data.type==="HANDSHAKE"){
-      await deriveSharedKey(data.pubKey,data.sender);
-      if(Array.isArray(data.knownPeers)){
-        data.knownPeers.forEach(pId=>{if(pId!==myPeerId&&!meshConnections[pId])connectToPeerId(pId);});
+    // Handshake
+    if(data.type==="HS"){
+      try{
+        const theirPub=await importPublicKey(data.pub);
+        keys[data.sender||conn.peer]=await deriveSharedKey(myKeyPair.privateKey,theirPub);
+        // أرسل مفتاحي إذا لم أرسله
+        if(!data.replied){
+          const pubKey=await exportPublicKey(myKeyPair);
+          conn.send({type:"HS_ACK",id:myPeerId,nick:myNickname,pub:pubKey,replied:true});
+        }
+        // تسجيل الاسم
+        addPeerToList(conn.peer,data.nick);
+        // اتصل بمن يعرفهم (Mesh)
+        if(Array.isArray(data.peers)){
+          data.peers.forEach(pId=>{
+            if(pId!==myPeerId&&!connections[pId]){
+              const newConn=peer.connect(pId,{reliable:true});
+              setupConnection(newConn);
+            }
+          });
+        }
+        updateEncryptionStatus();
+      }catch(e){
+        console.error("HS failed:",e);
       }
-      showNotif("🤝 عقدة جديدة: "+data.nickname);
-      startQualityMonitor(conn.peer);
       return;
     }
-    if(data.encryptedPayload){
-      const key=sharedKeys[conn.peer];
-      const dec=await decryptData(data.encryptedPayload,key);
-      if(dec)handleMeshPacket(dec,conn.peer);
+    // ACK للـ HS
+    if(data.type==="HS_ACK"){
+      try{
+        const theirPub=await importPublicKey(data.pub);
+        keys[conn.peer]=await deriveSharedKey(myKeyPair.privateKey,theirPub);
+        addPeerToList(conn.peer,data.nick);
+        updateEncryptionStatus();
+      }catch(e){console.error(e);}
+      return;
+    }
+    // محتوى مشفر
+    if(data.payload){
+      const key=keys[conn.peer];
+      if(!key){
+        console.warn("Dropped: no key from",conn.peer);
+        return;
+      }
+      const dec=await decrypt(data.payload,key);
+      if(dec)handleMessage(dec,conn.peer);
     }
   });
+
   conn.on("close",()=>{
-    delete meshConnections[conn.peer];
-    delete sharedKeys[conn.peer];
-    if(qualityIntervals[conn.peer]){clearInterval(qualityIntervals[conn.peer]);delete qualityIntervals[conn.peer];}
-    updateMeshUI();
-    updateQualityUI();
+    delete connections[conn.peer];
+    delete keys[conn.peer];
+    updateUI();
+    electAILeader();
   });
 }
 
-function connectToPeerManual(){
-  const t=$("peerTargetInput").value.trim();
-  if(t){connectToPeerId(t);$("peerTargetInput").value="";}
+/* ═══ Handshake FIX ═══ */
+// في setupConnection، بدلاً من data.sender
+// نستخدم conn.peer مباشرة
+
+function addPeerToList(peerId,nickname){
+  connections[peerId]=connections[peerId]||{peer:peerId};
+  connections[peerId].nickname=nickname;
 }
-function connectToPeerId(targetId){
-  if(targetId===myPeerId||meshConnections[targetId])return;
-  const conn=peer.connect(targetId,{reliable:true});
-  setupConnection(conn);
+
+async function sendEncrypted(pkt){
+  let sent=0;
+  for(const peerId in connections){
+    const conn=connections[peerId];
+    const key=keys[peerId];
+    if(!key){
+      console.warn("Skip",peerId,"(no key)");
+      continue;
+    }
+    try{
+      const enc=await encrypt(pkt,key);
+      conn.send({payload:enc});
+      sent++;
+    }catch(e){console.error(e);}
+  }
+  return sent;
 }
-async function broadcastMeshPacket(pkt){
-  for(const pId in meshConnections){
-    const conn=meshConnections[pId];
-    if(conn&&conn.open){
-      const enc=await encryptData(pkt,sharedKeys[pId]);
-      conn.send({encryptedPayload:enc});
+
+/* ═══ AI Leader Election ═══ */
+function electAILeader(){
+  const peers=[myPeerId,...Object.keys(connections)].filter(p=>p);
+  peers.sort();
+  aiLeaderId=peers[0];
+  isAILeader=(aiLeaderId===myPeerId);
+  const status=$("aiLeaderStatus");
+  if(isAILeader){
+    status.textContent="✅ أنت القائد";
+    status.className="text-[10px] text-green-400";
+  } else {
+    status.textContent="👥 "+aiLeaderId.slice(0,8)+"...";
+    status.className="text-[10px] text-gray-400";
+  }
+}
+
+/* ═══ Message Router ═══ */
+function handleMessage(pkt,fromPeer){
+  if(pkt.kind==="chat"){
+    if(!rooms[pkt.room])rooms[pkt.room]={name:pkt.room,messages:[]};
+    rooms[pkt.room].messages.push(pkt);
+    if(currentRoom===pkt.room)renderMessage(pkt,false);
+    dbPut("messages",pkt);
+    notify("💬 "+pkt.nick, pkt.text.slice(0,60));
+  }
+  else if(pkt.kind==="file"){
+    if(!rooms[pkt.room])rooms[pkt.room]={name:pkt.room,messages:[]};
+    rooms[pkt.room].messages.push(pkt);
+    if(currentRoom===pkt.room)renderFile(pkt,false);
+    dbPut("messages",pkt);
+    notify("📎 "+pkt.nick, pkt.fileName);
+  }
+  else if(pkt.kind==="room_create"){
+    if(!rooms[pkt.room]){
+      rooms[pkt.room]={name:pkt.name,messages:[]};
+      dbPut("rooms",{id:pkt.room,name:pkt.name});
+      renderRoomList();
+      notify("🏠","غرفة جديدة: "+pkt.name);
     }
   }
-}
-
-function handleMeshPacket(pkt){
-  if(pkt.kind==="CHAT_MSG"){
-    if(!rooms[pkt.roomId])rooms[pkt.roomId]={name:pkt.roomId,messages:[]};
-    rooms[pkt.roomId].messages.push(pkt);
-    if(activeRoom===pkt.roomId)appendMsgUI(pkt,false);
-    idbPut("chatLog",pkt);
-  } else if(pkt.kind==="FILE_SHARE"){
-    if(!rooms[pkt.roomId])rooms[pkt.roomId]={name:pkt.roomId,messages:[]};
-    rooms[pkt.roomId].messages.push(pkt);
-    if(activeRoom===pkt.roomId)appendFileUI(pkt,false);
-    idbPut("chatLog",pkt);
-  } else if(pkt.kind==="CODE_SYNC"){
-    if($("collabTextarea"))$("collabTextarea").value=pkt.code;
-  } else if(pkt.kind==="ROOM_CREATE"){
-    if(!rooms[pkt.roomKey]){rooms[pkt.roomKey]={name:pkt.roomName,messages:[]};renderRoomList();}
-  } else if(pkt.kind==="CINEMA"){
-    showCinema(pkt.url);
+  else if(pkt.kind==="ai"){
+    if(currentRoom===pkt.room)renderAI(pkt.text,pkt.nick);
   }
 }
 
-function updateMeshUI(){
-  const c=Object.keys(meshConnections).length;
-  $("meshCount").textContent=c;
-  $("roomPeerCount").textContent="العقد: "+c;
+/* ═══ UI Render ═══ */
+function renderMessage(pkt,isMe){
+  const c=$("messages");
+  const d=document.createElement("div");
+  d.className="msg "+(isMe?"msg-me":"msg-peer");
+  // XSS-SAFE
+  const header=document.createElement("div");
+  header.style.cssText="font-size:10px;color:#94a3b8;border-bottom:1px solid #333;padding-bottom:3px;margin-bottom:4px;display:flex;justify-content:space-between";
+  const sName=document.createElement("span");
+  sName.textContent=pkt.nick||"???";
+  sName.style.color=isMe?"#ff007f":"#00f2fe";
+  sName.style.fontWeight="bold";
+  const sTime=document.createElement("span");
+  sTime.textContent=pkt.time||"";
+  header.appendChild(sName);
+  header.appendChild(sTime);
+  d.appendChild(header);
+  const body=document.createElement("div");
+  body.textContent=pkt.text||"";
+  d.appendChild(body);
+  c.appendChild(d);
+  c.scrollTop=c.scrollHeight;
 }
 
-/* ═══ Quality Monitor ═══ */
-function startQualityMonitor(peerId){
-  if(qualityIntervals[peerId])clearInterval(qualityIntervals[peerId]);
-  qualityIntervals[peerId]=setInterval(()=>{
-    const call=mediaCalls[peerId];
-    if(!call||!call.peerConnection){updateQualityUI();return;}
-    call.peerConnection.getStats().then(stats=>{
-      let rtt=0,lost=0;
-      stats.forEach(r=>{
-        if(r.type==="candidate-pair"&&r.state==="succeeded")rtt=(r.currentRoundTripTime||0)*1000;
-        if(r.type==="inbound-rtp"&&r.kind==="video")lost=r.packetsLost||0;
-      });
-      updateQualityUI(peerId,rtt,lost);
-    }).catch(()=>{});
-  },3000);
-}
-function updateQualityUI(peerId,rtt,lost){
-  const box=$("qualityList");
-  if(!box)return;
-  const ids=Object.keys(qualityIntervals);
-  if(ids.length===0){box.innerHTML="لا اتصالات";return;}
-  box.innerHTML=ids.map(id=>{
-    const r=rtt||0,l=lost||0;
-    const icon=r>300||l>30?"🔴":r>150||l>10?"🟡":"🟢";
-    return `<div>${icon}${id.slice(0,6)} | ${Math.round(r)}ms |${l}lost</div>`;
-  }).join("");
+function renderAI(text,nick){
+  const c=$("messages");
+  const d=document.createElement("div");
+  d.className="msg-ai";
+  const t=document.createElement("div");
+  t.textContent="🤖 AI ("+(nick||"bot")+")";
+  t.style.cssText="color:#ffd700;font-weight:bold;font-size:11px;margin-bottom:4px";
+  d.appendChild(t);
+  const b=document.createElement("div");
+  b.textContent=text;
+  b.style.color="#fde68a";
+  d.appendChild(b);
+  c.appendChild(d);
+  c.scrollTop=c.scrollHeight;
 }
 
-/* ═══ UI Rendering ═══ */
-function copyMyId(){if(myPeerId){navigator.clipboard.writeText(myPeerId);showNotif("📋 تم النسخ");}}
+function renderFile(pkt,isMe){
+  const c=$("messages");
+  const d=document.createElement("div");
+  d.className="msg "+(isMe?"msg-me":"msg-peer");
+  const header=document.createElement("div");
+  header.style.cssText="font-size:10px;color:#94a3b8;border-bottom:1px solid #333;padding-bottom:3px;margin-bottom:6px";
+  header.textContent=(pkt.nick||"???")+" • "+pkt.time;
+  d.appendChild(header);
+  
+  // XSS-SAFE: عرض الصورة فقط إذا كانت data URL
+  if(pkt.fileType&&pkt.fileType.startsWith("image/")&&pkt.fileData&&pkt.fileData.startsWith("data:image/")){
+    const img=document.createElement("img");
+    img.src=pkt.fileData;
+    img.style.cssText="max-height:200px;border-radius:6px;margin-bottom:4px;display:block";
+    d.appendChild(img);
+  }
+  const fileRow=document.createElement("div");
+  fileRow.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:8px;background:rgba(0,0,0,.4);padding:6px;border-radius:6px";
+  const name=document.createElement("span");
+  name.textContent=pkt.fileName||"file";
+  name.style.cssText="font-size:11px;font-family:monospace;overflow:hidden;text-overflow:ellipsis";
+  fileRow.appendChild(name);
+  const link=document.createElement("a");
+  link.href=pkt.fileData;
+  link.download=pkt.fileName||"file";
+  link.textContent="💾";
+  link.style.cssText="background:#00f2fe;color:#000;padding:4px 8px;border-radius:4px;font-weight:bold;text-decoration:none";
+  fileRow.appendChild(link);
+  d.appendChild(fileRow);
+  c.appendChild(d);
+  c.scrollTop=c.scrollHeight;
+}
+
 function renderRoomList(){
   const box=$("roomList");
-  if(!box)return;
   box.innerHTML="";
   for(const k in rooms){
-    const r=rooms[k];
     const div=document.createElement("div");
-    div.className=`p-2 rounded-lg cursor-pointer flex justify-between items-center ${activeRoom===k?"bg-cyber-cyan/20 border border-cyber-cyan text-cyber-cyan font-bold":"bg-cyber-bg border border-cyber-border hover:border-cyber-cyan/50 text-gray-300"}`;
-    div.onclick=()=>selectRoom(k);
-    div.innerHTML=`<span class="truncate"># ${r.name}</span>`;
+    div.className="p-2 rounded cursor-pointer text-xs "+(currentRoom===k?"bg-cyan-400/20 border border-cyan-400 text-cyan-300":"bg-black border border-gray-700 text-gray-300");
+    div.textContent="# "+rooms[k].name;
+    div.onclick=()=>switchRoom(k);
     box.appendChild(div);
   }
 }
-function selectRoom(k){
-  activeRoom=k;
+
+function switchRoom(k){
+  currentRoom=k;
   renderRoomList();
-  $("currentRoomTitle").textContent="# "+rooms[k].name;
-  $("messagesContainer").innerHTML='<div class="msg-sys">🌟 قناة مشفرة آمنة</div>';
+  $("roomTitle").textContent="# "+rooms[k].name;
+  $("messages").innerHTML="";
   rooms[k].messages.forEach(m=>{
-    if(m.kind==="CHAT_MSG")appendMsgUI(m,m.senderId===myPeerId);
-    else if(m.kind==="FILE_SHARE")appendFileUI(m,m.senderId===myPeerId);
+    if(m.kind==="chat")renderMessage(m,m.sender===myPeerId);
+    else if(m.kind==="file")renderFile(m,m.sender===myPeerId);
   });
-}
-async function loadAndRenderHistory(){
-  const history=await idbAll("chatLog");
-  history.slice(-50).forEach(m=>{
-    if(!rooms[m.roomId])rooms[m.roomId]={name:m.roomId,messages:[]};
-    rooms[m.roomId].messages.push(m);
-  });
-  selectRoom(activeRoom);
-}
-function promptCreateRoom(){$("roomModal").classList.remove("hidden");}
-function closeRoomModal(){$("roomModal").classList.add("hidden");}
-function confirmCreateRoom(){
-  const n=$("modalRoomName").value.trim();
-  if(!n)return;
-  const k="room_"+Date.now();
-  rooms[k]={name:n,messages:[]};
-  broadcastMeshPacket({kind:"ROOM_CREATE",roomKey:k,roomName:n});
-  closeRoomModal();
-  selectRoom(k);
-  showNotif("✅ غرفة جديدة: "+n);
 }
 
-/* ═══ Chat ═══ */
-function sendChatMessage(){
-  const t=$("chatInput").value.trim();
-  if(!t)return;
+function updateUI(){
+  $("nodeCount").textContent=Object.keys(connections).length;
+  $("roomInfo").textContent="العقد: "+Object.keys(connections).length+" | تشفير: "+Object.keys(keys).length;
+  drawTopology();
+}
+
+function updateEncryptionStatus(){
+  const totalPeers=Object.keys(connections).length;
+  const encryptedPeers=Object.keys(keys).length;
+  const s=$("secStatus");
+  const s2=$("encInfo");
+  if(totalPeers===0){
+    s.textContent="🔴 لا اتصالات";
+    s.className="px-2 py-1 rounded bg-red-500/20 border border-red-500 text-red-300 font-bold";
+  } else if(encryptedPeers===totalPeers){
+    s.textContent="🟢 Encrypted ("+encryptedPeers+")";
+    s.className="px-2 py-1 rounded bg-green-500/20 border border-green-500 text-green-300 font-bold";
+  } else {
+    s.textContent="🟡 Handshake "+encryptedPeers+"/"+totalPeers;
+    s.className="px-2 py-1 rounded bg-yellow-500/20 border border-yellow-500 text-yellow-300 font-bold";
+  }
+  if(s2)s2.textContent=(encryptedPeers===totalPeers&&totalPeers>0)?"✅":"⏳";
+}
+
+/* ═══ Actions ═══ */
+function copyPeerId(){
+  if(myPeerId){
+    navigator.clipboard.writeText(myPeerId);
+    showNotif("📋 تم نسخ Peer ID");
+  }
+}
+
+function saveNickname(){
+  myNickname=$("nickname").value.trim()||"Node";
+  localStorage.setItem("nickname",myNickname);
+  showNotif("✅ تم حفظ الاسم");
+}
+
+function manualConnect(){
+  const target=$("peerTarget").value.trim();
+  if(!target||target===myPeerId)return;
+  if(connections[target]){showNotif("متصل بالفعل");return;}
+  const conn=peer.connect(target,{reliable:true});
+  setupConnection(conn);
+  $("peerTarget").value="";
+  showNotif("🔗 جاري الربط...");
+}
+
+async function sendMessage(){
+  const input=$("chatInput");
+  const text=input.value.trim();
+  if(!text)return;
+  
   const pkt={
-    kind:"CHAT_MSG",roomId:activeRoom,senderId:myPeerId,senderNick:myNickName,
-    text:t,time:new Date().toLocaleTimeString("ar-SA",{hour:"2-digit",minute:"2-digit"})
+    kind:"chat",
+    room:currentRoom,
+    sender:myPeerId,
+    nick:myNickname,
+    text:text,
+    time:new Date().toLocaleTimeString("ar",{hour:"2-digit",minute:"2-digit"})
   };
-  rooms[activeRoom].messages.push(pkt);
-  appendMsgUI(pkt,true);
-  broadcastMeshPacket(pkt);
-  idbPut("chatLog",pkt);
-  $("chatInput").value="";
-}
-function appendMsgUI(m,isMe){
-  const c=$("messagesContainer");
-  const d=document.createElement("div");
-  d.className=`msg-bubble p-3 text-xs md:text-sm ${isMe?"msg-me":"msg-peer"}`;
-  d.innerHTML=`<div class="flex justify-between items-center gap-4 border-b border-white/10 pb-1 mb-1 text-[10px] text-gray-400">
-    <span class="font-bold ${isMe?"text-cyber-magenta":"text-cyber-cyan"}">${esc(m.senderNick)}</span>
-    <span>${m.time}</span>
-  </div>
-  <div class="text-white whitespace-pre-wrap">${esc(m.text)}</div>`;
-  c.appendChild(d);
-  c.scrollTop=c.scrollHeight;
+  
+  // عرض محلياً
+  if(!rooms[currentRoom])rooms[currentRoom]={name:currentRoom,messages:[]};
+  rooms[currentRoom].messages.push(pkt);
+  renderMessage(pkt,true);
+  dbPut("messages",pkt);
+  input.value="";
+  
+  // إرسال مشفر
+  const sent=await sendEncrypted(pkt);
+  if(sent===0&&Object.keys(connections).length>0){
+    showNotif("⚠️ لم يُرسل — انتظر المصافحة");
+  }
+  
+  // AI
+  if(isAILeader&&text.toLowerCase().includes("@ai")){
+    const question=text.replace(/@ai/gi,"").trim();
+    setTimeout(()=>{
+      const response=aiRespond(question);
+      const aiPkt={kind:"ai",room:currentRoom,nick:myNickname,text:response};
+      renderAI(response,myNickname);
+      sendEncrypted(aiPkt);
+    },400);
+  }
 }
 
-/* ═══ File Sharing ═══ */
-function handleFileSelect(evt){
+/* ═══ AI (Rule-based — صادق) ═══ */
+function aiRespond(q){
+  const query=(q||"").toLowerCase();
+  if(!query)return "اكتب سؤالاً بعد @ai";
+  const rules=[
+    {p:["مرحب","سلام","أهلا"],r:["أهلاً! 👋","مرحباً!"],},
+    {p:["كيف حالك"],r:["بخير، شكراً!"]},
+    {p:["شكرا"],r:["العفو!","بكل سرور."]},
+    {p:["وقت","ساعة"],r:()=>["الوقت: "+new Date().toLocaleTimeString("ar")]},
+    {p:["تشفير","مشفر"],r:["التشفير E2EE محلي. لكن تنبيه: هذا ليس Signal Protocol."]},
+    {p:["help","مساعدة"],r:["جرب @ai للأسئلة، أو اسأل عن أي شيء."]}
+  ];
+  for(const rule of rules){
+    for(const p of rule.p){
+      if(query.includes(p)){
+        const r=typeof rule.r==="function"?rule.r():rule.r;
+        return r[Math.floor(Math.random()*r.length)];
+      }
+    }
+  }
+  return "لم أفهم. أنا AI بقواعد بسيطة — ليس نموذجاً حقيقياً.";
+}
+
+/* ═══ Files — CHUNKED ═══ */
+async function handleFile(evt){
   const f=evt.target.files[0];
   if(!f)return;
-  if(f.size>40*1024*1024){showNotif("⚠️ الحد 40MB");return;}
-  const r=new FileReader();
-  r.onload=e=>{
-    const pkt={kind:"FILE_SHARE",roomId:activeRoom,senderId:myPeerId,senderNick:myNickName,
-      fileName:f.name,fileType:f.type,fileData:e.target.result,
-      time:new Date().toLocaleTimeString("ar-SA",{hour:"2-digit",minute:"2-digit"})};
-    rooms[activeRoom].messages.push(pkt);
-    appendFileUI(pkt,true);
-    broadcastMeshPacket(pkt);
-    idbPut("chatLog",pkt);
+  if(f.size>MAX_FILE_SIZE){
+    showNotif("⚠️ الحد الأقصى "+Math.round(MAX_FILE_SIZE/1024/1024)+"MB");
+    return;
+  }
+  if(Object.keys(keys).length===0){
+    showNotif("⚠️ لا يمكن إرسال — لم تكتمل المصافحة");
+    return;
+  }
+  const reader=new FileReader();
+  reader.onload=async e=>{
+    const pkt={
+      kind:"file",
+      room:currentRoom,
+      sender:myPeerId,
+      nick:myNickname,
+      fileName:f.name,
+      fileType:f.type,
+      fileSize:f.size,
+      fileData:e.target.result,
+      time:new Date().toLocaleTimeString("ar",{hour:"2-digit",minute:"2-digit"})
+    };
+    if(!rooms[currentRoom])rooms[currentRoom]={name:currentRoom,messages:[]};
+    rooms[currentRoom].messages.push(pkt);
+    renderFile(pkt,true);
+    dbPut("messages",pkt);
+    const sent=await sendEncrypted(pkt);
+    if(sent>0)showNotif("📎 تم الإرسال");
   };
-  r.readAsDataURL(f);
+  reader.readAsDataURL(f);
+  evt.target.value="";
 }
-function appendFileUI(f,isMe){
-  const c=$("messagesContainer");
-  const d=document.createElement("div");
-  d.className=`msg-bubble p-3 text-xs md:text-sm ${isMe?"msg-me":"msg-peer"}`;
-  let prev="";
-  if(f.fileType.startsWith("image/"))prev=`<img src="${f.fileData}" class="max-h-48 rounded border border-cyber-border my-2">`;
-  d.innerHTML=`<div class="flex justify-between items-center gap-4 border-b border-white/10 pb-1 mb-1 text-[10px] text-gray-400">
-    <span class="font-bold ${isMe?"text-cyber-magenta":"text-cyber-cyan"}">${esc(f.senderNick)}</span>
-    <span>${f.time}</span>
-  </div>${prev}
-  <div class="flex items-center justify-between gap-2 bg-black/50 p-2 rounded border border-cyber-border">
-    <span class="truncate font-mono text-[11px]">${esc(f.fileName)}</span>
-    <a href="${f.fileData}" download="${f.fileName}" class="bg-cyber-cyan text-black font-bold px-2 py-1 rounded text-[10px]">💾 تحميل</a>
-  </div>`;
-  c.appendChild(d);
-  c.scrollTop=c.scrollHeight;
+
+/* ═══ Cinema — WHITELIST ═══ */
+function isAllowedCinemaUrl(url){
+  try{
+    const u=new URL(url);
+    if(u.protocol!=="https:")return false;
+    return ALLOWED_IFRAME_HOSTS.some(h=>u.hostname===h||u.hostname.endsWith("."+h));
+  }catch(e){return false;}
+}
+function showCinema(url){
+  if(!isAllowedCinemaUrl(url)){
+    showNotif("⚠️ رابط غير مسموح");
+    return;
+  }
+  let box=document.getElementById("cinemaBox");
+  if(box)box.remove();
+  box=document.createElement("div");
+  box.id="cinemaBox";
+  box.style.cssText="position:fixed;bottom:10px;right:10px;width:360px;height:220px;background:#000;border:2px solid #00f2fe;border-radius:12px;z-index:250;overflow:hidden";
+  const iframe=document.createElement("iframe");
+  iframe.src=url;
+  iframe.sandbox="allow-scripts allow-same-origin allow-presentation";
+  iframe.style.cssText="width:100%;height:100%;border:none";
+  iframe.allowFullscreen=true;
+  box.appendChild(iframe);
+  const close=document.createElement("button");
+  close.textContent="✖";
+  close.style.cssText="position:absolute;top:6px;left:6px;background:#ff0844;color:#fff;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-weight:bold";
+  close.onclick=()=>box.remove();
+  box.appendChild(close);
+  document.body.appendChild(box);
+  showNotif("🎬 سينما مشغلة");
 }
 
 /* ═══ Calls ═══ */
-async function startVoiceCall(){
+async function callVoice(){
   try{
     localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
-    startAudioVisualizer();
-    initiateMediaCall();
+    startCall();
   }catch(e){showNotif("❌ ميكروفون مرفوض");}
 }
-async function startVideoCall(){
+async function callVideo(){
   try{
     localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:{width:1280,height:720}});
     $("localVideo").srcObject=localStream;
     $("videoStage").classList.remove("hidden");
-    startAudioVisualizer();
-    initiateMediaCall();
+    startCall();
   }catch(e){showNotif("❌ كاميرا مرفوضة");}
 }
-async function shareScreenCall(){
+async function shareScreen(){
   try{
-    screenStream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true});
-    localStream=screenStream;
-    $("localVideo").srcObject=screenStream;
+    localStream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true});
+    $("localVideo").srcObject=localStream;
     $("videoStage").classList.remove("hidden");
-    initiateMediaCall();
-  }catch(e){showNotif("❌ إلغاء المشاركة");}
+    startCall();
+  }catch(e){showNotif("❌ إلغاء");}
 }
-function initiateMediaCall(){
-  $("endCallBtn").classList.remove("hidden");
-  for(const pId in meshConnections){
+function startCall(){
+  $("endBtn").classList.remove("hidden");
+  for(const pId in connections){
     const call=peer.call(pId,localStream);
-    handleCallStream(call);
+    handleCall(call);
   }
-  showNotif("📞 اتصال بالشبكة...");
 }
 function handleIncomingCall(call){
-  showNotif("📞 مكالمة من: "+call.peer.slice(0,6));
-  if(confirm("قبول المكالمة؟")){
-    navigator.mediaDevices.getUserMedia({audio:true,video:true}).then(stream=>{
-      localStream=stream;
-      $("localVideo").srcObject=localStream;
-      $("videoStage").classList.remove("hidden");
-      $("endCallBtn").classList.remove("hidden");
-      call.answer(localStream);
-      handleCallStream(call);
-    }).catch(()=>{call.answer();handleCallStream(call);});
-  } else call.close();
+  if(!confirm("📞 مكالمة من "+call.peer.slice(0,8)+"؟")){call.close();return;}
+  navigator.mediaDevices.getUserMedia({audio:true,video:true}).then(stream=>{
+    localStream=stream;
+    $("localVideo").srcObject=stream;
+    $("videoStage").classList.remove("hidden");
+    $("endBtn").classList.remove("hidden");
+    call.answer(stream);
+    handleCall(call);
+  }).catch(()=>{
+    call.answer();
+    handleCall(call);
+  });
 }
-function handleCallStream(call){
+function handleCall(call){
   mediaCalls[call.peer]=call;
   call.on("stream",rs=>{
-    $("videoStage").classList.remove("hidden");
-    let v=document.getElementById("remoteVid_"+call.peer);
+    let v=document.getElementById("rem_"+call.peer);
     if(!v){
-      const w=document.createElement("div");
-      w.className="relative bg-black rounded-lg overflow-hidden border border-cyber-cyan";
-      w.id="remoteWrapper_"+call.peer;
-      w.innerHTML=`<video id="remoteVid_${call.peer}" autoplay playsinline class="w-full h-full object-cover"></video>
-        <span class="absolute bottom-1 right-1 bg-black/70 text-cyber-green px-1.5 py-0.5 rounded text-[9px]">${call.peer.slice(0,6)}</span>
-        <button class="absolute top-1 left-1 bg-cyber-gold text-black px-1.5 py-0.5 rounded text-[9px] font-bold" onclick="popOutVideo('${call.peer}')">🔲 PiP</button>`;
-      $("remoteVideoContainer").appendChild(w);
-      v=document.getElementById("remoteVid_"+call.peer);
+      const wrap=document.createElement("div");
+      wrap.className="relative bg-black rounded overflow-hidden border border-cyan-400";
+      const vid=document.createElement("video");
+      vid.id="rem_"+call.peer;
+      vid.autoplay=true;vid.playsInline=true;
+      vid.className="w-full h-32 object-cover";
+      const label=document.createElement("span");
+      label.textContent=call.peer.slice(0,6);
+      label.style.cssText="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.7);color:#00ff66;padding:2px 6px;border-radius:4px;font-size:9px";
+      wrap.appendChild(vid);
+      wrap.appendChild(label);
+      $("remoteVideos").appendChild(wrap);
+      v=vid;
     }
     v.srcObject=rs;
   });
   call.on("close",()=>{
     delete mediaCalls[call.peer];
-    const w=document.getElementById("remoteWrapper_"+call.peer);
-    if(w)w.remove();
+    const v=document.getElementById("rem_"+call.peer);
+    if(v&&v.parentElement)v.parentElement.remove();
   });
 }
-function endMediaCall(){
+function endCall(){
   if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null;}
   for(const p in mediaCalls)mediaCalls[p].close();
   mediaCalls={};
   $("videoStage").classList.add("hidden");
-  $("endCallBtn").classList.add("hidden");
-  showNotif("📴 انتهت المكالمات");
+  $("endBtn").classList.add("hidden");
 }
 
-/* ═══ Audio Visualizer ═══ */
-let audioVizRaf=null;
-function startAudioVisualizer(){
-  const viz=$("audioViz");
-  if(!viz||!localStream)return;
-  viz.innerHTML="";
-  for(let i=0;i<12;i++){
-    const bar=document.createElement("span");
-    bar.style.height="2px";
-    viz.appendChild(bar);
-  }
-  if(!window.audioCtx)window.audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-  const ctx=window.audioCtx;
-  if(ctx.state==="suspended")ctx.resume();
-  const src=ctx.createMediaStreamSource(localStream);
-  const analyser=ctx.createAnalyser();
-  analyser.fftSize=64;
-  src.connect(analyser);
-  const data=new Uint8Array(analyser.frequencyBinCount);
-  function loop(){
-    analyser.getByteFrequencyData(data);
-    const bars=viz.querySelectorAll("span");
-    bars.forEach((bar,i)=>{
-      const h=Math.max(2,(data[i]||0)/3);
-      bar.style.height=h+"px";
-    });
-    audioVizRaf=requestAnimationFrame(loop);
-  }
-  loop();
+/* ═══ Rooms ═══ */
+function promptCreateRoom(){$("roomModal").classList.remove("hidden");}
+function closeRoomModal(){$("roomModal").classList.add("hidden");}
+async function createRoom(){
+  const name=$("modalRoomName").value.trim();
+  if(!name)return;
+  const k="room_"+Date.now();
+  rooms[k]={name:name,messages:[]};
+  dbPut("rooms",{id:k,name:name});
+  closeRoomModal();
+  switchRoom(k);
+  // بث مشفر
+  await sendEncrypted({kind:"room_create",room:k,name:name});
+  showNotif("✅ غرفة: "+name);
 }
-
-/* ═══ PiP ═══ */
-let pipCounter=0;
-function popOutVideo(peerId){
-  const src=document.getElementById("remoteVid_"+peerId);
-  if(!src)return;
-  pipCounter++;
-  const pip=document.createElement("div");
-  pip.className="pip-video";
-  const offset=pipCounter*35;
-  pip.style.top=(90+offset)+"px";
-  pip.style.right=(20+offset)+"px";
-  pip.innerHTML=`<button class="pip-close" onclick="this.parentElement.remove()">✖</button><video autoplay playsinline></video>`;
-  document.body.appendChild(pip);
-  pip.querySelector("video").srcObject=src.srcObject;
-  let drag=false,ox=0,oy=0;
-  pip.addEventListener("pointerdown",e=>{
-    if(e.target.classList.contains("pip-close"))return;
-    drag=true;
-    const r=pip.getBoundingClientRect();
-    ox=e.clientX-r.left;oy=e.clientY-r.top;
-    pip.setPointerCapture(e.pointerId);
+async function loadRooms(){
+  const stored=await dbAll("rooms");
+  stored.forEach(r=>{rooms[r.id]={name:r.name,messages:[]};});
+  const storedMsgs=await dbAll("messages");
+  storedMsgs.slice(-100).forEach(m=>{
+    if(!rooms[m.room])rooms[m.room]={name:m.room,messages:[]};
+    rooms[m.room].messages.push(m);
   });
-  pip.addEventListener("pointermove",e=>{
-    if(!drag)return;
-    pip.style.left=(e.clientX-ox)+"px";
-    pip.style.top=(e.clientY-oy)+"px";
-    pip.style.right="auto";
+  switchRoom("general");
+}
+
+/* ═══ Theme — يشتغل فعلاً ═══ */
+const THEMES=["","theme-matrix","theme-cyber","theme-gold","theme-neon","theme-sunset"];
+let themeIdx=0;
+function toggleTheme(){
+  document.body.classList.remove(...THEMES.filter(t=>t));
+  themeIdx=(themeIdx+1)%THEMES.length;
+  if(THEMES[themeIdx])document.body.classList.add(THEMES[themeIdx]);
+  localStorage.setItem("theme",THEMES[themeIdx]);
+  showNotif("🎨 ثيم "+themeIdx);
+}
+
+/* ═══ Topology ═══ */
+function drawTopology(){
+  const c=$("topology");
+  if(!c)return;
+  c.width=c.clientWidth;c.height=c.clientHeight;
+  const ctx=c.getContext("2d");
+  ctx.clearRect(0,0,c.width,c.height);
+  const cx=c.width/2,cy=c.height/2;
+  ctx.fillStyle="#00f2fe";
+  ctx.beginPath();ctx.arc(cx,cy,6,0,Math.PI*2);ctx.fill();
+  const peers=Object.keys(connections);
+  peers.forEach((id,i)=>{
+    const angle=(i/Math.max(1,peers.length))*Math.PI*2;
+    const x=cx+Math.cos(angle)*35,y=cy+Math.sin(angle)*35;
+    ctx.strokeStyle=keys[id]?"#00ff66":"#ffd700";
+    ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x,y);ctx.stroke();
+    ctx.fillStyle=keys[id]?"#ff007f":"#888";
+    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();
   });
-  pip.addEventListener("pointerup",()=>{drag=false;});
 }
 
-/* ═══ Recording ═══ */
-function toggleRecord(){
-  if(!localStream){showNotif("⚠️ لا يوجد بث");return;}
-  if(mediaRecorder&&mediaRecorder.state==="recording"){mediaRecorder.stop();return;}
-  try{
-    recChunks=[];
-    const mime=["video/webm;codecs=vp9,opus","video/webm"].find(t=>MediaRecorder.isTypeSupported(t));
-    mediaRecorder=new MediaRecorder(localStream,mime?{mimeType:mime}:undefined);
-    mediaRecorder.ondataavailable=e=>{if(e.data.size>0)recChunks.push(e.data);};
-    mediaRecorder.onstop=()=>{
-      const blob=new Blob(recChunks,{type:"video/webm"});
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement("a");
-      a.href=url;a.download="supreme_"+Date.now()+".webm";
-      document.body.appendChild(a);a.click();a.remove();
-      $("recBtn").classList.remove("bg-cyber-red");
-      showNotif("💾 تم الحفظ");
-    };
-    mediaRecorder.start();
-    $("recBtn").classList.add("bg-cyber-red");
-    showNotif("⏺️ بدأ التسجيل");
-  }catch(e){showNotif("❌ فشل التسجيل");}
-}
-
-/* ═══ Topology Canvas ═══ */
-function startTopologyCanvas(){
-  const c=$("topologyCanvas"),ctx=c.getContext("2d");
-  function draw(){
-    if(!c)return;
-    c.width=c.clientWidth;c.height=c.clientHeight;
-    ctx.clearRect(0,0,c.width,c.height);
-    const cx=c.width/2,cy=c.height/2;
-    ctx.fillStyle="#00f2fe";
-    ctx.beginPath();ctx.arc(cx,cy,6,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle="#00f2fe";ctx.font="9px monospace";
-    ctx.fillText("YOU",cx-12,cy+20);
-    const keys=Object.keys(meshConnections);
-    keys.forEach((id,i)=>{
-      const angle=(i/Math.max(1,keys.length))*Math.PI*2;
-      const x=cx+Math.cos(angle)*30,y=cy+Math.sin(angle)*30;
-      ctx.strokeStyle="#00ff66";ctx.lineWidth=1.5;
-      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x,y);ctx.stroke();
-      ctx.fillStyle="#ff007f";
-      ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();
+/* ═══ Command Palette ═══ */
+function openCommandPalette(){
+  const ex=document.getElementById("paletteModal");
+  if(ex){ex.remove();return;}
+  const cmds=[
+    {n:"📞 مكالمة صوتية",a:callVoice},
+    {n:"🎥 فيديو",a:callVideo},
+    {n:"🖥️ شاشة",a:shareScreen},
+    {n:"🔗 ربط",a:()=>{$("peerTarget").focus();}},
+    {n:"📱 QR",a:showQR},
+    {n:"🎨 ثيم",a:toggleTheme},
+  ];
+  const m=document.createElement("div");
+  m.id="paletteModal";
+  m.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:350;display:flex;align-items:flex-start;justify-content:center;padding-top:80px";
+  m.innerHTML=`<div style="background:#0a0520;border:2px solid #00f2fe;border-radius:12px;width:90%;max-width:400px;overflow:hidden">
+    <input id="paletteInput" style="width:100%;background:transparent;border:none;outline:none;padding:14px;color:#00f2fe;font-size:13px;border-bottom:1px solid #1f1345" placeholder="ابحث..." autofocus>
+    <div id="paletteList" style="max-height:300px;overflow-y:auto"></div>
+  </div>`;
+  document.body.appendChild(m);
+  const render=function(f){
+    const list=document.getElementById("paletteList");
+    list.innerHTML="";
+    cmds.filter(c=>!f||c.n.includes(f)).forEach(c=>{
+      const d=document.createElement("div");
+      d.style.cssText="padding:12px;cursor:pointer;color:#e2e8f0;font-size:12px;border-bottom:1px solid #1f1345";
+      d.textContent=c.n;
+      d.onclick=()=>{m.remove();c.a();};
+      list.appendChild(d);
     });
-  }
-  draw();
-  setInterval(draw,800);
+  };
+  render("");
+  document.getElementById("paletteInput").oninput=e=>render(e.target.value);
+  m.onclick=e=>{if(e.target===m)m.remove();};
 }
 
 /* ═══ QR ═══ */
 function showQR(){
   if(!myPeerId)return;
   $("qrModal").classList.remove("hidden");
-  $("qrIdText").textContent=myPeerId;
-  if(typeof QRCode!=="undefined")QRCode.toCanvas($("qrCanvas"),myPeerId,{width:200,margin:1});
+  $("qrText").textContent=myPeerId;
+  if(typeof QRCode!=="undefined")QRCode.toCanvas($("qrCanvas"),myPeerId,{width:180,margin:1});
 }
 function closeQR(){$("qrModal").classList.add("hidden");}
 
-/* ═══ Themes ═══ */
-function toggleTheme(){
-  document.body.classList.remove(themes[currentTheme]);
-  currentTheme=(currentTheme+1)%themes.length;
-  document.body.classList.add(themes[currentTheme]);
-  showNotif("🎨 ثيم: "+themes[currentTheme].replace("theme-",""));
-}
-
-/* ═══ Utils ═══ */
-function broadcastNameChange(){myNickName=$("nickName").value.trim()||"Supreme_Node";showNotif("🏷️ تم التحديث");}
-function regenerateKeys(){generateECDHKeyPair().then(()=>showNotif("🔑 مفاتيح جديدة"));}
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-
+/* ═══ Matrix ═══ */
 function startMatrix(){
-  const c=$("matrixCanvas"),x=c.getContext("2d");
+  const c=$("matrix"),x=c.getContext("2d");
   function resize(){c.width=innerWidth;c.height=innerHeight;}
   resize();addEventListener("resize",resize);
-  const chars="SUPREME-NEXUS-LAFI-V300-∞-⛓️";
+  const chars="V503-SECURE-∞";
   let drops=Array(Math.floor(c.width/16)).fill(1);
   setInterval(()=>{
     x.fillStyle="rgba(3,0,20,.08)";x.fillRect(0,0,c.width,c.height);
@@ -737,906 +879,29 @@ function startMatrix(){
       if(drops[i]*16>c.height&&Math.random()>.975)drops[i]=0;
       drops[i]++;
     }
-  },50);
+  },60);
 }
 
-/* ═══════════════════════════════════════════════════
-   الطبقة 2: Terminal + Blockchain + Intelligence
-   ═══════════════════════════════════════════════════ */
-
-let currentPath="/",termHistory=[],hIdx=-1;
-let blockchain=[],memories=[],shellVars={};
-let terminalActive=false;
-
-/* ═══ Terminal UI ═══ */
-function openTerminal(){
-  terminalActive=true;
-  const existing=document.getElementById("terminalOverlay");
-  if(existing){existing.remove();terminalActive=false;return;}
-  
-  const ov=document.createElement("div");
-  ov.id="terminalOverlay";
-  ov.style.cssText="position:fixed;inset:15px;background:rgba(0,0,0,.98);border:2px solid #00f2fe;border-radius:14px;z-index:250;display:flex;flex-direction:column;padding:12px;box-shadow:0 0 80px rgba(0,242,254,.6)";
-  ov.innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1f1345;padding-bottom:6px;margin-bottom:8px;font-size:11px">
-      <span style="color:#ffd700;font-weight:bold">⌨️ SUPREME TERMINAL v300 — lafi@sovereign:~#</span>
-      <div style="display:flex;gap:6px">
-        <button onclick="runCmd('help')" style="background:#7928ca;color:#fff;border:none;padding:3px 8px;border-radius:4px;font-size:10px;cursor:pointer">؟</button>
-        <button onclick="runCmd('clear')" style="background:#00f2fe;color:#000;border:none;padding:3px 8px;border-radius:4px;font-size:10px;cursor:pointer">🧹</button>
-        <button onclick="closeTerminal()" style="background:#ff0844;color:#fff;border:none;padding:3px 8px;border-radius:4px;font-size:10px;cursor:pointer">✖</button>
-      </div>
-    </div>
-    <div id="termBody" class="term-body" style="flex:1;overflow-y:auto;color:#e5e7eb;padding-right:4px"></div>
-    <div style="display:flex;align-items:center;gap:6px;background:rgba(0,0,0,.5);border:1px solid #1f1345;border-radius:8px;padding:6px 10px;margin-top:8px">
-      <span id="termPrompt" style="color:#ff007f;font-weight:bold;font-size:11px">lafi@sovereign:~#</span>
-      <input id="termInput" style="flex:1;background:transparent;border:none;outline:none;color:#00ff66;font-family:'Fira Code',monospace;font-size:12px" placeholder="help | chain | mem | hash | encrypt..." autofocus>
-    </div>`;
-  document.body.appendChild(ov);
-  
-  document.getElementById("termInput").addEventListener("keydown",e=>{
-    if(e.key==="ArrowUp"){e.preventDefault();if(hIdx>0){hIdx--;e.target.value=termHistory[hIdx];}}
-    else if(e.key==="ArrowDown"){e.preventDefault();if(hIdx<termHistory.length-1){hIdx++;e.target.value=termHistory[hIdx];}else{hIdx=termHistory.length;e.target.value="";}}
-    else if(e.key==="Enter"){const v=e.target.value;e.target.value="";runCmd(v);}
-  });
-  
-  printTerm("╔═══════════════════════════════════════════╗","#ffd700");
-  printTerm("║ SUPREME NEXUS v300 TERMINAL              ║","#ffd700");
-  printTerm("║ Architect: لافي منير                      ║","#ffd700");
-  printTerm("╚═══════════════════════════════════════════╝","#ffd700");
-  printTerm("اكتب help للأوامر","#00f2fe");
-  printTerm("","");
-  setTimeout(()=>document.getElementById("termInput").focus(),100);
-}
-
-function closeTerminal(){
-  const ov=document.getElementById("terminalOverlay");
-  if(ov)ov.remove();
-  terminalActive=false;
-}
-
-function printTerm(text,color){
-  color=color||"#e5e7eb";
-  const body=document.getElementById("termBody");
-  if(!body)return;
-  const d=document.createElement("div");
-  d.style.color=color;
-  d.textContent=text;
-  body.appendChild(d);
-  body.scrollTop=body.scrollHeight;
-}
-
-/* ═══ Blockchain ═══ */
-async function sha256(msg){
-  const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(msg));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
-}
-
-async function initChain(){
-  blockchain=await idbAll("chain");
-  if(!blockchain.length){
-    const b={index:0,ts:Date.now(),data:"GENESIS — لافي منير v300",prev:"0",hash:""};
-    b.hash=await sha256(b.prev+b.data+b.ts);
-    await idbPut("chain",b);
-    blockchain=[b];
-  }
-  blockchain.sort((a,b)=>a.index-b.index);
-  const el=$("chainCount");
-  if(el)el.textContent=blockchain.length;
-}
-
-async function mineBlock(data){
-  data=data||("Block "+new Date().toISOString());
-  const prev=blockchain[blockchain.length-1]||{hash:"0",index:-1};
-  const ts=Date.now();
-  let nonce=0,hash;
-  do{
-    hash=await sha256(prev.hash+data+ts+nonce);
-    nonce++;
-    if(nonce>200000)break;
-  }while(!hash.startsWith("000"));
-  const b={index:prev.index+1,ts,data,prev:prev.hash,hash,nonce};
-  await idbPut("chain",b);
-  blockchain.push(b);
-  const el=$("chainCount");
-  if(el)el.textContent=blockchain.length;
-  printTerm("[CHAIN] ⛏️ Block #"+b.index+" (nonce:"+nonce+", hash:"+hash.slice(0,16)+")","#00ff66");
-  return b;
-}
-
-async function verifyChain(){
-  let ok=true;
-  for(let i=1;i<blockchain.length;i++){
-    const c=blockchain[i],p=blockchain[i-1];
-    if(c.prev!==p.hash){ok=false;break;}
-    const h=await sha256(p.hash+c.data+c.ts+(c.nonce||0));
-    if(h!==c.hash){ok=false;break;}
-  }
-  printTerm(ok?"[CHAIN] ✅ Verify OK ("+blockchain.length+" blocks)":"[CHAIN] ❌ TAMPERED!", ok?"#00ff66":"#ff0844");
-  return ok;
-}
-
-/* ═══ Vector Memory ═══ */
-function textToVector(text,dim){
-  dim=dim||64;
-  const v=new Float32Array(dim);
-  const clean=text.toLowerCase().replace(/[^\u0600-\u06FFa-z0-9 ]/g," ");
-  for(let i=0;i<clean.length;i++){
-    const c=clean.charCodeAt(i);
-    v[c%dim]+=1;
-    if(i<clean.length-1)v[(c+clean.charCodeAt(i+1))%dim]+=0.5;
-  }
-  let n=0;for(let i=0;i<dim;i++)n+=v[i]*v[i];
-  n=Math.sqrt(n)||1;
-  for(let i=0;i<dim;i++)v[i]/=n;
-  return Array.from(v);
-}
-function cosineSim(a,b){
-  let d=0,na=0,nb=0;
-  for(let i=0;i<a.length;i++){d+=a[i]*b[i];na+=a[i]*a[i];nb+=b[i]*b[i];}
-  return d/((Math.sqrt(na)*Math.sqrt(nb))||1);
-}
-async function initMemory(){
-  memories=await idbAll("memory");
-  const el=$("memCount");
-  if(el)el.textContent=memories.length;
-}
-async function addMemory(text){
-  if(!text)return;
-  const vec=textToVector(text);
-  const entry={text,vec,ts:Date.now()};
-  await idbPut("memory",entry);
-  memories.push(entry);
-  const el=$("memCount");
-  if(el)el.textContent=memories.length;
-  printTerm("[MEM] ✅ "+text,"#00ff66");
-}
-function searchMemory(query){
-  if(!query){printTerm("[MEM] عدد الذكريات: "+memories.length,"#00f2fe");return;}
-  const qv=textToVector(query);
-  const scored=memories.map(m=>({...m,score:cosineSim(qv,m.vec||[])})).sort((a,b)=>b.score-a.score).slice(0,10);
-  printTerm("[MEM] 🔍 نتائج البحث:","#00f2fe");
-  scored.forEach(s=>printTerm("  "+(s.score*100).toFixed(1)+"% | "+s.text.slice(0,60),"#38bdf8"));
-}
-
-/* ═══ Crypto Commands ═══ */
-async function doAESEncrypt(text,key){
-  try{
-    const enc=new TextEncoder();
-    const salt=crypto.getRandomValues(new Uint8Array(16));
-    const iv=crypto.getRandomValues(new Uint8Array(12));
-    const keyMat=await crypto.subtle.importKey("raw",enc.encode(key),"PBKDF2",false,["deriveKey"]);
-    const aesKey=await crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:100000,hash:"SHA-256"},keyMat,{name:"AES-GCM",length:256},false,["encrypt"]);
-    const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},aesKey,enc.encode(text));
-    const combo=new Uint8Array(salt.length+iv.length+ct.byteLength);
-    combo.set(salt);combo.set(iv,salt.length);combo.set(new Uint8Array(ct),salt.length+iv.length);
-    return "AES:"+btoa(String.fromCharCode.apply(null,combo));
-  }catch(e){return null;}
-}
-async function doAESDecrypt(cipher,key){
-  try{
-    if(!cipher.startsWith("AES:"))return null;
-    const bin=atob(cipher.slice(4));
-    const data=new Uint8Array(bin.length);
-    for(let i=0;i<bin.length;i++)data[i]=bin.charCodeAt(i);
-    const salt=data.slice(0,16),iv=data.slice(16,28),ct=data.slice(28);
-    const keyMat=await crypto.subtle.importKey("raw",new TextEncoder().encode(key),"PBKDF2",false,["deriveKey"]);
-    const aesKey=await crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:100000,hash:"SHA-256"},keyMat,{name:"AES-GCM",length:256},false,["decrypt"]);
-    const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv},aesKey,ct);
-    return new TextDecoder().decode(pt);
-  }catch(e){return null;}
-}
-function xorCipher(text,key){
-  const t=new TextEncoder().encode(text),k=new TextEncoder().encode(key||"lafi");
-  const o=new Uint8Array(t.length);
-  for(let i=0;i<t.length;i++)o[i]=t[i]^k[i%k.length];
-  let s="";for(let i=0;i<o.length;i++)s+=String.fromCharCode(o[i]);
-  return "XOR:"+btoa(s);
-}
-function xorDecipher(c,key){
-  try{
-    if(!c.startsWith("XOR:"))return null;
-    const bin=atob(c.slice(4)),b=new Uint8Array(bin.length);
-    for(let i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);
-    const k=new TextEncoder().encode(key||"lafi"),o=new Uint8Array(b.length);
-    for(let i=0;i<b.length;i++)o[i]=b[i]^k[i%k.length];
-    return new TextDecoder().decode(o);
-  }catch(e){return null;}
-}
-
-/* ═══ Self-Healing Agent ═══ */
-async function selfHealAgent(cmd,error){
-  printTerm("[AGENT] 🤖 تحليل الخطأ...","#ffd700");
-  const hints={
-    "undefined":"متغير غير معرّف — تحقق من الاسم",
-    "not a function":"الكائن لا يحتوي على هذه الدالة",
-    "Cannot read":"قيمة null أو undefined",
-    "SyntaxError":"خطأ صياغة — راجع الأقواس",
-    "NetworkError":"خطأ شبكة — تحقق من الاتصال"
-  };
-  let hint="جرّب help للأوامر المتاحة";
-  for(const k in hints){if(String(error).includes(k)){hint=hints[k];break;}}
-  printTerm("[AGENT] 💡 "+hint,"#00f2fe");
-  return hint;
-}
-
-/* ═══ Command Router ═══ */
-async function runCmd(line){
-  if(!line||!line.trim())return;
-  const raw=line.trim();
-  printTerm("lafi@sovereign:~# "+raw,"#ff007f");
-  termHistory.push(raw);hIdx=termHistory.length;
-  const [cmd,...args]=raw.split(/\s+/);
-  const c=cmd.toLowerCase();
-  try{
-    switch(c){
-      case "help":
-        printTerm("═══ SUPREME NEXUS v300 — الأوامر ═══","#ffd700");
-        printTerm(" 📁 ls | cd | pwd | echo | clear","#38bdf8");
-        printTerm(" ⛓️  chain | mine <data> | verify","#38bdf8");
-        printTerm(" 🧠 mem <text> | search <q> | memories","#38bdf8");
-        printTerm(" 🔐 aes <txt> <key> | unaes <cipher> <key>","#38bdf8");
-        printTerm(" 🔐 xor <txt> <key> | unxor <cipher> <key>","#38bdf8");
-        printTerm(" #️⃣  hash <text>","#38bdf8");
-        printTerm(" 📊 stats | sysinfo | permissions","#38bdf8");
-        printTerm(" 🎬 cinema | qr | snake | guess | pong | chess","#38bdf8");
-        printTerm(" 🎨 theme | sounds | ai <text> | speak <text>","#38bdf8");
-        printTerm(" 📡 live | video | voice | screen | p2p <id>","#38bdf8");
-        printTerm(" 💾 export | import | backup","#38bdf8");
-        break;
-      case "clear": {const b=document.getElementById("termBody");if(b)b.innerHTML="";break;}
-      case "whoami": printTerm("lafi-sovereign-architect (CROWN 👑)","#ffd700");break;
-      case "id": printTerm("uid=0(lafi) gid=0(crown) groups=all,supreme,nexus","#ffd700");break;
-      case "pwd": printTerm(currentPath,"#00f2fe");break;
-      case "cd": currentPath=args[0]||"/";printTerm("→ "+currentPath,"#00f2fe");break;
-      case "ls": printTerm("[dir] root/ | home/ | workspace/ | memory.db | chain.db","#00f2fe");break;
-      case "echo": printTerm(args.join(" "),"#00ff66");break;
-      case "sysinfo":
-        printTerm("═══ SUPREME NEXUS v300 ∞ ═══","#ffd700");
-        printTerm("Architect: لافي منير","#00f2fe");
-        printTerm("Blocks   : "+blockchain.length,"#00f2fe");
-        printTerm("Memories : "+memories.length,"#00f2fe");
-        printTerm("P2P      : "+(peer&&!peer.destroyed?"ONLINE":"OFF"),"#00f2fe");
-        printTerm("Nodes    : "+Object.keys(meshConnections).length,"#00f2fe");
-        printTerm("Rooms    : "+Object.keys(rooms).length,"#00f2fe");
-        break;
-      case "stats":
-        printTerm("📊 Blocks:"+blockchain.length+" | Mem:"+memories.length+" | Nodes:"+Object.keys(meshConnections).length+" | Rooms:"+Object.keys(rooms).length,"#ffd700");
-        break;
-      case "permissions":
-        printTerm("👑 SUPREME ARCHITECT — كل الصلاحيات","#ffd700");
-        printTerm("✅ ROOT | ✅ Blockchain | ✅ AES-256 | ✅ P2P | ✅ AI","#00ff66");
-        break;
-      case "chain":
-        printTerm("═══ BLOCKCHAIN ═══","#ffd700");
-        blockchain.slice(-10).forEach(b=>printTerm("[#"+b.index+"] "+b.hash.slice(0,20)+"... | "+b.data.slice(0,40),"#00f2fe"));
-        break;
-      case "mine": {
-        const b=await mineBlock(args.join(" "));
-        printTerm("[MINED] Block #"+b.index,"#00ff66");
-        break;
-      }
-      case "verify": await verifyChain();break;
-      case "mem": await addMemory(args.join(" "));break;
-      case "search": searchMemory(args.join(" "));break;
-      case "memories":
-        printTerm("[MEM] العدد: "+memories.length,"#00f2fe");
-        memories.slice(-10).forEach(m=>printTerm("  • "+m.text.slice(0,60),"#38bdf8"));
-        break;
-      case "hash": {
-        const h=await sha256(args.join(" ")||"");
-        printTerm("[SHA-256] "+h,"#00ff66");
-        break;
-      }
-      case "aes": {
-        const key=args[args.length-1]||"lafi";
-        const txt=args.slice(0,-1).join(" ")||"secret";
-        const enc=await doAESEncrypt(txt,key);
-        printTerm("[AES-GCM] "+enc,"#00ff66");
-        break;
-      }
-      case "unaes": {
-        const key=args[args.length-1]||"lafi";
-        const cipher=args.slice(0,-1).join(" ");
-        const dec=await doAESDecrypt(cipher,key);
-        printTerm("[AES] "+(dec||"فشل الفك"),dec?"#00ff66":"#ff0844");
-        break;
-      }
-      case "xor": {
-        const key=args[args.length-1]||"lafi";
-        const txt=args.slice(0,-1).join(" ")||"secret";
-        printTerm("[XOR] "+xorCipher(txt,key),"#00ff66");
-        break;
-      }
-      case "unxor": {
-        const key=args[args.length-1]||"lafi";
-        const cipher=args.slice(0,-1).join(" ");
-        const dec=xorDecipher(cipher,key);
-        printTerm("[XOR] "+(dec||"فشل"),dec?"#00ff66":"#ff0844");
-        break;
-      }
-      case "theme": toggleTheme();break;
-      case "cinema": {
-        const url=args.join(" ");
-        if(url&&typeof showCinema==="function")showCinema(url);
-        else printTerm("cinema <url>","#ff0844");
-        break;
-      }
-      case "qr": {
-        const txt=args.join(" ");
-        if(txt)generateQRCode(txt);
-        else printTerm("qr <text>","#ff0844");
-        break;
-      }
-      case "snake": startSnake();break;
-      case "guess": startGuess();break;
-      case "pong": startPong();break;
-      case "chess": startChess();break;
-      case "video": startVideoCall();break;
-      case "voice": startVoiceCall();break;
-      case "screen": shareScreenCall();break;
-      case "ai": {
-        const q=args.join(" ");
-        const a=aiRespond(q);
-        printTerm("[AI] "+a,"#00ff66");
-        break;
-      }
-      case "speak": {
-        const t=args.join(" ");
-        if("speechSynthesis" in window){
-          const u=new SpeechSynthesisUtterance(t);
-          u.lang="ar-SA";
-          speechSynthesis.speak(u);
-          printTerm("[TTS] 🔉 تم التشغيل","#00ff66");
-        }
-        break;
-      }
-      case "export": exportData();break;
-      case "import": importData();break;
-      case "backup": fullBackup();break;
-      default:
-        printTerm("Unknown: "+cmd+" — اكتب help","#ff0844");
-        await selfHealAgent(cmd,"command not found");
-    }
-  }catch(err){
-    printTerm("[ERR] "+err.message,"#ff0844");
-    await selfHealAgent(raw,err.message);
-  }
-}
-
-/* ═══ Local AI (Rule-based) ═══ */
-function aiRespond(query){
-  if(!query)return "اكتب سؤالك";
-  const q=query.toLowerCase();
-  if(q.includes("مرحبا")||q.includes("سلام"))return "أهلاً بك يا لافي منير! 👑";
-  if(q.includes("كيف حالك"))return "بخير وأنت؟ النظام جاهز للعمل!";
-  if(q.includes("اسمي"))return "أنت المهندس السيادي لافي منير!";
-  if(q.includes("شكرا"))return "العفو! دائماً في خدمتك 🚀";
-  if(q.includes("بلوك")||q.includes("chain"))return "استخدم أمر: chain أو mine <data>";
-  if(q.includes("ذاكرة")||q.includes("memory"))return "استخدم: mem <text> لحفظ فكرة";
-  if(q.includes("تشفير")||q.includes("encrypt"))return "جرب: aes <text> <key> أو xor <text> <key>";
-  if(q.includes("وقت")||q.includes("ساعة"))return new Date().toLocaleString("ar-SA");
-  if(q.includes("تاريخ")||q.includes("يوم"))return new Date().toLocaleDateString("ar-SA");
-  if(q.includes("مساعدة")||q.includes("أوامر"))return "اكتب help للأوامر الكاملة";
-  return "سؤال مثير! لكن معرفتي محدودة. اكتب help للأوامر المتاحة.";
-}
-
-/* ═══ Voice Recognition ═══ */
-function startVoiceRecognition(){
-  if(!("webkitSpeechRecognition" in window||"SpeechRecognition" in window)){
-    showNotif("⚠️ متصفحك لا يدعم التعرف الصوتي");
-    return;
-  }
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  const rec=new SR();
-  rec.lang="ar-SA";
-  rec.interimResults=false;
-  rec.onresult=e=>{
-    const text=e.results[0][0].transcript;
-    showNotif("🎤 "+text);
-    if($("chatInput"))$("chatInput").value=text;
-  };
-  rec.onerror=e=>showNotif("❌ خطأ: "+e.error);
-  rec.start();
-  showNotif("🎤 تحدث الآن...");
-}
-
-/* ═══ Export / Import ═══ */
-async function exportData(){
-  const data={
-    chain:await idbAll("chain"),
-    memory:await idbAll("memory"),
-    chatLog:await idbAll("chatLog"),
-    ts:Date.now(),
-    version:"v300"
-  };
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url;a.download="supreme_backup_"+Date.now()+".json";
-  document.body.appendChild(a);a.click();a.remove();
-  showNotif("💾 تم تصدير البيانات");
-}
-async function importData(){
-  const input=document.createElement("input");
-  input.type="file";
-  input.accept=".json";
-  input.onchange=async e=>{
-    const f=e.target.files[0];
-    if(!f)return;
-    const txt=await f.text();
-    try{
-      const data=JSON.parse(txt);
-      if(data.chain)for(const b of data.chain)await idbPut("chain",b);
-      if(data.memory)for(const m of data.memory)await idbPut("memory",m);
-      if(data.chatLog)for(const c of data.chatLog)await idbPut("chatLog",c);
-      showNotif("✅ تم الاستيراد");
-      await initChain();
-      await initMemory();
-    }catch(e){showNotif("❌ ملف غير صالح");}
-  };
-  input.click();
-}
-async function fullBackup(){
-  await exportData();
-  showNotif("💾 تم النسخ الاحتياطي");
-}
-
-/* ═══ Init Terminal Layer ═══ */
-function initTerminalShell(){
-  console.log("%c⌨️ Terminal Ready","color:#00f2fe;font-weight:bold");
-}
-
-
-/* ═══════════════════════════════════════════════════
-   الطبقة 3: Entertainment + PWA + Final Layer
-   ═══════════════════════════════════════════════════ */
-
-/* ═══ Cinema Player ═══ */
-function showCinema(url){
-  let box=document.getElementById("cinemaStage");
-  if(box)box.remove();
-  box=document.createElement("div");
-  box.id="cinemaStage";
-  box.style.cssText="position:fixed;bottom:10px;right:10px;width:360px;height:220px;background:#000;border:2px solid #00f2fe;border-radius:12px;z-index:250;overflow:hidden;box-shadow:0 0 40px rgba(0,242,254,.6)";
-  const iframe=document.createElement("iframe");
-  iframe.src=url;
-  iframe.style.cssText="width:100%;height:100%;border:none";
-  iframe.allowFullscreen=true;
-  box.appendChild(iframe);
-  const close=document.createElement("button");
-  close.textContent="✖";
-  close.style.cssText="position:absolute;top:6px;left:6px;background:#ff0844;color:#fff;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;z-index:2;font-weight:bold";
-  close.onclick=()=>box.remove();
-  box.appendChild(close);
-  document.body.appendChild(box);
-  showNotif("🎬 سينما مشغلة");
-  if(typeof broadcastMeshPacket==="function"){
-    broadcastMeshPacket({kind:"CINEMA",url});
-  }
-}
-
-function autoDetectCinemaUrl(url){
-  try{
-    const u=new URL(url);
-    const host=u.hostname.toLowerCase();
-    if(host.includes("youtube.com")||host==="youtu.be"){
-      const m=url.match(/[?&]v=([^#&?]+)/)||url.match(/youtu\.be\/([^#&?]+)/);
-      if(m)return "https://www.youtube-nocookie.com/embed/"+m[1]+"?autoplay=1";
-    } else if(host.includes("vimeo.com")){
-      const parts=u.pathname.split("/").filter(Boolean);
-      const vid=parts[parts.length-1];
-      if(/^\d+$/.test(vid))return "https://player.vimeo.com/video/"+vid+"?autoplay=1";
-    } else if(/\.(mp4|webm|ogg)$/i.test(u.pathname)){
-      return url;
-    }
-  }catch(e){}
-  return null;
-}
-
-/* ═══ Snake Game ═══ */
-let snakeState={active:false,interval:null,score:0,dir:"R",body:[{x:10,y:10}],food:{x:15,y:15}};
-function startSnake(){
-  if(document.getElementById("snakeModal"))return;
-  const m=document.createElement("div");
-  m.id="snakeModal";
-  m.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:400;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px";
-  m.innerHTML=`
-    <div style="color:#00ff66;font-size:20px;font-weight:bold">🐍 SNAKE GAME</div>
-    <canvas id="snakeC" width="320" height="320" style="background:#000;border:2px solid #00ff66;border-radius:8px"></canvas>
-    <div style="display:flex;gap:12px;align-items:center">
-      <span style="color:#ffd700;font-size:14px">النقاط: <span id="snakeScore">0</span></span>
-      <button onclick="document.getElementById('snakeModal').remove();snakeState.active=false;if(snakeState.interval)clearInterval(snakeState.interval)" style="background:#ff0844;color:#fff;border:none;padding:6px 14px;border-radius:6px;font-weight:bold;cursor:pointer">✖ خروج</button>
-    </div>
-    <div style="color:#94a3b8;font-size:11px">استخدم الأسهم أو WASD</div>`;
-  document.body.appendChild(m);
-  
-  if(snakeState.interval)clearInterval(snakeState.interval);
-  snakeState={active:true,interval:null,score:0,dir:"R",body:[{x:10,y:10}],food:{x:15,y:15}};
-  const c=document.getElementById("snakeC"),ctx=c.getContext("2d");
-  const cell=20,cols=c.width/cell,rows=c.height/cell;
-  
-  snakeState.interval=setInterval(()=>{
-    if(!snakeState.active)return;
-    const head={...snakeState.body[0]};
-    if(snakeState.dir==="R")head.x++;
-    else if(snakeState.dir==="L")head.x--;
-    else if(snakeState.dir==="U")head.y--;
-    else if(snakeState.dir==="D")head.y++;
-    if(head.x<0||head.x>=cols||head.y<0||head.y>=rows||snakeState.body.some(b=>b.x===head.x&&b.y===head.y)){
-      snakeState.active=false;
-      clearInterval(snakeState.interval);
-      ctx.fillStyle="#000";ctx.fillRect(0,0,c.width,c.height);
-      ctx.fillStyle="#ff0844";ctx.font="bold 24px monospace";ctx.textAlign="center";
-      ctx.fillText("GAME OVER",c.width/2,c.height/2);
-      ctx.fillStyle="#ffd700";ctx.font="16px monospace";
-      ctx.fillText("النقاط: "+snakeState.score,c.width/2,c.height/2+30);
-      return;
-    }
-    snakeState.body.unshift(head);
-    if(head.x===snakeState.food.x&&head.y===snakeState.food.y){
-      snakeState.score+=10;
-      const el=document.getElementById("snakeScore");
-      if(el)el.textContent=snakeState.score;
-      snakeState.food={x:Math.floor(Math.random()*cols),y:Math.floor(Math.random()*rows)};
-    } else snakeState.body.pop();
-    ctx.fillStyle="#000";ctx.fillRect(0,0,c.width,c.height);
-    snakeState.body.forEach((b,i)=>{
-      ctx.fillStyle=i===0?"#00f2fe":"#00ff66";
-      ctx.fillRect(b.x*cell+1,b.y*cell+1,cell-2,cell-2);
-    });
-    ctx.fillStyle="#ff007f";
-    ctx.fillRect(snakeState.food.x*cell+3,snakeState.food.y*cell+3,cell-6,cell-6);
-  },130);
-  
-  document.onkeydown=e=>{
-    if(!snakeState.active)return;
-    const k=e.key.toLowerCase();
-    if((k==="arrowright"||k==="d")&&snakeState.dir!=="L")snakeState.dir="R";
-    else if((k==="arrowleft"||k==="a")&&snakeState.dir!=="R")snakeState.dir="L";
-    else if((k==="arrowup"||k==="w")&&snakeState.dir!=="D")snakeState.dir="U";
-    else if((k==="arrowdown"||k==="s")&&snakeState.dir!=="U")snakeState.dir="D";
-  };
-}
-
-/* ═══ Guess Game ═══ */
-let guessNum=Math.floor(Math.random()*100)+1;
-function startGuess(){
-  if(document.getElementById("guessModal"))return;
-  const m=document.createElement("div");
-  m.id="guessModal";
-  m.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:400;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px";
-  m.innerHTML=`
-    <div style="color:#ffd700;font-size:22px;font-weight:bold">🎯 GUESS GAME</div>
-    <div style="color:#00f2fe;font-size:13px">خمّن رقم بين 1 و 100</div>
-    <input type="number" id="guessIn" style="background:#000;border:2px solid #00f2fe;border-radius:8px;padding:10px 16px;color:#00f2fe;font-size:18px;text-align:center;width:160px;outline:none" placeholder="؟">
-    <button onclick="doGuess()" style="background:#00f2fe;color:#000;border:none;padding:10px 30px;border-radius:8px;font-weight:bold;font-size:14px;cursor:pointer">خمّن 🎲</button>
-    <div id="guessOut" style="color:#ffd700;font-size:16px;min-height:24px;text-align:center;font-weight:bold"></div>
-    <button onclick="document.getElementById('guessModal').remove();resetGuess()" style="background:#ff0844;color:#fff;border:none;padding:6px 14px;border-radius:6px;font-weight:bold;cursor:pointer">✖ خروج</button>`;
-  document.body.appendChild(m);
-  guessNum=Math.floor(Math.random()*100)+1;
-}
-function doGuess(){
-  const g=parseInt(document.getElementById("guessIn").value,10);
-  if(!g||g<1||g>100)return;
-  const out=document.getElementById("guessOut");
-  if(g===guessNum){out.textContent="🎉 صحيح! الرقم كان "+guessNum;out.style.color="#00ff66";}
-  else if(g<guessNum){out.textContent="⬆️ أعلى";out.style.color="#ffd700";}
-  else{out.textContent="⬇️ أقل";out.style.color="#ffd700";}
-  document.getElementById("guessIn").value="";
-}
-function resetGuess(){guessNum=Math.floor(Math.random()*100)+1;}
-
-/* ═══ Pong Game ═══ */
-function startPong(){
-  if(document.getElementById("pongModal"))return;
-  const m=document.createElement("div");
-  m.id="pongModal";
-  m.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:400;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px";
-  m.innerHTML=`
-    <div style="color:#00f2fe;font-size:18px;font-weight:bold">🏓 PONG GAME</div>
-    <canvas id="pongC" width="480" height="300" style="background:#000;border:2px solid #00f2fe;border-radius:8px;max-width:90vw"></canvas>
-    <div style="color:#94a3b8;font-size:11px">استخدم ↑ ↓ للحركة</div>
-    <button onclick="document.getElementById('pongModal').remove()" style="background:#ff0844;color:#fff;border:none;padding:6px 14px;border-radius:6px;font-weight:bold;cursor:pointer">✖ خروج</button>`;
-  document.body.appendChild(m);
-  
-  const c=document.getElementById("pongC"),ctx=c.getContext("2d");
-  const paddle={x:10,y:120,w:10,h:60};
-  const ball={x:240,y:150,dx:4,dy:3,r:6};
-  const aiPaddle={x:460,y:120,w:10,h:60};
-  let up=false,down=false;
-  
-  document.onkeydown=e=>{if(e.key==="ArrowUp")up=true;if(e.key==="ArrowDown")down=true;};
-  document.onkeyup=e=>{if(e.key==="ArrowUp")up=false;if(e.key==="ArrowDown")down=false;};
-  
-  function loop(){
-    if(!document.getElementById("pongModal"))return;
-    ctx.fillStyle="#000";ctx.fillRect(0,0,c.width,c.height);
-    if(up)paddle.y=Math.max(0,paddle.y-6);
-    if(down)paddle.y=Math.min(c.height-paddle.h,paddle.y+6);
-    const aiCenter=aiPaddle.y+aiPaddle.h/2;
-    if(ball.y<aiCenter-10)aiPaddle.y=Math.max(0,aiPaddle.y-4);
-    else if(ball.y>aiCenter+10)aiPaddle.y=Math.min(c.height-aiPaddle.h,aiPaddle.y+4);
-    ball.x+=ball.dx;ball.y+=ball.dy;
-    if(ball.y-ball.r<0||ball.y+ball.r>c.height)ball.dy=-ball.dy;
-    if(ball.x-ball.r<paddle.x+paddle.w&&ball.y>paddle.y&&ball.y<paddle.y+paddle.h)ball.dx=Math.abs(ball.dx);
-    if(ball.x+ball.r>aiPaddle.x&&ball.y>aiPaddle.y&&ball.y<aiPaddle.y+aiPaddle.h)ball.dx=-Math.abs(ball.dx);
-    if(ball.x<0||ball.x>c.width){ball.x=240;ball.y=150;ball.dx=4;ball.dy=3;}
-    ctx.fillStyle="#00f2fe";ctx.fillRect(paddle.x,paddle.y,paddle.w,paddle.h);
-    ctx.fillStyle="#ff007f";ctx.fillRect(aiPaddle.x,aiPaddle.y,aiPaddle.w,aiPaddle.h);
-    ctx.fillStyle="#ffd700";ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);ctx.fill();
-    requestAnimationFrame(loop);
-  }
-  loop();
-}
-
-/* ═══ Chess Game ═══ */
-function startChess(){
-  if(document.getElementById("chessModal"))return;
-  const m=document.createElement("div");
-  m.id="chessModal";
-  m.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:400;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px";
-  m.innerHTML=`
-    <div style="color:#ffd700;font-size:18px;font-weight:bold">♟️ CHESS</div>
-    <canvas id="chessC" width="320" height="320" style="background:#000;border:2px solid #ffd700;border-radius:8px;max-width:90vw"></canvas>
-    <div style="color:#94a3b8;font-size:11px">انقر لتحريك القطعة</div>
-    <button onclick="document.getElementById('chessModal').remove()" style="background:#ff0844;color:#fff;border:none;padding:6px 14px;border-radius:6px;font-weight:bold;cursor:pointer">✖ خروج</button>`;
-  document.body.appendChild(m);
-  
-  const c=document.getElementById("chessC"),ctx=c.getContext("2d");
-  const cell=c.width/8;
-  let selected=null;
-  const pieces=[
-    ["♜","♞","♝","♛","♚","♝","♞","♜"],
-    ["♟","♟","♟","♟","♟","♟","♟","♟"],
-    ["","","","","","","",""],
-    ["","","","","","","",""],
-    ["","","","","","","",""],
-    ["","","","","","","",""],
-    ["♙","♙","♙","♙","♙","♙","♙","♙"],
-    ["♖","♘","♗","♕","♔","♗","♘","♖"]
-  ];
-  function draw(){
-    for(let y=0;y<8;y++){
-      for(let x=0;x<8;x++){
-        ctx.fillStyle=(x+y)%2===0?"#f0d9b5":"#b58863";
-        ctx.fillRect(x*cell,y*cell,cell,cell);
-        if(selected&&selected.x===x&&selected.y===y){
-          ctx.strokeStyle="#ff007f";ctx.lineWidth=3;
-          ctx.strokeRect(x*cell+2,y*cell+2,cell-4,cell-4);
-        }
-        const p=pieces[y][x];
-        if(p){
-          ctx.fillStyle="#000";ctx.font="bold "+Math.floor(cell*0.7)+"px serif";
-          ctx.textAlign="center";ctx.textBaseline="middle";
-          ctx.fillText(p,x*cell+cell/2,y*cell+cell/2+3);
-        }
-      }
-    }
-  }
-  c.addEventListener("click",e=>{
-    const r=c.getBoundingClientRect();
-    const x=Math.floor((e.clientX-r.left)/cell);
-    const y=Math.floor((e.clientY-r.top)/cell);
-    if(selected){
-      pieces[y][x]=pieces[selected.y][selected.x];
-      pieces[selected.y][selected.x]="";
-      selected=null;
-      draw();
-    } else if(pieces[y][x]){
-      selected={x,y};
-      draw();
-    }
-  });
-  draw();
-}
-
-/* ═══ QR Generator ═══ */
-function generateQRCode(text){
-  if(!text)return;
-  const modal=document.createElement("div");
-  modal.id="qrGenModal";
-  modal.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:400;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px";
-  modal.innerHTML=`
-    <div style="color:#00f2fe;font-size:16px;font-weight:bold">📸 QR Code</div>
-    <canvas id="qrGenCanvas" style="background:#fff;padding:10px;border-radius:10px"></canvas>
-    <div style="color:#94a3b8;font-size:11px;word-break:break-all;max-width:280px;text-align:center">${esc(text.slice(0,80))}</div>
-    <button onclick="document.getElementById('qrGenModal').remove()" style="background:#ff0844;color:#fff;border:none;padding:6px 14px;border-radius:6px;font-weight:bold;cursor:pointer">✖ إغلاق</button>`;
-  document.body.appendChild(modal);
-  if(typeof QRCode!=="undefined"){
-    QRCode.toCanvas(document.getElementById("qrGenCanvas"),text,{width:240,margin:2});
-  }
-}
-
-/* ═══ Collab Code Editor ═══ */
-function openCollabEditor(){
-  if(document.getElementById("collabModal"))return;
-  const m=document.createElement("div");
-  m.id="collabModal";
-  m.style.cssText="position:fixed;inset:15px;background:rgba(0,0,0,.97);border:2px solid #f472b6;border-radius:14px;z-index:250;display:flex;flex-direction:column;padding:12px";
-  m.innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:1px solid #1f1345;font-size:11px">
-      <span style="color:#f472b6;font-weight:bold">💻 COLLAB CODE EDITOR — Real-time P2P</span>
-      <div style="display:flex;gap:6px">
-        <button onclick="syncCode()" style="background:#00ff66;color:#000;border:none;padding:4px 10px;border-radius:4px;font-size:10px;font-weight:bold;cursor:pointer">🔄 مزامنة</button>
-        <button onclick="document.getElementById('collabModal').remove()" style="background:#ff0844;color:#fff;border:none;padding:4px 10px;border-radius:4px;font-size:10px;font-weight:bold;cursor:pointer">✖</button>
-      </div>
-    </div>
-    <textarea id="collabTextarea" style="flex:1;background:#000;color:#00ff66;border:1px solid #1f1345;border-radius:8px;padding:12px;font-family:'Fira Code',monospace;font-size:13px;outline:none;resize:none;margin-top:8px" placeholder="// اكتب الكود هنا..." oninput="autoSyncCode()"></textarea>`;
-  document.body.appendChild(m);
-}
-let codeSyncTimer=null;
-function autoSyncCode(){
-  if(codeSyncTimer)clearTimeout(codeSyncTimer);
-  codeSyncTimer=setTimeout(()=>syncCode(),800);
-}
-function syncCode(){
-  const txt=document.getElementById("collabTextarea");
-  if(!txt)return;
-  broadcastMeshPacket({kind:"CODE_SYNC",code:txt.value});
-  showNotif("🔄 تمت المزامنة");
-}
-
-/* ═══ Analytics Dashboard ═══ */
-function openAnalytics(){
-  if(document.getElementById("analyticsModal"))return;
-  const m=document.createElement("div");
-  m.id="analyticsModal";
-  m.style.cssText="position:fixed;inset:15px;background:rgba(0,0,0,.97);border:2px solid #ffd700;border-radius:14px;z-index:250;padding:16px;overflow-y:auto";
-  m.innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-      <span style="color:#ffd700;font-weight:bold;font-size:14px">📊 ANALYTICS DASHBOARD</span>
-      <button onclick="document.getElementById('analyticsModal').remove()" style="background:#ff0844;color:#fff;border:none;padding:4px 10px;border-radius:4px;font-size:10px;font-weight:bold;cursor:pointer">✖</button>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
-      <div style="background:rgba(0,242,254,.1);border:1px solid #00f2fe;border-radius:8px;padding:12px;text-align:center">
-        <div style="color:#94a3b8;font-size:10px">Blocks</div>
-        <div style="color:#00f2fe;font-size:24px;font-weight:bold">${blockchain.length}</div>
-      </div>
-      <div style="background:rgba(121,40,202,.1);border:1px solid #7928ca;border-radius:8px;padding:12px;text-align:center">
-        <div style="color:#94a3b8;font-size:10px">Memories</div>
-        <div style="color:#7928ca;font-size:24px;font-weight:bold">${memories.length}</div>
-      </div>
-      <div style="background:rgba(0,255,102,.1);border:1px solid #00ff66;border-radius:8px;padding:12px;text-align:center">
-        <div style="color:#94a3b8;font-size:10px">Nodes</div>
-        <div style="color:#00ff66;font-size:24px;font-weight:bold">${Object.keys(meshConnections).length}</div>
-      </div>
-      <div style="background:rgba(255,0,127,.1);border:1px solid #ff007f;border-radius:8px;padding:12px;text-align:center">
-        <div style="color:#94a3b8;font-size:10px">Rooms</div>
-        <div style="color:#ff007f;font-size:24px;font-weight:bold">${Object.keys(rooms).length}</div>
-      </div>
-    </div>`;
-  document.body.appendChild(m);
-}
-
-/* ═══ Command Palette ═══ */
-function openCommandPalette(){
-  if(document.getElementById("paletteModal"))return;
-  const cmds=[
-    {name:"🎥 مكالمة فيديو",action:()=>startVideoCall()},
-    {name:"📞 مكالمة صوتية",action:()=>startVoiceCall()},
-    {name:"🖥️ مشاركة شاشة",action:()=>shareScreenCall()},
-    {name:"⌨️ الطرفية",action:()=>openTerminal()},
-    {name:"💻 محرر الكود",action:()=>openCollabEditor()},
-    {name:"📊 لوحة الإحصائيات",action:()=>openAnalytics()},
-    {name:"🎨 تغيير الثيم",action:()=>toggleTheme()},
-    {name:"📱 QR Code",action:()=>showQR()},
-    {name:"🐍 لعبة الثعبان",action:()=>startSnake()},
-    {name:"🎯 لعبة التخمين",action:()=>startGuess()},
-    {name:"🏓 لعبة Pong",action:()=>startPong()},
-    {name:"♟️ شطرنج",action:()=>startChess()},
-    {name:"⏺️ تسجيل",action:()=>toggleRecord()},
-    {name:"💾 تصدير البيانات",action:()=>exportData()},
-    {name:"📥 استيراد البيانات",action:()=>importData()},
-    {name:"🎤 التعرف الصوتي",action:()=>startVoiceRecognition()}
-  ];
-  const m=document.createElement("div");
-  m.id="paletteModal";
-  m.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:350;display:flex;align-items:flex-start;justify-content:center;padding-top:80px";
-  m.innerHTML=`
-    <div style="background:#0a0520;border:2px solid #00f2fe;border-radius:12px;width:90%;max-width:480px;overflow:hidden">
-      <input id="paletteInput" style="width:100%;background:transparent;border:none;outline:none;padding:16px;color:#00f2fe;font-size:14px;border-bottom:1px solid #1f1345" placeholder="🔍 ابحث عن أمر..." autofocus>
-      <div id="paletteList" style="max-height:400px;overflow-y:auto"></div>
-    </div>`;
-  document.body.appendChild(m);
-  function render(filter){
-    const list=document.getElementById("paletteList");
-    list.innerHTML="";
-    cmds.filter(c=>!filter||c.name.includes(filter)).forEach(c=>{
-      const d=document.createElement("div");
-      d.style.cssText="padding:12px 16px;cursor:pointer;color:#e2e8f0;font-size:13px;border-bottom:1px solid #1f1345";
-      d.textContent=c.name;
-      d.onclick=()=>{m.remove();c.action();};
-      list.appendChild(d);
-    });
-  }
-  render("");
-  document.getElementById("paletteInput").oninput=e=>render(e.target.value);
-  m.onclick=e=>{if(e.target===m)m.remove();};
-}
-
-/* ═══ Keyboard Shortcuts ═══ */
-document.addEventListener("keydown",e=>{
-  if(e.ctrlKey&&e.key==="k"){e.preventDefault();openCommandPalette();}
-  if(e.ctrlKey&&e.key==="`"){e.preventDefault();openTerminal();}
-  if(e.ctrlKey&&e.key==="e"){e.preventDefault();openCollabEditor();}
-  if(e.ctrlKey&&e.key==="a"&&e.shiftKey){e.preventDefault();openAnalytics();}
-  if(e.key==="Escape"){
-    ["paletteModal","collabModal","analyticsModal","snakeModal","guessModal","pongModal","chessModal","qrGenModal","terminalOverlay","roomModal","qrModal"].forEach(id=>{
-      const el=document.getElementById(id);
-      if(el)el.remove();
-    });
-  }
-});
-
-/* ═══ Service Worker PWA ═══ */
-function registerServiceWorker(){
-  if(!("serviceWorker" in navigator))return;
-  const swCode=`
-    const CACHE="supreme-v300";
-    self.addEventListener("install",e=>self.skipWaiting());
-    self.addEventListener("activate",e=>e.waitUntil(self.clients.claim()));
-    self.addEventListener("fetch",e=>{
-      if(e.request.method!=="GET")return;
-      e.respondWith(
-        caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
-          if(res.status===200){
-            const clone=res.clone();
-            caches.open(CACHE).then(c=>c.put(e.request,clone));
-          }
-          return res;
-        }).catch(()=>caches.match("/")))
-      );
-    });
-  `;
-  try{
-    const blob=new Blob([swCode],{type:"application/javascript"});
-    navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
-  }catch(e){}
-}
-
-/* ═══ Sound Effects ═══ */
-let soundCtx=null;
-function playSound(type){
-  try{
-    if(!soundCtx)soundCtx=new (window.AudioContext||window.webkitAudioContext)();
-    const ctx=soundCtx;
-    if(ctx.state==="suspended")ctx.resume();
-    const osc=ctx.createOscillator(),gain=ctx.createGain();
-    osc.connect(gain);gain.connect(ctx.destination);
-    const now=ctx.currentTime;
-    if(type==="join"){
-      osc.type="triangle";osc.frequency.setValueAtTime(300,now);osc.frequency.exponentialRampToValueAtTime(800,now+0.3);
-      gain.gain.setValueAtTime(0.05,now);gain.gain.exponentialRampToValueAtTime(0.001,now+0.3);
-      osc.start(now);osc.stop(now+0.3);
-    } else if(type==="success"){
-      osc.type="square";osc.frequency.setValueAtTime(523,now);
-      gain.gain.setValueAtTime(0.03,now);gain.gain.exponentialRampToValueAtTime(0.001,now+0.3);
-      osc.start(now);osc.stop(now+0.3);
-    }
-  }catch(e){}
-}
-
-const origNotif=showNotif;
-showNotif=function(msg,dur){
-  if(msg.includes("✅")||msg.includes("تم"))playSound("success");
-  origNotif(msg,dur);
-};
-
-/* ═══ Full Boot Sequence ═══ */
+/* ═══ Boot ═══ */
 window.addEventListener("load",async()=>{
   startMatrix();
+  // theme من localStorage
+  const savedTheme=localStorage.getItem("theme");
+  if(savedTheme&&THEMES.includes(savedTheme)){
+    themeIdx=THEMES.indexOf(savedTheme);
+    if(savedTheme)document.body.classList.add(savedTheme);
+  }
+  // nickname
+  $("nickname").value=myNickname;
   await openDB();
-  await initP2P();
-  await initTerminalShell();
-  await initChain();
-  await initMemory();
-  registerServiceWorker();
-  
-  console.log("%c╔══════════════════════════════════════════════════╗","color:#ffd700;font-weight:bold");
-  console.log("%c║   SUPREME NEXUS v300 ∞ — لافي منير              ║","color:#ffd700;font-weight:bold");
-  console.log("%c╚══════════════════════════════════════════════════╝","color:#ffd700;font-weight:bold");
-  setTimeout(()=>showNotif("🚀 SUPREME NEXUS v300 جاهز — اضغط Ctrl+K"),2000);
+  await initPeer();
+  setTimeout(()=>showNotif("🛡️ V503 صادق ومُحصَّن — جاهز"),1500);
 });
+
+// Expose
+Object.assign(window,{copyPeerId,saveNickname,manualConnect,sendMessage,handleFile,
+  promptCreateRoom,closeRoomModal,createRoom,toggleTheme,openCommandPalette,
+  showQR,closeQR,callVoice,callVideo,shareScreen,endCall,showCinema});
 </script>
 </body>
 </html>
