@@ -2,1080 +2,1647 @@
 <html lang="ar" dir="rtl" class="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>لافي منير — SOVEREIGN OS v38.0 AI APEX 🛰️⚡</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>لافي منير — SOVEREIGN OS v50.0 NEXUS OMEGA ∞</title>
 <meta name="theme-color" content="#030014">
 <meta name="author" content="لافي منير">
-<link rel="manifest" href='data:application/manifest+json,{"name":"Sovereign OS","short_name":"SOVOS","start_url":"./","display":"standalone","background_color":"%23030014","theme_color":"%23030014","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🛰️%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"}]}'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href='data:application/manifest+json,{"name":"NEXUS OMEGA","short_name":"OMEGA","start_url":".","display":"standalone","background_color":"%23030014","theme_color":"%2300f2fe","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 192 192%27%3E%3Crect width=%27192%27 height=%27192%27 fill=%27%23030014%27/%3E%3Ctext x=%2796%27 y=%27120%27 font-size=%27100%27 text-anchor=%27middle%27 fill=%27%2300f2fe%27%3EΩ%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"}]}'>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config = {
   darkMode: 'class',
   theme: { extend: {
     colors: { cyber: { bg:'#030014', panel:'#0a0520', border:'#1f1345', cyan:'#00f2fe', magenta:'#ff007f', gold:'#ffd700', green:'#00ff66', purple:'#7928ca' } },
-    fontFamily: { mono: ['Fira Code','Courier New','monospace'] }
+    fontFamily: { mono: ['Fira Code','Courier New','monospace'], sans: ['Cairo','Tajawal','sans-serif'] }
   }}
 }
 </script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/satellite.js@5.0.0/dist/satellite.min.js"></script>
+<script src="https://unpkg.com/globe.gl@2.32.0/dist/globe.gl.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&family=Cairo:wght@400;700;900&display=swap');
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; padding: 0; }
-body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', monospace; overflow: hidden; user-select: none; }
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: rgba(10,5,32,0.8); }
+body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', 'Cairo', monospace; overflow: hidden; user-select: none; padding-top: env(safe-area-inset-top); }
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-thumb { background: #00f2fe; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #ff007f; }
-.neon-text-cyan { color: #00f2fe; text-shadow: 0 0 8px rgba(0,242,254,0.6); }
-.neon-text-magenta { color: #ff007f; text-shadow: 0 0 8px rgba(255,0,127,0.6); }
-.neon-text-gold { color: #ffd700; text-shadow: 0 0 8px rgba(255,215,0,0.6); }
-#matrixCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: auto; }
+.neon-cyan { color: #00f2fe; text-shadow: 0 0 10px rgba(0,242,254,0.8); }
+.neon-magenta { color: #ff007f; text-shadow: 0 0 10px rgba(255,0,127,0.8); }
+.neon-gold { color: #ffd700; text-shadow: 0 0 10px rgba(255,215,0,0.8); }
+#matrixCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.08; }
 .terminal-input { background: transparent; outline: none; border: none; color: #00ff66; width: 100%; font-family: inherit; }
-.terminal-output { white-space: pre-wrap; word-break: break-word; user-select: text; -webkit-user-select: text; }
-@media (max-width: 900px) {
-  .main-grid { grid-template-columns: 1fr !important; }
-  .side-panel { display: none !important; }
-  .side-panel.mobile-active { display: flex !important; }
-}
-.modal-overlay { position: fixed; inset: 0; background: rgba(3,0,20,0.85); z-index: 100; display: none; align-items: center; justify-content: center; padding: 15px; backdrop-filter: blur(10px); }
-.modal-overlay.active { display: flex; }
-.modal-content { background: #0a0520; border: 2px solid #00f2fe; border-radius: 14px; padding: 16px; max-width: 900px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 0 60px rgba(0,242,254,0.4); }
-.dot-on { color: #00ff66; text-shadow: 0 0 6px #00ff66; }
-.dot-off { color: #ff007f; text-shadow: 0 0 6px #ff007f; }
+.terminal-output { white-space: pre-wrap; word-break: break-word; user-select: text; }
+.omni-card { border-right: 3px solid #00f2fe; padding-right: 8px; margin-bottom: 4px; background: rgba(0,242,254,0.05); }
+#mapContainer, #globeContainer { width: 100%; height: 200px; border-radius: 8px; border: 1px solid #1f1345; z-index: 10; background: #000; }
+#apodImage { width: 100%; height: 130px; object-fit: cover; border-radius: 8px; border: 1px solid #1f1345; }
+#videoPreview, #remoteVideo { width: 100%; height: 130px; object-fit: cover; border-radius: 8px; border: 1px solid #1f1345; background: #000; }
+.dot-pulse { animation: pulse 1.2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.status-live { color: #00ff66; }
+.status-loading { color: #ffd700; }
+.status-error { color: #ff4444; }
+.leaflet-container { background: #030014 !important; }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #0a0520; color: #00f2fe; border: 1px solid #1f1345; }
+.tab-btn { transition: all 0.2s; }
+.tab-btn.active { background: rgba(0,242,254,0.15); border-color: #00f2fe; color: #00f2fe; }
+.launch-card { border-right: 2px solid #ffd700; padding-right: 6px; margin-bottom: 4px; font-size: 9px; }
+.p2p-peer { background: rgba(0,255,102,0.05); border-right: 2px solid #00ff66; padding: 3px 6px; margin-bottom: 3px; font-size: 9px; }
+.install-banner { position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%); z-index: 300; }
+#audioLevel { border-radius: 4px; background: #000; height: 20px; position: relative; overflow: hidden; }
+#audioBar { height: 100%; background: linear-gradient(90deg, #00ff66, #00f2fe); transition: width 0.1s; }
+.memory-item { border-right: 2px solid #7928ca; padding: 3px 6px; margin-bottom: 3px; font-size: 9px; background: rgba(121,40,202,0.05); }
+.voice-pulse { animation: voiceGlow 0.8s infinite; }
+@keyframes voiceGlow { 0%,100% { box-shadow: 0 0 5px #ff007f; } 50% { box-shadow: 0 0 20px #ff007f, 0 0 30px #ff007f; } }
+.offline-badge { background: #ffd700; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; }
 </style>
 </head>
 <body class="dark h-screen w-screen flex flex-col overflow-hidden">
 
 <canvas id="matrixCanvas"></canvas>
-<div id="notification" class="fixed top-20 left-1/2 -translate-x-1/2 bg-cyber-cyan text-black px-6 py-3 rounded-lg font-bold z-[200] hidden shadow-2xl text-sm max-w-[90%] text-center"></div>
+<div id="notification" class="fixed top-20 left-1/2 -translate-x-1/2 bg-cyber-cyan text-black px-6 py-3 rounded-lg font-bold z-[200] hidden shadow-2xl text-sm text-center max-w-[90%]"></div>
+<button id="installBtn" class="install-banner hidden bg-cyber-cyan text-black px-4 py-2 rounded-lg font-bold text-xs shadow-2xl">
+  <i class="fa-solid fa-download"></i> تثبيت
+</button>
 
-<header class="relative z-10 bg-cyber-panel/90 border-b border-cyber-border px-3 py-2 flex justify-between items-center backdrop-blur-md">
+<header class="relative z-10 bg-cyber-panel/95 border-b border-cyber-border px-3 py-2 flex justify-between items-center backdrop-blur-md">
   <div class="flex items-center gap-2">
-    <span class="text-base md:text-lg font-black neon-text-magenta flex items-center gap-1">
-      <i class="fa-solid fa-shield-halved"></i>
-      <span class="hidden sm:inline">SOVEREIGN OS</span>
+    <span class="text-base md:text-lg font-black neon-magenta flex items-center gap-1">
+      <i class="fa-solid fa-atom dot-pulse"></i>
+      <span class="hidden sm:inline">NEXUS OMEGA</span>
     </span>
-    <span class="bg-cyber-cyan/10 text-cyber-cyan text-[10px] md:text-xs px-1.5 py-0.5 rounded border border-cyber-cyan/30 font-bold">v38.0 APEX</span>
-    <span class="text-[10px] text-gray-400 hidden md:inline">| لافي منير</span>
+    <span class="bg-cyber-magenta/20 text-cyber-magenta text-[10px] px-1.5 py-0.5 rounded border border-cyber-magenta/40 font-bold">v50.0 Ω</span>
+    <span id="offlineBadge" class="hidden offline-badge">OFFLINE</span>
   </div>
-  <div class="flex items-center gap-1.5 md:gap-3 text-[10px] md:text-xs">
-    <div class="hidden md:flex items-center gap-1.5 bg-cyber-bg px-2 py-1 rounded border border-cyber-border">
-      <i class="fa-solid fa-brain text-cyber-magenta"></i>
-      <span>AI: <span id="aiStatus" class="dot-on font-bold">ACTIVE</span></span>
+  <div class="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-xs overflow-x-auto">
+    <div class="bg-cyber-bg px-2 py-1 rounded border border-cyber-border whitespace-nowrap">
+      <span>SATS: <span id="satCount" class="text-cyber-gold font-bold">0</span></span>
     </div>
-    <div class="hidden md:flex items-center gap-1.5 bg-cyber-bg px-2 py-1 rounded border border-cyber-border">
-      <i class="fa-solid fa-key text-cyber-gold"></i>
-      <span>DB: <span id="dbStatus" class="dot-on font-bold">ON</span></span>
+    <div class="bg-cyber-bg px-2 py-1 rounded border border-cyber-border whitespace-nowrap">
+      <span>MEM: <span id="memCount" class="text-cyber-purple font-bold">0</span></span>
     </div>
-    <div class="flex items-center gap-1.5 bg-cyber-bg px-2 py-1 rounded border border-cyber-border">
-      <i class="fa-solid fa-network-wired text-cyber-magenta"></i>
-      <span>P2P: <span id="p2pStatus" class="font-bold text-yellow-400">OFF</span></span>
+    <div class="bg-cyber-bg px-2 py-1 rounded border border-cyber-border whitespace-nowrap">
+      <span>VOICE: <span id="voiceStatus" class="text-gray-500 font-bold">OFF</span></span>
+    </div>
+    <div class="bg-cyber-bg px-2 py-1 rounded border border-cyber-border whitespace-nowrap">
+      <span>⛓️ <span id="chainCount" class="text-cyber-green font-bold">1</span></span>
     </div>
     <button id="btnToggleSide" class="md:hidden bg-cyber-magenta/20 text-cyber-magenta px-2 py-1 rounded border border-cyber-magenta/50">
-      <i class="fa-solid fa-video"></i>
+      <i class="fa-solid fa-chevron-down"></i>
     </button>
   </div>
 </header>
 
 <main class="relative z-10 flex-1 grid grid-cols-1 md:grid-cols-12 gap-2 p-2 overflow-hidden main-grid">
   <section class="md:col-span-7 lg:col-span-8 flex flex-col gap-2 h-full overflow-hidden">
-    <div class="flex-1 bg-cyber-panel/85 border border-cyber-border rounded-xl p-2 md:p-3 flex flex-col shadow-2xl backdrop-blur-sm overflow-hidden">
-      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 mb-2 text-[10px] md:text-xs">
+    <div class="flex-1 bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex flex-col shadow-2xl backdrop-blur-sm overflow-hidden">
+      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 mb-2 text-[10px]">
         <div class="flex items-center gap-1.5">
-          <span class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-red-500"></span>
-          <span class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-yellow-500"></span>
-          <span class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-green-500"></span>
-          <span class="mr-2 font-bold text-gray-200">bash-lite ~ <span id="currentPromptUser" class="text-cyber-cyan">root</span>@sovereign</span>
+          <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+          <span class="mr-2 font-bold text-gray-200">omega@nexus ~ root</span>
         </div>
         <div class="flex gap-2">
-          <button onclick="runCommand('clear')" class="hover:text-cyber-cyan"><i class="fa-solid fa-eraser"></i><span class="hidden md:inline"> Clear</span></button>
-          <button onclick="runCommand('help')" class="hover:text-cyber-gold"><i class="fa-solid fa-circle-question"></i><span class="hidden md:inline"> Help</span></button>
-          <button onclick="runCommand('sysinfo')" class="hover:text-cyber-magenta"><i class="fa-solid fa-microchip"></i><span class="hidden md:inline"> Info</span></button>
+          <button onclick="runCommand('clear')" class="hover:text-cyber-cyan" title="مسح"><i class="fa-solid fa-eraser"></i></button>
+          <button onclick="runCommand('help')" class="hover:text-cyber-gold" title="مساعدة"><i class="fa-solid fa-circle-question"></i></button>
+          <button onclick="toggleVoice()" id="btnVoice" class="hover:text-cyber-magenta" title="أوامر صوتية"><i class="fa-solid fa-microphone"></i></button>
+          <button onclick="toggleLoop()" class="hover:text-cyber-green" title="حلقة ذاتية"><i class="fa-solid fa-infinity"></i></button>
+          <button onclick="runCommand('stats')" class="hover:text-cyber-magenta" title="إحصائيات"><i class="fa-solid fa-chart-line"></i></button>
         </div>
       </div>
-      <div id="terminalOutput" class="flex-1 overflow-y-auto space-y-0.5 text-xs md:text-sm pr-1 terminal-output"></div>
-      <div class="mt-1.5 flex items-center gap-2 bg-cyber-bg/80 px-2 md:px-3 py-1.5 rounded-lg border border-cyber-border">
-        <span id="promptLabel" class="text-cyber-green font-bold text-xs md:text-sm whitespace-nowrap">root@sovereign:~#</span>
-        <input type="text" id="terminalInput" class="terminal-input text-xs md:text-sm" placeholder="اكتب أمراً... جرّب ai، help، call" autofocus autocomplete="off" spellcheck="false" autocapitalize="off">
+      <div id="terminalOutput" class="flex-1 overflow-y-auto space-y-1 text-xs md:text-sm pr-1 terminal-output"></div>
+      <div class="mt-1.5 flex items-center gap-2 bg-cyber-bg/90 px-3 py-1.5 rounded-lg border border-cyber-border">
+        <span id="promptLabel" class="text-cyber-green font-bold text-xs md:text-sm whitespace-nowrap">Ω:~#</span>
+        <input type="text" id="terminalInput" class="terminal-input text-xs md:text-sm" placeholder="help | globe | video | voice | memory | agent" autofocus autocomplete="off" spellcheck="false">
       </div>
     </div>
   </section>
 
   <section id="sidePanel" class="md:col-span-5 lg:col-span-4 flex flex-col gap-2 h-full overflow-hidden side-panel">
-    <div class="bg-cyber-panel/85 border border-cyber-border rounded-xl p-2 md:p-3 flex flex-col gap-2 shadow-xl backdrop-blur-sm">
-      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px] md:text-xs">
-        <span class="font-bold text-cyber-magenta flex items-center gap-1">
-          <i class="fa-solid fa-tower-broadcast"></i> Mesh & AI Studio
-        </span>
-        <span id="roomStatusBadge" class="text-gray-400 text-[9px] md:text-[10px]">ROOM: OFF</span>
+    <div class="bg-cyber-panel/90 border border-cyber-border rounded-xl p-2 flex gap-1 shadow-xl overflow-x-auto">
+      <button data-tab="globe" onclick="switchTab('globe', event)" class="tab-btn active bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-globe"></i> 3D</button>
+      <button data-tab="map" onclick="switchTab('map', event)" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-map"></i> 2D</button>
+      <button data-tab="space" onclick="switchTab('space', event)" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-rocket"></i> Space</button>
+      <button data-tab="video" onclick="switchTab('video', event)" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-video"></i> Video</button>
+      <button data-tab="memory" onclick="switchTab('memory', event)" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-brain"></i> Memory</button>
+      <button data-tab="agent" onclick="switchTab('agent', event)" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-robot"></i> Agent</button>
+    </div>
+
+    <!-- GLOBE 3D -->
+    <div id="tabGlobe" class="tab-content bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex flex-col gap-2 shadow-xl backdrop-blur-sm">
+      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px]">
+        <span class="font-bold text-cyber-cyan flex items-center gap-1"><i class="fa-solid fa-globe"></i> Globe 3D — Real-time Sats</span>
+        <span id="globeSatCount" class="text-cyber-gold text-[9px]">0</span>
       </div>
-      <div class="grid grid-cols-2 gap-1.5 text-[10px] md:text-xs">
-        <input type="text" id="roomIdInput" class="bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-cyber-cyan outline-none" placeholder="اسم الغرفة">
-        <button onclick="joinMeshRoom()" class="bg-cyber-cyan/20 hover:bg-cyber-cyan/30 border border-cyber-cyan text-cyber-cyan rounded font-bold transition">🌐 انضمام</button>
-      </div>
-      <div class="flex items-center gap-1.5 text-[10px] md:text-xs">
-        <input type="password" id="roomKeyInput" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-cyber-gold outline-none" placeholder="مفتاح التشفير">
-        <button onclick="applyCryptoKey()" class="bg-cyber-gold/20 hover:bg-cyber-gold/30 border border-cyber-gold text-cyber-gold px-2 py-1 rounded font-bold transition">🔐 ضبط</button>
-      </div>
-      <div id="videoGrid" class="grid grid-cols-2 gap-1.5 bg-cyber-bg/60 p-1.5 rounded-lg border border-cyber-border min-h-[90px] max-h-[120px] overflow-y-auto">
-        <div class="relative bg-black/50 rounded border border-cyber-border flex items-center justify-center min-h-[50px]">
-          <video id="localVideo" autoplay muted playsinline class="w-full h-full object-cover rounded"></video>
-          <span class="absolute bottom-0.5 right-0.5 text-[8px] bg-black/70 px-1 rounded text-cyber-cyan">أنت</span>
+      <div id="globeContainer"></div>
+      <div class="grid grid-cols-3 gap-1 text-[9px]">
+        <div class="bg-cyber-bg/80 p-1 rounded border border-cyber-border text-center">
+          <div class="text-gray-500">Lat</div>
+          <div id="globeLat" class="text-cyber-cyan font-bold">—</div>
+        </div>
+        <div class="bg-cyber-bg/80 p-1 rounded border border-cyber-border text-center">
+          <div class="text-gray-500">Lon</div>
+          <div id="globeLon" class="text-cyber-cyan font-bold">—</div>
+        </div>
+        <div class="bg-cyber-bg/80 p-1 rounded border border-cyber-border text-center">
+          <div class="text-gray-500">Alt</div>
+          <div id="globeAlt" class="text-cyber-cyan font-bold">—</div>
         </div>
       </div>
-      <div class="flex justify-around bg-cyber-bg/80 p-1 rounded-lg border border-cyber-border">
-        <button id="btnToggleMic" onclick="toggleMic()" class="text-[10px] md:text-xs text-gray-300 hover:text-cyber-cyan" title="المايك"><i class="fa-solid fa-microphone"></i></button>
-        <button id="btnToggleCam" onclick="toggleCam()" class="text-[10px] md:text-xs text-gray-300 hover:text-cyber-cyan" title="الكاميرا"><i class="fa-solid fa-video"></i></button>
-        <button onclick="shareScreen()" class="text-[10px] md:text-xs text-gray-300 hover:text-cyber-gold" title="مشاركة الشاشة"><i class="fa-solid fa-desktop"></i></button>
-        <button onclick="snapshot()" class="text-[10px] md:text-xs text-gray-300 hover:text-cyber-magenta" title="لقطة"><i class="fa-solid fa-camera"></i></button>
-        <label class="text-[10px] md:text-xs text-cyber-magenta cursor-pointer" title="إرسال ملف">
-          <i class="fa-solid fa-paperclip"></i>
-          <input type="file" id="p2pFileInput" class="hidden" onchange="sendP2PFile(this.files[0])">
-        </label>
-      </div>
-      <div id="fileProgressContainer" class="hidden space-y-1">
-        <div class="flex justify-between text-[9px] text-gray-300">
-          <span id="transferFileName">file.dat</span>
-          <span id="transferPercent">0%</span>
-        </div>
-        <div class="w-full bg-cyber-bg rounded-full h-1.5 border border-cyber-border overflow-hidden">
-          <div id="transferProgressBar" class="bg-cyber-cyan h-full w-0 transition-all duration-150"></div>
-        </div>
-      </div>
-      <div id="chatBox" class="bg-cyber-bg/90 border border-cyber-border rounded-lg p-2 h-20 overflow-y-auto space-y-0.5 text-[10px] md:text-xs terminal-output"></div>
-      <div class="flex gap-1.5">
-        <input type="text" id="chatInput" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] md:text-xs text-white outline-none" placeholder="رسالة مشفرة..." onkeydown="if(event.key==='Enter') sendChatMessage()">
-        <button onclick="sendChatMessage()" class="bg-cyber-magenta hover:bg-pink-600 text-white text-[10px] md:text-xs px-3 py-1 rounded font-bold transition">
-          <i class="fa-solid fa-paper-plane"></i>
-        </button>
+      <div class="flex gap-1">
+        <button onclick="loadGlobeSats('stations')" class="flex-1 bg-cyber-cyan text-black text-[9px] py-1 rounded font-bold">Stations</button>
+        <button onclick="loadGlobeSats('starlink')" class="flex-1 bg-cyber-gold text-black text-[9px] py-1 rounded font-bold">Starlink</button>
+        <button onclick="loadGlobeSats('gps-ops')" class="flex-1 bg-cyber-green text-black text-[9px] py-1 rounded font-bold">GPS</button>
       </div>
     </div>
 
-    <div class="flex-1 bg-cyber-panel/85 border border-cyber-border rounded-xl p-2 md:p-3 flex flex-col shadow-xl backdrop-blur-sm overflow-hidden">
-      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px] md:text-xs mb-1.5">
-        <span class="font-bold text-cyber-gold flex items-center gap-1"><i class="fa-solid fa-link"></i> Ledger</span>
-        <div class="flex gap-2">
-          <span id="cryptoStatus" class="text-cyber-green text-[9px]">AES-256</span>
-          <button onclick="renderLedgerUI()" class="text-cyber-cyan hover:underline text-[9px]"><i class="fa-solid fa-rotate"></i></button>
+    <!-- MAP 2D -->
+    <div id="tabMap" class="tab-content hidden bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex-col gap-2 shadow-xl backdrop-blur-sm">
+      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px]">
+        <span class="font-bold text-cyber-cyan flex items-center gap-1"><i class="fa-solid fa-map"></i> Leaflet 2D Map</span>
+        <span id="issCoords" class="text-gray-400 text-[9px]">---</span>
+      </div>
+      <div id="mapContainer"></div>
+      <div class="grid grid-cols-4 gap-1 text-[9px]">
+        <div class="bg-cyber-bg/80 p-1 rounded border border-cyber-border text-center">
+          <div class="text-gray-500">Lat</div>
+          <div id="issLat" class="text-cyber-cyan font-bold">—</div>
+        </div>
+        <div class="bg-cyber-bg/80 p-1 rounded border border-cyber-border text-center">
+          <div class="text-gray-500">Lon</div>
+          <div id="issLon" class="text-cyber-cyan font-bold">—</div>
+        </div>
+        <div class="bg-cyber-bg/80 p-1 rounded border border-cyber-border text-center">
+          <div class="text-gray-500">Alt</div>
+          <div id="issAlt" class="text-cyber-cyan font-bold">—</div>
+        </div>
+        <div class="bg-cyber-bg/80 p-1 rounded border border-cyber-border text-center">
+          <div class="text-gray-500">Vis</div>
+          <div id="issVis" class="text-cyber-cyan font-bold">—</div>
         </div>
       </div>
-      <div id="ledgerLog" class="flex-1 overflow-y-auto space-y-1.5 text-[10px] terminal-output"></div>
+      <button onclick="updateISS(true)" class="bg-cyber-cyan text-black text-[10px] py-1 rounded font-bold">تحديث ISS</button>
+    </div>
+
+    <!-- SPACE -->
+    <div id="tabSpace" class="tab-content hidden bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex-col gap-2 shadow-xl backdrop-blur-sm max-h-[55vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px]">
+        <span class="font-bold neon-gold flex items-center gap-1"><i class="fa-solid fa-image"></i> NASA APOD</span>
+        <button onclick="loadAPOD()" class="text-gray-500 hover:text-cyber-cyan text-[9px]">🔄</button>
+      </div>
+      <img id="apodImage" src="" alt="NASA APOD" onerror="this.style.display='none'">
+      <div id="apodInfo" class="text-[9px] text-gray-400 max-h-16 overflow-y-auto"></div>
+      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px] mt-2">
+        <span class="font-bold text-cyber-magenta"><i class="fa-solid fa-rocket"></i> SpaceX</span>
+      </div>
+      <div id="launchesBox" class="max-h-32 overflow-y-auto space-y-1 text-[9px]"></div>
+    </div>
+
+    <!-- VIDEO P2P -->
+    <div id="tabVideo" class="tab-content hidden bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex-col gap-2 shadow-xl backdrop-blur-sm">
+      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px]">
+        <span class="font-bold text-cyber-magenta flex items-center gap-1"><i class="fa-solid fa-video"></i> Video P2P</span>
+        <span id="videoState" class="text-gray-500 text-[9px]">متوقف</span>
+      </div>
+      <div class="relative">
+        <video id="videoPreview" autoplay playsinline muted></video>
+        <div class="absolute top-1 right-1 bg-black/70 px-2 py-0.5 rounded text-[8px]">📷 أنت</div>
+      </div>
+      <div class="relative">
+        <video id="remoteVideo" autoplay playsinline></video>
+        <div class="absolute top-1 right-1 bg-black/70 px-2 py-0.5 rounded text-[8px]">🎥 الطرف الآخر</div>
+      </div>
+      <div class="flex gap-1">
+        <button onclick="startVideo()" class="flex-1 bg-cyber-cyan text-black text-[10px] py-1 rounded font-bold">📹 بدء</button>
+        <button onclick="stopVideo()" class="flex-1 bg-cyber-magenta text-white text-[10px] py-1 rounded font-bold">⏹ إيقاف</button>
+      </div>
+      <div class="flex gap-1">
+        <input type="text" id="videoPeerId" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-white outline-none" placeholder="معرّف الطرف...">
+        <button onclick="callVideoPeer()" class="bg-cyber-green text-black text-[10px] px-2 py-1 rounded font-bold">📞 اتصال</button>
+      </div>
+      <div class="text-[9px] text-gray-500">معرّفك: <span id="myVideoId" class="text-cyber-green">—</span></div>
+    </div>
+
+    <!-- MEMORY -->
+    <div id="tabMemory" class="tab-content hidden bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex-col gap-2 shadow-xl backdrop-blur-sm">
+      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px]">
+        <span class="font-bold text-cyber-purple flex items-center gap-1"><i class="fa-solid fa-brain"></i> Semantic Memory</span>
+        <span id="memVecCount" class="text-cyber-gold text-[9px]">0 vec</span>
+      </div>
+      <div class="flex gap-1">
+        <input type="text" id="memInput" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-white outline-none" placeholder="أضف ذكرى..." onkeydown="if(event.key==='Enter') addMemory($('memInput').value)">
+        <button onclick="addMemory($('memInput').value)" class="bg-cyber-purple text-white text-[10px] px-2 py-1 rounded font-bold">+</button>
+      </div>
+      <div class="flex gap-1">
+        <input type="text" id="memQuery" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-white outline-none" placeholder="ابحث دلالياً..." onkeydown="if(event.key==='Enter') searchMemory($('memQuery').value)">
+        <button onclick="searchMemory($('memQuery').value)" class="bg-cyber-cyan text-black text-[10px] px-2 py-1 rounded font-bold">🔍</button>
+      </div>
+      <div id="memResults" class="bg-cyber-bg/90 border border-cyber-border rounded p-2 h-28 overflow-y-auto text-[9px]"></div>
+      <div class="flex justify-between text-[9px]">
+        <button onclick="dumpMemory()" class="text-cyber-cyan hover:text-white">عرض الكل</button>
+        <button onclick="clearMemory()" class="text-red-400 hover:text-red-300">مسح الذاكرة</button>
+      </div>
+    </div>
+
+    <!-- AGENT -->
+    <div id="tabAgent" class="tab-content hidden bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex-col gap-2 shadow-xl backdrop-blur-sm">
+      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px]">
+        <span class="font-bold text-cyber-magenta flex items-center gap-1"><i class="fa-solid fa-robot"></i> Self-Healing Agent</span>
+        <span id="queueCount" class="text-cyber-gold text-[9px]">0</span>
+      </div>
+      <div class="flex gap-1">
+        <input type="text" id="agentInput" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-white outline-none" placeholder="هدف للوكيل..." onkeydown="if(event.key==='Enter') enqueueGoal($('agentInput').value)">
+        <button onclick="enqueueGoal($('agentInput').value)" class="bg-cyber-cyan text-black text-[10px] px-3 py-1 rounded font-bold">تنفيذ</button>
+      </div>
+      <div id="agentLogBox" class="bg-cyber-bg/90 border border-cyber-border rounded p-2 h-32 overflow-y-auto text-[9px] space-y-1">
+        <div class="text-gray-500">جاهز...</div>
+      </div>
+    </div>
+
+    <!-- CTF -->
+    <div class="bg-cyber-panel/90 border border-cyber-border rounded-xl p-2 flex flex-col shadow-xl max-h-24">
+      <div class="flex justify-between items-center border-b border-cyber-border pb-1 text-[10px] mb-1">
+        <span class="font-bold text-cyber-magenta"><i class="fa-solid fa-shield-halved"></i> CTF</span>
+        <span id="ctfScore" class="text-cyber-gold text-[9px]">0 pts</span>
+      </div>
+      <div id="ctfBox" class="flex-1 overflow-y-auto space-y-1 text-[9px] terminal-output"></div>
+    </div>
+
+    <!-- LEDGER -->
+    <div class="flex-1 bg-cyber-panel/90 border border-cyber-border rounded-xl p-2 flex flex-col shadow-xl overflow-hidden min-h-20">
+      <div class="flex justify-between items-center border-b border-cyber-border pb-1 text-[10px] mb-1">
+        <span class="font-bold text-cyber-gold"><i class="fa-solid fa-link"></i> Ledger</span>
+        <span id="chainValid" class="text-cyber-green text-[9px]">✓</span>
+      </div>
+      <div id="ledgerLog" class="flex-1 overflow-y-auto space-y-1 text-[9px] terminal-output"></div>
     </div>
   </section>
 </main>
 
-<footer class="relative z-10 bg-cyber-panel/90 border-t border-cyber-border px-3 py-1 flex justify-between items-center text-[10px] md:text-[11px] text-gray-400">
-  <div>© 2026 <span class="text-cyber-cyan font-bold">لافي منير</span></div>
-  <div id="footerStatus" class="text-cyber-gold font-bold">READY</div>
+<footer class="relative z-10 bg-cyber-panel/95 border-t border-cyber-border px-3 py-1 flex justify-between items-center text-[10px] text-gray-400">
+  <div>© 2026 <span class="text-cyber-magenta font-bold">لافي منير</span> — v50.0 OMEGA Ω</div>
+  <div id="footerStatus" class="text-cyber-green font-bold">OMEGA ONLINE</div>
 </footer>
 
-<div id="nanoModal" class="modal-overlay">
-  <div class="modal-content">
-    <div class="flex justify-between items-center border-b border-cyber-cyan/30 pb-2 mb-2">
-      <div class="flex items-center gap-2 text-cyber-cyan font-bold text-sm">
-        <i class="fa-solid fa-file-lines"></i> nano — <span id="nanoFilename" class="text-cyber-gold">file.txt</span>
-      </div>
-      <div class="text-[10px] text-gray-400">Ctrl+S = حفظ | Esc = خروج</div>
-    </div>
-    <textarea id="nanoBuffer" class="flex-1 bg-cyber-bg/90 text-cyber-green p-3 font-mono text-xs border border-cyber-border rounded-lg outline-none resize-none focus:border-cyber-cyan min-h-[300px]" spellcheck="false"></textarea>
-    <div class="flex justify-end gap-2 mt-3">
-      <button onclick="closeNano(false)" class="px-4 py-1.5 bg-gray-700 hover:bg-gray-600 rounded text-xs font-bold">إلغاء</button>
-      <button onclick="saveNano()" class="px-4 py-1.5 bg-cyber-cyan text-black hover:bg-cyan-400 rounded text-xs font-bold">حفظ</button>
-    </div>
-  </div>
-</div>
-
-<script>
+<script type="module">
 "use strict";
 
-/* ═══════════════════════════════════════════════════════════
-   SOVEREIGN OS v38.0 AI APEX — FULL ENGINE
-   ═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   SOVEREIGN OS v50.0 NEXUS OMEGA
+   🌍 Globe 3D + 🎥 Video P2P + 🗣️ Voice + 🧠 Memory + 📲 Offline
+   ═══════════════════════════════════════════════════════════════ */
 
-let currentUser = "root";
 let currentPath = "/root";
 let vfs = {};
-let passwdDB = new Map();
 let auditLedger = [];
 let commandHistory = [];
 let historyIndex = -1;
-let shellVars = { USER: "root", HOME: "/root", SHELL: "/bin/bash", PWD: "/root" };
 let idb = null;
-let bootTime = Date.now();
 
-let cryptoKeyObj = null;
-let rawPasswordSecret = "SOVEREIGN_APEX_2026";
-let openAiApiKey = ""; // لا يخزّن في localStorage للأمان
+// Maps
+let issMap = null, issMarker = null, issTrail = null, issTrailPoints = [];
+let globeWorld = null, globeArcsData = [], globeRingsData = [];
+let satData = [], satMarkers = [], globeSatData = [];
+let issInterval = null;
 
-let peer = null;
-let myPeerId = null;
-let dataConnections = {};
-let roomId = null;
-let localStream = null;
-let screenStream = null;
-let currentNanoPath = null;
-let pendingFileChunks = {};
-let incomingFileMeta = null;
+// CTF + Stats
+let ctfScore = 0;
+let stats = { goalsDone: 0, goalsFail: 0, goalsRetried: 0, loops: 0, aiQueries: 0, p2pMessages: 0, photos: 0, memories: 0, voiceCmds: 0 };
+let goalQueue = [];
+let loopActive = false;
+let loopInterval = null;
+let agentBusy = false;
+
+// P2P
+let peer = null, connections = {}, myPeerId = "";
+let activeCall = null, currentCall = null;
+let mediaCallStream = null;
+
+// LLM
+let llmEngine = null, llmLoading = false, aiDrivesAgent = false;
+
+// Sensors
+let cameraStream = null, micStream = null, audioCtx = null, audioAnalyser = null;
+
+// Voice
+let recognition = null, voiceActive = false;
+
+// Memory (Vector DB)
+let memoryVectors = []; // [{id, text, vec:[...] , meta}]
 
 const $ = id => document.getElementById(id);
 const termOutput = $("terminalOutput");
 const termInput = $("terminalInput");
 
-/* ═══ UTILITIES ═══ */
-function notify(msg, ms = 3000) {
-  const el = $("notification");
-  el.textContent = msg;
-  el.classList.remove("hidden");
-  clearTimeout(el._to);
-  el._to = setTimeout(() => el.classList.add("hidden"), ms);
-}
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* ─── Utils ─── */
+function esc(s) {
+  return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 }
 function printToTerm(text, color = "text-gray-300") {
   const div = document.createElement("div");
   div.className = "font-mono " + color;
-  div.innerText = text;
+  div.textContent = text;
   termOutput.appendChild(div);
   termOutput.scrollTop = termOutput.scrollHeight;
+  while (termOutput.children.length > 500) termOutput.removeChild(termOutput.firstChild);
 }
-async function sha256Hex(str) {
-  const buf = new TextEncoder().encode(str);
-  const h = await crypto.subtle.digest("SHA-256", buf);
-  return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, "0")).join("");
+function notify(msg, color) {
+  const n = $("notification");
+  n.textContent = msg;
+  n.className = "fixed top-20 left-1/2 -translate-x-1/2 " + (color || "bg-cyber-cyan text-black") + " px-6 py-3 rounded-lg font-bold z-[200] shadow-2xl text-sm text-center max-w-[90%]";
+  n.classList.remove("hidden");
+  setTimeout(() => n.classList.add("hidden"), 2500);
 }
-function beep(freq = 440, dur = 80, type = "sine") {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator(); const g = ctx.createGain();
-    osc.type = type; osc.frequency.value = freq;
-    osc.connect(g); g.connect(ctx.destination);
-    g.gain.setValueAtTime(0.08, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur / 1000);
-    osc.start(); osc.stop(ctx.currentTime + dur / 1000);
-  } catch (e) {}
+function setStatus(id, text, cls) {
+  const el = $(id); if (!el) return;
+  el.textContent = text;
+  el.className = "font-bold " + (cls || "");
 }
 
-/* ═══ AI ENGINE ═══ */
-async function queryAI(prompt) {
-  if (!prompt) return "⚠️ اكتب سؤالاً بعد الأمر ai";
-
-  if (openAiApiKey) {
+/* ─── IndexedDB ─── */
+function initIDB() {
+  return new Promise(res => {
     try {
-      const res = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + openAiApiKey },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: [
-            { role: "system", content: "You are Sovereign AI assistant inside Sovereign OS created by لافي منير. Answer concisely in Arabic." },
-            { role: "user", content: prompt }
-          ]
-        })
-      });
-      const data = await res.json();
-      if (data.choices && data.choices[0]) return data.choices[0].message.content;
-      if (data.error) return "❌ " + data.error.message;
-    } catch (e) { return "❌ فشل الاتصال: " + e.message; }
-  }
-
-  // Local fallback AI
-  const p = prompt.toLowerCase().trim();
-  if (p.includes("من أنت") || p.includes("who are you") || p.includes("اسمك")) return "🤖 أنا Sovereign AI — مساعد ذكي مدمج في نظام لافي منير. أعمل محلياً بدون اتصال، أو عبر OpenAI لو ضبطت مفتاحاً بـ setapikey.";
-  if (p.includes("مرحبا") || p.includes("hello") || p.includes("سلام")) return "👋 أهلاً بك! كيف أساعدك في Sovereign OS اليوم؟";
-  if (p.includes("كيف") || p.includes("how")) return "💡 استخدم help للأوامر، أو sysinfo لحالة النظام، أو call لبدء شبكة Mesh.";
-  if (p.includes("تشفير") || p.includes("encrypt")) return "🔒 النظام يدعم AES-GCM 256-bit + PBKDF2. اضبط المفتاح من الواجهة الجانبية.";
-  if (p.includes("وقت") || p.includes("time")) return "⏰ الوقت الحالي: " + new Date().toLocaleString("ar-DZ");
-  if (p.includes("تاريخ") || p.includes("date")) return "📅 التاريخ: " + new Date().toLocaleDateString("ar-DZ");
-  if (p.startsWith("احسب") || p.startsWith("calc") || /^[\d\s+\-*/()]+$/.test(p)) {
-    try {
-      const expr = p.replace("احسب", "").replace("calc", "").trim();
-      // eslint-disable-next-line no-new-func
-      const r = Function('"use strict";return (' + expr + ")")();
-      return "🧮 النتيجة: " + r;
-    } catch (e) {}
-  }
-  if (p.includes("نكتة") || p.includes("joke")) {
-    const jokes = ["لماذا لا يخاف المبرمج من الظلام؟ لأنه يعمل في بيئة terminal مظلمة أصلاً 😄", "كم مبرمج لتغيير مصباح؟ لا شيء، إنه مشكلة في الشبكة 🐛"];
-    return "😄 " + jokes[Math.floor(Math.random() * jokes.length)];
-  }
-  return "🤖 (محلي) فهمت: \"" + prompt + "\". ضبط setapikey <key> لتفعيل OpenAI، أو جرّب: احسب 2+2، نكتة، الوقت، من أنت.";
-}
-function speakAI(text) {
-  try {
-    if (!window.speechSynthesis) return;
-    const u = new SpeechSynthesisUtterance(text.replace(/[🤖👋💡🔒⏰📅🧮😄❌]/g, ""));
-    u.lang = "ar-SA"; u.rate = 1.0;
-    speechSynthesis.cancel(); speechSynthesis.speak(u);
-  } catch (e) {}
-}
-
-/* ═══ AES-GCM ═══ */
-async function deriveCryptoKey(secret) {
-  try {
-    const enc = new TextEncoder();
-    const km = await crypto.subtle.importKey("raw", enc.encode(secret), { name: "PBKDF2" }, false, ["deriveKey"]);
-    cryptoKeyObj = await crypto.subtle.deriveKey(
-      { name: "PBKDF2", salt: enc.encode("SOVEREIGN_SALT"), iterations: 100000, hash: "SHA-256" },
-      km, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]
-    );
-    const cs = $("cryptoStatus"); if (cs) cs.textContent = "AES-GCM-256";
-  } catch (e) { console.warn("crypto error", e); }
-}
-async function encryptPayload(text) {
-  try {
-    if (!cryptoKeyObj) await deriveCryptoKey(rawPasswordSecret);
-    const enc = new TextEncoder(); const iv = crypto.getRandomValues(new Uint8Array(12));
-    const encData = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, cryptoKeyObj, enc.encode(text));
-    const combined = new Uint8Array(iv.length + encData.byteLength);
-    combined.set(iv, 0); combined.set(new Uint8Array(encData), iv.length);
-    let bin = ""; for (let i = 0; i < combined.length; i++) bin += String.fromCharCode(combined[i]);
-    return "AES256:" + btoa(bin);
-  } catch (e) { return text; }
-}
-async function decryptPayload(cipher) {
-  try {
-    if (typeof cipher !== "string" || !cipher.startsWith("AES256:")) return cipher;
-    if (!cryptoKeyObj) await deriveCryptoKey(rawPasswordSecret);
-    const raw = atob(cipher.slice(7)); const combined = new Uint8Array(raw.length);
-    for (let i = 0; i < raw.length; i++) combined[i] = raw.charCodeAt(i);
-    const iv = combined.slice(0, 12); const ct = combined.slice(12);
-    const dec = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, cryptoKeyObj, ct);
-    return new TextDecoder().decode(dec);
-  } catch (e) { return "[فشل فك التشفير]"; }
-}
-
-/* ═══ IndexedDB ═══ */
-function initIndexedDB() {
-  return new Promise(resolve => {
-    try {
-      const req = indexedDB.open("SovereignOS_v38", 1);
-      req.onupgradeneeded = e => {
+      const r = indexedDB.open("Omega_v50", 1);
+      r.onupgradeneeded = e => {
         const d = e.target.result;
         if (!d.objectStoreNames.contains("vfs")) d.createObjectStore("vfs");
         if (!d.objectStoreNames.contains("ledger")) d.createObjectStore("ledger");
+        if (!d.objectStoreNames.contains("memory")) d.createObjectStore("memory", { keyPath: "id" });
       };
-      req.onsuccess = e => { idb = e.target.result; $("dbStatus").textContent = "ON"; $("dbStatus").className = "dot-on font-bold"; resolve(); };
-      req.onerror = () => { $("dbStatus").textContent = "ERR"; $("dbStatus").className = "dot-off font-bold"; resolve(); };
-    } catch (e) { resolve(); }
+      r.onsuccess = e => { idb = e.target.result; res(true); };
+      r.onerror = () => res(false);
+    } catch (e) { res(false); }
   });
 }
-async function saveVFSToIDB() {
+async function saveVFS() {
   if (!idb) return;
   try {
-    const tx = idb.transaction("vfs", "readwrite"); const s = tx.objectStore("vfs"); s.clear();
-    for (const [k, v] of Object.entries(vfs)) s.put(v, k);
+    const tx = idb.transaction("vfs","readwrite");
+    const s = tx.objectStore("vfs"); s.clear();
+    for (const [k,v] of Object.entries(vfs)) {
+      if (v.data && typeof v.data === "string" && v.data.length > 400000) continue;
+      s.put(v, k);
+    }
   } catch (e) {}
 }
-async function loadVFSFromIDB() {
+async function loadVFS() {
   if (!idb) return null;
-  return new Promise(resolve => {
+  return new Promise(res => {
     try {
-      const tx = idb.transaction("vfs", "readonly"); const s = tx.objectStore("vfs"); const req = s.getAllKeys();
-      req.onsuccess = async () => {
-        if (req.result.length === 0) return resolve(null);
-        const result = {};
-        for (const key of req.result) {
-          result[key] = await new Promise(r => { const rq = s.get(key); rq.onsuccess = () => r(rq.result); rq.onerror = () => r(null); });
-        }
-        resolve(result);
+      const tx = idb.transaction("vfs","readonly");
+      const s = tx.objectStore("vfs");
+      const r = s.getAll(); const k = s.getAllKeys();
+      tx.oncomplete = () => {
+        const o = {}; r.result.forEach((v,i) => o[k.result[i]] = v);
+        res(Object.keys(o).length ? o : null);
       };
-      req.onerror = () => resolve(null);
-    } catch (e) { resolve(null); }
+      tx.onerror = () => res(null);
+    } catch (e) { res(null); }
   });
 }
-async function saveLedgerToIDB() {
+async function saveLedger() {
   if (!idb) return;
-  try { const tx = idb.transaction("ledger", "readwrite"); tx.objectStore("ledger").put(auditLedger, "ledger"); } catch (e) {}
+  try { idb.transaction("ledger","readwrite").objectStore("ledger").put(auditLedger,"chain"); } catch (e) {}
 }
-async function loadLedgerFromIDB() {
+async function loadLedger() {
   if (!idb) return null;
-  return new Promise(resolve => {
+  return new Promise(res => {
     try {
-      const tx = idb.transaction("ledger", "readonly"); const req = tx.objectStore("ledger").get("ledger");
-      req.onsuccess = () => resolve(req.result || null); req.onerror = () => resolve(null);
-    } catch (e) { resolve(null); }
+      const tx = idb.transaction("ledger","readonly");
+      const req = tx.objectStore("ledger").get("chain");
+      tx.oncomplete = () => res(req.result || null);
+      tx.onerror = () => res(null);
+    } catch (e) { res(null); }
+  });
+}
+async function saveMemory() {
+  if (!idb) return;
+  try {
+    const tx = idb.transaction("memory","readwrite");
+    const s = tx.objectStore("memory");
+    s.clear();
+    memoryVectors.forEach(m => s.put(m));
+  } catch (e) {}
+}
+async function loadMemory() {
+  if (!idb) return [];
+  return new Promise(res => {
+    try {
+      const tx = idb.transaction("memory","readonly");
+      const req = tx.objectStore("memory").getAll();
+      tx.oncomplete = () => res(req.result || []);
+      tx.onerror = () => res([]);
+    } catch (e) { res([]); }
   });
 }
 
-/* ═══ BLOCKCHAIN LEDGER ═══ */
-async function createLedgerBlock(type, details, author) {
-  author = author || currentUser;
-  const prev = auditLedger.length > 0 ? auditLedger[auditLedger.length - 1] : null;
-  const prevHash = prev ? prev.hash : "00000000000000000000000000000000";
-  const timestamp = new Date().toISOString();
-  const index = auditLedger.length;
-  const blockHash = await sha256Hex(index + "|" + timestamp + "|" + type + "|" + details + "|" + author + "|" + prevHash);
-  auditLedger.push({ index, timestamp, type, details, author, prevHash, hash: blockHash });
-  await saveLedgerToIDB();
+/* ─── Blockchain ─── */
+async function sha256(str) {
+  const b = new TextEncoder().encode(str);
+  const h = await crypto.subtle.digest("SHA-256", b);
+  return Array.from(new Uint8Array(h)).map(x => x.toString(16).padStart(2,"0")).join("");
+}
+async function addBlock(type, details) {
+  const prev = auditLedger.length ? auditLedger[auditLedger.length-1] : null;
+  const prevHash = prev ? prev.hash : "0".repeat(64);
+  const ts = new Date().toISOString();
+  const idx = auditLedger.length;
+  const hash = await sha256(idx + "|" + ts + "|" + type + "|" + details + "|" + prevHash);
+  auditLedger.push({ index: idx, timestamp: ts, type, details, prevHash, hash });
+  await saveLedger();
   renderLedgerUI();
+  $("chainCount").textContent = auditLedger.length;
+}
+async function verifyChain(silent) {
+  let ok = true;
+  for (let i = 0; i < auditLedger.length; i++) {
+    const b = auditLedger[i];
+    const exp = await sha256(b.index + "|" + b.timestamp + "|" + b.type + "|" + b.details + "|" + b.prevHash);
+    if (exp !== b.hash) { ok = false; break; }
+    if (i > 0 && b.prevHash !== auditLedger[i-1].hash) { ok = false; break; }
+  }
+  $("chainValid").textContent = ok ? "✓" : "✗";
+  $("chainValid").className = ok ? "text-cyber-green text-[9px]" : "text-red-400 text-[9px]";
+  if (!silent) printToTerm(ok ? "✅ السلسلة سليمة" : "❌ مكسورة", ok ? "text-cyber-green" : "text-red-400");
+  return ok;
 }
 function renderLedgerUI() {
   const box = $("ledgerLog"); if (!box) return;
   box.innerHTML = "";
-  auditLedger.slice().reverse().forEach(b => {
+  auditLedger.slice().reverse().slice(0, 12).forEach(b => {
     const div = document.createElement("div");
-    div.className = "bg-cyber-bg/90 p-1.5 rounded border border-cyber-border space-y-0.5";
-    div.innerHTML = '<div class="flex justify-between text-cyber-gold font-bold text-[9px]"><span>#' + b.index + ' [' + escapeHtml(b.type) + ']</span><span>' + escapeHtml(b.author) + '</span></div>' +
-      '<div class="text-gray-300 break-all">' + escapeHtml(b.details) + '</div>' +
-      '<div class="text-cyber-cyan text-[8px] break-all">🔗 ' + b.hash.substring(0, 24) + '…</div>';
+    div.className = "bg-cyber-bg/90 p-1 rounded border border-cyber-border";
+    div.innerHTML = '<span class="text-cyber-cyan font-bold">#' + b.index + '</span> <span class="text-cyber-magenta">[' + esc(b.type) + ']</span> <span class="text-gray-400 text-[8px]">' + esc(String(b.details).slice(0,40)) + '</span>';
     box.appendChild(div);
   });
 }
 
-/* ═══ VFS ═══ */
+/* ─── VFS ─── */
 function initVFS() {
   return {
-    "/": { type: "dir", owner: "root", children: ["root", "etc", "home", "tmp", "bin"] },
-    "/root": { type: "dir", owner: "root", children: ["readme.txt", ".bashrc"] },
-    "/root/readme.txt": { type: "file", owner: "root", content: "لافي منير — SOVEREIGN OS v38.0 AI APEX\n\nجرّب الأوامر:\n  help     — قائمة الأوامر\n  ai <..>  — اسأل الذكاء الاصطناعي\n  call     — شبكة P2P\n  sysinfo  — معلومات النظام\n  tree     — شجرة الملفات\n" },
-    "/root/.bashrc": { type: "file", owner: "root", content: "# Sovereign bashrc\nexport USER=root\n" },
-    "/etc": { type: "dir", owner: "root", children: ["hosts", "passwd"] },
-    "/etc/hosts": { type: "file", owner: "root", content: "127.0.0.1 localhost\n::1 localhost" },
-    "/etc/passwd": { type: "file", owner: "root", content: "root:x:0:0:root:/root:/bin/bash\nlafi:x:1000:1000:lafi:/home/lafi:/bin/bash" },
-    "/home": { type: "dir", owner: "root", children: ["lafi"] },
-    "/home/lafi": { type: "dir", owner: "lafi", children: [] },
-    "/tmp": { type: "dir", owner: "root", children: [] },
-    "/bin": { type: "dir", owner: "root", children: [] }
+    "/": { type:"dir", children:["root","etc","space","photos","ctf","tmp"] },
+    "/root": { type:"dir", children:["readme.txt"] },
+    "/root/readme.txt": { type:"file", content:"SOVEREIGN OS v50.0 OMEGA ∞ — كل شيء ذاتي" },
+    "/etc": { type:"dir", children:[] },
+    "/space": { type:"dir", children:["iss.json"] },
+    "/space/iss.json": { type:"file", content:"{}" },
+    "/photos": { type:"dir", children:[] },
+    "/ctf": { type:"dir", children:[] },
+    "/tmp": { type:"dir", children:[] }
   };
 }
-
-/* ═══ PATH RESOLUTION (with . .. ~) ═══ */
-function resolvePath(arg) {
-  if (!arg) return currentPath;
-  if (arg === "~") return "/root";
-  if (arg.startsWith("~/")) arg = "/root/" + arg.slice(2);
-  let base;
-  if (arg.startsWith("/")) base = arg;
-  else base = (currentPath === "/" ? "" : currentPath) + "/" + arg;
-  const parts = base.split("/").filter(p => p !== "" && p !== ".");
+function resolvePath(a) {
+  if (!a) return currentPath;
+  if (a === "~") return "/root";
+  let base = a.startsWith("/") ? a : (currentPath === "/" ? "" : currentPath) + "/" + a;
+  const parts = base.split("/").filter(Boolean);
   const stack = [];
   for (const p of parts) {
-    if (p === "..") stack.pop();
-    else stack.push(p);
+    if (p === ".") continue;
+    if (p === "..") stack.pop(); else stack.push(p);
   }
-  return "/" + stack.join("");
+  return "/" + stack.join("/") || "/";
 }
-function parentPath(p) { const idx = p.lastIndexOf("/"); return idx <= 0 ? "/" : p.slice(0, idx); }
-function baseName(p) { return p.slice(p.lastIndexOf("/") + 1); }
+function parentOf(p) { if (p === "/") return "/"; const i = p.lastIndexOf("/"); return i <= 0 ? "/" : p.slice(0,i); }
+function baseName(p) { if (p === "/") return "/"; return p.slice(p.lastIndexOf("/")+1); }
+function ensureParent(path) {
+  const par = parentOf(path), name = baseName(path);
+  if (vfs[par] && vfs[par].children && !vfs[par].children.includes(name)) vfs[par].children.push(name);
+}
 
-/* ═══ SPEECH / VOICE ═══ */
-async function listenVoice() {
-  if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
-    notify("⚠️ متصفحك لا يدعم التعرف على الصوت");
+/* ═══════════════════════════════════════════════════════════
+   1️⃣ GLOBE 3D — kرة أرضية للأقمار
+   ═══════════════════════════════════════════════════════════ */
+function initGlobe() {
+  if (typeof Globe === "undefined") {
+    printToTerm("⚠️ Globe.gl لم تُحمّل بعد", "text-yellow-400");
     return;
   }
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const rec = new SR();
-  rec.lang = "ar-SA"; rec.continuous = false; rec.interimResults = false;
-  rec.onresult = e => {
-    const text = e.results[0][0].transcript;
-    printToTerm("🎤 (صوت) " + text, "text-cyber-gold");
-    runCommand(text);
-  };
-  rec.onerror = e => notify("❌ خطأ صوتي: " + e.error);
-  rec.start();
-  notify("🎤 تحدث الآن...");
+  try {
+    globeWorld = Globe()($("globeContainer"))
+      .globeImageUrl("//unpkg.com/three-globe/example/img/earth-blue-marble.jpg")
+      .bumpImageUrl("//unpkg.com/three-globe/example/img/earth-topology.png")
+      .backgroundImageUrl("//unpkg.com/three-globe/example/img/night-sky.png")
+      .backgroundColor("#030014")
+      .showAtmosphere(true)
+      .atmosphereColor("#00f2fe")
+      .atmosphereAltitude(0.22)
+      .pointOfView({ lat: 20, lng: 0, altitude: 2.5 }, 1000);
+
+    // الأقمار كنقاط
+    globeWorld
+      .pointsData(globeSatData)
+      .pointLat("lat")
+      .pointLng("lng")
+      .pointColor(d => d.type === "iss" ? "#00f2fe" : "#ffd700")
+      .pointAltitude(d => d.type === "iss" ? 0.15 : 0.05)
+      .pointRadius(d => d.type === "iss" ? 0.6 : 0.3)
+      .pointLabel(d => "<b style='color:" + (d.type === "iss" ? "#00f2fe" : "#ffd700") + "'>" + esc(d.name) + "</b><br>" + d.norad);
+
+    // حلقات
+    globeWorld
+      .ringsData([])
+      .ringColor(() => "#ff007f")
+      .ringMaxRadius(3)
+      .ringPropagationSpeed(3)
+      .ringRepeatPeriod(800);
+
+    printToTerm("🌍 Globe 3D جاهز", "text-cyber-green");
+    if (Notification.permission === "granted") new Notification("🌍 Globe 3D", { body: "كرة أرضية جاهزة" });
+  } catch (e) {
+    printToTerm("❌ Globe: " + e.message, "text-red-400");
+  }
+}
+async function loadGlobeSats(group) {
+  group = group || "stations";
+  printToTerm("🌍 تحميل " + group + " على Globe 3D...", "text-cyber-cyan");
+  try {
+    const r = await fetch("https://celestrak.org/NORAD/elements/gp.php?GROUP=" + encodeURIComponent(group) + "&FORMAT=json");
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const sats = await r.json();
+    globeSatData = [];
+    satData = []; // shared
+
+    sats.forEach(s => {
+      try {
+        const satrec = satellite.twoline2satrec(s.TLE_LINE1, s.TLE_LINE2);
+        const record = { name: s.OBJECT_NAME, norad: s.NORAD_CAT_ID, satrec };
+        satData.push(record);
+        globeSatData.push(record);
+      } catch (e) {}
+    });
+
+    $("globeSatCount").textContent = globeSatData.length;
+    $("satCount").textContent = satData.length;
+    printToTerm("  ✅ " + globeSatData.length + " قمر على Globe", "text-cyber-green");
+
+    updateGlobePositions();
+    await addBlock("GLOBE_LOAD", globeSatData.length + " sats " + group);
+
+    // شغّل التحديث الدوري
+    if (!window._globeInterval) {
+      window._globeInterval = setInterval(updateGlobePositions, 2000);
+    }
+  } catch (e) { printToTerm("❌ " + e.message, "text-red-400"); }
+}
+function updateGlobePositions() {
+  const now = new Date();
+  globeSatData.forEach(sd => {
+    if (!sd.satrec) return;
+    try {
+      const pv = satellite.propagate(sd.satrec, now);
+      if (!pv || !pv.position) return;
+      const gmst = satellite.gstime(now);
+      const geo = satellite.eciToGeodetic(pv.position, gmst);
+      const lat = satellite.degreesLat(geo.latitude);
+      const lon = satellite.degreesLong(geo.longitude);
+      const alt = geo.height;
+      if (isNaN(lat) || isNaN(lon)) return;
+      sd.lat = lat; sd.lng = lon; sd.alt = alt;
+    } catch (e) {}
+  });
+  if (globeWorld) globeWorld.pointsData([...globeSatData]);
+}
+// ISS marker على Globe
+async function updateISSOnGlobe(d) {
+  if (!globeWorld || !d) return;
+  // ضع ISS كنقطة خاصة
+  const issIndex = globeSatData.findIndex(s => s.type === "iss");
+  const rec = { name: "ISS", norad: "25544", lat: d.lat, lng: d.lon, alt: d.alt, type: "iss" };
+  if (issIndex >= 0) globeSatData[issIndex] = rec;
+  else globeSatData.push(rec);
+  globeWorld.pointsData([...globeSatData]);
+
+  // رنّ حول ISS
+  globeWorld.ringsData([{ lat: d.lat, lng: d.lon }]);
 }
 
-/* ═══ TERMINAL ENGINE ═══ */
-async function executeOneCommand(cmd, args, fullLine) {
-  const out = (t, c) => printToTerm(t, c || "text-gray-300");
-  const flagAll = args.includes("-a") || args.includes("-l");
+/* ═══════════════════════════════════════════════════════════
+   2️⃣ ISS + Leaflet 2D
+   ═══════════════════════════════════════════════════════════ */
+function initMap() {
+  try {
+    issMap = L.map('mapContainer', { zoomControl: false, attributionControl: false, worldCopyJump: true }).setView([0,0], 2);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 6 }).addTo(issMap);
+    issMarker = L.circleMarker([0,0], { radius: 7, color: '#00f2fe', fillColor: '#00f2fe', fillOpacity: 0.9, weight: 2 }).addTo(issMap);
+    issMarker.bindPopup("<b style='color:#00f2fe'>🛰️ ISS</b>");
+    issTrail = L.polyline([], { color: '#ff007f', weight: 2, opacity: 0.7 }).addTo(issMap);
+  } catch (e) { console.error(e); }
+}
+async function fetchISS() {
+  try {
+    const r = await fetch("https://api.wheretheiss.at/v1/satellites/25544");
+    if (r.ok) {
+      const d = await r.json();
+      return { lat: d.latitude, lon: d.longitude, alt: d.altitude, vel: d.velocity, vis: d.visibility };
+    }
+  } catch (e) {}
+  return null;
+}
+async function updateISS(center) {
+  const d = await fetchISS();
+  if (!d) { setStatus("issCoords", "NO DATA", "status-error"); return; }
+  $("issLat").textContent = d.lat.toFixed(2) + "°";
+  $("issLon").textContent = d.lon.toFixed(2) + "°";
+  $("issAlt").textContent = d.alt.toFixed(0) + "km";
+  $("issVis").textContent = d.vis === "daylight" ? "☀️" : "🌙";
+  $("issCoords").textContent = d.lat.toFixed(1) + "°, " + d.lon.toFixed(1) + "°";
+  $("globeLat").textContent = d.lat.toFixed(2) + "°";
+  $("globeLon").textContent = d.lon.toFixed(2) + "°";
+  $("globeAlt").textContent = d.alt.toFixed(0) + "km";
+
+  if (issMarker) {
+    issMarker.setLatLng([d.lat, d.lon]);
+    const p = issMarker.getPopup();
+    if (p) p.setContent("<b style='color:#00f2fe'>🛰️ ISS</b><br>" + d.lat.toFixed(2) + "°, " + d.lon.toFixed(2) + "<br>" + d.alt.toFixed(0) + " km");
+  }
+  issTrailPoints.push([d.lat, d.lon]);
+  if (issTrailPoints.length > 100) issTrailPoints.shift();
+  if (issTrail) issTrail.setLatLngs(issTrailPoints);
+  if (center && issMap) issMap.panTo([d.lat, d.lon], { animate: true });
+  vfs["/space/iss.json"].content = JSON.stringify(d, null, 2);
+
+  // Globe
+  updateISSOnGlobe(d);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   3️⃣ NASA + SpaceX
+   ═══════════════════════════════════════════════════════════ */
+async function loadAPOD() {
+  try {
+    const r = await fetch("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY");
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const d = await r.json();
+    $("apodImage").src = d.url;
+    $("apodImage").style.display = "block";
+    $("apodInfo").innerHTML = '<div class="text-cyber-gold font-bold">' + esc(d.title) + '</div>' +
+      '<div class="text-gray-400">' + esc(d.date) + '</div>' +
+      '<div class="text-gray-300 mt-1">' + esc((d.explanation||"").slice(0, 200)) + '...</div>';
+    printToTerm("🌌 APOD: " + d.title, "text-cyber-cyan");
+    await addBlock("APOD", d.title.slice(0,50));
+    addMemory("NASA APOD: " + d.title + " — " + (d.explanation||"").slice(0,100));
+  } catch (e) { printToTerm("❌ APOD: " + e.message, "text-red-400"); }
+}
+async function loadLaunches() {
+  try {
+    const r = await fetch("https://api.spacexdata.com/v5/launches/upcoming?limit=6");
+    if (!r.ok) throw new Error();
+    const ls = await r.json();
+    const box = $("launchesBox");
+    box.innerHTML = "";
+    ls.forEach(l => {
+      const d = document.createElement("div");
+      d.className = "launch-card";
+      const date = new Date(l.date_utc);
+      const days = Math.ceil((date - Date.now()) / 86400000);
+      d.innerHTML = '<div class="text-cyber-gold font-bold">🚀 ' + esc(l.name) + '</div>' +
+        '<div class="text-gray-400">📅 ' + date.toLocaleDateString('ar-EG') + ' • ' + days + ' يوم</div>';
+      box.appendChild(d);
+    });
+    printToTerm("🚀 " + ls.length + " إطلاق SpaceX", "text-cyber-green");
+  } catch (e) { printToTerm("❌ SpaceX: " + e.message, "text-red-400"); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   4️⃣ WebLLM Phi-3
+   ═══════════════════════════════════════════════════════════ */
+async function loadWebLLM() {
+  if (llmEngine || llmLoading) return;
+  llmLoading = true;
+  printToTerm("🧠 تحميل Phi-3...", "text-cyber-green");
+  try {
+    const webllm = await import("https://esm.run/@mlc-ai/web-llm@0.2.72");
+    llmEngine = await webllm.CreateMLCEngine("Phi-3-mini-4k-instruct-q4f16_1-MLC", {
+      initProgressCallback: r => printToTerm("   " + (r.text||"") + " " + (r.progress*100).toFixed(0) + "%", "text-gray-500")
+    });
+    printToTerm("✅ Phi-3 جاهز", "text-cyber-green");
+    await addBlock("LLM_LOAD", "Phi-3-mini");
+  } catch (e) { printToTerm("❌ Phi-3: " + e.message, "text-red-400"); }
+  finally { llmLoading = false; }
+}
+async function llmAsk(q, system) {
+  if (!llmEngine) throw new Error("LLM not loaded");
+  const reply = await llmEngine.chat.completions.create({
+    messages: [
+      { role: "system", content: system || "أنت مساعد في SOVEREIGN OMEGA. أجب بالعربية بإيجاز." },
+      { role: "user", content: q }
+    ],
+    temperature: 0.7, max_tokens: 300
+  });
+  return reply.choices[0].message.content;
+}
+async function llmPlanGoal(goal) {
+  if (!llmEngine || !aiDrivesAgent) return null;
+  try {
+    const txt = await llmAsk(goal, "أنت وكيل أوامر. الأوامر: iss, sats, apod, launches, ctf, sysinfo, ls, cat, chain, globe, stats, help. أرجع JSON فقط: {\"steps\":[\"cmd1\",\"cmd2\"]}.");
+    const m = txt.match(/\{[\s\S]*\}/);
+    if (m) { const p = JSON.parse(m[0]); if (Array.isArray(p.steps)) return p.steps; }
+  } catch (e) {}
+  return null;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   5️⃣ VIDEO P2P
+   ═══════════════════════════════════════════════════════════ */
+function initPeer() {
+  try {
+    peer = new Peer({
+      config: { iceServers: [
+        { urls: "stun:stun.l.google.com:19302" },
+        { urls: "stun:global.stun.twilio.com:3478" }
+      ]}
+    });
+    peer.on("open", id => {
+      myPeerId = id;
+      $("myPeerId").value = id;
+      $("myVideoId").textContent = id;
+      setStatus("p2pStatus", "ONLINE", "status-live");
+      setStatus("p2pNetState", "✅ متصل", "status-live");
+      p2pLog("✅ معرّفك: " + id);
+      printToTerm("🌐 P2P: " + id, "text-cyber-green");
+    });
+    peer.on("connection", conn => setupConnection(conn));
+    peer.on("call", call => {
+      printToTerm("📞 مكالمة فيديو واردة من: " + call.peer.slice(0,8), "text-cyber-cyan");
+      if (confirm("📞 مكالمة واردة من " + call.peer.slice(0,8) + " — هل تقبل؟")) {
+        call.answer(mediaCallStream);
+        currentCall = call;
+        handleCallStream(call);
+      } else {
+        call.close();
+      }
+    });
+    peer.on("error", err => p2pLog("❌ " + err.message));
+  } catch (e) { p2pLog("❌ " + e.message); }
+}
+async function startVideo() {
+  try {
+    mediaCallStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    $("videoPreview").srcObject = mediaCallStream;
+    $("videoState").textContent = "📹 يعمل";
+    $("videoState").className = "text-cyber-green text-[9px]";
+    printToTerm("📹 الكاميرا جاهزة للمكالمة", "text-cyber-green");
+    await addBlock("VIDEO_START", "Local stream ready");
+  } catch (e) { printToTerm("❌ " + e.message, "text-red-400"); }
+}
+function stopVideo() {
+  if (mediaCallStream) { mediaCallStream.getTracks().forEach(t => t.stop()); mediaCallStream = null; }
+  $("videoPreview").srcObject = null;
+  if (currentCall) { currentCall.close(); currentCall = null; }
+  $("remoteVideo").srcObject = null;
+  $("videoState").textContent = "متوقف";
+  $("videoState").className = "text-gray-500 text-[9px]";
+  printToTerm("📹 أُوقف", "text-yellow-400");
+}
+function callVideoPeer() {
+  const id = $("videoPeerId").value.trim();
+  if (!id) { notify("⚠️ معرّف مطلوب"); return; }
+  if (!mediaCallStream) { notify("⚠️ شغّل الكاميرا أولاً"); return; }
+  printToTerm("📞 اتصال فيديو بـ: " + id.slice(0,8), "text-cyber-cyan");
+  const call = peer.call(id, mediaCallStream);
+  currentCall = call;
+  handleCallStream(call);
+}
+function handleCallStream(call) {
+  call.on("stream", remoteStream => {
+    $("remoteVideo").srcObject = remoteStream;
+    $("videoState").textContent = "🎥 متصل";
+    $("videoState").className = "text-cyber-green text-[9px]";
+    notify("✅ فيديو الطرف وصل!", "bg-cyber-green text-black");
+  });
+  call.on("close", () => {
+    $("remoteVideo").srcObject = null;
+    $("videoState").textContent = "انتهت";
+    printToTerm("📴 انتهت المكالمة", "text-yellow-400");
+  });
+  call.on("error", e => printToTerm("❌ مكالمة: " + e.message, "text-red-400"));
+}
+function setupConnection(conn) {
+  conn.on("open", () => {
+    connections[conn.peer] = conn;
+    p2pLog("✅ متصل: " + conn.peer.slice(0,8));
+    renderPeers();
+    notify("🌐 متصل", "bg-cyber-green text-black");
+  });
+  conn.on("data", d => { stats.p2pMessages++; handleP2PData(d, conn); });
+  conn.on("close", () => { delete connections[conn.peer]; renderPeers(); });
+}
+function handleP2PData(data, conn) {
+  if (!data || !data.type) return;
+  if (data.type === "chain-broadcast" && Array.isArray(data.chain)) {
+    if (data.chain.length > auditLedger.length) {
+      auditLedger = data.chain;
+      saveLedger();
+      $("chainCount").textContent = auditLedger.length;
+      renderLedgerUI();
+      printToTerm("📥 سلسلة من " + conn.peer.slice(0,8), "text-cyber-green");
+    }
+  } else if (data.type === "chain-request") {
+    conn.send({ type: "chain-broadcast", chain: auditLedger });
+  } else if (data.type === "chat") {
+    printToTerm("💬 [" + conn.peer.slice(0,8) + "]: " + (data.text || ""), "text-cyber-gold");
+  } else if (data.type === "memory-sync" && Array.isArray(data.memories)) {
+    data.memories.forEach(m => { if (!memoryVectors.find(x => x.id === m.id)) memoryVectors.push(m); });
+    saveMemory();
+    updateMemoryUI();
+    printToTerm("🧠 ذكريات مستلمة من " + conn.peer.slice(0,8), "text-cyber-purple");
+  }
+}
+function broadcastChain() {
+  const ps = Object.values(connections);
+  if (!ps.length) { notify("⚠️ لا أقران"); return; }
+  ps.forEach(c => c.send({ type: "chain-broadcast", chain: auditLedger }));
+  p2pLog("📤 بُثّت (" + auditLedger.length + ")");
+}
+function requestChain() {
+  const ps = Object.values(connections);
+  if (!ps.length) { notify("⚠️ لا أقران"); return; }
+  ps.forEach(c => c.send({ type: "chain-request" }));
+}
+function broadcastMemory() {
+  const ps = Object.values(connections);
+  if (!ps.length) { notify("⚠️ لا أقران"); return; }
+  ps.forEach(c => c.send({ type: "memory-sync", memories: memoryVectors }));
+  p2pLog("🧠 بث الذاكرة (" + memoryVectors.length + ")");
+}
+function broadcastChat() {
+  const t = prompt("رسالة:");
+  if (!t) return;
+  const ps = Object.values(connections);
+  if (!ps.length) { notify("⚠️ لا أقران"); return; }
+  ps.forEach(c => c.send({ type: "chat", text: t }));
+  printToTerm("💬 [أنت]: " + t, "text-cyber-cyan");
+}
+function renderPeers() {
+  const box = $("peersList"); if (!box) return;
+  box.innerHTML = "";
+  const ids = Object.keys(connections);
+  if (!ids.length) { box.innerHTML = '<div class="text-gray-600">لا يوجد</div>'; return; }
+  ids.forEach(id => {
+    const d = document.createElement("div");
+    d.className = "p2p-peer text-cyber-green";
+    d.textContent = "🟢 " + id.slice(0,16) + "...";
+    box.appendChild(d);
+  });
+}
+function p2pLog(msg) {
+  const box = $("p2pLog"); if (!box) return;
+  const t = new Date().toLocaleTimeString("ar-EG", { hour12: false });
+  const d = document.createElement("div");
+  d.textContent = "[" + t + "] " + msg;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+  while (box.children.length > 30) box.removeChild(box.firstChild);
+}
+function copyMyId() {
+  if (myPeerId) { navigator.clipboard.writeText(myPeerId); notify("📋 نُسخ"); }
+}
+function connectToPeer() {
+  const id = $("peerConnectId").value.trim();
+  if (!id || !peer) return;
+  const conn = peer.connect(id);
+  setupConnection(conn);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   6️⃣ VOICE — Web Speech API
+   ═══════════════════════════════════════════════════════════ */
+function initVoice() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    printToTerm("⚠️ متصفحك لا يدعم Web Speech API", "text-yellow-400");
+    return false;
+  }
+  recognition = new SR();
+  recognition.lang = "ar-SA";
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  recognition.onstart = () => {
+    voiceActive = true;
+    setStatus("voiceStatus", "LISTENING", "status-live");
+    $("btnVoice")?.classList.add("voice-pulse");
+    printToTerm("🎤 الاستماع نشط — تحدث الآن...", "text-cyber-magenta");
+  };
+  recognition.onend = () => {
+    if (voiceActive) { try { recognition.start(); } catch (e) {} }
+    else {
+      $("btnVoice")?.classList.remove("voice-pulse");
+      setStatus("voiceStatus", "OFF", "text-gray-500");
+    }
+  };
+  recognition.onerror = (e) => {
+    printToTerm("🎤 خطأ: " + e.error, "text-red-400");
+  };
+  recognition.onresult = (event) => {
+    const last = event.results[event.results.length-1];
+    if (last.isFinal) {
+      const text = last[0].transcript.trim();
+      printToTerm("🎤 [قال]: " + text, "text-cyber-magenta");
+      stats.voiceCmds++;
+      runCommand(text);
+    }
+  };
+  return true;
+}
+function toggleVoice() {
+  if (!recognition) {
+    if (!initVoice()) { notify("❌ لا يدعم"); return; }
+  }
+  if (voiceActive) {
+    voiceActive = false;
+    recognition.stop();
+    setStatus("voiceStatus", "OFF", "text-gray-500");
+    $("btnVoice")?.classList.remove("voice-pulse");
+    printToTerm("🎤 أُوقف", "text-yellow-400");
+  } else {
+    voiceActive = true;
+    try { recognition.start(); } catch (e) {}
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   7️⃣ SEMANTIC MEMORY — Vector DB
+   ═══════════════════════════════════════════════════════════ */
+function tokenize(text) {
+  return (text || "").toLowerCase()
+    .replace(/[^\w\u0600-\u06FF\s]/g, " ")
+    .split(/\s+/)
+    .filter(t => t.length > 1);
+}
+function embed(text) {
+  // Bag-of-words hash-based embedding (lightweight)
+  const tokens = tokenize(text);
+  const dim = 128;
+  const v = new Array(dim).fill(0);
+  tokens.forEach(t => {
+    let h = 0;
+    for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0;
+    v[h % dim] += 1;
+  });
+  // Normalize
+  const mag = Math.sqrt(v.reduce((a,b) => a + b*b, 0)) || 1;
+  return v.map(x => x / mag);
+}
+function cosine(a, b) {
+  let d = 0;
+  for (let i = 0; i < a.length; i++) d += a[i] * b[i];
+  return d;
+}
+async function addMemory(text, meta) {
+  if (!text || !text.trim()) return;
+  const id = "m_" + Date.now() + "_" + Math.random().toString(36).slice(2,6);
+  const vec = embed(text);
+  memoryVectors.push({ id, text, vec, meta: meta || {}, ts: new Date().toISOString() });
+  await saveMemory();
+  updateMemoryUI();
+  stats.memories++;
+  if ($("memInput")) $("memInput").value = "";
+  printToTerm("🧠 حُفظت ذكرى: " + text.slice(0,40), "text-cyber-purple");
+}
+async function searchMemory(query, topK) {
+  topK = topK || 5;
+  if (!query) return [];
+  const qVec = embed(query);
+  const scored = memoryVectors.map(m => ({ ...m, score: cosine(qVec, m.vec) }))
+    .filter(m => m.score > 0.01)
+    .sort((a,b) => b.score - a.score)
+    .slice(0, topK);
+  renderMemResults(scored, query);
+  return scored;
+}
+function renderMemResults(results, query) {
+  const box = $("memResults"); if (!box) return;
+  box.innerHTML = '<div class="text-cyber-gold mb-1">نتائج: "' + esc(query) + '"</div>';
+  if (!results.length) {
+    box.innerHTML += '<div class="text-gray-500">لا نتائج</div>';
+    return;
+  }
+  results.forEach(r => {
+    const d = document.createElement("div");
+    d.className = "memory-item";
+    d.innerHTML = '<div class="text-cyber-cyan">[' + (r.score*100).toFixed(1) + '%] ' + esc(r.text.slice(0,100)) + '</div>';
+    box.appendChild(d);
+  });
+  printToTerm("🧠 نتائج البحث: " + results.length, "text-cyber-purple");
+}
+function dumpMemory() {
+  const box = $("memResults");
+  box.innerHTML = '<div class="text-cyber-gold mb-1">كل الذكريات (' + memoryVectors.length + '):</div>';
+  memoryVectors.slice().reverse().slice(0, 30).forEach(m => {
+    const d = document.createElement("div");
+    d.className = "memory-item";
+    d.textContent = m.text.slice(0, 100);
+    box.appendChild(d);
+  });
+}
+async function clearMemory() {
+  if (!confirm("مسح كل الذاكرة؟")) return;
+  memoryVectors = [];
+  await saveMemory();
+  updateMemoryUI();
+  $("memResults").innerHTML = '<div class="text-gray-500">مُسحت</div>';
+  printToTerm("🧠 الذاكرة مُسحت", "text-yellow-400");
+}
+function updateMemoryUI() {
+  $("memCount").textContent = memoryVectors.length;
+  $("memVecCount").textContent = memoryVectors.length + " vec";
+}
+async function ragAnswer(query) {
+  // RAG: ابحث في الذاكرة ثم اطلب من LLM
+  const ctx = await searchMemory(query, 3);
+  const context = ctx.map(c => "- " + c.text).join("\n");
+  if (!llmEngine) {
+    printToTerm("🧠 (بدون LLM) معلومات ذات صلة:\n" + (context || "لا شيء"), "text-cyber-purple");
+    return;
+  }
+  try {
+    const prompt = "استخدم الذكريات التالية للإجابة:\n" + context + "\n\nالسؤال: " + query;
+    const ans = await llmAsk(prompt, "أجب بالعربية بناءً على الذكريات المتاحة. إذا لم تكن كافية، قل ذلك.");
+    printToTerm("🧠 RAG: " + ans, "text-cyber-green");
+  } catch (e) { printToTerm("❌ " + e.message, "text-red-400"); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   8️⃣ CAMERA + MIC
+   ═══════════════════════════════════════════════════════════ */
+async function startCamera() {
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+    $("videoPreview").srcObject = cameraStream;
+    printToTerm("📷 كاميرا تعمل", "text-cyber-green");
+  } catch (e) { printToTerm("❌ " + e.message, "text-red-400"); }
+}
+function stopCamera() {
+  if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+  $("videoPreview").srcObject = null;
+  printToTerm("📷 أُوقفت", "text-yellow-400");
+}
+async function capturePhoto() {
+  const v = $("videoPreview");
+  if (!v.srcObject) { notify("⚠️ شغّل الكاميرا"); return; }
+  const c = document.createElement("canvas");
+  c.width = v.videoWidth || 640; c.height = v.videoHeight || 480;
+  c.getContext("2d").drawImage(v, 0, 0);
+  const dataUrl = c.toDataURL("image/jpeg", 0.7);
+  const name = "photo_" + Date.now() + ".jpg";
+  const path = "/photos/" + name;
+  vfs[path] = { type:"file", content:"[image]", data:dataUrl, size:dataUrl.length };
+  ensureParent(path);
+  await saveVFS();
+  stats.photos++;
+  printToTerm("📸 " + path, "text-cyber-green");
+  notify("📸 " + name);
+  await addBlock("PHOTO", name);
+}
+async function startMic() {
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const src = audioCtx.createMediaStreamSource(micStream);
+    audioAnalyser = audioCtx.createAnalyser();
+    audioAnalyser.fftSize = 256;
+    src.connect(audioAnalyser);
+    const buf = new Uint8Array(audioAnalyser.frequencyBinCount);
+    function loop() {
+      if (!audioAnalyser) return;
+      audioAnalyser.getByteFrequencyData(buf);
+      let s = 0; for (let i = 0; i < buf.length; i++) s += buf[i];
+      $("audioBar").style.width = Math.min(100, (s/buf.length)*1.5) + "%";
+      requestAnimationFrame(loop);
+    }
+    loop();
+    printToTerm("🎤 ميك يعمل", "text-cyber-green");
+  } catch (e) { printToTerm("❌ " + e.message, "text-red-400"); }
+}
+function stopMic() {
+  if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+  if (audioCtx) { audioCtx.close(); audioCtx = null; }
+  audioAnalyser = null;
+  $("audioBar").style.width = "0%";
+  printToTerm("🎤 أُوقف", "text-yellow-400");
+}
+async function requestNotifPermission() {
+  if (!("Notification" in window)) { notify("❌ لا تدعم"); return; }
+  const p = await Notification.requestPermission();
+  if (p === "granted") new Notification("OMEGA", { body: "الإشعارات تعمل 🎉" });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Agent + Loop
+   ═══════════════════════════════════════════════════════════ */
+function logAgent(msg, color) {
+  const box = $("agentLogBox"); if (!box) return;
+  const d = document.createElement("div");
+  d.className = color || "text-cyber-cyan";
+  d.textContent = msg;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+  while (box.children.length > 60) box.removeChild(box.firstChild);
+}
+function enqueueGoal(goal) {
+  if (!goal || !goal.trim()) return;
+  goalQueue.push({ id:"g_"+Date.now(), goal:goal.trim(), status:"pending", retries:0 });
+  $("agentInput").value = "";
+  $("queueCount").textContent = goalQueue.filter(g=>g.status==="pending").length;
+  processQueue();
+}
+async function processQueue() {
+  if (agentBusy) return;
+  const next = goalQueue.find(g => g.status === "pending");
+  if (!next) return;
+  agentBusy = true; next.status = "running";
+  try {
+    logAgent("🚀 " + next.goal);
+    addMemory("هدف منفّذ: " + next.goal, { type: "goal" });
+
+    let steps = null;
+    if (aiDrivesAgent && llmEngine) {
+      steps = await llmPlanGoal(next.goal);
+      if (steps) logAgent("🧠 Phi-3: " + steps.length + " خطوة", "text-cyber-purple");
+    }
+
+    if (steps && steps.length) {
+      for (const s of steps) {
+        logAgent("   ⚙️ " + s, "text-gray-400");
+        await executeCommand(s);
+        await new Promise(r => setTimeout(r, 300));
+      }
+    } else {
+      await executeCommand(next.goal);
+    }
+    next.status = "done";
+    stats.goalsDone++;
+    logAgent("✅ اكتمل", "text-cyber-green");
+  } catch (e) {
+    next.retries++;
+    stats.goalsRetried++;
+    if (next.retries <= 2) {
+      const fixMap = { "ls":"ls /", "cat":"ls /root", "cd":"pwd", "mkdir":"ls /", "write":"sysinfo", "chain":"stats" };
+      const base = next.goal.split(/\s+/)[0].toLowerCase();
+      const fixed = fixMap[base] || "sysinfo";
+      logAgent("⚠️ فشل — إصلاح: " + fixed, "text-yellow-400");
+      next.goal = fixed;
+      next.status = "pending";
+      await addBlock("AGENT_FIX", base + " → " + fixed);
+    } else {
+      next.status = "failed";
+      stats.goalsFail++;
+      logAgent("❌ فشل: " + e.message, "text-red-400");
+    }
+  } finally {
+    agentBusy = false;
+    $("queueCount").textContent = goalQueue.filter(g=>g.status==="pending").length;
+    if (goalQueue.some(g=>g.status==="pending")) setTimeout(processQueue, 500);
+  }
+}
+function toggleLoop() {
+  loopActive = !loopActive;
+  setStatus("footerStatus", loopActive ? "LOOP ∞ ACTIVE" : "OMEGA ONLINE", loopActive ? "status-live" : "");
+  if (loopActive) {
+    printToTerm("♾️ حلقة ذاتية مُشغّلة", "text-cyber-green");
+    if (loopInterval) clearInterval(loopInterval);
+    loopInterval = setInterval(() => {
+      stats.loops++;
+      if (goalQueue.filter(g=>g.status==="pending").length < 2) {
+        const pool = ["iss", "apod", "launches", "ctf", "sysinfo", "chain", "stats", "memory-dump"];
+        enqueueGoal(pool[Math.floor(Math.random()*pool.length)]);
+      }
+      processQueue();
+      if (auditLedger.length % 10 === 0) verifyChain(true);
+    }, 12000);
+  } else if (loopInterval) { clearInterval(loopInterval); loopInterval = null; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CTF
+   ═══════════════════════════════════════════════════════════ */
+const CTF = [
+  { id:"b64_1", cat:"base64", desc:"SGV sbG8=", ans:"Hello", pts:5, solved:false },
+  { id:"b64_2", cat:"base64", desc:"TGFmaQ==", ans:"Lafi", pts:5, solved:false },
+  { id:"hex_1", cat:"hex", desc:"4c616669", ans:"Lafi", pts:10, solved:false },
+  { id:"rot13", cat:"rot13", desc:"Uryyb", ans:"Hello", pts:5, solved:false },
+  { id:"math_1", cat:"math", desc:"15×7=?", ans:"105", pts:5, solved:false },
+  { id:"logic_1", cat:"logic", desc:"2,4,8,16,__", ans:"32", pts:10, solved:false }
+];
+function renderCTF() {
+  const box = $("ctfBox"); if (!box) return;
+  box.innerHTML = '<div class="text-cyber-gold mb-1">' + CTF.filter(c=>c.solved).length + "/" + CTF.length + '</div>';
+  CTF.forEach(c => {
+    const d = document.createElement("div");
+    d.className = "omni-card " + (c.solved ? "opacity-40" : "");
+    d.innerHTML = (c.solved ? "✅" : "🔓") + " " + esc(c.desc);
+    box.appendChild(d);
+  });
+  $("ctfScore").textContent = ctfScore + " pts";
+}
+function solveCTF(id, ans) {
+  const c = CTF.find(x => x.id === id);
+  if (!c || c.solved) return { ok:false, msg:"غير صالح" };
+  if (c.ans.toLowerCase() === (ans||"").toLowerCase().trim()) {
+    c.solved = true; ctfScore += c.pts; renderCTF();
+    return { ok:true, msg:"✅ +" + c.pts };
+  }
+  return { ok:false, msg:"❌" };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Local AI Fallback
+   ═══════════════════════════════════════════════════════════ */
+function localAI(query) {
+  const q = query.trim(); const ql = q.toLowerCase();
+  stats.aiQueries++;
+  const mm = q.match(/^[\d\s+\-*/().%^]+$/);
+  if (mm) {
+    try {
+      const r = Function('"use strict";return (' + q.replace(/\^/g,"**") + ')')();
+      if (typeof r === "number" && isFinite(r)) return "🧮 = " + r;
+    } catch (e) {}
+  }
+  if (/(جذر|sqrt)/i.test(ql)) { const m = q.match(/(\d+)/); if (m) return "🧮 √" + m[1] + " = " + Math.sqrt(+m[1]).toFixed(4); }
+  if (/(سلام|مرحبا|hi|hello)/i.test(ql)) return "👋 أهلاً لافي!";
+  if (/(لافي|منير)/i.test(ql)) return "👑 لافي منير — مالك OMEGA";
+  return "💡 للنقاش الذكي: llm <سؤال> (بعد تحميل Phi-3)";
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Commands
+   ═══════════════════════════════════════════════════════════ */
+async function executeCommand(line) {
+  const parts = line.trim().split(/\s+/);
+  const cmd = (parts[0] || "").toLowerCase();
+  const args = parts.slice(1);
+  const out = (t,c) => printToTerm(t, c || "text-gray-300");
 
   switch (cmd) {
-    /* ─── AI ─── */
-    case "ai": case "ask": {
-      const prompt = args.join(" ");
-      if (!prompt) { out("ai <سؤالك>", "text-red-400"); break; }
-      out("🤖 جاري التفكير...", "text-cyber-cyan");
-      const answer = await queryAI(prompt);
-      out(answer, "text-cyber-green");
-      await createLedgerBlock("AI_QUERY", prompt.substring(0, 40));
-      beep(880, 60);
-      break;
-    }
-    case "setapikey": {
-      if (!args[0]) { out("setapikey <sk-...>", "text-red-400"); break; }
-      openAiApiKey = args[0];
-      $("aiStatus").textContent = "OPENAI";
-      out("✅ مفتاح OpenAI مفعّل لهذه الجلسة (لا يُخزّن)", "text-cyber-green");
-      break;
-    }
-    case "speak": {
-      const text = args.join(" ");
-      if (!text) { out("speak <نص>", "text-red-400"); break; }
-      speakAI(text); out("🔊 جاري النطق...", "text-cyber-gold");
-      break;
-    }
-    case "listen": case "voice":
-      listenVoice();
-      out("🎤 استمع...", "text-cyber-gold");
+    case "help":
+      out("═══ OMEGA v50.0 Ω ═══", "text-cyber-gold");
+      out(" 🌍 globe / globe starlink   : كرة أرضية 3D", "text-cyber-cyan");
+      out(" 🛰️ iss / sats [grp]         : ISS + أقمار", "text-cyber-cyan");
+      out(" 🌌 apod / launches          : NASA + SpaceX", "text-cyber-cyan");
+      out(" 🧠 llm <سؤال> / rag <سؤال>  : Phi-3 + ذاكرة", "text-cyber-green");
+      out(" 📹 video / start-video / call <id>", "text-cyber-magenta");
+      out(" 🗣️ voice / voice-on / voice-off", "text-cyber-magenta");
+      out(" 💭 mem <نص> / recall <سؤال> / mems / forget", "text-cyber-purple");
+      out(" 📸 cam-on/off, mic-on/off, snap", "text-cyber-magenta");
+      out(" 🌐 p2p, p2p-id, p2p-broadcast, p2p-request, p2p-chat, p2p-mem", "text-cyber-green");
+      out(" 🤖 agent <هدف>, loop, think", "text-cyber-purple");
+      out(" 🏴 ctf [solve <id> <ans>]", "text-cyber-magenta");
+      out(" 📁 ls, cd, pwd, tree, mkdir, write, cat, rm, echo", "text-gray-300");
+      out(" ⛓️ chain, chain-verify, stats, sysinfo", "text-gray-300");
+      out(" 💾 save, export, clear, history, whoami, date", "text-gray-300");
       break;
 
-    /* ─── NETWORK ─── */
-    case "call": case "webrtc": case "mesh":
-      out("🛰️ فتح Mesh Studio...", "text-cyber-cyan");
-      $("sidePanel").classList.add("mobile-active");
-      await initPeer();
+    case "globe":
+      await loadGlobeSats(args[0] || "stations");
       break;
-    case "peer":
-      out(myPeerId ? "🆔 " + myPeerId : "⚠️ اكتب call أولاً", "text-cyber-green");
-      break;
-    case "msg": {
-      const text = args.join(" ");
-      if (!text) { out("msg <نص>", "text-red-400"); break; }
-      if (Object.keys(dataConnections).length === 0) { out("⚠️ لا اتصالات نشطة", "text-red-400"); break; }
-      const enc = await encryptPayload(text);
-      Object.values(dataConnections).forEach(c => { if (c.open) c.send(enc); });
-      addChatMessage("أنا", text); out("✅ أُرسلت", "text-cyber-green");
-      break;
-    }
-    case "members": {
-      const ids = Object.keys(dataConnections);
-      if (ids.length === 0) out("(لا يوجد أحد متصل)", "text-gray-500");
-      else ids.forEach(id => out("👤 " + id.substring(0, 12), "text-cyber-cyan"));
-      break;
-    }
 
-    /* ─── FILE SYSTEM ─── */
+    case "iss": await updateISS(true); out("🛰️ محدّث", "text-cyber-green"); break;
+    case "sats": await loadGlobeSats(args[0]); break;
+    case "apod": await loadAPOD(); break;
+    case "launches": case "spacex": await loadLaunches(); break;
+
+    case "llm":
+      if (!llmEngine) { out("⚠️ llm-load أولاً", "text-yellow-400"); break; }
+      try { const ans = await llmAsk(args.join(" ")); out("🧠 " + ans, "text-cyber-green"); }
+      catch (e) { out("❌ " + e.message, "text-red-400"); }
+      break;
+    case "llm-load": await loadWebLLM(); break;
+    case "rag": await ragAnswer(args.join(" ")); break;
+
+    case "video": await startVideo(); break;
+    case "start-video": await startVideo(); break;
+    case "stop-video": stopVideo(); break;
+    case "call": $("videoPeerId").value = args[0] || ""; callVideoPeer(); break;
+
+    case "voice": toggleVoice(); break;
+    case "voice-on": if (!voiceActive) toggleVoice(); break;
+    case "voice-off": if (voiceActive) toggleVoice(); break;
+
+    case "mem": case "remember": await addMemory(args.join(" ")); break;
+    case "recall": await ragAnswer(args.join(" ")); break;
+    case "mems": case "memory-dump": dumpMemory(); break;
+    case "forget": await clearMemory(); break;
+
+    case "cam-on": await startCamera(); break;
+    case "cam-off": stopCamera(); break;
+    case "mic-on": await startMic(); break;
+    case "mic-off": stopMic(); break;
+    case "snap": await capturePhoto(); out("📸 /photos", "text-cyber-green"); break;
+    case "notif-on": await requestNotifPermission(); break;
+
+    case "p2p": out("🌐 " + (myPeerId||"—") + " | " + Object.keys(connections).length + " أقران", "text-cyber-cyan"); break;
+    case "p2p-id": out(myPeerId||"—", "text-cyber-cyan"); break;
+    case "p2p-broadcast": broadcastChain(); out("📤", "text-cyber-green"); break;
+    case "p2p-request": requestChain(); out("📥", "text-cyber-green"); break;
+    case "p2p-chat": broadcastChat(); break;
+    case "p2p-mem": broadcastMemory(); out("🧠 بُثّت", "text-cyber-purple"); break;
+
+    case "think": aiDrivesAgent = !aiDrivesAgent; out(aiDrivesAgent ? "🧠 Phi-3 يقود" : "🤖 محلي", "text-cyber-purple"); break;
+    case "ai": out("🤖 " + localAI(args.join(" ")), "text-cyber-green"); break;
+
+    case "ctf":
+      if (args[0] === "solve") { const r = solveCTF(args[1], args.slice(2).join(" ")); out(r.msg, r.ok?"text-cyber-green":"text-red-400"); }
+      else { renderCTF(); out("ctf solve <id> <ans>", "text-cyber-gold"); }
+      break;
+
+    case "agent": enqueueGoal(args.join(" ")); break;
+    case "loop": toggleLoop(); break;
+
     case "ls": {
-      const target = resolvePath(args.filter(a => !a.startsWith("-"))[0] || currentPath);
-      const node = vfs[target];
-      if (!node) { out("ls: " + target + ": No such file or directory", "text-red-400"); break; }
-      if (node.type === "file") { out(baseName(target), "text-cyber-cyan"); break; }
-      const items = node.children || [];
-      if (items.length === 0) break;
-      if (flagAll || flagAll) {
-        items.forEach(item => {
-          const full = target === "/" ? "/" + item : target + "/" + item;
-          const n = vfs[full];
-          out((n?.type === "dir" ? "d " : "- ") + "root root  " + (n?.type || "?") + "  " + item, n?.type === "dir" ? "text-cyber-cyan" : "text-gray-200");
-        });
-      } else {
-        out(items.join("   "), "text-cyber-cyan");
-      }
+      const t = resolvePath(args[0] || currentPath); const n = vfs[t];
+      if (n && n.type === "dir") out((n.children||[]).join("   ") || "(فارغ)", "text-cyber-cyan");
+      else throw new Error("غير موجود");
       break;
-    }
-    case "tree": {
-      const target = resolvePath(args[0] || currentPath);
-      if (!vfs[target]) { out("tree: not found", "text-red-400"); break; }
-      const walk = (path, prefix = "") => {
-        const node = vfs[path]; if (!node || node.type !== "dir") return;
-        const kids = node.children || [];
-        kids.forEach((k, i) => {
-          const last = i === kids.length - 1;
-          const child = path === "/" ? "/" + k : path + "/" + k;
-          out(prefix + (last ? "└── " : "├── ") + k, vfs[child]?.type === "dir" ? "text-cyber-cyan" : "text-gray-200");
-          if (vfs[child]?.type === "dir") walk(child, prefix + (last ? "    " : "│   "));
-        });
-      };
-      out(target, "text-cyber-gold"); walk(target); break;
     }
     case "cd": {
-      const target = resolvePath(args[0] || "/root");
-      if (vfs[target] && vfs[target].type === "dir") { currentPath = target; shellVars.PWD = target; updatePrompt(); }
-      else out("cd: " + target + ": No such directory", "text-red-400");
+      const t = resolvePath(args[0] || "/root");
+      if (vfs[t] && vfs[t].type === "dir") { currentPath = t; $("promptLabel").textContent = "Ω:" + (t==="/root"?"~":t) + "#"; out("→ " + t, "text-cyber-green"); }
+      else throw new Error("غير موجود");
       break;
     }
-    case "pwd": out(currentPath, "text-cyber-green"); break;
+    case "pwd": out(currentPath, "text-cyber-cyan"); break;
+    case "mkdir": {
+      if (!args[0]) throw new Error("اسم مفقود");
+      const p = resolvePath(args[0]); if (vfs[p]) break;
+      const par = parentOf(p);
+      if (!vfs[par] || vfs[par].type !== "dir") throw new Error("أب غير موجود");
+      vfs[p] = { type:"dir", children:[] }; ensureParent(p); await saveVFS();
+      out("[OK]", "text-cyber-green"); break;
+    }
+    case "touch": {
+      if (!args[0]) throw new Error("اسم");
+      const p = resolvePath(args[0]);
+      if (!vfs[p]) { vfs[p] = { type:"file", content:"" }; ensureParent(p); await saveVFS(); }
+      out("[OK]", "text-cyber-green"); break;
+    }
     case "cat": {
-      if (!args[0]) { out("cat <file>", "text-red-400"); break; }
-      const fp = resolvePath(args[0]);
-      if (vfs[fp] && vfs[fp].type === "file") vfs[fp].content.split("\n").forEach(l => out(l, "text-cyber-green"));
-      else out("cat: " + fp + ": No such file", "text-red-400");
+      if (!args[0]) throw new Error("اسم");
+      const p = resolvePath(args[0]);
+      if (vfs[p] && vfs[p].type === "file") {
+        if (vfs[p].data) out("(binary)", "text-gray-400");
+        else out(vfs[p].content || "(فارغ)", "text-gray-200");
+      } else throw new Error("غير موجود");
       break;
     }
     case "write": {
-      if (args.length < 2) { out("write <file> <content>", "text-red-400"); break; }
-      const name = args[0]; const path = resolvePath(name);
-      vfs[path] = { type: "file", content: args.slice(1).join(" "), owner: currentUser };
-      const pp = parentPath(path);
-      if (vfs[pp] && !vfs[pp].children.includes(baseName(path))) vfs[pp].children.push(baseName(path));
-      await saveVFSToIDB(); await createLedgerBlock("WRITE", path);
-      out("[OK] ✅ " + path, "text-cyber-green"); beep(660, 50);
-      break;
-    }
-    case "touch": {
-      if (!args[0]) { out("touch <file>", "text-red-400"); break; }
-      const path = resolvePath(args[0]);
-      if (!vfs[path]) {
-        vfs[path] = { type: "file", content: "", owner: currentUser };
-        const pp = parentPath(path);
-        if (vfs[pp] && !vfs[pp].children.includes(baseName(path))) vfs[pp].children.push(baseName(path));
-      }
-      await saveVFSToIDB(); out("[OK]", "text-cyber-green");
-      break;
-    }
-    case "mkdir": {
-      if (!args[0]) { out("mkdir <dir>", "text-red-400"); break; }
-      const path = resolvePath(args[0]);
-      vfs[path] = { type: "dir", owner: currentUser, children: [] };
-      const pp = parentPath(path);
-      if (vfs[pp] && !vfs[pp].children.includes(baseName(path))) vfs[pp].children.push(baseName(path));
-      await saveVFSToIDB(); out("[OK]", "text-cyber-green");
-      break;
+      if (args.length < 2) throw new Error("write <path> <content>");
+      const p = resolvePath(args[0]);
+      vfs[p] = { type:"file", content:args.slice(1).join(" ") }; ensureParent(p); await saveVFS();
+      out("[OK]", "text-cyber-green"); break;
     }
     case "rm": {
-      if (!args[0]) { out("rm [-r] <path>", "text-red-400"); break; }
-      const recursive = args.includes("-r") || args.includes("-rf");
-      const path = resolvePath(args.filter(a => !a.startsWith("-"))[0]);
-      if (path === "/" || path === "/root") { out("rm: cannot remove " + path, "text-red-400"); break; }
-      if (!vfs[path]) { out("rm: not found", "text-red-400"); break; }
-      if (vfs[path].type === "dir" && !recursive) { out("rm: is a directory (use -r)", "text-red-400"); break; }
-      delete vfs[path];
-      const pp = parentPath(path);
-      if (vfs[pp]) vfs[pp].children = vfs[pp].children.filter(c => c !== baseName(path));
-      await saveVFSToIDB(); await createLedgerBlock("RM", path);
-      out("[OK]", "text-cyber-green");
+      if (!args[0]) throw new Error("اسم");
+      const p = resolvePath(args[0]);
+      if (p === "/" || p === "/root") throw new Error("محظور");
+      if (!vfs[p]) throw new Error("غير موجود");
+      function rec(x) {
+        if (vfs[x] && vfs[x].type === "dir") (vfs[x].children||[]).forEach(c => rec(x === "/" ? "/"+c : x+"/"+c));
+        delete vfs[x];
+      }
+      rec(p);
+      const par = parentOf(p), nm = baseName(p);
+      if (vfs[par] && vfs[par].children) vfs[par].children = vfs[par].children.filter(c => c !== nm);
+      await saveVFS(); out("[OK]", "text-cyber-green"); break;
+    }
+    case "tree": {
+      function walk(p, pre) {
+        const n = vfs[p]; if (!n) return;
+        out(pre + (p === "/" ? "/" : baseName(p)) + (n.type === "dir" ? "/" : ""), "text-cyber-cyan");
+        if (n.type === "dir") (n.children||[]).forEach(c => walk(p === "/" ? "/"+c : p+"/"+c, pre + "  "));
+      }
+      walk("/",""); break;
+    }
+    case "echo": {
+      const raw = line.slice(line.indexOf("echo") + 4).trim();
+      if (raw.includes(">")) {
+        const [t,f] = raw.split(">").map(s => s.trim());
+        const p = resolvePath(f);
+        vfs[p] = { type:"file", content:t.replace(/^["']|["']$/g, "") }; ensureParent(p); await saveVFS();
+        out("[OK]", "text-cyber-green");
+      } else out(raw.replace(/^["']|["']$/g, ""), "text-gray-200");
       break;
     }
-    case "cp": {
-      if (args.length < 2) { out("cp <src> <dst>", "text-red-400"); break; }
-      const src = resolvePath(args[0]); const dst = resolvePath(args[1]);
-      if (!vfs[src]) { out("cp: src not found", "text-red-400"); break; }
-      if (vfs[src].type === "dir") { out("cp: directories not supported yet", "text-red-400"); break; }
-      vfs[dst] = { ...vfs[src] };
-      const pp = parentPath(dst);
-      if (vfs[pp] && !vfs[pp].children.includes(baseName(dst))) vfs[pp].children.push(baseName(dst));
-      await saveVFSToIDB(); out("[OK]", "text-cyber-green");
+
+    case "chain":
+      auditLedger.slice(-8).forEach(b => out("[#" + b.index + "] " + b.type + " | " + String(b.details).slice(0,50), "text-cyber-cyan"));
       break;
-    }
-    case "mv": {
-      if (args.length < 2) { out("mv <src> <dst>", "text-red-400"); break; }
-      const src = resolvePath(args[0]); const dst = resolvePath(args[1]);
-      if (!vfs[src]) { out("mv: not found", "text-red-400"); break; }
-      vfs[dst] = vfs[src]; delete vfs[src];
-      const sp = parentPath(src);
-      if (vfs[sp]) vfs[sp].children = vfs[sp].children.filter(c => c !== baseName(src));
-      const dp = parentPath(dst);
-      if (vfs[dp] && !vfs[dp].children.includes(baseName(dst))) vfs[dp].children.push(baseName(dst));
-      await saveVFSToIDB(); out("[OK]", "text-cyber-green");
+    case "chain-verify": await verifyChain(false); break;
+
+    case "stats":
+      out("📊 OMEGA Stats:", "text-cyber-gold");
+      out("  Blocks: " + auditLedger.length, "text-cyber-green");
+      out("  CTF: " + ctfScore + " pts", "text-cyber-green");
+      out("  Sats: " + satData.length, "text-cyber-cyan");
+      out("  Memory: " + memoryVectors.length + " vectors", "text-cyber-purple");
+      out("  Goals: " + stats.goalsDone + "✓/" + stats.goalsFail + "✗ (retry: " + stats.goalsRetried + ")", "text-cyber-cyan");
+      out("  Photos: " + stats.photos + " | Voice: " + stats.voiceCmds, "text-cyber-cyan");
+      out("  Loops: " + stats.loops + " | AI: " + stats.aiQueries + " | P2P: " + stats.p2pMessages, "text-cyber-cyan");
+      out("  VFS: " + Object.keys(vfs).length + " | Peers: " + Object.keys(connections).length, "text-gray-300");
       break;
-    }
-    case "stat": {
-      const path = resolvePath(args[0] || currentPath);
-      const n = vfs[path]; if (!n) { out("stat: not found", "text-red-400"); break; }
-      out("File: " + path, "text-cyber-gold");
-      out("Type: " + n.type, "text-gray-200");
-      out("Owner: " + n.owner, "text-gray-200");
-      if (n.type === "file") out("Size: " + n.content.length + " bytes", "text-gray-200");
-      break;
-    }
-    case "find": {
-      const query = args[0] || "";
-      Object.keys(vfs).forEach(p => { if (p.includes(query)) out(p, "text-cyber-cyan"); });
-      break;
-    }
-    case "nano":
-      if (args[0]) openNano(args[0]);
-      else out("nano <file>", "text-red-400");
+    case "sysinfo":
+      out("SOVEREIGN OS v50.0 OMEGA ∞", "text-cyber-gold");
+      out("3D Globe • Video P2P • Voice • Memory DB • PWA Offline", "text-cyber-cyan");
+      out("SGP4 • Phi-3 • NASA • SpaceX • IndexedDB • Notifications", "text-cyber-green");
       break;
 
-    /* ─── SYSTEM ─── */
-    case "whoami": out(currentUser, "text-cyber-green"); break;
-    case "id": out("uid=" + (currentUser === "root" ? 0 : 1000) + "(" + currentUser + ") gid=0(root) groups=0(root)", "text-cyber-green"); break;
-    case "su": {
-      const target = args[0] || "root";
-      if (passwdDB.has(target)) { currentUser = target; shellVars.USER = target; updatePrompt(); await createLedgerBlock("SU", target); out("→ " + target, "text-cyber-gold"); }
-      else out("su: user not found", "text-red-400");
-      break;
-    }
-    case "sudo": {
-      if (args.length === 0) { out("sudo <command>", "text-red-400"); break; }
-      await executeOneCommand(args[0].toLowerCase(), args.slice(1), args.join(" "));
-      break;
-    }
-    case "echo": out(args.join(" ").replace(/\$(\w+)/g, (_, k) => shellVars[k] || ""), "text-gray-200"); break;
-    case "env": Object.entries(shellVars).forEach(([k, v]) => out(k + "=" + v, "text-cyber-cyan")); break;
+    case "save": await saveVFS(); await saveLedger(); await saveMemory(); out("💾", "text-cyber-green"); break;
     case "export": {
-      const [k, ...rest] = args;
-      if (k && k.includes("=")) { const [key, ...v] = k.split("="); shellVars[key] = v.join("=") || rest.join(" "); out("[OK]", "text-cyber-green"); }
-      break;
+      const data = JSON.stringify({
+        vfs: Object.fromEntries(Object.entries(vfs).map(([k,v]) => [k, v.data ? {...v, data:"[omitted]"} : v])),
+        auditLedger, memory: memoryVectors,
+        ctf: CTF.map(c=>({id:c.id,solved:c.solved})),
+        score: ctfScore, stats
+      }, null, 2);
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([data], { type:"application/json" }));
+      a.download = "omega_v50_backup.json"; a.click();
+      out("📤", "text-cyber-green"); break;
     }
-    case "history": commandHistory.forEach((c, i) => out(String(i + 1).padStart(4) + "  " + c, "text-gray-300")); break;
-    case "date": out(new Date().toLocaleString("ar-DZ"), "text-cyber-green"); break;
-    case "uptime": {
-      const s = Math.floor((Date.now() - bootTime) / 1000);
-      out("up " + Math.floor(s / 60) + "m " + (s % 60) + "s — " + Object.keys(vfs).length + " inodes — " + auditLedger.length + " blocks", "text-cyber-green");
-      break;
-    }
-    case "ps": case "top": {
-      out("  PID  USER     CMD", "text-cyber-gold");
-      out("    1  root     init", "text-cyber-cyan");
-      out("   42  root     sovereign-shell", "text-cyber-cyan");
-      out(" 1337  " + currentUser.padEnd(8) + " " + cmd, "text-cyber-cyan");
-      if (performance.memory) {
-        const used = (performance.memory.usedJSHeapSize / 1048576).toFixed(1);
-        const total = (performance.memory.totalJSHeapSize / 1048576).toFixed(1);
-        out("🧠 RAM: " + used + "MB / " + total + "MB", "text-cyber-gold");
-      }
-      break;
-    }
-    case "sysinfo": {
-      out("╔══════════════════════════════════════════════════════╗", "text-cyber-cyan");
-      out("║   لافي منير — SOVEREIGN OS v38.0 AI APEX             ║", "text-cyber-cyan");
-      out("╚══════════════════════════════════════════════════════╝", "text-cyber-cyan");
-      out("User      : " + currentUser, "text-gray-200");
-      out("CWD       : " + currentPath, "text-gray-200");
-      out("AI Mode   : " + (openAiApiKey ? "OpenAI Connected" : "Local Engine"), "text-cyber-green");
-      out("Blocks    : " + auditLedger.length, "text-cyber-cyan");
-      out("Inodes    : " + Object.keys(vfs).length, "text-cyber-cyan");
-      out("Peers     : " + Object.keys(dataConnections).length, "text-cyber-magenta");
-      out("Crypto    : AES-GCM 256 / PBKDF2 100k", "text-cyber-gold");
-      if (performance.memory) out("RAM       : " + (performance.memory.usedJSHeapSize / 1048576).toFixed(1) + " MB", "text-gray-200");
-      out("© لافي منير 2026", "text-cyber-gold");
-      break;
-    }
-    case "chain":
-      auditLedger.slice(-10).forEach(b => out("[#" + b.index + "] " + b.type + " — " + b.details.substring(0, 30), "text-cyber-cyan"));
-      break;
-    case "chain-verify": {
-      let ok = true;
-      for (let i = 1; i < auditLedger.length; i++) {
-        if (auditLedger[i].prevHash !== auditLedger[i - 1].hash) { ok = false; break; }
-      }
-      out(ok ? "✅ السلسلة سليمة (" + auditLedger.length + " بلوك)" : "❌ تلاعب في السلسلة!", ok ? "text-cyber-green" : "text-red-400");
-      break;
-    }
+
     case "clear": termOutput.innerHTML = ""; break;
-    case "help":
-      out("═══ SOVEREIGN OS v38.0 — قائمة الأوامر ═══", "text-cyber-gold");
-      out("", "");
-      out("🤖 AI:", "text-cyber-magenta");
-      out("   ai <سؤال>       اسأل الذكاء الاصطناعي (محلي/OpenAI)", "text-gray-200");
-      out("   setapikey <k>   تفعيل OpenAI لهذه الجلسة", "text-gray-200");
-      out("   speak <نص>      نطق صوتي عربي", "text-gray-200");
-      out("   listen          إدخال صوتي", "text-gray-200");
-      out("", "");
-      out("🌐 الشبكة:", "text-cyber-cyan");
-      out("   call            بدء شبكة Mesh P2P", "text-gray-200");
-      out("   peer / members  عرض معرّفك/الأعضاء", "text-gray-200");
-      out("   msg <نص>        إرسال مشفّر", "text-gray-200");
-      out("", "");
-      out("📁 الملفات:", "text-cyber-green");
-      out("   ls [-l]  cd  pwd  tree  find  stat", "text-gray-200");
-      out("   cat  write  touch  mkdir  rm [-r]  cp  mv  nano", "text-gray-200");
-      out("", "");
-      out("⚙️ النظام:", "text-cyber-gold");
-      out("   whoami  id  su  sudo  echo  env  export", "text-gray-200");
-      out("   date  uptime  ps  top  sysinfo  history", "text-gray-200");
-      out("   chain  chain-verify  clear  help", "text-gray-200");
-      break;
+    case "history": commandHistory.slice(-30).forEach((h,i) => out(String(i+1).padStart(3) + "  " + h, "text-gray-400")); break;
+    case "whoami": out("root (لافي منير)", "text-cyber-cyan"); break;
+    case "date": out(new Date().toString(), "text-cyber-cyan"); break;
 
     default:
-      out("Unknown: " + cmd + " — اكتب 'help'", "text-red-400");
-      beep(220, 120, "sawtooth");
+      if (cmd && line.length > 2) out("🤖 " + localAI(line), "text-cyber-green");
+      else throw new Error("أمر غير معروف");
   }
 }
-
-/* ═══ SHELL PIPES / MULTI COMMANDS ═══ */
-async function runCommand(cmdLine) {
-  if (!cmdLine || !cmdLine.trim()) return;
-  printToTerm(currentUser + "@sovereign:" + (currentPath === "/root" ? "~" : currentPath) + "# " + cmdLine, "text-cyber-cyan");
-  commandHistory.push(cmdLine); historyIndex = commandHistory.length;
-
-  const segments = cmdLine.split("&&").map(s => s.trim()).filter(Boolean);
-  for (const seg of segments) {
-    const parts = seg.split(/\s+/);
-    await executeOneCommand(parts[0].toLowerCase(), parts.slice(1), seg);
-  }
-}
-function updatePrompt() {
-  $("promptLabel").textContent = currentUser + "@sovereign:" + (currentPath === "/root" ? "~" : currentPath) + "#";
-  $("currentPromptUser").textContent = currentUser;
+async function runCommand(line) {
+  if (!line || !line.trim()) return;
+  printToTerm("Ω:~# " + line, "text-cyber-cyan");
+  commandHistory.push(line); historyIndex = commandHistory.length;
+  try { await executeCommand(line); } catch (e) { printToTerm("❌ " + e.message, "text-red-400"); }
+  await addBlock("CMD", line.slice(0, 60));
 }
 
-/* ═══ NANO EDITOR ═══ */
-function openNano(filename) {
-  currentNanoPath = resolvePath(filename);
-  $("nanoFilename").textContent = filename;
-  $("nanoBuffer").value = vfs[currentNanoPath] ? vfs[currentNanoPath].content : "";
-  $("nanoModal").classList.add("active");
-  $("nanoBuffer").focus();
+/* ═══════════════════════════════════════════════════════════
+   Tabs
+   ═══════════════════════════════════════════════════════════ */
+function switchTab(name, ev) {
+  document.querySelectorAll(".tab-content").forEach(el => { el.classList.add("hidden"); el.classList.remove("flex"); });
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  const tab = $("tab" + name.charAt(0).toUpperCase() + name.slice(1));
+  if (tab) { tab.classList.remove("hidden"); tab.classList.add("flex"); }
+  const btn = ev?.target?.closest(".tab-btn") || document.querySelector('[data-tab="' + name + '"]');
+  if (btn) btn.classList.add("active");
+  if (name === "space" && !$("apodImage").src) { loadAPOD(); loadLaunches(); }
+  if (name === "globe" && globeWorld) setTimeout(() => globeWorld.width($("globeContainer").clientWidth).height(200), 100);
+  if (name === "memory") updateMemoryUI();
 }
-function closeNano(saved) {
-  $("nanoModal").classList.remove("active");
-  if (saved) printToTerm("[nano] 💾 تم الحفظ", "text-cyber-green");
-  currentNanoPath = null;
-}
-async function saveNano() {
-  if (!currentNanoPath) return;
-  vfs[currentNanoPath] = { type: "file", content: $("nanoBuffer").value, owner: currentUser };
-  const pp = parentPath(currentNanoPath);
-  if (vfs[pp] && !vfs[pp].children.includes(baseName(currentNanoPath))) vfs[pp].children.push(baseName(currentNanoPath));
-  await saveVFSToIDB(); await createLedgerBlock("NANO", currentNanoPath);
-  closeNano(true); beep(880, 60);
-}
+window.switchTab = switchTab;
 
-/* ═══ P2P MESH ═══ */
-async function initPeer() {
-  if (peer && !peer.destroyed) return;
-  try {
-    if (!localStream) {
-      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      $("localVideo").srcObject = localStream;
-    }
-  } catch (e) { notify("⚠️ تعذّر الوصول للكاميرا"); }
-
-  peer = new Peer(undefined, { config: { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] } });
-  peer.on("open", id => {
-    myPeerId = id;
-    $("p2pStatus").textContent = "ON"; $("p2pStatus").className = "dot-on font-bold";
-    addChatMessage("SYSTEM", "✅ متصل — ID: " + id.substring(0, 8));
-    printToTerm("🆔 PeerID: " + id, "text-cyber-cyan");
-    beep(990, 80);
-  });
-  peer.on("connection", conn => { setupDataConnection(conn); addChatMessage("SYSTEM", "🔗 اتصال من " + conn.peer.substring(0, 6)); });
-  peer.on("error", err => { printToTerm("⚠️ PeerJS: " + err.message, "text-red-400"); });
-}
-async function joinMeshRoom() {
-  const room = $("roomIdInput").value.trim();
-  if (!room) { notify("⚠️ اكتب اسم الغرفة"); return; }
-  roomId = room;
-  $("roomStatusBadge").textContent = "ROOM: " + room;
-  await initPeer();
-  notify("🌐 انضممت لغرفة: " + room, 2000);
-  await createLedgerBlock("JOIN_ROOM", room);
-}
-function setupDataConnection(conn) {
-  dataConnections[conn.peer] = conn;
-  conn.on("open", () => { addChatMessage("SYSTEM", "✅ اتصال مفتوح: " + conn.peer.substring(0, 6)); });
-  conn.on("data", async data => {
-    if (typeof data === "string") {
-      const dec = await decryptPayload(data);
-      addChatMessage(conn.peer.substring(0, 6), dec);
-      beep(660, 60);
-    } else if (data && data.type === "file-meta") {
-      incomingFileMeta = data; pendingFileChunks = {};
-      printToTerm("📥 استقبال: " + data.name + " (" + (data.size / 1024).toFixed(1) + "KB)", "text-cyber-gold");
-    } else if (data && data.type === "file-chunk") {
-      pendingFileChunks[data.index] = data.data;
-    } else if (data && data.type === "file-end") {
-      const chunks = Object.keys(pendingFileChunks).sort((a, b) => a - b).map(k => pendingFileChunks[k]);
-      const blob = new Blob(chunks);
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = incomingFileMeta?.name || "file.bin";
-      a.click();
-      addChatMessage("SYSTEM", "📎 تم استلام الملف: " + a.download);
-      pendingFileChunks = {}; incomingFileMeta = null;
-    }
-  });
-  conn.on("close", () => { delete dataConnections[conn.peer]; addChatMessage("SYSTEM", "❌断开"); });
-}
-function addChatMessage(sender, text) {
-  const box = $("chatBox"); const div = document.createElement("div");
-  div.className = "text-[10px]";
-  div.innerHTML = '<span class="text-cyber-cyan font-bold">' + escapeHtml(sender) + ':</span> ' + escapeHtml(text);
-  box.appendChild(div); box.scrollTop = box.scrollHeight;
-}
-async function sendChatMessage() {
-  const input = $("chatInput"); const text = input.value.trim(); if (!text) return;
-  input.value = ""; addChatMessage("أنا", text);
-  if (Object.keys(dataConnections).length === 0) { notify("⚠️ لا اتصالات"); return; }
-  const enc = await encryptPayload(text);
-  Object.values(dataConnections).forEach(c => { if (c.open) c.send(enc); });
-}
-
-/* ═══ MEDIA CONTROLS ═══ */
-function toggleMic() {
-  if (!localStream) { notify("⚠️ ابدأ call أولاً"); return; }
-  const t = localStream.getAudioTracks()[0]; if (!t) return;
-  t.enabled = !t.enabled;
-  $("btnToggleMic").style.color = t.enabled ? "" : "#ff007f";
-  notify(t.enabled ? "🎤 المايك مفتوح" : "🔇 المايك مغلق");
-}
-function toggleCam() {
-  if (!localStream) { notify("⚠️ ابدأ call أولاً"); return; }
-  const t = localStream.getVideoTracks()[0]; if (!t) return;
-  t.enabled = !t.enabled;
-  $("btnToggleCam").style.color = t.enabled ? "" : "#ff007f";
-}
-async function shareScreen() {
-  try {
-    screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-    $("localVideo").srcObject = screenStream;
-    screenStream.getVideoTracks()[0].onended = () => {
-      $("localVideo").srcObject = localStream;
-      screenStream = null;
-    };
-    notify("🖥️ مشاركة الشاشة مفعّلة");
-  } catch (e) { notify("❌ فشل مشاركة الشاشة"); }
-}
-function snapshot() {
-  const video = $("localVideo");
-  if (!video.videoWidth) { notify("⚠️ لا يوجد فيديو"); return; }
-  const canvas = document.createElement("canvas");
-  canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-  canvas.getContext("2d").drawImage(video, 0, 0);
-  canvas.toBlob(b => {
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(b);
-    a.download = "snapshot_" + Date.now() + ".png";
-    a.click();
-    notify("📸 تم حفظ اللقطة");
-    beep(1320, 80);
-  });
-}
-async function sendP2PFile(file) {
-  if (!file) return;
-  const conns = Object.values(dataConnections).filter(c => c.open);
-  if (conns.length === 0) { notify("⚠️ لا اتصالات نشطة"); return; }
-  const conn = conns[0];
-  const CHUNK = 16384;
-  const total = Math.ceil(file.size / CHUNK);
-  $("fileProgressContainer").classList.remove("hidden");
-  $("transferFileName").textContent = file.name;
-  conn.send({ type: "file-meta", name: file.name, size: file.size, total });
-  for (let i = 0; i < total; i++) {
-    const chunk = file.slice(i * CHUNK, (i + 1) * CHUNK);
-    const buf = await chunk.arrayBuffer();
-    conn.send({ type: "file-chunk", index: i, data: buf });
-    const pct = Math.round(((i + 1) / total) * 100);
-    $("transferPercent").textContent = pct + "%";
-    $("transferProgressBar").style.width = pct + "%";
-    await new Promise(r => setTimeout(r, 0));
-  }
-  conn.send({ type: "file-end" });
-  addChatMessage("SYSTEM", "📤 أُرسل: " + file.name);
-  beep(880, 100);
-  setTimeout(() => $("fileProgressContainer").classList.add("hidden"), 2000);
-}
-function applyCryptoKey() {
-  const key = $("roomKeyInput").value;
-  if (key.length < 6) { notify("⚠️ المفتاح قصير (6+ أحرف)"); return; }
-  rawPasswordSecret = key;
-  cryptoKeyObj = null;
-  deriveCryptoKey(key);
-  notify("🔐 تم ضبط مفتاح التشفير");
-  beep(1200, 80);
-}
-
-/* ═══ MATRIX BACKGROUND ═══ */
-function initMatrix() {
-  const canvas = $("matrixCanvas"); const ctx = canvas.getContext("2d");
-  let width, height; let stars = [], particles = [];
-  function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+/* ─── Matrix ─── */
+function startMatrix() {
+  const c = $("matrixCanvas"), ctx = c.getContext("2d");
+  function resize() { c.width = innerWidth; c.height = innerHeight; }
   resize(); window.addEventListener("resize", resize);
-
-  class Star {
-    constructor() { this.reset(); }
-    reset() { this.x = (Math.random() - 0.5) * width * 2; this.y = (Math.random() - 0.5) * height * 2; this.z = Math.random() * width; this.pz = this.z; }
-    update(speed) { this.z -= speed; if (this.z < 1) this.reset(); }
-    draw() {
-      const sx = (this.x / this.z) * width + width / 2, sy = (this.y / this.z) * height + height / 2;
-      const px = (this.x / this.pz) * width + width / 2, py = (this.y / this.pz) * height + height / 2;
-      ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(sx, sy);
-      ctx.strokeStyle = `rgba(200, 230, 255, ${1 - this.z / width})`; ctx.lineWidth = 1; ctx.stroke();
-      this.pz = this.z;
+  const chars = "01ΩOMEGA-GLOBE-VOICE-MEM-NEXUS";
+  let drops = Array(Math.floor(c.width/16)).fill(1);
+  setInterval(() => {
+    ctx.fillStyle = "rgba(3,0,20,0.08)"; ctx.fillRect(0, 0, c.width, c.height);
+    ctx.fillStyle = "#ff007f"; ctx.font = "12px 'Fira Code'";
+    for (let i = 0; i < drops.length; i++) {
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*16, drops[i]*16);
+      if (drops[i]*16 > c.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
     }
-  }
-  class CrystalDust {
-    constructor(x, y) {
-      this.x = x; this.y = y; this.size = Math.random() * 4 + 1;
-      this.speedX = Math.random() * 6 - 3; this.speedY = Math.random() * 6 - 3;
-      const colors = ["#00ffff", "#00bfff", "#8a2be2", "#ff69b4", "#ffffff"];
-      this.color = colors[Math.floor(Math.random() * colors.length)];
-      this.life = 1.0; this.decay = Math.random() * 0.02 + 0.01;
-    }
-    update() { this.x += this.speedX; this.y += this.speedY; this.life -= this.decay; if (this.size > 0.2) this.size -= 0.06; }
-    draw() { ctx.save(); ctx.translate(this.x, this.y); ctx.fillStyle = this.color; ctx.globalAlpha = this.life; ctx.beginPath(); ctx.arc(0, 0, this.size, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
-  }
-  for (let i = 0; i < 250; i++) stars.push(new Star());
-  canvas.addEventListener("click", e => {
-    const r = canvas.getBoundingClientRect();
-    for (let i = 0; i < 15; i++) particles.push(new CrystalDust(e.clientX - r.left, e.clientY - r.top));
-  });
-  function animate() {
-    ctx.fillStyle = "rgba(3, 0, 20, 0.2)"; ctx.fillRect(0, 0, width, height);
-    stars.forEach(s => { s.update(8); s.draw(); });
-    for (let i = particles.length - 1; i >= 0; i--) {
-      particles[i].update(); particles[i].draw();
-      if (particles[i].life <= 0) particles.splice(i, 1);
-    }
-    requestAnimationFrame(animate);
-  }
-  animate();
+  }, 55);
 }
 
-/* ═══ EVENTS ═══ */
+/* ─── Input ─── */
 termInput.addEventListener("keydown", async e => {
-  if (e.key === "Enter") {
-    const val = termInput.value; termInput.value = "";
-    await runCommand(val);
-  } else if (e.key === "ArrowUp") {
-    if (historyIndex > 0) { historyIndex--; termInput.value = commandHistory[historyIndex] || ""; }
-    e.preventDefault();
-  } else if (e.key === "ArrowDown") {
-    if (historyIndex < commandHistory.length - 1) { historyIndex++; termInput.value = commandHistory[historyIndex] || ""; }
-    else { historyIndex = commandHistory.length; termInput.value = ""; }
-    e.preventDefault();
-  } else if (e.key === "Tab") {
-    e.preventDefault();
-    const partial = termInput.value.trim();
-    if (!partial) return;
-    const cmds = ["help","ai","call","ls","cd","cat","pwd","write","nano","mkdir","rm","cp","mv","touch","tree","find","stat","sysinfo","whoami","id","su","sudo","echo","env","export","date","uptime","ps","top","chain","chain-verify","clear","history","speak","listen","msg","members","peer"];
-    const matches = cmds.filter(c => c.startsWith(partial));
-    if (matches.length === 1) termInput.value = matches[0] + " ";
-    else if (matches.length > 1) printToTerm(matches.join("  "), "text-cyber-cyan");
-  }
+  if (e.key === "Enter") { const v = termInput.value; termInput.value = ""; await runCommand(v); }
+  else if (e.key === "ArrowUp") { e.preventDefault(); if (historyIndex > 0) { historyIndex--; termInput.value = commandHistory[historyIndex] || ""; } }
+  else if (e.key === "ArrowDown") { e.preventDefault(); if (historyIndex < commandHistory.length-1) { historyIndex++; termInput.value = commandHistory[historyIndex] || ""; } }
 });
-$("btnToggleSide").addEventListener("click", () => $("sidePanel").classList.toggle("mobile-active"));
+$("btnToggleSide")?.addEventListener("click", () => $("sidePanel").classList.toggle("mobile-active"));
 
-document.addEventListener("keydown", e => {
-  if ($("nanoModal").classList.contains("active")) {
-    if (e.ctrlKey && e.key === "s") { e.preventDefault(); saveNano(); }
-    if (e.key === "Escape") closeNano(false);
-  }
-});
-
-/* ═══ CLEANUP ═══ */
-window.addEventListener("beforeunload", () => {
+/* ─── PWA + Offline ─── */
+async function initPWA() {
+  const swCode = `
+    const CACHE = 'omega-v50';
+    const URLS = [
+      'https://cdn.tailwindcss.com',
+      'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
+      'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+      'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+      'https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js',
+      'https://cdn.jsdelivr.net/npm/satellite.js@5.0.0/dist/satellite.min.js',
+      'https://unpkg.com/globe.gl@2.32.0/dist/globe.gl.min.js'
+    ];
+    self.addEventListener('install', e => {
+      e.waitUntil(caches.open(CACHE).then(c => c.addAll(URLS).catch(() => {})));
+      self.skipWaiting();
+    });
+    self.addEventListener('activate', e => {
+      e.waitUntil(caches.keys().then(keys =>
+        Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+      ));
+      self.clients.claim();
+    });
+    self.addEventListener('fetch', e => {
+      e.respondWith(
+        fetch(e.request).then(r => {
+          if (e.request.method === 'GET' && r.status === 200) {
+            const cl = r.clone();
+            caches.open(CACHE).then(c => c.put(e.request, cl)).catch(()=>{});
+          }
+          return r;
+        }).catch(() => caches.match(e.request).then(r => r || new Response('Offline', { status: 503 })))
+      );
+    });
+  `;
   try {
-    if (localStream) localStream.getTracks().forEach(t => t.stop());
-    if (screenStream) screenStream.getTracks().forEach(t => t.stop());
-    if (peer && !peer.destroyed) peer.destroy();
-  } catch (e) {}
-});
-
-/* ═══ EXPOSE GLOBALLY (must be before boot) ═══ */
-Object.assign(window, {
-  runCommand, joinMeshRoom, applyCryptoKey, toggleMic, toggleCam,
-  shareScreen, snapshot, sendP2PFile, sendChatMessage, renderLedgerUI,
-  closeNano, saveNano, notify, openNano, speakAI, listenVoice
-});
-
-/* ═══ BOOT ═══ */
-async function boot() {
-  initMatrix();
-  await initIndexedDB();
-  const loadedVFS = await loadVFSFromIDB();
-  vfs = loadedVFS || initVFS();
-  await createUser("root", 0, "/root", "/bin/bash");
-  await createUser("lafi", 1000, "/home/lafi", "/bin/bash");
-  const loadedLedger = await loadLedgerFromIDB();
-  if (loadedLedger && Array.isArray(loadedLedger) && loadedLedger.length > 0) auditLedger = loadedLedger;
-  else await createLedgerBlock("GENESIS", "System v38.0 Initialized", "SYSTEM");
-  renderLedgerUI(); await saveVFSToIDB(); updatePrompt();
-
-  printToTerm("╔══════════════════════════════════════════════════════╗", "text-cyber-cyan");
-  printToTerm("║   لافي منير — SOVEREIGN OS v38.0 AI APEX             ║", "text-cyber-cyan");
-  printToTerm("║   🤖 AI + Mesh P2P + AES-GCM + IndexedDB + Ledger    ║", "text-cyber-cyan");
-  printToTerm("╚══════════════════════════════════════════════════════╝", "text-cyber-cyan");
-  printToTerm("", "");
-  printToTerm("🎉 مرحباً لافي منير (root).", "text-cyber-green");
-  printToTerm("   جرّب: ai مرحبا  |  help  |  call  |  tree  |  sysinfo  |  chain-verify", "text-gray-400");
-  printToTerm("", "");
-  beep(880, 100); setTimeout(() => beep(1320, 100), 100);
+    const blob = new Blob([swCode], { type: "application/javascript" });
+    const url = URL.createObjectURL(blob);
+    await navigator.serviceWorker.register(url);
+    // offline badge
+    window.addEventListener("online", () => $("offlineBadge").classList.add("hidden"));
+    window.addEventListener("offline", () => $("offlineBadge").classList.remove("hidden"));
+    if (!navigator.onLine) $("offlineBadge").classList.remove("hidden");
+  } catch (e) { console.log("SW err", e); }
 }
-async function createUser(username, uid, home, shell) {
-  passwdDB.set(username, { username, uid, home, shell });
+let deferredInstallPrompt = null;
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault(); deferredInstallPrompt = e; $("installBtn").classList.remove("hidden");
+});
+$("installBtn")?.addEventListener("click", async () => {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  if (outcome === "accepted") { notify("✅ تم التثبيت"); $("installBtn").classList.add("hidden"); }
+  deferredInstallPrompt = null;
+});
+
+/* ─── Boot ─── */
+async function boot() {
+  await initIDB();
+  const sv = await loadVFS(); vfs = sv || initVFS();
+  const sc = await loadLedger(); if (sc && Array.isArray(sc)) auditLedger = sc;
+  memoryVectors = await loadMemory();
+
+  startMatrix();
+  initMap();
+  initGlobe();
+  renderCTF();
+  renderLedgerUI();
+  updateMemoryUI();
+  initPeer();
+  initPWA();
+
+  if (!auditLedger.length) await addBlock("GENESIS", "OMEGA v50.0");
+  else await addBlock("BOOT", auditLedger.length + " blocks");
+
+  printToTerm("╔══════════════════════════════════════════════════════╗", "text-cyber-magenta");
+  printToTerm("║   لافي منير — SOVEREIGN OS v50.0 NEXUS OMEGA Ω      ║", "text-cyber-magenta");
+  printToTerm("║   🌍 3D Globe • 🎥 Video P2P • 🗣️ Voice • 🧠 Memory ║", "text-cyber-magenta");
+  printToTerm("║   📲 PWA Offline • 🛰️ SGP4 • 🧠 Phi-3 • ⛓️ Chain   ║", "text-cyber-magenta");
+  printToTerm("╚══════════════════════════════════════════════════════╝", "text-cyber-magenta");
+  printToTerm("", "");
+  printToTerm("🌍 globe              → كرة أرضية 3D بالأقمار", "text-cyber-cyan");
+  printToTerm("🎥 video              → كاميرا + مكالمة P2P", "text-cyber-magenta");
+  printToTerm("🗣️ voice-on           → أوامر صوتية (تحدث!)", "text-cyber-magenta");
+  printToTerm("🧠 mem <نص>           → احفظ في الذاكرة", "text-cyber-purple");
+  printToTerm("🧠 recall <سؤال>      → ابحث دلالياً + RAG", "text-cyber-purple");
+  printToTerm("📲 التطبيق يعمل offline بعد التثبيت", "text-cyber-gold");
+  printToTerm("", "");
+
+  await updateISS(false);
+  issInterval = setInterval(() => updateISS(false), 8000);
+
+  setTimeout(async () => {
+    if (!loopActive) toggleLoop();
+    await loadGlobeSats("stations");
+    await loadAPOD();
+    await loadLaunches();
+    await addMemory("بدأت جلسة OMEGA في " + new Date().toLocaleString("ar-EG"), { type: "session" });
+  }, 3000);
 }
 
 window.addEventListener("load", boot);
+window.addEventListener("beforeunload", () => { saveVFS(); saveLedger(); saveMemory(); });
+
+// Globals
+Object.assign(window, {
+  runCommand, executeCommand, enqueueGoal, toggleLoop, toggleVoice,
+  loadGlobeSats, loadAPOD, loadLaunches, loadWebLLM,
+  startVideo, stopVideo, callVideoPeer,
+  startCamera, stopCamera, capturePhoto, startMic, stopMic,
+  connectToPeer, broadcastChain, requestChain, broadcastChat, broadcastMemory,
+  copyMyId, updateISS, addMemory, searchMemory, dumpMemory, clearMemory,
+  switchTab
+});
 </script>
 </body>
 </html>
