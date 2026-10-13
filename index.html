@@ -1,520 +1,544 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" translate="no">
+<html lang="ar" dir="rtl" class="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>لافي منير — SOVEREIGN OS v27.0 🔐</title>
-<meta name="theme-color" content="#030008">
+<title>لافي منير — SOVEREIGN OS v35.0 APEX 🛰️</title>
+<meta name="theme-color" content="#030014">
 <meta name="author" content="لافي منير">
-</head>
-<body>
-<div id="app"></div>
+<script src="https://cdn.tailwindcss.com"></script>
 <script>
-(function() {
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: {
+    colors: { cyber: { bg:'#030014', panel:'#0a0520', border:'#1f1345', cyan:'#00f2fe', magenta:'#ff007f', gold:'#ffd700', green:'#00ff66', purple:'#7928ca' } },
+    fontFamily: { mono: ['Fira Code','Courier New','monospace'] }
+  }}
+}
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&display=swap');
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; padding: 0; }
+body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', monospace; overflow: hidden; user-select: none; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(10,5,32,0.8); }
+::-webkit-scrollbar-thumb { background: #00f2fe; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #ff007f; }
+.neon-text-cyan { color: #00f2fe; text-shadow: 0 0 8px rgba(0,242,254,0.6); }
+.neon-text-magenta { color: #ff007f; text-shadow: 0 0 8px rgba(255,0,127,0.6); }
+.neon-text-gold { color: #ffd700; text-shadow: 0 0 8px rgba(255,215,0,0.6); }
+#matrixCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.15; pointer-events: none; }
+.terminal-input { background: transparent; outline: none; border: none; color: #00ff66; width: 100%; font-family: inherit; }
+.terminal-output { white-space: pre-wrap; word-break: break-word; user-select: text; -webkit-user-select: text; }
+@media (max-width: 900px) {
+  .main-grid { grid-template-columns: 1fr !important; }
+  .side-panel { display: none; }
+  .side-panel.mobile-active { display: flex; }
+}
+.modal-overlay { position: fixed; inset: 0; background: rgba(3,0,20,0.85); z-index: 100; display: none; align-items: center; justify-content: center; padding: 15px; backdrop-filter: blur(10px); }
+.modal-overlay.active { display: flex; }
+.modal-content { background: #0a0520; border: 2px solid #00f2fe; border-radius: 14px; padding: 16px; max-width: 900px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 0 60px rgba(0,242,254,0.4); }
+</style>
+</head>
+<body class="dark h-screen w-screen flex flex-col overflow-hidden">
+
+<canvas id="matrixCanvas"></canvas>
+<div id="notification" class="fixed top-20 left-1/2 -translate-x-1/2 bg-cyber-cyan text-black px-6 py-3 rounded-lg font-bold z-[200] hidden shadow-2xl text-sm max-w-[90%] text-center"></div>
+
+<header class="relative z-10 bg-cyber-panel/90 border-b border-cyber-border px-3 py-2 flex justify-between items-center backdrop-blur-md">
+  <div class="flex items-center gap-2">
+    <span class="text-base md:text-lg font-black neon-text-magenta flex items-center gap-1">
+      <i class="fa-solid fa-shield-halved"></i>
+      <span class="hidden sm:inline">SOVEREIGN OS</span>
+    </span>
+    <span class="bg-cyber-cyan/10 text-cyber-cyan text-[10px] md:text-xs px-1.5 py-0.5 rounded border border-cyber-cyan/30 font-bold">v35.0</span>
+    <span class="text-[10px] text-gray-400 hidden md:inline">| لافي منير</span>
+  </div>
+  <div class="flex items-center gap-1.5 md:gap-3 text-[10px] md:text-xs">
+    <div class="hidden md:flex items-center gap-1.5 bg-cyber-bg px-2 py-1 rounded border border-cyber-border">
+      <i class="fa-solid fa-key text-cyber-gold"></i>
+      <span>E2E: <span id="cryptoStatus" class="text-cyber-green font-bold">AES-GCM</span></span>
+    </div>
+    <div class="hidden md:flex items-center gap-1.5 bg-cyber-bg px-2 py-1 rounded border border-cyber-border">
+      <i class="fa-solid fa-database text-cyber-cyan"></i>
+      <span>DB: <span id="dbStatus" class="text-cyber-green font-bold">ON</span></span>
+    </div>
+    <div class="flex items-center gap-1.5 bg-cyber-bg px-2 py-1 rounded border border-cyber-border">
+      <i class="fa-solid fa-network-wired text-cyber-magenta"></i>
+      <span>P2P: <span id="p2pStatus" class="text-yellow-400 font-bold">OFF</span></span>
+    </div>
+    <button id="btnToggleSide" class="md:hidden bg-cyber-magenta/20 text-cyber-magenta px-2 py-1 rounded border border-cyber-magenta/50">
+      <i class="fa-solid fa-video"></i>
+    </button>
+  </div>
+</header>
+
+<main class="relative z-10 flex-1 grid grid-cols-1 md:grid-cols-12 gap-2 p-2 overflow-hidden main-grid">
+  <section class="md:col-span-7 lg:col-span-8 flex flex-col gap-2 h-full overflow-hidden">
+    <div class="flex-1 bg-cyber-panel/85 border border-cyber-border rounded-xl p-2 md:p-3 flex flex-col shadow-2xl backdrop-blur-sm overflow-hidden">
+      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 mb-2 text-[10px] md:text-xs">
+        <div class="flex items-center gap-1.5">
+          <span class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-red-500"></span>
+          <span class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-yellow-500"></span>
+          <span class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-green-500"></span>
+          <span class="mr-2 font-bold text-gray-200">bash-lite ~ <span id="currentPromptUser" class="text-cyber-cyan">root</span>@sovereign</span>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="runCommand('clear')" class="hover:text-cyber-cyan"><i class="fa-solid fa-eraser"></i><span class="hidden md:inline"> Clear</span></button>
+          <button onclick="runCommand('help')" class="hover:text-cyber-gold"><i class="fa-solid fa-circle-question"></i><span class="hidden md:inline"> Help</span></button>
+        </div>
+      </div>
+      <div id="terminalOutput" class="flex-1 overflow-y-auto space-y-0.5 text-xs md:text-sm pr-1 terminal-output"></div>
+      <div class="mt-1.5 flex items-center gap-2 bg-cyber-bg/80 px-2 md:px-3 py-1.5 rounded-lg border border-cyber-border">
+        <span id="promptLabel" class="text-cyber-green font-bold text-xs md:text-sm whitespace-nowrap">root@sovereign:~#</span>
+        <input type="text" id="terminalInput" class="terminal-input text-xs md:text-sm" placeholder="اكتب أمراً... جرّب help أو call" autofocus autocomplete="off" spellcheck="false" autocapitalize="off">
+      </div>
+    </div>
+  </section>
+
+  <section id="sidePanel" class="md:col-span-5 lg:col-span-4 flex flex-col gap-2 h-full overflow-hidden side-panel">
+    <div class="bg-cyber-panel/85 border border-cyber-border rounded-xl p-2 md:p-3 flex flex-col gap-2 shadow-xl backdrop-blur-sm">
+      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px] md:text-xs">
+        <span class="font-bold text-cyber-magenta flex items-center gap-1">
+          <i class="fa-solid fa-tower-broadcast"></i> Mesh Studio
+        </span>
+        <span id="roomStatusBadge" class="text-gray-400 text-[9px] md:text-[10px]">ROOM: OFF</span>
+      </div>
+      <div class="grid grid-cols-2 gap-1.5 text-[10px] md:text-xs">
+        <input type="text" id="roomIdInput" class="bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-cyber-cyan outline-none" placeholder="اسم الغرفة">
+        <button onclick="joinMeshRoom()" class="bg-cyber-cyan/20 hover:bg-cyber-cyan/30 border border-cyber-cyan text-cyber-cyan rounded font-bold transition">🌐 انضمام</button>
+      </div>
+      <div class="flex items-center gap-1.5 text-[10px] md:text-xs">
+        <input type="password" id="roomKeyInput" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-cyber-gold outline-none" placeholder="مفتاح التشفير">
+        <button onclick="applyCryptoKey()" class="bg-cyber-gold/20 hover:bg-cyber-gold/30 border border-cyber-gold text-cyber-gold px-2 py-1 rounded font-bold transition">🔐 ضبط</button>
+      </div>
+      <div id="videoGrid" class="grid grid-cols-2 gap-1.5 bg-cyber-bg/60 p-1.5 rounded-lg border border-cyber-border min-h-[100px] max-h-[140px] overflow-y-auto">
+        <div class="relative bg-black/50 rounded border border-cyber-border flex items-center justify-center min-h-[60px]">
+          <video id="localVideo" autoplay muted playsinline class="w-full h-full object-cover rounded"></video>
+          <span class="absolute bottom-0.5 right-0.5 text-[8px] bg-black/70 px-1 rounded text-cyber-cyan">أنت</span>
+        </div>
+      </div>
+      <div class="flex justify-around bg-cyber-bg/80 p-1 rounded-lg border border-cyber-border">
+        <button id="btnToggleMic" onclick="toggleMic()" class="text-[10px] md:text-xs text-gray-300 hover:text-cyber-cyan"><i class="fa-solid fa-microphone"></i></button>
+        <button id="btnToggleCam" onclick="toggleCam()" class="text-[10px] md:text-xs text-gray-300 hover:text-cyber-cyan"><i class="fa-solid fa-video"></i></button>
+        <button onclick="shareScreen()" class="text-[10px] md:text-xs text-gray-300 hover:text-cyber-gold"><i class="fa-solid fa-desktop"></i></button>
+        <button onclick="snapshot()" class="text-[10px] md:text-xs text-gray-300 hover:text-cyber-magenta"><i class="fa-solid fa-camera"></i></button>
+        <label class="text-[10px] md:text-xs text-cyber-magenta cursor-pointer">
+          <i class="fa-solid fa-paperclip"></i>
+          <input type="file" id="p2pFileInput" class="hidden" onchange="sendP2PFile(this.files[0])">
+        </label>
+      </div>
+      <div id="fileProgressContainer" class="hidden space-y-1">
+        <div class="flex justify-between text-[9px] text-gray-300">
+          <span id="transferFileName">file.dat</span>
+          <span id="transferPercent">0%</span>
+        </div>
+        <div class="w-full bg-cyber-bg rounded-full h-1.5 border border-cyber-border overflow-hidden">
+          <div id="transferProgressBar" class="bg-cyber-cyan h-full w-0 transition-all duration-150"></div>
+        </div>
+      </div>
+      <div id="chatBox" class="bg-cyber-bg/90 border border-cyber-border rounded-lg p-2 h-24 overflow-y-auto space-y-0.5 text-[10px] md:text-xs terminal-output"></div>
+      <div class="flex gap-1.5">
+        <input type="text" id="chatInput" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] md:text-xs text-white outline-none" placeholder="رسالة مشفرة..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+        <button onclick="sendChatMessage()" class="bg-cyber-magenta hover:bg-magenta-600 text-white text-[10px] md:text-xs px-3 py-1 rounded font-bold transition">
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex-1 bg-cyber-panel/85 border border-cyber-border rounded-xl p-2 md:p-3 flex flex-col shadow-xl backdrop-blur-sm overflow-hidden">
+      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px] md:text-xs mb-1.5">
+        <span class="font-bold text-cyber-gold flex items-center gap-1"><i class="fa-solid fa-link"></i> Ledger</span>
+        <button onclick="renderLedgerUI()" class="text-cyber-cyan hover:underline text-[9px]"><i class="fa-solid fa-rotate"></i></button>
+      </div>
+      <div id="ledgerLog" class="flex-1 overflow-y-auto space-y-1.5 text-[10px] terminal-output"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="relative z-10 bg-cyber-panel/90 border-t border-cyber-border px-3 py-1 flex justify-between items-center text-[10px] md:text-[11px] text-gray-400">
+  <div>© 2026 <span class="text-cyber-cyan font-bold">لافي منير</span></div>
+  <div id="footerStatus" class="text-cyber-gold font-bold">READY</div>
+</footer>
+
+<div id="nanoModal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="flex justify-between items-center border-b border-cyber-cyan/30 pb-2 mb-2">
+      <div class="flex items-center gap-2 text-cyber-cyan font-bold text-sm">
+        <i class="fa-solid fa-file-lines"></i> nano — <span id="nanoFilename" class="text-cyber-gold">file.txt</span>
+      </div>
+      <div class="text-[10px] text-gray-400">Ctrl+S = حفظ | Ctrl+X = خروج</div>
+    </div>
+    <textarea id="nanoBuffer" class="flex-1 bg-cyber-bg/90 text-cyber-green p-3 font-mono text-xs border border-cyber-border rounded-lg outline-none resize-none focus:border-cyber-cyan min-h-[300px]" spellcheck="false"></textarea>
+    <div class="flex justify-end gap-2 mt-3">
+      <button onclick="closeNano(false)" class="px-4 py-1.5 bg-gray-700 hover:bg-gray-600 rounded text-xs font-bold">إلغاء</button>
+      <button onclick="saveNano()" class="px-4 py-1.5 bg-cyber-cyan text-black hover:bg-cyan-400 rounded text-xs font-bold">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<script>
 "use strict";
 
-/* ═══ قفل الدومين ═══ */
-const ALLOWED_DOMAINS = ['localhost','127.0.0.1','wwwmournirp-hue.github.io','lafi-munir.vercel.app','lafi-munir.netlify.app'];
-function checkDomain() {
-  const host = window.location.hostname;
-  if (window.location.protocol === 'file:') return;
-  const allowed = ALLOWED_DOMAINS.some(d => host === d || host.endsWith('.' + d) || host.endsWith('.github.io') || host.endsWith('.vercel.app') || host.endsWith('.netlify.app'));
-  if (!allowed) {
-    document.body.innerHTML = '<div style="color:#ff0844;font-family:monospace;padding:50px;text-align:center;background:#030008;min-height:100vh;display:flex;align-items:center;justify-content:center;"><div><h1>🚫 ACCESS DENIED</h1><p style="margin-top:20px;">© لافي منير 2026</p></div></div>';
-    throw new Error('Domain not authorized');
-  }
-}
-checkDomain();
+/* ═══════════════════════════════════════════════════════════
+   SOVEREIGN OS v35.0 APEX — CORE ENGINE
+   ═══════════════════════════════════════════════════════════ */
 
-/* ═══ قفل التاريخ ═══ */
-const LICENSE_EXPIRY = new Date('2027-12-31T23:59:59').getTime();
-const LICENSE_START = new Date('2025-01-01').getTime();
-if (Date.now() > LICENSE_EXPIRY || Date.now() < LICENSE_START) {
-  document.body.innerHTML = '<div style="color:#ff0844;font-family:monospace;padding:50px;text-align:center;background:#030008;min-height:100vh;display:flex;align-items:center;justify-content:center;"><div><h1>⏰ LICENSE EXPIRED</h1></div></div>';
-  throw new Error('License expired');
-}
-
-/* ═══ منع DevTools ═══ */
-(function() {
-  document.addEventListener('contextmenu', e => e.preventDefault());
-  document.addEventListener('keydown', e => {
-    if (e.key === 'F12') { e.preventDefault(); return false; }
-    if (e.ctrlKey && e.shiftKey && ['I','J','C','i','j','c'].includes(e.key)) { e.preventDefault(); return false; }
-    if (e.ctrlKey && ['u','U','s','S','a','A','p','P'].includes(e.key)) { e.preventDefault(); return false; }
-  });
-  document.addEventListener('dragstart', e => e.preventDefault());
-})();
-
-/* ═══ منع النسخ ═══ */
-document.addEventListener('copy', e => {
-  const t = e.target;
-  if (t && t.closest && t.closest('.terminal-body')) return true;
-  e.preventDefault(); return false;
-});
-document.addEventListener('cut', e => e.preventDefault());
-
-/* ═══ CSS ═══ */
-const CSS = `
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
-body { min-height: 100vh; color: #00f2fe; background: linear-gradient(135deg, #030008, #0a0118, #20003b); padding: 15px; display: flex; align-items: center; justify-content: center; }
-.terminal-container { position: relative; width: 100%; max-width: 1280px; height: 96vh; background: rgba(5, 1, 15, 0.99); border: 2px solid #00f2fe; border-radius: 18px; padding: 15px; box-shadow: 0 0 170px rgba(0,242,254,0.8); display: flex; flex-direction: column; backdrop-filter: blur(40px); }
-.top-bar { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid rgba(0,242,254,0.4); margin-bottom: 10px; font-size: 11.5px; }
-.status-badge { padding: 3px 8px; background: rgba(0,242,254,0.15); border: 1px solid #00f2fe; border-radius: 6px; color: #00f2fe; font-weight: bold; }
-.status-badge.root { background: rgba(255,0,127,0.2); border-color: #ff007f; color: #ff007f; }
-.status-badge.editing { background: rgba(255,215,0,0.2); border-color: #ffd700; color: #ffd700; }
-.main-stage { display: flex; flex: 1; gap: 12px; overflow: hidden; }
-.term-side { flex: 1; display: flex; flex-direction: column; height: 100%; min-width: 0; }
-.visual-side { width: 340px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid rgba(0,242,254,0.25); padding-right: 10px; }
-.terminal-body { flex: 1; overflow-y: auto; font-size: 12px; line-height: 1.55; color: #e5e7eb; padding-right: 5px; white-space: pre-wrap; user-select: text; -webkit-user-select: text; overflow-wrap: break-word; }
-.cmd-line { display: flex; gap: 8px; align-items: center; margin-top: 10px; border-top: 1px solid rgba(0,242,254,0.2); padding-top: 8px; }
-.prompt { color: #ff007f; font-weight: bold; font-size: 12px; white-space: nowrap; }
-.cmd-input { flex: 1; background: transparent; border: none; outline: none; color: #00f2fe; font-size: 12px; user-select: text; }
-.sys-stat { display: flex; gap: 6px; font-size: 10px; color: #38bdf8; margin-top: 6px; flex-wrap: wrap; }
-.stat-item { background: rgba(0,242,254,0.08); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(0,242,254,0.2); }
-.stat-item.root { background: rgba(255,0,127,0.15); border-color: #ff007f; color: #ff007f; }
-.stat-item.edit { background: rgba(255,215,0,0.15); border-color: #ffd700; color: #ffd700; }
-canvas { width: 100%; height: 110px; background: #020005; border: 1px solid rgba(0,242,254,0.5); border-radius: 10px; }
-.panel { background: rgba(121, 40, 202, 0.1); border: 1px dashed rgba(121, 40, 202, 0.5); border-radius: 10px; padding: 8px; font-size: 10px; color: #d946ef; overflow-y: auto; }
-.panel-title { color: #ffd700; font-weight: bold; margin-bottom: 4px; font-size: 10.5px; }
-.audit-entry { padding: 2px 0; border-bottom: 1px dashed rgba(217,70,239,0.15); font-size: 9.5px; line-height: 1.4; word-break: break-all; }
-.audit-entry .time { color: #38bdf8; }
-.audit-entry.INFO { color: #00ff66; }
-.audit-entry.WARN { color: #ffd700; }
-.audit-entry.ERROR { color: #ff0844; }
-.export-btn { padding: 6px 10px; background: linear-gradient(135deg, #00f2fe, #7928ca); border: none; border-radius: 8px; color: #fff; font-size: 10px; font-weight: bold; cursor: pointer; margin-top: 4px; width: 100%; }
-.editor-overlay { position: absolute; inset: 15px; background: rgba(0,0,0,0.97); border: 2px solid #ffd700; border-radius: 14px; display: none; flex-direction: column; z-index: 100; padding: 12px; box-shadow: 0 0 80px rgba(255,215,0,0.5); }
-.editor-overlay.active { display: flex; }
-.editor-header { display: flex; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid #ffd700; color: #ffd700; font-size: 12px; font-weight: bold; }
-.editor-status { display: flex; gap: 12px; color: #38bdf8; font-size: 10px; }
-.editor-area { flex: 1; background: #000; color: #00ff66; border: 1px solid #ffd700; border-radius: 6px; padding: 10px; margin-top: 8px; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.5; resize: none; outline: none; width: 100%; user-select: text; }
-.editor-help { color: #ffd700; font-size: 10px; margin-top: 6px; text-align: center; }
-.credit { color: #ffd700; font-size: 10px; margin-top: 8px; text-align: center; opacity: 0.8; }
-@media (max-width: 800px) {
-  body { padding: 5px; }
-  .terminal-container { padding: 8px; height: 98vh; border-radius: 12px; }
-  .top-bar { font-size: 10px; padding-bottom: 6px; margin-bottom: 6px; }
-  .main-stage { flex-direction: column; gap: 6px; }
-  .visual-side { display: none !important; }
-  .term-side { order: 1; }
-  .terminal-body { font-size: 13px; line-height: 1.5; }
-  .cmd-input { font-size: 16px !important; padding: 4px; }
-  .prompt { font-size: 13px; }
-  .sys-stat { font-size: 9px; gap: 4px; }
-  .stat-item { padding: 1px 4px; }
-  .cmd-line { margin-top: 6px; padding-top: 6px; gap: 6px; }
-  .credit { font-size: 9px; }
-}
-`;
-const styleEl = document.createElement('style');
-styleEl.textContent = CSS;
-document.head.appendChild(styleEl);
-
-/* ═══ HTML ═══ */
-document.getElementById('app').innerHTML = `
-<div class="terminal-container">
-  <div class="top-bar">
-    <span>🌌 لافي منير — SOVEREIGN OS v27.0</span>
-    <span class="status-badge root" id="kernelStatus">ROOT 👑</span>
-  </div>
-  <div class="main-stage">
-    <div class="visual-side">
-      <canvas id="paintCanvas"></canvas>
-      <div class="panel" style="max-height:140px;">
-        <div class="panel-title">👥 المستخدمون</div>
-        <div id="varsDisplay">...</div>
-      </div>
-      <div class="panel" style="flex:1;">
-        <div class="panel-title">📊 السجل</div>
-        <div id="auditDisplay" style="max-height: 100%; overflow-y: auto;">لا أحداث بعد...</div>
-      </div>
-      <button id="exportChainBtn" class="export-btn">📥 تصدير السلسلة</button>
-      <button id="exportAuditBtn" class="export-btn">📥 تصدير السجل</button>
-    </div>
-    <div class="term-side">
-      <div class="terminal-body" id="termBody"></div>
-      <div class="sys-stat">
-        <span class="stat-item root" id="userStat">User: root</span>
-        <span class="stat-item root" id="uidStat">UID: 0 (GID 0)</span>
-        <span class="stat-item" id="pathStat">PWD: /root</span>
-        <span class="stat-item" id="timeStat">--:--:--</span>
-        <span class="stat-item" id="chainStat">Blocks: 1</span>
-        <span class="stat-item edit" id="editStat" style="display:none;">EDITING ✏️</span>
-      </div>
-      <div class="cmd-line">
-        <span class="prompt" id="promptText">root@lafi:/root#</span>
-        <input type="text" class="cmd-input" id="cmdInput" autofocus autocomplete="off" spellcheck="false" autocapitalize="off">
-      </div>
-    </div>
-  </div>
-  <div class="editor-overlay" id="editorOverlay">
-    <div class="editor-header">
-      <span id="editorFilename">nano — new_file.txt</span>
-      <div class="editor-status">
-        <span id="editorLineInfo">سطر: 1 | أحرف: 0</span>
-        <span id="editorState">[ جديد ]</span>
-      </div>
-    </div>
-    <textarea class="editor-area" id="editorArea" spellcheck="false"></textarea>
-    <div class="editor-help">💾 Ctrl+S = حفظ | 🚪 Ctrl+X = خروج | 🧹 Ctrl+K = مسح</div>
-  </div>
-  <div class="credit">© لافي منير 2026 — جميع الحقوق محفوظة</div>
-</div>
-`;
-
-/* ═══ Core ═══ */
-const $ = id => document.getElementById(id);
-const canvas = $('paintCanvas');
-const ctx = canvas.getContext('2d');
-function resizeCanvas() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
-
-let blockchain = [];
+/* ─── State ─── */
+let currentUser = "root";
+let currentPath = "/root";
+let session = { uid: 0, username: "root" };
+let vfs = {};
+let userShadows = {};
+let auditLedger = [];
 let commandHistory = [];
 let historyIndex = -1;
-let currentPath = "/root";
 let shellVars = {};
-let shellFunctions = {};
-let auditEvents = [];
 let suPending = null;
 let terminalBuffer = [];
+let idb = null;
 
-// ✅ جلسة مفتوحة تلقائياً بدون كلمة سر
-let session = { uid: 0, username: "root", loginState: "LOGGED_IN", pendingUsername: null };
-let nanoState = { active: false, filename: null, originalContent: "", fullPath: null, dirty: false };
+/* Crypto state */
+let cryptoKeyObj = null;
+let rawPasswordSecret = "SOVEREIGN_APEX_2026";
 
-const passwdDB = new Map();
-const shadowDB = new Map();
-const groupDB = new Map();
-let VFS = {};
+/* Peer state */
+let peer = null;
+let myPeerId = null;
+let dataConnections = {};
+let videoCalls = {};
+let roomId = null;
+let roomMembers = {};
+let localStream = null;
+let screenStream = null;
+let isMicOn = true;
+let isCamOn = true;
+let isScreenSharing = false;
+let pendingFileChunks = {};
+let callLog = [];
 
-/* ═══ Audit ═══ */
+/* Nano state */
+let currentNanoPath = null;
+
+/* ─── Utility ─── */
+const $ = id => document.getElementById(id);
+const termOutput = $("terminalOutput");
+const termInput = $("terminalInput");
+
+function notify(msg, ms) {
+  ms = ms || 3000;
+  const el = $("notification");
+  el.textContent = msg;
+  el.classList.remove("hidden");
+  clearTimeout(el._to);
+  el._to = setTimeout(() => el.classList.add("hidden"), ms);
+}
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-function addAuditEvent(type, message) {
-  const time = new Date().toLocaleTimeString();
-  auditEvents.unshift({ time, type, message });
-  if (auditEvents.length > 60) auditEvents.pop();
-  const html = auditEvents.slice(0, 25).map(e =>
-    '<div class="audit-entry ' + e.type + '"><span class="time">[' + e.time + ']</span> [' + e.type + '] ' + escapeHtml(e.message.substring(0, 55)) + '</div>'
-  ).join('');
-  $('auditDisplay').innerHTML = html || "لا أحداث بعد...";
+function printToTerm(text, color) {
+  color = color || "text-gray-300";
+  const div = document.createElement("div");
+  div.className = "font-mono " + color;
+  div.innerText = text;
+  termOutput.appendChild(div);
+  termOutput.scrollTop = termOutput.scrollHeight;
+}
+async function sha256Hex(str) {
+  const buf = new TextEncoder().encode(str);
+  const h = await crypto.subtle.digest("SHA-256", buf);
+  return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-/* ═══ Blockchain ═══ */
-async function computeSHA256(message) {
-  const buf = new TextEncoder().encode(message);
-  const hash = await crypto.subtle.digest('SHA-256', buf);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+/* ─── AES-GCM Crypto ─── */
+async function deriveCryptoKey(secret) {
+  try {
+    const enc = new TextEncoder();
+    const km = await crypto.subtle.importKey("raw", enc.encode(secret), { name: "PBKDF2" }, false, ["deriveKey"]);
+    cryptoKeyObj = await crypto.subtle.deriveKey(
+      { name: "PBKDF2", salt: enc.encode("SOVEREIGN_APEX_SALT"), iterations: 100000, hash: "SHA-256" },
+      km, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]
+    );
+    $("cryptoStatus").textContent = "AES-GCM-256";
+    $("cryptoStatus").className = "text-cyber-green font-bold";
+  } catch (e) { console.error(e); }
 }
-async function addBlock(data) {
-  const prev = blockchain[blockchain.length - 1] || { hash: "0000000000", index: -1 };
-  const timestamp = Date.now();
-  const hash = await computeSHA256(prev.hash + data + timestamp);
-  const block = { index: prev.index + 1, timestamp, data, prevHash: prev.hash, hash };
-  blockchain.push(block);
-  $('chainStat').textContent = 'Blocks: ' + blockchain.length;
-  addAuditEvent('INFO', 'Block #' + block.index + ': ' + data.substring(0, 20));
-  try { localStorage.setItem('sovereign_chain_v27_nopass', JSON.stringify(blockchain)); } catch (e) {}
-  return block;
+async function encryptPayload(text) {
+  try {
+    if (!cryptoKeyObj) await deriveCryptoKey(rawPasswordSecret);
+    const enc = new TextEncoder();
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const enc_data = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, cryptoKeyObj, enc.encode(text));
+    const combined = new Uint8Array(iv.length + enc_data.byteLength);
+    combined.set(iv, 0);
+    combined.set(new Uint8Array(enc_data), iv.length);
+    let bin = "";
+    for (let i = 0; i < combined.length; i++) bin += String.fromCharCode(combined[i]);
+    return "AES256:" + btoa(bin);
+  } catch (e) {
+    let bin = "";
+    const enc = new TextEncoder();
+    const data = enc.encode(text);
+    const k = enc.encode(rawPasswordSecret);
+    for (let i = 0; i < data.length; i++) bin += String.fromCharCode(data[i] ^ k[i % k.length]);
+    return "XOR:" + btoa(bin);
+  }
+}
+async function decryptPayload(cipher) {
+  try {
+    if (cipher.startsWith("XOR:")) {
+      const bin = atob(cipher.slice(4));
+      const enc = new TextEncoder();
+      const k = enc.encode(rawPasswordSecret);
+      let out = "";
+      for (let i = 0; i < bin.length; i++) out += String.fromCharCode(bin.charCodeAt(i) ^ k[i % k.length]);
+      return out;
+    }
+    if (!cipher.startsWith("AES256:")) return cipher;
+    if (!cryptoKeyObj) await deriveCryptoKey(rawPasswordSecret);
+    const raw = atob(cipher.slice(7));
+    const combined = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) combined[i] = raw.charCodeAt(i);
+    const iv = combined.slice(0, 12);
+    const ct = combined.slice(12);
+    const dec = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, cryptoKeyObj, ct);
+    return new TextDecoder().decode(dec);
+  } catch (e) { return "[فشل فك التشفير - مفتاح خاطئ]"; }
 }
 
-/* ═══ Crypto ═══ */
-async function hashPassword(password, salt) {
-  const data = new TextEncoder().encode(salt + ":" + password + ":LAFI-MUNIR-V27");
-  const buf = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-function generateSalt() {
-  const arr = new Uint8Array(8);
-  crypto.getRandomValues(arr);
-  return Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-async function verifyPassword(username, password) {
-  const s = shadowDB.get(username);
-  if (!s) return false;
-  return (await hashPassword(password, s.salt)) === s.hash;
-}
+/* ─── XOR (legacy) ─── */
 function xorCipher(text, key) {
   const t = new TextEncoder().encode(text);
   const k = new TextEncoder().encode(key);
-  const out = new Uint8Array(t.length);
-  for (let i = 0; i < t.length; i++) out[i] = t[i] ^ k[i % k.length];
   let bin = "";
-  for (let i = 0; i < out.length; i++) bin += String.fromCharCode(out[i]);
-  return "ENC:" + btoa(bin);
+  for (let i = 0; i < t.length; i++) bin += String.fromCharCode(t[i] ^ k[i % k.length]);
+  return "XOR:" + btoa(bin);
 }
 function xorDecipher(c, key) {
   try {
-    if (!c.startsWith("ENC:")) return null;
+    if (!c.startsWith("XOR:")) return c;
     const bin = atob(c.slice(4));
-    const bytes = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
     const k = new TextEncoder().encode(key);
-    const out = new Uint8Array(bytes.length);
-    for (let i = 0; i < bytes.length; i++) out[i] = bytes[i] ^ k[i % k.length];
-    return new TextDecoder().decode(out);
+    let out = "";
+    for (let i = 0; i < bin.length; i++) out += String.fromCharCode(bin.charCodeAt(i) ^ k[i % k.length]);
+    return out;
   } catch (e) { return null; }
 }
 
-/* ═══ Users ═══ */
-async function createUser(username, uid, gid, home, shell, password, groups) {
-  groups = groups || [];
-  if (passwdDB.has(username)) return { ok: false, error: "user exists" };
-  passwdDB.set(username, { username, uid, gid, home, shell, created: Date.now() });
-  const salt = generateSalt();
-  const hash = await hashPassword(password, salt);
-  shadowDB.set(username, { hash, salt, lastChange: Date.now() });
-  groups.forEach(g => {
-    if (groupDB.has(g)) {
-      const grp = groupDB.get(g);
-      if (!grp.members.includes(username)) grp.members.push(username);
-    }
+/* ─── IndexedDB ─── */
+function initIndexedDB() {
+  return new Promise(resolve => {
+    const req = indexedDB.open("SovereignOS_v35", 1);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains("vfs")) d.createObjectStore("vfs");
+      if (!d.objectStoreNames.contains("ledger")) d.createObjectStore("ledger");
+      if (!d.objectStoreNames.contains("shadow")) d.createObjectStore("shadow");
+    };
+    req.onsuccess = e => { idb = e.target.result; $("dbStatus").textContent = "ON"; resolve(); };
+    req.onerror = () => { $("dbStatus").textContent = "ERR"; resolve(); };
   });
-  VFS[home] = { type: "dir", children: [], owner: username, group: gid, mode: "rwxr-xr-x" };
-  return { ok: true };
 }
-async function createGroup(name, gid, members) {
-  members = members || [];
-  if (groupDB.has(name)) return { ok: false };
-  groupDB.set(name, { name, gid, members: members.slice() });
-  return { ok: true };
+async function saveVFSToIDB() {
+  if (!idb) return;
+  try {
+    const tx = idb.transaction("vfs", "readwrite");
+    const s = tx.objectStore("vfs");
+    s.clear();
+    for (const [k, v] of Object.entries(vfs)) s.put(v, k);
+  } catch (e) {}
 }
-async function deleteUser(username) {
-  if (username === "root") return { ok: false, error: "cannot delete root" };
-  if (!passwdDB.has(username)) return { ok: false, error: "user not found" };
-  const u = passwdDB.get(username);
-  passwdDB.delete(username);
-  shadowDB.delete(username);
-  groupDB.forEach(g => { g.members = g.members.filter(m => m !== username); });
-  return { ok: true, home: u.home };
+async function loadVFSFromIDB() {
+  if (!idb) return null;
+  return new Promise(resolve => {
+    try {
+      const tx = idb.transaction("vfs", "readonly");
+      const s = tx.objectStore("vfs");
+      const req = s.getAllKeys();
+      req.onsuccess = async () => {
+        if (req.result.length === 0) return resolve(null);
+        const result = {};
+        for (const key of req.result) {
+          result[key] = await new Promise(r => {
+            const rq = s.get(key);
+            rq.onsuccess = () => r(rq.result);
+            rq.onerror = () => r(null);
+          });
+        }
+        resolve(result);
+      };
+      req.onerror = () => resolve(null);
+    } catch (e) { resolve(null); }
+  });
 }
-async function changePassword(username, newPassword) {
-  const salt = generateSalt();
-  const hash = await hashPassword(newPassword, salt);
-  shadowDB.set(username, { hash, salt, lastChange: Date.now() });
+async function saveLedgerToIDB() {
+  if (!idb) return;
+  try {
+    const tx = idb.transaction("ledger", "readwrite");
+    tx.objectStore("ledger").put(auditLedger, "ledger");
+  } catch (e) {}
+}
+async function loadLedgerFromIDB() {
+  if (!idb) return null;
+  return new Promise(resolve => {
+    try {
+      const tx = idb.transaction("ledger", "readonly");
+      const req = tx.objectStore("ledger").get("ledger");
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => resolve(null);
+    } catch (e) { resolve(null); }
+  });
+}
+
+/* ─── Blockchain ─── */
+async function createLedgerBlock(type, details, author) {
+  author = author || currentUser;
+  const prev = auditLedger.length > 0 ? auditLedger[auditLedger.length - 1] : null;
+  const prevHash = prev ? prev.hash : "00000000000000000000000000000000";
+  const timestamp = new Date().toISOString();
+  const index = auditLedger.length;
+  const blockHash = await sha256Hex(index + "|" + timestamp + "|" + type + "|" + details + "|" + author + "|" + prevHash);
+  auditLedger.push({ index, timestamp, type, details, author, prevHash, hash: blockHash });
+  await saveLedgerToIDB();
+  renderLedgerUI();
+}
+async function verifyBlockchain() {
+  for (let i = 0; i < auditLedger.length; i++) {
+    const b = auditLedger[i];
+    const expectedPrev = i === 0 ? "00000000000000000000000000000000" : auditLedger[i - 1].hash;
+    if (b.prevHash !== expectedPrev) return false;
+    const rehash = await sha256Hex(b.index + "|" + b.timestamp + "|" + b.type + "|" + b.details + "|" + b.author + "|" + b.prevHash);
+    if (rehash !== b.hash) return false;
+  }
   return true;
 }
-function getUserGroups(username) {
-  const groups = [];
-  const user = passwdDB.get(username);
-  if (user) {
-    groupDB.forEach(g => {
-      if (g.gid === user.gid && groups.indexOf(g.name) === -1) groups.unshift(g.name);
-    });
-  }
-  groupDB.forEach(g => {
-    if (g.members.indexOf(username) !== -1 && groups.indexOf(g.name) === -1) groups.push(g.name);
+function renderLedgerUI() {
+  const box = $("ledgerLog");
+  if (!box) return;
+  box.innerHTML = "";
+  auditLedger.slice().reverse().forEach(b => {
+    const div = document.createElement("div");
+    div.className = "bg-cyber-bg/90 p-1.5 rounded border border-cyber-border space-y-0.5";
+    div.innerHTML = '<div class="flex justify-between text-cyber-gold font-bold text-[9px]">' +
+      '<span>#' + b.index + ' [' + escapeHtml(b.type) + ']</span>' +
+      '<span>' + escapeHtml(b.author) + '</span></div>' +
+      '<div class="text-gray-300 break-all">' + escapeHtml(b.details) + '</div>' +
+      '<div class="text-[8px] text-gray-500 flex justify-between">' +
+      '<span>HASH: ' + b.hash.substring(0, 10) + '...</span>' +
+      '<span>' + new Date(b.timestamp).toLocaleTimeString() + '</span></div>';
+    box.appendChild(div);
   });
-  return groups;
-}
-const isRoot = () => session.username === "root";
-const getCurrentUser = () => passwdDB.get(session.username);
-function canSudo() {
-  if (!session.username) return false;
-  if (isRoot()) return true;
-  const gs = getUserGroups(session.username);
-  return gs.indexOf("sudo") !== -1 || gs.indexOf("wheel") !== -1;
 }
 
-/* ═══ Init ═══ */
+/* ─── VFS Init ─── */
 async function initSystemState() {
-  VFS = {
-    "/":                  { type: "dir",  children: ["root","etc","home","var","usr","tmp","bin"], owner: "root", group: 0, mode: "rwxr-xr-x" },
-    "/etc":               { type: "dir",  children: ["passwd","shadow","group","hosts","motd"], owner: "root", group: 0, mode: "rwxr-xr-x" },
-    "/etc/passwd":        { type: "file", content: "(managed)", restricted: true, owner: "root", group: 0, mode: "rw-r--r--" },
-    "/etc/shadow":        { type: "file", content: "(protected)", restricted: true, owner: "root", group: 0, mode: "rw-------" },
-    "/etc/group":         { type: "file", content: "(managed)", restricted: false, owner: "root", group: 0, mode: "rw-r--r--" },
-    "/etc/hosts":         { type: "file", content: "127.0.0.1  localhost\n10.0.0.1  lafi-munir.local", restricted: false, owner: "root", group: 0, mode: "rw-r--r--" },
-    "/etc/motd":          { type: "file", content: "لافي منير — SOVEREIGN OS v27.0", restricted: false, owner: "root", group: 0, mode: "rw-r--r--" },
-    "/root":              { type: "dir",  children: ["readme.txt"], owner: "root", group: 0, mode: "rwx------" },
-    "/root/readme.txt":   { type: "file", content: "لافي منير — Protected Edition", restricted: false, owner: "root", group: 0, mode: "rw-r--r--" },
-    "/home":              { type: "dir",  children: [], owner: "root", group: 0, mode: "rwxr-xr-x" },
-    "/usr":               { type: "dir",  children: ["bin"], owner: "root", group: 0, mode: "rwxr-xr-x" },
-    "/usr/bin":           { type: "dir",  children: [], owner: "root", group: 0, mode: "rwxr-xr-x" },
-    "/bin":               { type: "dir",  children: [], owner: "root", group: 0, mode: "rwxr-xr-x" },
-    "/var":               { type: "dir",  children: ["log"], owner: "root", group: 0, mode: "rwxr-xr-x" },
-    "/var/log":           { type: "dir",  children: ["auth.log","syslog"], owner: "root", group: 0, mode: "rwxr-xr-x" },
-    "/var/log/auth.log":  { type: "file", content: "", restricted: false, owner: "root", group: 0, mode: "rw-r-----" },
-    "/var/log/syslog":    { type: "file", content: "[INFO] boot ok", restricted: false, owner: "root", group: 0, mode: "rw-r--r--" },
-    "/tmp":               { type: "dir",  children: [], owner: "root", group: 0, mode: "rwxrwxrwx" }
-  };
+  await initIndexedDB();
+  const loadedVFS = await loadVFSFromIDB();
+  const loadedLedger = await loadLedgerFromIDB();
 
-  await createGroup("root", 0, ["root"]);
-  await createGroup("sudo", 27, []);
-  await createGroup("wheel", 10, []);
-  await createGroup("users", 100, []);
-  await createUser("root", 0, 0, "/root", "/bin/bash", "", ["root"]);
-  await createUser("lafi", 1000, 100, "/home/lafi", "/bin/bash", "", ["users"]);
-  groupDB.get("sudo").members.push("lafi");
-
-  VFS["/home/lafi/workspace"] = { type: "dir", children: [], owner: "lafi", group: 100, mode: "rwxr-xr-x" };
-  VFS["/home/lafi"].children.push("workspace");
-
-  const welcomeScript = '#!/bin/bash\nNAME="لافي منير"\necho "مرحباً $NAME في نظام SOVEREIGN OS"\nfor i in 1 2 3; do\n  echo "المرحلة $i"\ndone\necho "اكتمل التنفيذ ✅"\n';
-  VFS["/home/lafi/welcome.sh"] = { type: "file", content: welcomeScript, restricted: false, owner: "lafi", group: 100, mode: "rwxr-xr-x" };
-  VFS["/home/lafi"].children.push("welcome.sh");
-  VFS["/root/welcome.sh"] = { type: "file", content: welcomeScript, restricted: false, owner: "root", group: 0, mode: "rwxr-xr-x" };
-  VFS["/root"].children.push("welcome.sh");
-
-  const genesisData = "GENESIS_LAFI_MUNIR_V27";
-  const gh = await computeSHA256("0000000000" + genesisData + 1711000000000);
-  try {
-    const saved = localStorage.getItem('sovereign_chain_v27_nopass');
-    if (saved) {
-      const p = JSON.parse(saved);
-      if (Array.isArray(p) && p.length > 0 && p[0].hash) blockchain = p;
-      else throw new Error("invalid");
-    } else {
-      blockchain = [{ index: 0, timestamp: 1711000000000, data: genesisData, prevHash: "0000000000", hash: gh }];
-      localStorage.setItem('sovereign_chain_v27_nopass', JSON.stringify(blockchain));
-    }
-  } catch (e) {
-    blockchain = [{ index: 0, timestamp: 1711000000000, data: genesisData, prevHash: "0000000000", hash: gh }];
+  if (loadedVFS) {
+    vfs = loadedVFS;
+  } else {
+    vfs = {
+      "/": { type: "dir", owner: "root", perm: "rwxr-xr-x", children: ["root","etc","home","bin","var","tmp"] },
+      "/root": { type: "dir", owner: "root", perm: "rwx------", children: ["readme.txt","welcome.sh"] },
+      "/root/readme.txt": { type: "file", owner: "root", perm: "rw-r--r--", content: "لافي منير — SOVEREIGN OS v35.0 APEX\n\nاكتب help للأوامر\nأو call للاتصال" },
+      "/etc": { type: "dir", owner: "root", perm: "rwxr-xr-x", children: ["passwd","hosts","motd"] },
+      "/etc/hosts": { type: "file", owner: "root", perm: "rw-r--r--", content: "127.0.0.1  localhost\n10.0.0.1  lafi-sovereign.local" },
+      "/etc/motd": { type: "file", owner: "root", perm: "rw-r--r--", content: "لافي منير — Sovereign OS v35.0 APEX" },
+      "/home": { type: "dir", owner: "root", perm: "rwxr-xr-x", children: [] },
+      "/bin": { type: "dir", owner: "root", perm: "rwxr-xr-x", children: [] },
+      "/var": { type: "dir", owner: "root", perm: "rwxr-xr-x", children: [] },
+      "/tmp": { type: "dir", owner: "root", perm: "rwxrwxrwx", children: [] }
+    };
+    vfs["/root/welcome.sh"] = {
+      type: "file", owner: "root", perm: "rwxr-xr-x",
+      content: '#!/bin/bash\necho "مرحباً لافي في SOVEREIGN OS v35.0"\nfor i in 1 2 3; do\n  echo "المرحلة $i"\ndone\necho "اكتمل التنفيذ ✅"\n'
+    };
   }
-  $('chainStat').textContent = 'Blocks: ' + blockchain.length;
-  renderUserList();
+
+  if (loadedLedger && Array.isArray(loadedLedger) && loadedLedger.length > 0) {
+    auditLedger = loadedLedger;
+  } else {
+    await createLedgerBlock("GENESIS", "System Initialization", "SYSTEM");
+  }
+
+  renderLedgerUI();
+  await saveVFSToIDB();
 }
 
-/* ═══ 3D Matrix ═══ */
-let angle = 0;
-function drawMatrix() {
-  ctx.fillStyle = '#020005';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  const cx = canvas.width / 2, cy = canvas.height / 2, size = 30;
-  angle += 0.02;
-  const cos = Math.cos(angle), sin = Math.sin(angle);
-  for (let x = -2; x <= 2; x++) {
-    for (let y = -2; y <= 2; y++) {
-      const px = x * size, py = y * size;
-      const pz = Math.sin(x + y + angle * 2) * 18;
-      const rx = px * cos - pz * sin;
-      const alpha = Math.max(0.2, Math.min(1, (pz + 40) / 80));
-      ctx.fillStyle = 'rgba(0,242,254,' + alpha + ')';
-      ctx.fillRect(cx + rx - 2, cy + py - 2, 4, 4);
+/* ─── Matrix Canvas ─── */
+function initMatrix() {
+  const canvas = $("matrixCanvas");
+  const ctx = canvas.getContext("2d");
+  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener("resize", resize);
+  const chars = "01SOVEREIGN_APEX_2026_LAFI_MUNIR";
+  const fontSize = 12;
+  const columns = Math.floor(canvas.width / fontSize);
+  const drops = new Array(columns).fill(1);
+  function draw() {
+    ctx.fillStyle = "rgba(3,0,20,0.08)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#00f2fe";
+    ctx.font = fontSize + "px monospace";
+    for (let i = 0; i < drops.length; i++) {
+      const text = chars.charAt(Math.floor(Math.random() * chars.length));
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
     }
   }
-  requestAnimationFrame(drawMatrix);
-}
-drawMatrix();
-
-/* ═══ Print + UI ═══ */
-function printTerm(text, color, capture) {
-  if (color === undefined) color = "#e5e7eb";
-  if (capture === undefined) capture = false;
-  if (capture) { terminalBuffer.push({ text, color }); return; }
-  const line = document.createElement('div');
-  line.style.color = color;
-  line.textContent = text;
-  $('termBody').appendChild(line);
-  $('termBody').scrollTop = $('termBody').scrollHeight;
-}
-function updatePrompt() {
-  const p = $('promptText');
-  if (nanoState.active) { p.textContent = "nano>"; p.style.color = "#ffd700"; return; }
-  const sym = isRoot() ? "#" : "$";
-  p.textContent = session.username + "@lafi:" + currentPath + sym;
-  p.style.color = isRoot() ? "#ff007f" : "#38bdf8";
-}
-function updateStats() {
-  const u = getCurrentUser();
-  $('userStat').textContent = 'User: ' + session.username;
-  $('uidStat').textContent = u ? ('UID: ' + u.uid + ' (GID ' + u.gid + ')') : 'UID: --';
-  $('pathStat').textContent = 'PWD: ' + currentPath;
-  $('userStat').className = isRoot() ? "stat-item root" : "stat-item";
-  $('uidStat').className = isRoot() ? "stat-item root" : "stat-item";
-  $('editStat').style.display = nanoState.active ? "" : "none";
-  updatePrompt();
-}
-function renderUserList() {
-  const panel = $('varsDisplay');
-  let html = "";
-  passwdDB.forEach(u => {
-    const gs = getUserGroups(u.username).join(",");
-    html += '<div style="padding:2px 0;border-bottom:1px dashed rgba(217,70,239,0.2);"><span style="color:#00f2fe;font-weight:bold;">[' + u.uid + ']</span> <b>' + u.username + '</b> <span style="color:#38bdf8;font-size:9px;">(' + gs + ')</span></div>';
-  });
-  panel.innerHTML = html;
-}
-setInterval(() => {
-  const d = new Date();
-  $('timeStat').textContent = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ':' + String(d.getSeconds()).padStart(2, '0');
-}, 1000);
-
-/* ═══ Welcome ═══ */
-function showWelcome() {
-  $('termBody').innerHTML = "";
-  printTerm("╔══════════════════════════════════════════════════╗", "#00f2fe");
-  printTerm("║   لافي منير — SOVEREIGN OS v27.0                 ║", "#00f2fe");
-  printTerm("║   🔓 No Password Required | Welcome!             ║", "#00f2fe");
-  printTerm("╚══════════════════════════════════════════════════╝", "#00f2fe");
-  printTerm("", "#fff");
-  printTerm("🎉 مرحباً لافي منير!", "#00ff66");
-  printTerm("You are logged in as: root (UID 0)", "#00ff66");
-  printTerm("⚠️  أنت تعمل بصلاحيات الجذر المطلقة.", "#ffd700");
-  printTerm("", "#fff");
-  printTerm("📋 أوامر مفيدة:", "#d946ef");
-  printTerm("   help              ← قائمة الأوامر", "#38bdf8");
-  printTerm("   ls                ← عرض الملفات", "#38bdf8");
-  printTerm("   ./welcome.sh      ← تشغيل سكربت الترحيب", "#38bdf8");
-  printTerm("   cat readme.txt    ← قراءة ملف", "#38bdf8");
-  printTerm("   clear             ← مسح الشاشة", "#38bdf8");
-  printTerm("", "#fff");
-  printTerm("✨ النظام جاهز للاستخدام!", "#ffd700");
-  printTerm("", "#fff");
-  updateStats();
-  renderUserList();
-  addAuditEvent("INFO", "User 'root' auto-logged in");
+  setInterval(draw, 33);
 }
 
-/* ═══ su + sudo (بدون كلمة مرور) ═══ */
-async function performSu(targetUsername) {
-  if (!passwdDB.has(targetUsername)) return { ok: false, error: "su: user not found" };
-  addAuditEvent("WARN", "su: " + session.username + " -> " + targetUsername);
-  await addBlock("SU: " + session.username + " -> " + targetUsername);
-  session.username = targetUsername;
-  session.uid = passwdDB.get(targetUsername).uid;
-  currentPath = getCurrentUser().home;
-  shellVars.USER = targetUsername;
-  shellVars.HOME = getCurrentUser().home;
-  shellVars.PWD = currentPath;
-  renderUserList(); updateStats();
-  return { ok: true };
-}
-async function performSudo(cmdLine) {
-  if (!canSudo()) { addAuditEvent("ERROR", "sudo DENIED"); return { ok: false, error: session.username + " is not in sudoers file." }; }
-  const origUser = session.username, origUID = session.uid, origHome = getCurrentUser().home;
-  addAuditEvent("WARN", "sudo: '" + origUser + "' -> " + cmdLine.substring(0, 30));
-  await addBlock("SUDO: " + origUser + " -> " + cmdLine);
-  session.username = "root"; session.uid = 0;
-  shellVars.USER = "root"; shellVars.HOME = "/root";
-  updateStats();
-  await runPipeline(cmdLine, { silent: true });
-  session.username = origUser; session.uid = origUID;
-  shellVars.USER = origUser; shellVars.HOME = origHome;
-  updateStats(); renderUserList();
-  return { ok: true };
-}
-
-/* ═══ Tokenizer ═══ */
+/* ─── Shell Engine ─── */
 function tokenizeShellLine(line) {
-  const tokens = []; let current = "", quote = null;
+  const tokens = []; let cur = "", q = null;
   for (let i = 0; i < line.length; i++) {
     const c = line[i];
-    if (quote) { if (c === quote) quote = null; else current += c; }
-    else if (c === '"' || c === "'") quote = c;
-    else if (c === ' ' || c === '\t') { if (current) { tokens.push(current); current = ""; } }
+    if (q) { if (c === q) q = null; else cur += c; }
+    else if (c === '"' || c === "'") q = c;
+    else if (c === ' ' || c === '\t') { if (cur) { tokens.push(cur); cur = ""; } }
     else if (c === '|' || c === '>' || c === '<') {
-      if (current) { tokens.push(current); current = ""; }
+      if (cur) { tokens.push(cur); cur = ""; }
       if (c === '>' && line[i + 1] === '>') { tokens.push(">>"); i++; }
       else tokens.push(c);
-    } else current += c;
+    } else cur += c;
   }
-  if (current) tokens.push(current);
+  if (cur) tokens.push(cur);
   return tokens;
 }
+function expandVars(token) {
+  return token.replace(/\$\{(\w+)\}|\$(\w+)/g, (_, a, b) => {
+    const n = a || b;
+    return shellVars[n] !== undefined ? shellVars[n] : "";
+  });
+}
+function resolvePath(arg) {
+  if (!arg) return currentPath;
+  if (arg === "~") return "/root";
+  if (arg.startsWith("/")) { const c = arg.replace(/\/+/g, "/").replace(/\/$/, ""); return c || "/"; }
+  if (arg === "..") {
+    if (currentPath === "/") return "/";
+    const parts = currentPath.split("/").filter(Boolean); parts.pop();
+    return parts.length === 0 ? "/" : "/" + parts.join("/");
+  }
+  if (arg === ".") return currentPath;
+  return currentPath === "/" ? "/" + arg : currentPath + "/" + arg;
+}
+function checkPermission(node, action) {
+  action = action || "read";
+  if (!node) return false;
+  if (currentUser === "root") return true;
+  if (node.owner === currentUser) return true;
+  return false;
+}
 
-/* ═══ Pipeline ═══ */
 async function runPipeline(line, opts) {
   opts = opts || {};
   if (line.indexOf(';') !== -1 && line.indexOf('"') === -1 && line.indexOf("'") === -1) {
@@ -532,43 +556,34 @@ async function runPipeline(line, opts) {
     stages[stages.length - 1].push(t);
   }
   const hasPipe = stages.length > 1;
-  let lastOutput = [];
+  let lastOut = [];
   for (let s = 0; s < stages.length; s++) {
     terminalBuffer = [];
-    const stageTokens = stages[s];
-    if (stageTokens.length === 0) continue;
-    const expanded = stageTokens.map(expandVars);
-    const cmd = expanded[0].toLowerCase();
-    const args = expanded.slice(1);
+    const st = stages[s];
+    if (st.length === 0) continue;
+    const ex = st.map(expandVars);
     const capture = hasPipe || opts.silent;
-    await executeOneCommand(cmd, args, { capture, silent: opts.silent });
-    lastOutput = terminalBuffer;
-    if (s < stages.length - 1) shellVars.STDIN = lastOutput.map(l => l.text).join("\n");
+    await executeOneCommand(ex[0].toLowerCase(), ex.slice(1), { capture, silent: opts.silent });
+    lastOut = terminalBuffer;
+    if (s < stages.length - 1) shellVars.STDIN = lastOut.map(l => l.text).join("\n");
   }
-  if (hasPipe && !opts.silent) lastOutput.forEach(l => printTerm(l.text, l.color, false));
-  if (opts.silent && !hasPipe) lastOutput.forEach(l => printTerm(l.text, l.color, false));
+  if (hasPipe && !opts.silent) lastOut.forEach(l => printToTerm(l.text, l.color));
+  if (opts.silent && !hasPipe) lastOut.forEach(l => printToTerm(l.text, l.color));
   if (redirect && redirect.type !== '<') {
     const target = resolvePath(redirect.target);
-    const content = lastOutput.map(l => l.text).join("\n");
-    if (redirect.type === ">>" && VFS[target] && VFS[target].type === "file") VFS[target].content += "\n" + content;
+    const content = lastOut.map(l => l.text).join("\n");
+    if (redirect.type === ">>" && vfs[target] && vfs[target].type === "file") vfs[target].content += "\n" + content;
     else {
-      VFS[target] = { type: "file", content, restricted: false, owner: session.username, group: getCurrentUser()?.gid || 100, mode: "rw-r--r--" };
+      vfs[target] = { type: "file", content, owner: currentUser, perm: "rw-r--r--" };
       const lastSlash = target.lastIndexOf("/");
       const parent = lastSlash > 0 ? target.substring(0, lastSlash) : "/";
       const fname = target.substring(lastSlash + 1);
-      if (VFS[parent]?.children && VFS[parent].children.indexOf(fname) === -1) VFS[parent].children.push(fname);
+      if (vfs[parent] && vfs[parent].children && vfs[parent].children.indexOf(fname) === -1) vfs[parent].children.push(fname);
     }
-    if (!opts.silent) printTerm("[REDIRECT]: " + redirect.type + " " + redirect.target, "#38bdf8");
+    await saveVFSToIDB();
   }
 }
-function expandVars(token) {
-  return token.replace(/\$\{(\w+)\}|\$(\w+)/g, (_, a, b) => {
-    const name = a || b;
-    return shellVars[name] !== undefined ? shellVars[name] : "";
-  });
-}
 
-/* ═══ Bash-lite ═══ */
 async function runScriptContent(content, opts) {
   opts = opts || {};
   const lines = content.split('\n');
@@ -582,16 +597,16 @@ async function runScriptContent(content, opts) {
       if (raw.startsWith('for ')) {
         const m = raw.match(/^for\s+(\w+)\s+in\s+(.+?)(?:;?\s*do)?$/);
         if (m) {
-          const varName = m[1];
+          const vn = m[1];
           const items = m[2].replace(/;?\s*do$/, "").trim().split(/\s+/).map(expandVars);
-          const bodyLines = []; let depth = 1, j = idx + 1;
+          const body = []; let depth = 1, j = idx + 1;
           while (j < lines.length && depth > 0) {
             const l = lines[j].trim();
             if (l.startsWith('for ') || l.startsWith('while ')) depth++;
             if (l === 'done') { depth--; if (depth === 0) break; }
-            bodyLines.push(lines[j]); j++;
+            body.push(lines[j]); j++;
           }
-          for (let k = 0; k < items.length; k++) { shellVars[varName] = items[k]; await runScriptContent(bodyLines.join("\n"), opts); }
+          for (let k = 0; k < items.length; k++) { shellVars[vn] = items[k]; await runScriptContent(body.join("\n"), opts); }
           idx = j + 1; continue;
         }
       }
@@ -599,15 +614,15 @@ async function runScriptContent(content, opts) {
         const m = raw.match(/^while\s+(.+?)(?:;?\s*do)?$/);
         if (m) {
           const condition = m[1].replace(/;?\s*do$/, "").trim();
-          const bodyLines = []; let depth = 1, j = idx + 1;
+          const body = []; let depth = 1, j = idx + 1;
           while (j < lines.length && depth > 0) {
             const l = lines[j].trim();
             if (l.startsWith('while ') || l.startsWith('for ')) depth++;
             if (l === 'done') { depth--; if (depth === 0) break; }
-            bodyLines.push(lines[j]); j++;
+            body.push(lines[j]); j++;
           }
           let iter = 0;
-          while (iter < 20 && evaluateCondition(condition)) { await runScriptContent(bodyLines.join("\n"), opts); iter++; }
+          while (iter < 20 && evaluateCondition(condition)) { await runScriptContent(body.join("\n"), opts); iter++; }
           idx = j + 1; continue;
         }
       }
@@ -619,21 +634,20 @@ async function runScriptContent(content, opts) {
         }
         idx = result.nextIdx; continue;
       }
-      const varMatch = raw.match(/^(\w+)=(.*)$/);
-      if (varMatch && !raw.startsWith("if") && !raw.startsWith("for") && !raw.startsWith("while")) {
-        shellVars[varMatch[1]] = expandVars(varMatch[2].replace(/^["']|["']$/g, "")); idx++; continue;
+      const vm = raw.match(/^(\w+)=(.*)$/);
+      if (vm && !raw.startsWith("if") && !raw.startsWith("for") && !raw.startsWith("while")) {
+        shellVars[vm[1]] = expandVars(vm[2].replace(/^["']|["']$/g, "")); idx++; continue;
       }
-      if (raw === 'exit' || raw.startsWith('exit ')) return lines.length;
       await runPipeline(raw, opts); idx++;
     }
     return idx;
   }
 }
-function parseIfBlock(lines, startIdx) {
-  const branches = []; let idx = startIdx, currentCond = null, currentBody = [], depth = 1;
-  const firstLine = lines[idx].trim();
-  const m = firstLine.match(/^if\s+(.+?)(?:;?\s*then)?$/);
-  currentCond = m ? m[1].replace(/;?\s*then$/, "").trim() : null;
+function parseIfBlock(lines, si) {
+  const branches = []; let idx = si, cc = null, cb = [], depth = 1;
+  const fl = lines[idx].trim();
+  const m = fl.match(/^if\s+(.+?)(?:;?\s*then)?$/);
+  cc = m ? m[1].replace(/;?\s*then$/, "").trim() : null;
   idx++;
   while (idx < lines.length) {
     const raw = lines[idx].trim();
@@ -641,22 +655,14 @@ function parseIfBlock(lines, startIdx) {
     if (raw === 'fi') {
       depth--;
       if (depth === 0) {
-        if (currentBody.length > 0 || currentCond !== null) branches.push({ cond: currentCond, body: currentBody.slice() });
+        if (cb.length > 0 || cc !== null) branches.push({ cond: cc, body: cb.slice() });
         return { branches, nextIdx: idx + 1 };
       }
     }
-    if (depth === 1) {
-      if (raw === 'else') { branches.push({ cond: currentCond, body: currentBody.slice() }); currentCond = null; currentBody = []; idx++; continue; }
-      if (raw.startsWith('elif ')) {
-        branches.push({ cond: currentCond, body: currentBody.slice() });
-        const em = raw.match(/^elif\s+(.+?)(?:;?\s*then)?$/);
-        currentCond = em ? em[1].replace(/;?\s*then$/, "").trim() : null;
-        currentBody = []; idx++; continue;
-      }
-    }
-    currentBody.push(lines[idx]); idx++;
+    if (depth === 1 && raw === 'else') { branches.push({ cond: cc, body: cb.slice() }); cc = null; cb = []; idx++; continue; }
+    cb.push(lines[idx]); idx++;
   }
-  branches.push({ cond: currentCond, body: currentBody.slice() });
+  branches.push({ cond: cc, body: cb.slice() });
   return { branches, nextIdx: idx };
 }
 function evaluateCondition(cond) {
@@ -670,425 +676,634 @@ function evaluateCondition(cond) {
   if (m) return expandVars(sq(m[1].trim())) !== expandVars(sq(m[2].trim()));
   m = cond.match(/^(.+?)\s+-eq\s+(.+)$/);
   if (m) return parseInt(expandVars(m[1]), 10) === parseInt(expandVars(m[2]), 10);
-  m = cond.match(/^(.+?)\s+-ne\s+(.+)$/);
-  if (m) return parseInt(expandVars(m[1]), 10) !== parseInt(expandVars(m[2]), 10);
   m = cond.match(/^(.+?)\s+-gt\s+(.+)$/);
   if (m) return parseInt(expandVars(m[1]), 10) > parseInt(expandVars(m[2]), 10);
   m = cond.match(/^(.+?)\s+-lt\s+(.+)$/);
   if (m) return parseInt(expandVars(m[1]), 10) < parseInt(expandVars(m[2]), 10);
-  m = cond.match(/^-z\s+(.+)$/);
-  if (m) return expandVars(m[1]).length === 0;
-  m = cond.match(/^-n\s+(.+)$/);
-  if (m) return expandVars(m[1]).length > 0;
-  return !!cond && cond !== "0" && cond !== "false";
+  return !!cond;
 }
 
-/* ═══ VFS Helpers ═══ */
-function resolvePath(arg) {
-  if (!arg) return currentPath;
-  if (arg === "~") return getCurrentUser()?.home || currentPath;
-  if (arg.startsWith("/")) { const cleaned = arg.replace(/\/+/g, "/").replace(/\/$/, ""); return cleaned || "/"; }
-  if (arg === "..") {
-    if (currentPath === "/") return "/";
-    const parts = currentPath.split("/").filter(Boolean); parts.pop();
-    return parts.length === 0 ? "/" : "/" + parts.join("/");
-  }
-  if (arg === ".") return currentPath;
-  return currentPath === "/" ? "/" + arg : currentPath + "/" + arg;
-}
-function checkPermission(node, action) {
-  action = action || "read";
-  if (!node) return false;
-  if (isRoot()) return true;
-  const user = getCurrentUser();
-  if (!user) return false;
-  if (node.owner === user.username) return true;
-  const gs = getUserGroups(user.username);
-  for (let i = 0; i < gs.length; i++) {
-    const g = groupDB.get(gs[i]);
-    if (g && g.gid === node.group) return true;
-  }
-  if (node.mode && node.mode.length >= 9) {
-    const pub = node.mode.substring(6);
-    if (action === "read" && pub[0] === "r") return true;
-    if (action === "write" && pub[1] === "w") return true;
-    if (action === "exec" && pub[2] === "x") return true;
-  }
-  return false;
-}
-
-/* ═══ Commands ═══ */
+/* ─── Commands ─── */
 async function executeOneCommand(cmd, args, opts) {
   opts = opts || {};
   const cap = opts.capture || false;
-  const out = (t, c) => printTerm(t, c, cap);
-  if (shellFunctions[cmd]) { await runScriptContent(shellFunctions[cmd], opts); return; }
+  const out = (t, c) => {
+    if (cap) terminalBuffer.push({ text: t, color: c || "text-gray-300" });
+    else printToTerm(t, c || "text-gray-300");
+  };
+
   switch (cmd) {
-    case "echo": {
-      let text = args.join(" ").replace(/^["']|["']$/g, "");
-      text = expandVars(text).replace(/\\n/g, "\n");
-      if (!text && shellVars.STDIN) text = shellVars.STDIN;
-      out(text, "#00ff66"); break;
+    case "call": case "webrtc": case "video":
+      out("🛰️ جاري فتح نافذة الاتصال...", "text-cyber-cyan");
+      $("sidePanel").classList.add("mobile-active");
+      await initPeer();
+      break;
+
+    case "peer": case "myid":
+      if (myPeerId) out("🆔 " + myPeerId, "text-cyber-green");
+      else out("⚠️ اكتب call أولاً", "text-cyber-gold");
+      break;
+
+    case "msg": {
+      const text = args.join(" ");
+      if (!text) { out("msg <نص>", "text-red-400"); break; }
+      const ids = Object.keys(dataConnections);
+      if (ids.length === 0) { out("⚠️ لا أعضاء", "text-cyber-gold"); break; }
+      const enc = await encryptPayload(text);
+      ids.forEach(pid => {
+        const c = dataConnections[pid];
+        if (c && c.open) c.send(enc);
+      });
+      appendChatMessage("أنا", text);
+      out("✅ أُرسلت", "text-cyber-green");
+      break;
     }
-    case "printf": out(expandVars(args.join(" ")).replace(/\\n/g, "\n"), "#00ff66"); break;
-    case "clear": if (!cap) $('termBody').innerHTML = ""; break;
+
+    case "setkey": {
+      if (!args[0]) { out("setkey <مفتاح>", "text-red-400"); break; }
+      rawPasswordSecret = args.join(" ");
+      await deriveCryptoKey(rawPasswordSecret);
+      out("🔐 تم تحديث مفتاح التشفير", "text-cyber-green");
+      break;
+    }
+
+    case "members":
+      out("═══ الأعضاء (" + (1 + Object.keys(roomMembers).length) + ") ═══", "text-cyber-gold");
+      out("👤 " + (myPeerId ? myPeerId.substring(0, 12) : "--") + " (أنت)", "text-cyber-green");
+      Object.keys(roomMembers).forEach(pid => out("👥 " + pid.substring(0, 12), "text-cyber-magenta"));
+      break;
+
+    case "echo": out(expandVars(args.join(" ")), "text-cyber-green"); break;
+    case "clear": if (!cap) termOutput.innerHTML = ""; break;
+
     case "help": case "مساعدة":
-      out("═══ نظام لافي منير — الأوامر ═══", "#ffd700");
-      out(" 🐚 bash: VAR=val | if/then/fi | for/do/done", "#38bdf8");
-      out(" 🔗 Pipes: cmd1 | cmd2   Redirection: > >> <", "#38bdf8");
-      out(" 📝 nano | 🐚 ./script.sh | 📊 audit", "#38bdf8");
-      out(" 👤 whoami, id, su, sudo, useradd", "#38bdf8");
-      out(" 📁 ls, cd, cat, write, rm, mkdir", "#38bdf8");
-      out(" 🔎 grep, wc, head, tail, sort, uniq", "#38bdf8");
-      out(" 🔒 encrypt, decrypt, ps, sysinfo", "#38bdf8");
-      out(" ⛓️  chain, block, verify, logout", "#38bdf8");
+      out("═══ SOVEREIGN OS v35.0 APEX ═══", "text-cyber-gold");
+      out(" 🌐 الاتصال:", "text-cyber-cyan");
+      out("   call, peer, msg, members, setkey", "text-gray-300");
+      out(" 📁 الملفات:", "text-cyber-cyan");
+      out("   ls, cd, cat, write, mkdir, rm, nano", "text-gray-300");
+      out(" 👤 المستخدمون:", "text-cyber-cyan");
+      out("   whoami, id, su, sudo, useradd, passwd", "text-gray-300");
+      out(" 🔎 النصوص:", "text-cyber-cyan");
+      out("   grep, wc, head, tail", "text-gray-300");
+      out(" 🔒 الأمان:", "text-cyber-cyan");
+      out("   encrypt, decrypt", "text-gray-300");
+      out(" ⛓️ السلسلة:", "text-cyber-cyan");
+      out("   chain, verify, audit", "text-gray-300");
+      out(" 🐚 أخرى:", "text-cyber-cyan");
+      out("   ps, sysinfo, ./script.sh, clear", "text-gray-300");
       break;
-    case "whoami": out(session.username, "#00ff66"); break;
-    case "pwd": out(currentPath, "#00ff66"); break;
-    case "id": {
-      const u = getCurrentUser();
-      const gs = getUserGroups(u.username);
-      out("uid=" + u.uid + "(" + u.username + ") gid=" + u.gid + " groups=" + gs.join(","), "#00ff66"); break;
-    }
-    case "groups": out(getUserGroups(session.username).join(" "), "#00ff66"); break;
-    case "logout": case "exit":
-      if (!cap) {
-        session.username = "root"; session.uid = 0;
-        currentPath = "/root";
-        addAuditEvent("INFO", "Logout requested - auto re-login as root");
-        printTerm("✅ Auto re-login as root", "#00ff66");
-        updateStats();
-      }
+
+    case "whoami": out(currentUser, "text-cyber-green"); break;
+    case "pwd": out(currentPath, "text-cyber-green"); break;
+
+    case "id":
+      out("uid=" + session.uid + "(" + currentUser + ") gid=0 groups=root", "text-cyber-green");
       break;
-    case "env": case "set": Object.keys(shellVars).forEach(k => out(k + "=" + shellVars[k], "#38bdf8")); break;
-    case "su": {
-      const t = args[0];
-      if (!t) { out("su: usage: su <user>", "#ff0844"); break; }
-      if (!passwdDB.has(t)) { out("su: user not found", "#ff0844"); break; }
-      // بدون كلمة مرور
-      const r = await performSu(t);
-      if (r.ok) out("✅ Now: " + session.username, "#00ff66");
-      else out("su: " + r.error, "#ff0844");
-      break;
-    }
-    case "sudo": {
-      if (args.length === 0) { out("sudo: usage: sudo <cmd>", "#ff0844"); break; }
-      if (!cap) { const r = await performSudo(args.join(" ")); if (!r.ok) printTerm("sudo: " + r.error, "#ff0844"); }
-      break;
-    }
-    case "useradd": {
-      if (!isRoot()) { out("useradd: Permission denied", "#ff0844"); break; }
-      let uid = null, username = null, groups = ["users"];
-      for (let i = 0; i < args.length; i++) {
-        if (args[i] === "-u") uid = parseInt(args[++i], 10);
-        else if (args[i] === "-G") groups = args[++i].split(",");
-        else if (!username) username = args[i];
-      }
-      if (!username) { out("useradd: username required", "#ff0844"); break; }
-      if (passwdDB.has(username)) { out("useradd: exists", "#ff0844"); break; }
-      if (uid === null) { uid = 1000; let taken = true; while (taken) { taken = false; passwdDB.forEach(u => { if (u.uid === uid) taken = true; }); if (taken) uid++; } }
-      const r = await createUser(username, uid, 100, "/home/" + username, "/bin/bash", "", groups);
-      if (!r.ok) { out("useradd: " + r.error, "#ff0844"); break; }
-      if (VFS["/home"]) VFS["/home"].children.push(username);
-      addAuditEvent("WARN", "New user '" + username + "'");
-      await addBlock("USERADD: " + username);
-      out("✅ User '" + username + "' created (UID " + uid + ", no password)", "#00ff66");
-      renderUserList(); break;
-    }
-    case "userdel": {
-      if (!isRoot()) { out("userdel: root only", "#ff0844"); break; }
-      const r = await deleteUser(args[0]);
-      if (!r.ok) { out("userdel: " + r.error, "#ff0844"); break; }
-      if (VFS["/home"]) VFS["/home"].children = VFS["/home"].children.filter(c => c !== args[0]);
-      await addBlock("USERDEL: " + args[0]);
-      out("✅ User deleted", "#00ff66"); renderUserList(); break;
-    }
-    case "passwd": {
-      out("passwd: disabled in this edition (no password)", "#ffd700"); break;
-    }
+
     case "ls": {
-      const target = args.find(a => !a.startsWith("-")) || currentPath;
+      const target = args[0] || currentPath;
       const fp = resolvePath(target);
-      const node = VFS[fp];
-      if (!node) { out("ls: " + target + ": No such file", "#ff0844"); break; }
-      if (node.type === "file") { out(target, "#e5e7eb"); break; }
-      if (node.children.length === 0) { out("(فارغ)", "#38bdf8"); break; }
-      node.children.forEach(item => {
+      const node = vfs[fp];
+      if (!node) { out("ls: not found", "text-red-400"); break; }
+      if (node.type === "file") { out(target); break; }
+      (node.children || []).forEach(item => {
         const cp = fp === "/" ? "/" + item : fp + "/" + item;
-        const child = VFS[cp]; if (!child) return;
-        const icon = child.type === "dir" ? "📁" : "📄";
-        out(" " + (child.mode || "rw-r--r--") + "  " + (child.owner || "root") + "  " + icon + " " + item,
-            child.type === "dir" ? "#38bdf8" : "#e5e7eb");
-      }); break;
+        const child = vfs[cp];
+        out((child && child.type === "dir" ? "📁 " : "📄 ") + item, child && child.type === "dir" ? "text-cyber-cyan" : "text-gray-300");
+      });
+      break;
     }
+
     case "cd": {
-      const target = resolvePath(args[0] || (isRoot() ? "/root" : "/home/" + session.username));
-      if (!VFS[target] || VFS[target].type !== "dir") { out("cd: no such directory", "#ff0844"); break; }
-      if (!checkPermission(VFS[target], "exec")) { out("cd: Permission denied", "#ff0844"); break; }
-      currentPath = target; shellVars.PWD = currentPath; updateStats(); break;
+      const target = resolvePath(args[0] || "/root");
+      if (vfs[target] && vfs[target].type === "dir") {
+        currentPath = target;
+        shellVars.PWD = currentPath;
+        updatePrompt();
+      } else out("cd: no such directory", "text-red-400");
+      break;
     }
+
     case "cat": {
-      if (!args[0]) {
-        if (shellVars.STDIN) { shellVars.STDIN.split("\n").forEach(l => out(l, "#00ff66")); break; }
-        out("cat: usage", "#ff0844"); break;
-      }
+      if (!args[0]) { out("cat <file>", "text-red-400"); break; }
       const fp = resolvePath(args[0]);
-      if (fp === "/etc/passwd") { passwdDB.forEach(u => out(u.username + ":x:" + u.uid + ":" + u.gid + "::" + u.home + ":" + u.shell, "#00ff66")); break; }
-      if (fp === "/etc/group") { groupDB.forEach(g => out(g.name + ":x:" + g.gid + ":" + g.members.join(","), "#00ff66")); break; }
-      if (fp === "/etc/shadow") {
-        if (!isRoot()) { out("cat: /etc/shadow: Permission denied", "#ff0844"); break; }
-        shadowDB.forEach((s, n) => out(n + ":*:*:*:*:*:*", "#ff007f")); break;
-      }
-      if (!VFS[fp] || VFS[fp].type !== "file") { out("cat: no such file", "#ff0844"); break; }
-      if (!checkPermission(VFS[fp], "read")) { out("cat: Permission denied", "#ff0844"); break; }
-      VFS[fp].content.split("\n").forEach(l => out(l, "#00ff66")); break;
+      if (vfs[fp] && vfs[fp].type === "file") vfs[fp].content.split("\n").forEach(l => out(l, "text-cyber-green"));
+      else out("cat: not found", "text-red-400");
+      break;
     }
+
     case "write": {
-      if (args.length < 2) { out("write <file> <content>", "#ff0844"); break; }
+      if (args.length < 2) { out("write <file> <content>", "text-red-400"); break; }
       const name = args[0];
-      if (name.indexOf("/") !== -1) { out("write: filename only", "#ff0844"); break; }
-      const txt = args.slice(1).join(" ");
+      if (name.indexOf("/") !== -1) { out("write: اسم فقط", "text-red-400"); break; }
       const path = currentPath === "/" ? "/" + name : currentPath + "/" + name;
-      const dir = VFS[currentPath];
-      if (!checkPermission(dir, "write")) { out("write: Permission denied", "#ff0844"); break; }
-      VFS[path] = { type: "file", content: txt, restricted: false, owner: session.username, group: getCurrentUser().gid, mode: "rw-r--r--" };
-      if (dir.children.indexOf(name) === -1) dir.children.push(name);
-      await addBlock("WRITE: " + path);
-      out("[OK] ✅", "#00ff66"); break;
+      vfs[path] = { type: "file", content: args.slice(1).join(" "), owner: currentUser, perm: "rw-r--r--" };
+      const dir = vfs[currentPath];
+      if (dir && dir.children && dir.children.indexOf(name) === -1) dir.children.push(name);
+      await saveVFSToIDB();
+      await createLedgerBlock("WRITE", path);
+      out("[OK] ✅", "text-cyber-green");
+      break;
     }
-    case "rm": {
-      if (!args[0]) { out("rm <file>", "#ff0844"); break; }
-      const fp = resolvePath(args[0]);
-      if (fp === "/" || fp === currentPath) { out("rm: cannot remove cwd", "#ff0844"); break; }
-      const node = VFS[fp];
-      if (!node) { out("rm: no such file", "#ff0844"); break; }
-      if (!checkPermission(node, "write")) { out("rm: Permission denied", "#ff0844"); break; }
-      const lastSlash = fp.lastIndexOf("/");
-      const parent = lastSlash > 0 ? fp.substring(0, lastSlash) : "/";
-      const name = fp.substring(lastSlash + 1);
-      delete VFS[fp];
-      if (VFS[parent]?.children) VFS[parent].children = VFS[parent].children.filter(c => c !== name);
-      await addBlock("RM: " + fp);
-      out("[OK] removed", "#00ff66"); break;
-    }
+
     case "mkdir": {
-      if (!args[0]) { out("mkdir <dir>", "#ff0844"); break; }
+      if (!args[0]) { out("mkdir <dir>", "text-red-400"); break; }
+      const path = resolvePath(args[0]);
+      if (vfs[path]) { out("exists", "text-red-400"); break; }
+      const lastSlash = path.lastIndexOf("/");
+      const parent = lastSlash > 0 ? path.substring(0, lastSlash) : "/";
+      const name = path.substring(lastSlash + 1);
+      if (!vfs[parent] || vfs[parent].type !== "dir") { out("parent missing", "text-red-400"); break; }
+      vfs[path] = { type: "dir", children: [], owner: currentUser, perm: "rwxr-xr-x" };
+      if (vfs[parent].children.indexOf(name) === -1) vfs[parent].children.push(name);
+      await saveVFSToIDB();
+      out("[OK] " + args[0] + "/", "text-cyber-green");
+      break;
+    }
+
+    case "rm": {
+      if (!args[0]) { out("rm <file>", "text-red-400"); break; }
       const fp = resolvePath(args[0]);
-      if (VFS[fp]) { out("mkdir: exists", "#ff0844"); break; }
+      if (fp === "/" || fp === currentPath) { out("rm: cannot remove cwd", "text-red-400"); break; }
+      if (!vfs[fp]) { out("rm: not found", "text-red-400"); break; }
+      delete vfs[fp];
       const lastSlash = fp.lastIndexOf("/");
       const parent = lastSlash > 0 ? fp.substring(0, lastSlash) : "/";
       const name = fp.substring(lastSlash + 1);
-      if (!VFS[parent] || VFS[parent].type !== "dir") { out("mkdir: parent missing", "#ff0844"); break; }
-      if (!checkPermission(VFS[parent], "write")) { out("mkdir: Permission denied", "#ff0844"); break; }
-      VFS[fp] = { type: "dir", children: [], owner: session.username, group: getCurrentUser().gid, mode: "rwxr-xr-x" };
-      if (VFS[parent].children.indexOf(name) === -1) VFS[parent].children.push(name);
-      out("[OK] " + args[0] + "/", "#00ff66"); break;
-    }
-    case "grep": {
-      const pattern = args[0]; if (!pattern) { out("grep <pattern>", "#ff0844"); break; }
-      const source = shellVars.STDIN ? shellVars.STDIN.split("\n") : [];
-      if (source.length === 0 && args[1]) { const fp = resolvePath(args[1]); if (VFS[fp]?.type === "file") source.push.apply(source, VFS[fp].content.split("\n")); }
-      let re = null; try { re = new RegExp(pattern, "i"); } catch (e) { re = null; }
-      source.forEach(l => { if (re ? re.test(l) : l.indexOf(pattern) !== -1) out(l, "#00ff66"); });
+      if (vfs[parent] && vfs[parent].children) vfs[parent].children = vfs[parent].children.filter(c => c !== name);
+      await saveVFSToIDB();
+      await createLedgerBlock("RM", fp);
+      out("[OK] removed", "text-cyber-green");
       break;
     }
-    case "wc": { const s = shellVars.STDIN || ""; out("  " + s.split("\n").length + "  " + s.split(/\s+/).filter(Boolean).length + "  " + s.length, "#ffd700"); break; }
-    case "head": { const n = args[0]?.startsWith("-") ? parseInt(args[0].slice(1), 10) : 10; (shellVars.STDIN || "").split("\n").slice(0, n).forEach(l => out(l, "#00ff66")); break; }
-    case "tail": { const n = args[0]?.startsWith("-") ? parseInt(args[0].slice(1), 10) : 10; (shellVars.STDIN || "").split("\n").slice(-n).forEach(l => out(l, "#00ff66")); break; }
-    case "sort": (shellVars.STDIN || "").split("\n").filter(Boolean).sort().forEach(l => out(l, "#00ff66")); break;
-    case "uniq": { let prev = null; (shellVars.STDIN || "").split("\n").forEach(l => { if (l !== prev) { out(l, "#00ff66"); prev = l; } }); break; }
-    case "encrypt": {
-      if (args.length < 2) { out("encrypt <file> <key>", "#ff0844"); break; }
-      const fp = resolvePath(args[0]);
-      if (!VFS[fp] || VFS[fp].type !== "file") { out("encrypt: no such file", "#ff0844"); break; }
-      if (!checkPermission(VFS[fp], "write")) { out("encrypt: Permission denied", "#ff0844"); break; }
-      if (VFS[fp].content.startsWith("ENC:")) { out("Already encrypted", "#ffd700"); break; }
-      VFS[fp].content = xorCipher(VFS[fp].content, args[1]);
-      await addBlock("ENCRYPT: " + args[0]);
-      out("[CIPHER] ✅", "#00ff66"); break;
-    }
-    case "decrypt": {
-      if (args.length < 2) { out("decrypt <file> <key>", "#ff0844"); break; }
-      const fp = resolvePath(args[0]);
-      if (!VFS[fp] || VFS[fp].type !== "file") { out("decrypt: no such file", "#ff0844"); break; }
-      if (!checkPermission(VFS[fp], "write")) { out("decrypt: Permission denied", "#ff0844"); break; }
-      const dec = xorDecipher(VFS[fp].content, args[1]);
-      if (dec !== null && dec.indexOf("\u0000") === -1) { VFS[fp].content = dec; await addBlock("DECRYPT: " + args[0]); out("[CIPHER] ✅", "#00ff66"); }
-      else out("[CIPHER ERROR]: wrong key", "#ff0844");
-      break;
-    }
-    case "ps":
-      out("  PID  USER        STAT   COMMAND", "#ffd700");
-      [{ pid: 1, user: "root", stat: "Ss", cmd: "systemd" }, { pid: 214, user: "root", stat: "S", cmd: "sshd" }, { pid: 501, user: "root", stat: "S", cmd: "kernel_apex" }, { pid: 1024, user: session.username || "none", stat: "R", cmd: "-bash" }].forEach(p => out("  " + String(p.pid).padEnd(5) + " " + p.user.padEnd(11) + " " + p.stat.padEnd(6) + " " + p.cmd, p.user === "root" ? "#ff007f" : "#38bdf8"));
-      break;
-    case "sysinfo":
-      out("═══ نظام لافي منير ═══", "#ffd700");
-      out("User       : " + session.username + " (UID " + session.uid + ")", "#e5e7eb");
-      out("Groups     : " + getUserGroups(session.username).join(", "), "#38bdf8");
-      out("Privilege  : " + (isRoot() ? "ROOT 👑" : canSudo() ? "SUDO-capable" : "User"), isRoot() ? "#ff007f" : "#38bdf8");
-      out("Blocks     : " + blockchain.length, "#00ff66");
-      out("Audit      : " + auditEvents.length + " events", "#38bdf8");
-      out("Edition    : NO PASSWORD (Auto-login)", "#ffd700");
-      out("Copyright  : © لافي منير 2026", "#ffd700");
-      break;
-    case "audit": {
-      if (args[0] === "clear") { auditEvents = []; addAuditEvent("WARN", "Audit cleared"); out("[AUDIT] ✅", "#00ff66"); }
-      else auditEvents.slice(0, 20).forEach(e => out("[" + e.time + "] [" + e.type + "] " + e.message, e.type === "ERROR" ? "#ff0844" : e.type === "WARN" ? "#ffd700" : "#00ff66"));
-      break;
-    }
+
     case "nano": case "vim": case "vi":
-      if (!args[0]) { out("nano <file>", "#ff0844"); break; }
+      if (!args[0]) { out("nano <file>", "text-red-400"); break; }
       if (!cap) openNano(args[0]);
       break;
-    case "bash": case "sh": {
+
+    case "su": {
       const t = args[0];
-      if (!t) { out("bash <script.sh>", "#ff0844"); break; }
-      const fp = resolvePath(t);
-      if (!VFS[fp] || VFS[fp].type !== "file") { out("bash: no such file", "#ff0844"); break; }
-      await addBlock("EXEC: " + fp);
-      addAuditEvent("INFO", "Executed '" + fp + "'");
-      if (!cap) printTerm("[EXEC] " + t, "#38bdf8");
-      const savedPath = currentPath;
-      await runScriptContent(VFS[fp].content, opts);
-      currentPath = savedPath; break;
-    }
-    case "chain":
-      out("═══ LEDGER ═══", "#ffd700");
-      blockchain.slice(-12).forEach(b => out("[#" + b.index + "] " + b.hash.substring(0, 16) + "... | " + b.data, "#00f2fe"));
+      if (!t) { out("su <user>", "text-red-400"); break; }
+      if (t !== "root") { out("su: user not found", "text-red-400"); break; }
+      out("✅ أنت بالفعل root", "text-cyber-green");
       break;
-    case "block": { const nb = await addBlock(args.join(" ") || "Manual"); out("[MINED] Block #" + nb.index, "#00ff66"); break; }
-    case "verify": {
-      let ok = true;
-      for (let i = 1; i < blockchain.length; i++) {
-        const c = blockchain[i], p = blockchain[i - 1];
-        if (c.prevHash !== p.hash) { ok = false; break; }
-        if (c.hash !== await computeSHA256(p.hash + c.data + c.timestamp)) { ok = false; break; }
+    }
+
+    case "sudo": {
+      if (args.length === 0) { out("sudo <cmd>", "text-red-400"); break; }
+      if (currentUser !== "root") { out("sudo: Permission denied", "text-red-400"); break; }
+      await runPipeline(args.join(" "), { silent: cap });
+      break;
+    }
+
+    case "useradd":
+      out("useradd: disabled in this edition (single-user root)", "text-cyber-gold");
+      break;
+    case "passwd":
+      out("passwd: disabled (no password in this edition)", "text-cyber-gold");
+      break;
+
+    case "grep": {
+      const pattern = args[0];
+      if (!pattern) { out("grep <pattern>", "text-red-400"); break; }
+      const source = shellVars.STDIN ? shellVars.STDIN.split("\n") : [];
+      if (source.length === 0 && args[1]) {
+        const fp = resolvePath(args[1]);
+        if (vfs[fp] && vfs[fp].type === "file") source.push.apply(source, vfs[fp].content.split("\n"));
       }
-      out(ok ? "[✅] سليمة" : "[❌] تلاعب!", ok ? "#00ff66" : "#ff0844");
+      let re = null; try { re = new RegExp(pattern, "i"); } catch (e) {}
+      source.forEach(l => { if (re ? re.test(l) : l.indexOf(pattern) !== -1) out(l, "text-cyber-green"); });
       break;
     }
+
+    case "wc": {
+      const s = shellVars.STDIN || "";
+      out("  " + s.split("\n").length + "  " + s.split(/\s+/).filter(Boolean).length + "  " + s.length, "text-cyber-gold");
+      break;
+    }
+    case "head": {
+      const n = args[0] && args[0].startsWith("-") ? parseInt(args[0].slice(1), 10) : 10;
+      (shellVars.STDIN || "").split("\n").slice(0, n).forEach(l => out(l, "text-cyber-green"));
+      break;
+    }
+    case "tail": {
+      const n = args[0] && args[0].startsWith("-") ? parseInt(args[0].slice(1), 10) : 10;
+      (shellVars.STDIN || "").split("\n").slice(-n).forEach(l => out(l, "text-cyber-green"));
+      break;
+    }
+
+    case "encrypt": {
+      if (args.length < 2) { out("encrypt <file> <key>", "text-red-400"); break; }
+      const fp = resolvePath(args[0]);
+      if (!vfs[fp] || vfs[fp].type !== "file") { out("not found", "text-red-400"); break; }
+      vfs[fp].content = xorCipher(vfs[fp].content, args[1]);
+      await saveVFSToIDB();
+      await createLedgerBlock("ENCRYPT", args[0]);
+      out("[CIPHER] ✅", "text-cyber-green");
+      break;
+    }
+    case "decrypt": {
+      if (args.length < 2) { out("decrypt <file> <key>", "text-red-400"); break; }
+      const fp = resolvePath(args[0]);
+      if (!vfs[fp] || vfs[fp].type !== "file") { out("not found", "text-red-400"); break; }
+      const dec = xorDecipher(vfs[fp].content, args[1]);
+      if (dec !== null && dec.indexOf("\u0000") === -1) {
+        vfs[fp].content = dec;
+        await saveVFSToIDB();
+        await createLedgerBlock("DECRYPT", args[0]);
+        out("[CIPHER] ✅", "text-cyber-green");
+      } else out("[CIPHER ERROR] مفتاح خاطئ", "text-red-400");
+      break;
+    }
+
+    case "ps":
+      out("  PID  USER        STAT   COMMAND", "text-cyber-gold");
+      out("  1    root        Ss     sovereign_init", "text-cyber-magenta");
+      out("  1024 " + currentUser.padEnd(11) + " R      -bash", "text-cyber-cyan");
+      break;
+
+    case "sysinfo":
+      out("═══ SOVEREIGN OS v35.0 APEX ═══", "text-cyber-gold");
+      out("User     : " + currentUser + " (UID " + session.uid + ")", "text-gray-200");
+      out("Path     : " + currentPath, "text-cyber-cyan");
+      out("Peer     : " + (myPeerId ? "✓ " + myPeerId.substring(0, 12) : "✗"), myPeerId ? "text-cyber-green" : "text-cyber-gold");
+      out("Room     : " + (roomId || "—"), roomId ? "text-cyber-magenta" : "text-cyber-gold");
+      out("Members  : " + (1 + Object.keys(roomMembers).length), "text-cyber-cyan");
+      out("Blocks   : " + auditLedger.length, "text-cyber-green");
+      out("© لافي منير 2026", "text-cyber-gold");
+      break;
+
+    case "chain":
+      out("═══ LEDGER ═══", "text-cyber-gold");
+      auditLedger.slice(-10).forEach(b => out("[#" + b.index + "] " + b.hash.substring(0, 14) + "... | " + b.type + " " + b.details, "text-cyber-cyan"));
+      break;
+
+    case "verify": {
+      const ok = await verifyBlockchain();
+      out(ok ? "[✅] سليمة" : "[❌] تلاعب!", ok ? "text-cyber-green" : "text-red-400");
+      break;
+    }
+
+    case "audit":
+      auditLedger.slice(-15).forEach(b => out("[" + new Date(b.timestamp).toLocaleTimeString() + "] [" + b.type + "] " + b.details, "text-cyber-green"));
+      break;
+
     default:
       if (cmd.indexOf("./") === 0 || cmd.endsWith(".sh")) {
         const fp = resolvePath(cmd.indexOf("./") === 0 ? cmd.slice(2) : cmd);
-        if (VFS[fp]?.type === "file") {
-          if (!checkPermission(VFS[fp], "exec")) { out("bash: Permission denied", "#ff0844"); break; }
-          await addBlock("EXEC: " + fp);
-          addAuditEvent("INFO", "Executed '" + fp + "'");
-          if (!cap) printTerm("[EXEC] " + cmd, "#38bdf8");
-          const savedPath = currentPath;
-          await runScriptContent(VFS[fp].content, opts);
-          currentPath = savedPath; break;
+        if (vfs[fp] && vfs[fp].type === "file") {
+          await createLedgerBlock("EXEC", fp);
+          out("[EXEC] " + cmd, "text-cyber-cyan");
+          await runScriptContent(vfs[fp].content, opts);
+          break;
         }
       }
-      out("Unknown command: " + cmd, "#ff0844");
+      out("Unknown command: " + cmd + ". Type 'help'.", "text-red-400");
   }
 }
 
-/* ═══ Nano ═══ */
-function openNano(filename) {
-  if (!filename) return;
-  const fp = resolvePath(filename);
-  const existing = VFS[fp];
-  if (existing && existing.type === "dir") { printTerm("nano: is directory", "#ff0844"); return; }
-  if (existing && !checkPermission(existing, "write")) { printTerm("nano: Permission denied", "#ff0844"); return; }
-  nanoState.active = true; nanoState.filename = filename; nanoState.fullPath = fp;
-  nanoState.originalContent = existing ? existing.content : ""; nanoState.dirty = false;
-  $('editorOverlay').classList.add('active');
-  $('editorFilename').textContent = "nano — " + filename;
-  $('editorArea').value = nanoState.originalContent;
-  setTimeout(() => $('editorArea').focus(), 50);
-  updateEditorInfo(); updateStats();
+/* ─── runCommand (from input) ─── */
+async function runCommand(cmdLine) {
+  if (typeof cmdLine !== "string" || !cmdLine.trim()) return;
+  printToTerm(currentUser + "@sovereign:" + currentPath + "# " + cmdLine, "text-cyber-cyan");
+  commandHistory.push(cmdLine);
+  historyIndex = commandHistory.length;
+  await runPipeline(cmdLine);
 }
-function updateEditorInfo() {
-  const v = $('editorArea').value;
-  const pos = $('editorArea').selectionStart;
-  $('editorLineInfo').textContent = "سطر: " + v.substring(0, pos).split("\n").length + " | أحرف: " + v.length;
+
+function updatePrompt() {
+  $("promptLabel").textContent = currentUser + "@sovereign:" + (currentPath === "/root" ? "~" : currentPath) + "#";
+  $("currentPromptUser").textContent = currentUser;
+  $("footerStatus").textContent = "READY — " + new Date().toLocaleTimeString();
+}
+
+/* ─── Nano Editor ─── */
+function openNano(filename) {
+  currentNanoPath = resolvePath(filename);
+  const content = vfs[currentNanoPath] ? vfs[currentNanoPath].content : "";
+  $("nanoFilename").textContent = filename;
+  $("nanoBuffer").value = content;
+  $("nanoModal").classList.add("active");
+  setTimeout(() => $("nanoBuffer").focus(), 100);
+}
+function closeNano(saved) {
+  $("nanoModal").classList.remove("active");
+  if (saved) printToTerm("[nano] Saved " + currentNanoPath, "text-cyber-green");
+  else printToTerm("[nano] Discarded changes", "text-cyber-gold");
+  currentNanoPath = null;
 }
 async function saveNano() {
-  const v = $('editorArea').value;
-  const fp = nanoState.fullPath;
-  const lastSlash = fp.lastIndexOf("/");
-  const parent = lastSlash > 0 ? fp.substring(0, lastSlash) : "/";
-  const name = fp.substring(lastSlash + 1);
-  const existing = VFS[fp];
-  if (existing) existing.content = v;
-  else VFS[fp] = { type: "file", content: v, restricted: false, owner: session.username, group: getCurrentUser()?.gid || 100, mode: "rw-r--r--" };
-  if (VFS[parent]?.children && VFS[parent].children.indexOf(name) === -1) VFS[parent].children.push(name);
-  nanoState.dirty = false;
-  await addBlock("NANO_SAVE: " + fp);
-  printTerm("[NANO] 💾 Saved (" + v.length + " chars)", "#00ff66");
-}
-function closeNano() {
-  if (!nanoState.active) return;
-  if (nanoState.dirty) { if (confirm("⚠️ Unsave changes! OK to save?")) saveNano(); else return; }
-  nanoState.active = false;
-  $('editorOverlay').classList.remove('active');
-  $('cmdInput').focus(); updateStats();
-  printTerm("[NANO] 🚪 Closed", "#38bdf8");
+  if (!currentNanoPath) return;
+  const content = $("nanoBuffer").value;
+  vfs[currentNanoPath] = { type: "file", content, owner: currentUser, perm: "rw-r--r--" };
+  const lastSlash = currentNanoPath.lastIndexOf("/");
+  const parent = lastSlash > 0 ? currentNanoPath.substring(0, lastSlash) : "/";
+  const name = currentNanoPath.substring(lastSlash + 1);
+  if (vfs[parent] && vfs[parent].children && vfs[parent].children.indexOf(name) === -1) vfs[parent].children.push(name);
+  await saveVFSToIDB();
+  await createLedgerBlock("NANO_SAVE", currentNanoPath);
+  closeNano(true);
 }
 
-/* ═══ Events ═══ */
-$('editorArea').addEventListener('input', () => { nanoState.dirty = true; updateEditorInfo(); });
-$('editorArea').addEventListener('keyup', updateEditorInfo);
-$('editorArea').addEventListener('click', updateEditorInfo);
-$('editorOverlay').addEventListener('keydown', e => {
-  if (e.ctrlKey && e.key === 's') { e.preventDefault(); saveNano(); }
-  else if (e.ctrlKey && e.key === 'x') { e.preventDefault(); closeNano(); }
-  else if (e.ctrlKey && e.key === 'k') { e.preventDefault(); $('editorArea').value = ""; nanoState.dirty = true; }
-});
-$('cmdInput').addEventListener('keydown', async e => {
-  if (e.key === 'ArrowUp' && !nanoState.active) {
-    e.preventDefault();
-    if (historyIndex > 0) { historyIndex--; $('cmdInput').value = commandHistory[historyIndex]; }
-    return;
-  }
-  if (e.key === 'ArrowDown' && !nanoState.active) {
-    e.preventDefault();
-    if (historyIndex < commandHistory.length - 1) { historyIndex++; $('cmdInput').value = commandHistory[historyIndex]; }
-    else { historyIndex = commandHistory.length; $('cmdInput').value = ""; }
-    return;
-  }
-  if (e.key !== 'Enter' || nanoState.active) return;
-  const val = $('cmdInput').value;
-  $('cmdInput').value = "";
-  if (!val.trim()) return;
-  printTerm($('promptText').textContent + " " + val, "#00f2fe");
-  commandHistory.push(val); historyIndex = commandHistory.length;
-  await runPipeline(val);
-  updateStats();
-});
-document.addEventListener('click', e => {
-  if (nanoState.active) return;
-  if (e.target.closest('.editor-overlay')) return;
-  if (e.target.tagName === 'BUTTON' || e.target.tagName === 'TEXTAREA') return;
-  $('cmdInput').focus();
-});
-$('exportChainBtn').addEventListener('click', () => {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(blockchain, null, 2));
-  const a = document.createElement('a'); a.href = dataStr; a.download = "chain_" + Date.now() + ".json";
-  document.body.appendChild(a); a.click(); a.remove();
-  printTerm("[EXPORT] ✅ Chain exported", "#00ff66");
-});
-$('exportAuditBtn').addEventListener('click', () => {
-  const content = auditEvents.map(e => "[" + e.time + "] [" + e.type + "] " + e.message).join("\n");
-  const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(content);
-  const a = document.createElement('a'); a.href = dataStr; a.download = "audit_" + Date.now() + ".txt";
-  document.body.appendChild(a); a.click(); a.remove();
-  printTerm("[EXPORT] ✅ Audit exported", "#00ff66");
-});
-
-/* ═══ Boot ═══ */
-(async function boot() {
+/* ─── Peer / Mesh ─── */
+async function initPeer() {
+  if (peer) return;
   try {
-    await initSystemState();
-    addAuditEvent("INFO", "System boot v27.0 — لافي منير");
-    showWelcome();  // ✅ مباشرة بدون تسجيل دخول
-  } catch (err) {
-    document.body.innerHTML = '<div style="color:#ff0844;padding:20px;font-family:monospace;">Boot failed: ' + err.message + '</div>';
+    localStream = await navigator.mediaDevices.getUserMedia({ video: { width: {ideal:640}, height:{ideal:480} }, audio: true });
+    $("localVideo").srcObject = localStream;
+  } catch (e) {
+    notify("⚠️ لا كاميرا: " + e.message, 4000);
   }
-})();
+  peer = new Peer({
+    config: { iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' }
+    ]}
+  });
+  peer.on("open", id => {
+    myPeerId = id;
+    $("p2pStatus").textContent = "ON";
+    $("p2pStatus").className = "text-cyber-green font-bold";
+    addChatMessage("SYSTEM", "✅ متصل — ID: " + id.substring(0, 12) + "...");
+    createLedgerBlock("PEER_ONLINE", id.substring(0, 12));
+  });
+  peer.on("call", async call => {
+    if (!localStream) {
+      try { localStream = await navigator.mediaDevices.getUserMedia({video:true, audio:true}); $("localVideo").srcObject = localStream; }
+      catch (e) { call.close(); return; }
+    }
+    call.answer(localStream);
+    handleCall(call);
+  });
+  peer.on("connection", conn => setupDataConnection(conn));
+  peer.on("error", err => {
+    notify("⚠️ Peer: " + err.type, 3000);
+  });
+}
+async function joinMeshRoom() {
+  const room = $("roomIdInput").value.trim();
+  if (!room) { notify("⚠️ اكتب اسم الغرفة", 2000); return; }
+  roomId = room;
+  $("roomStatusBadge").textContent = "ROOM: " + room.toUpperCase();
+  await initPeer();
+  addChatMessage("SYSTEM", "🌐 غرفة: " + room);
+  await createLedgerBlock("JOIN_ROOM", room);
+  notify("🌐 انضممت لغرفة: " + room, 2500);
+}
+async function applyCryptoKey() {
+  const key = $("roomKeyInput").value;
+  if (!key) { notify("⚠️ أدخل مفتاحاً", 2000); return; }
+  rawPasswordSecret = key;
+  await deriveCryptoKey(key);
+  notify("🔐 تم تحديث مفتاح AES-GCM", 2500);
+  await createLedgerBlock("SET_KEY", "AES-GCM key updated");
+}
+function handleCall(call) {
+  if (videoCalls[call.peer]) return;
+  videoCalls[call.peer] = call;
+  roomMembers[call.peer] = { joinedAt: Date.now() };
+  call.on("stream", remoteStream => {
+    let existing = document.getElementById("remote-" + call.peer);
+    if (!existing) {
+      const card = document.createElement("div");
+      card.className = "relative bg-black/50 rounded border border-cyber-border flex items-center justify-center min-h-[60px]";
+      card.id = "card-" + call.peer;
+      const v = document.createElement("video");
+      v.id = "remote-" + call.peer;
+      v.autoplay = true; v.playsinline = true; v.srcObject = remoteStream;
+      v.className = "w-full h-full object-cover rounded";
+      const label = document.createElement("span");
+      label.className = "absolute bottom-0.5 right-0.5 text-[8px] bg-black/70 px-1 rounded text-cyber-magenta";
+      label.textContent = call.peer.substring(0, 6);
+      card.appendChild(v); card.appendChild(label);
+      $("videoGrid").appendChild(card);
+    }
+  });
+  call.on("close", () => {
+    const card = document.getElementById("card-" + call.peer);
+    if (card) card.remove();
+    delete videoCalls[call.peer];
+    delete roomMembers[call.peer];
+  });
+}
+function setupDataConnection(conn) {
+  dataConnections[conn.peer] = conn;
+  roomMembers[conn.peer] = { joinedAt: Date.now() };
+  conn.on("open", () => {
+    addChatMessage("SYSTEM", "💬 " + conn.peer.substring(0, 6) + " انضم");
+    conn.send({ type: "hello", peerId: myPeerId });
+    createLedgerBlock("CONN", conn.peer.substring(0, 8));
+  });
+  conn.on("data", async data => {
+    if (typeof data === "string") {
+      if (data.startsWith("AES256:") || data.startsWith("XOR:")) {
+        const dec = await decryptPayload(data);
+        appendChatMessage(conn.peer.substring(0, 6), dec);
+      }
+    } else if (data && typeof data === "object" && data.type === "FILE_CHUNK") {
+      handleIncomingChunk(data);
+    }
+  });
+  conn.on("close", () => {
+    delete dataConnections[conn.peer];
+    delete roomMembers[conn.peer];
+  });
+}
+function appendChatMessage(sender, text) {
+  addChatMessage(sender, text);
+}
+function addChatMessage(sender, text) {
+  const box = $("chatBox");
+  const div = document.createElement("div");
+  div.className = "text-[10px] leading-tight";
+  div.innerHTML = '<span class="text-cyber-cyan font-bold">' + escapeHtml(sender) + ':</span> <span class="text-gray-200">' + escapeHtml(text) + '</span>';
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+async function sendChatMessage() {
+  const input = $("chatInput");
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = "";
+  addChatMessage("أنا", text);
+  const enc = await encryptPayload(text);
+  Object.values(dataConnections).forEach(conn => {
+    if (conn.open) conn.send(enc);
+  });
+}
 
-})();
+/* ─── File Transfer ─── */
+const CHUNK_SIZE = 16384;
+async function sendP2PFile(file) {
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { notify("⚠️ الحد 5MB", 3000); return; }
+  const conns = Object.values(dataConnections).filter(c => c.open);
+  if (conns.length === 0) { notify("⚠️ لا أعضاء متصلون", 2000); return; }
+
+  const prog = $("fileProgressContainer");
+  prog.classList.remove("hidden");
+  $("transferFileName").textContent = file.name;
+
+  const buf = await file.arrayBuffer();
+  const total = Math.ceil(buf.byteLength / CHUNK_SIZE);
+  const tid = Math.random().toString(36).substring(2);
+
+  for (let i = 0; i < total; i++) {
+    const start = i * CHUNK_SIZE;
+    const end = Math.min(start + CHUNK_SIZE, buf.byteLength);
+    const chunk = new Uint8Array(buf.slice(start, end));
+    const packet = { type: "FILE_CHUNK", transferId: tid, fileName: file.name, chunkIndex: i, totalChunks: total, data: chunk };
+    conns.forEach(c => c.send(packet));
+    const pct = Math.round(((i + 1) / total) * 100);
+    $("transferProgressBar").style.width = pct + "%";
+    $("transferPercent").textContent = pct + "%";
+    await new Promise(r => setTimeout(r, 5));
+  }
+  addChatMessage("SYSTEM", "📁 أُرسل: " + file.name);
+  await createLedgerBlock("FILE_SENT", file.name);
+  setTimeout(() => prog.classList.add("hidden"), 2500);
+}
+function handleIncomingChunk(packet) {
+  const { transferId, fileName, chunkIndex, totalChunks, data } = packet;
+  if (totalChunks > 320) return;
+  if (!pendingFileChunks[transferId]) {
+    pendingFileChunks[transferId] = { fileName, chunks: new Array(totalChunks), received: 0, startedAt: Date.now() };
+  }
+  const t = pendingFileChunks[transferId];
+  t.chunks[chunkIndex] = new Uint8Array(data);
+  t.received++;
+  if (t.received === totalChunks) {
+    try {
+      const blob = new Blob(t.chunks);
+      const url = URL.createObjectURL(blob);
+      const line = document.createElement("div");
+      line.className = "text-[10px]";
+      line.innerHTML = '📁 <a href="' + url + '" download="' + escapeHtml(fileName) + '" class="text-cyber-gold underline">' + escapeHtml(fileName) + '</a>';
+      $("chatBox").appendChild(line);
+      $("chatBox").scrollTop = $("chatBox").scrollHeight;
+      createLedgerBlock("FILE_RECV", fileName);
+    } catch (e) {}
+    delete pendingFileChunks[transferId];
+  }
+  for (const id in pendingFileChunks) {
+    if (Date.now() - pendingFileChunks[id].startedAt > 300000) delete pendingFileChunks[id];
+  }
+}
+
+/* ─── Media Controls ─── */
+function toggleMic() {
+  if (localStream) {
+    const t = localStream.getAudioTracks()[0];
+    if (t) { t.enabled = !t.enabled; $("btnToggleMic").classList.toggle("text-red-400", !t.enabled); }
+  }
+}
+async function toggleCam() {
+  if (!localStream) {
+    try { localStream = await navigator.mediaDevices.getUserMedia({video:true, audio:true}); $("localVideo").srcObject = localStream; }
+    catch (e) { notify("⚠️ لا كاميرا", 2000); }
+    return;
+  }
+  const t = localStream.getVideoTracks()[0];
+  if (t) { t.enabled = !t.enabled; $("btnToggleCam").classList.toggle("text-red-400", !t.enabled); }
+}
+async function shareScreen() {
+  try {
+    screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+    $("localVideo").srcObject = screenStream;
+    const st = screenStream.getVideoTracks()[0];
+    Object.values(videoCalls).forEach(call => {
+      if (call.peerConnection) {
+        const s = call.peerConnection.getSenders().find(x => x.track && x.track.kind === "video");
+        if (s) s.replaceTrack(st);
+      }
+    });
+    st.onended = () => { if (localStream) $("localVideo").srcObject = localStream; };
+  } catch (e) { notify("⚠️ رُفضت", 2000); }
+}
+function snapshot() {
+  const v = $("localVideo");
+  if (!v.srcObject) return;
+  const c = document.createElement("canvas");
+  c.width = v.videoWidth; c.height = v.videoHeight;
+  c.getContext("2d").drawImage(v, 0, 0);
+  c.toBlob(b => {
+    const url = URL.createObjectURL(b);
+    const a = document.createElement("a");
+    a.href = url; a.download = "snap_" + Date.now() + ".png";
+    a.click();
+    notify("📸 لقطة", 1500);
+  });
+  createLedgerBlock("SNAPSHOT", "Screen captured");
+}
+
+/* ─── Events ─── */
+termInput.addEventListener("keydown", async e => {
+  if (e.key === "ArrowUp") {
+    e.preventDefault();
+    if (historyIndex > 0) { historyIndex--; termInput.value = commandHistory[historyIndex]; }
+    return;
+  }
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    if (historyIndex < commandHistory.length - 1) { historyIndex++; termInput.value = commandHistory[historyIndex]; }
+    else { historyIndex = commandHistory.length; termInput.value = ""; }
+    return;
+  }
+  if (e.key !== "Enter") return;
+  const val = termInput.value;
+  termInput.value = "";
+  if (!val.trim()) return;
+  await runCommand(val);
+});
+
+document.addEventListener("keydown", e => {
+  if ($("nanoModal").classList.contains("active")) {
+    if (e.ctrlKey && e.key.toLowerCase() === "s") { e.preventDefault(); saveNano(); }
+    if (e.ctrlKey && e.key.toLowerCase() === "x") { e.preventDefault(); closeNano(false); }
+  }
+});
+
+$("btnToggleSide") && $("btnToggleSide").addEventListener("click", () => {
+  $("sidePanel").classList.toggle("mobile-active");
+});
+
+document.addEventListener("click", e => {
+  if (e.target.tagName === "BUTTON" || e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.tagName === "A" || e.target.tagName === "VIDEO" || e.target.tagName === "LABEL") return;
+  if ($("nanoModal").classList.contains("active")) return;
+  termInput.focus();
+});
+
+/* ─── Boot ─── */
+async function boot() {
+  initMatrix();
+  await initSystemState();
+  await deriveCryptoKey(rawPasswordSecret);
+  updatePrompt();
+
+  printToTerm("╔══════════════════════════════════════════════════════╗", "text-cyber-cyan");
+  printToTerm("║   لافي منير — SOVEREIGN OS v35.0 APEX                ║", "text-cyber-cyan");
+  printToTerm("║   🛰️ Shell + Mesh P2P + AES-GCM + IndexedDB          ║", "text-cyber-cyan");
+  printToTerm("╚══════════════════════════════════════════════════════╝", "text-cyber-cyan");
+  printToTerm("", "text-gray-200");
+  printToTerm("🎉 مرحباً لافي منير (root)", "text-cyber-green");
+  printToTerm("", "text-gray-200");
+  printToTerm("🌐 الاتصال:   call | peer | msg <نص> | members", "text-cyber-cyan");
+  printToTerm("📁 الملفات:   ls, cd, cat, write, mkdir, nano", "text-gray-300");
+  printToTerm("👤 المستخدم:  whoami, id, su, sudo", "text-gray-300");
+  printToTerm("🔎 النصوص:    grep, wc, head, tail", "text-gray-300");
+  printToTerm("🔒 الأمان:    encrypt, decrypt, setkey", "text-gray-300");
+  printToTerm("⛓️ السلسلة:   chain, verify, audit", "text-gray-300");
+  printToTerm("🐚 أخرى:     ps, sysinfo, ./script.sh, help", "text-gray-300");
+  printToTerm("", "text-gray-200");
+  printToTerm("📌 جرّب: ./welcome.sh  أو  call  أو  help", "text-cyber-gold");
+  printToTerm("", "text-gray-200");
+
+  await createLedgerBlock("BOOT", "System v35.0 initialized");
+}
+
+window.addEventListener("load", boot);
 </script>
 </body>
 </html>
