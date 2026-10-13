@@ -1,1094 +1,693 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" translate="no">
+<html lang="ar" dir="rtl" class="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>لافي منير — SOVEREIGN OS v27.0 🔐</title>
-<meta name="theme-color" content="#030008">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>لافي منير — NEXUS OMEGA v101 ULTRA ∞</title>
+<meta name="theme-color" content="#030014">
 <meta name="author" content="لافي منير">
-</head>
-<body>
-<div id="app"></div>
+<script src="https://cdn.tailwindcss.com"></script>
 <script>
-(function() {
-"use strict";
+tailwind.config={darkMode:'class',theme:{extend:{colors:{cyber:{bg:'#030014',panel:'#0a0520',border:'#1f1345',cyan:'#00f2fe',magenta:'#ff007f',gold:'#ffd700',green:'#00ff66',purple:'#7928ca',red:'#ff0844'}}}}}
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Cairo',sans-serif;background:#030014;color:#e2e8f0;overflow:hidden;user-select:none;-webkit-user-select:none}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:#00f2fe;border-radius:4px}
+#matrixCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.06}
+.glass-panel{background:rgba(10,5,32,.85);backdrop-filter:blur(12px);border:1px solid #1f1345}
+.msg-bubble{max-width:80%;word-break:break-word;transition:all .2s}
+.msg-me{background:linear-gradient(135deg,rgba(255,0,127,.2),rgba(121,40,202,.3));border:1px solid rgba(255,0,127,.4);border-radius:16px 16px 2px 16px;margin-left:auto}
+.msg-peer{background:linear-gradient(135deg,rgba(0,242,254,.15),rgba(0,255,102,.1));border:1px solid rgba(0,242,254,.3);border-radius:16px 16px 16px 2px;margin-right:auto}
+.msg-sys{background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.3);color:#ffd700;font-size:11px;text-align:center;margin:4px auto;width:fit-content;padding:2px 12px;border-radius:12px}
+.status-indicator{width:8px;height:8px;border-radius:50%;display:inline-block}
+.pip-video{position:fixed;width:200px;height:140px;background:#000;border:2px solid #00f2fe;border-radius:12px;z-index:500;overflow:hidden;box-shadow:0 0 25px rgba(0,242,254,.6);cursor:move;touch-action:none}
+.pip-video video{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.pip-close{position:absolute;top:4px;left:4px;background:#ff0844;color:#fff;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:11px;font-weight:bold;z-index:2}
+</style>
+</head>
+<body class="dark h-screen w-screen flex flex-col overflow-hidden">
+<canvas id="matrixCanvas"></canvas>
+<div id="notif" class="fixed top-4 left-1/2 -translate-x-1/2 z-[300] bg-cyber-panel border border-cyber-cyan text-cyber-cyan px-6 py-2 rounded-full text-xs font-bold hidden shadow-2xl"></div>
 
-/* ═══ قفل الدومين ═══ */
-const ALLOWED_DOMAINS = ['localhost','127.0.0.1','wwwmournirp-hue.github.io','lafi-munir.vercel.app','lafi-munir.netlify.app'];
-function checkDomain() {
-  const host = window.location.hostname;
-  if (window.location.protocol === 'file:') return;
-  const allowed = ALLOWED_DOMAINS.some(d => host === d || host.endsWith('.' + d) || host.endsWith('.github.io') || host.endsWith('.vercel.app') || host.endsWith('.netlify.app'));
-  if (!allowed) {
-    document.body.innerHTML = '<div style="color:#ff0844;font-family:monospace;padding:50px;text-align:center;background:#030008;min-height:100vh;display:flex;align-items:center;justify-content:center;"><div><h1>🚫 ACCESS DENIED</h1><p style="margin-top:20px;">© لافي منير 2026</p></div></div>';
-    throw new Error('Domain not authorized');
-  }
-}
-checkDomain();
-
-/* ═══ قفل التاريخ ═══ */
-const LICENSE_EXPIRY = new Date('2027-12-31T23:59:59').getTime();
-const LICENSE_START = new Date('2025-01-01').getTime();
-if (Date.now() > LICENSE_EXPIRY || Date.now() < LICENSE_START) {
-  document.body.innerHTML = '<div style="color:#ff0844;font-family:monospace;padding:50px;text-align:center;background:#030008;min-height:100vh;display:flex;align-items:center;justify-content:center;"><div><h1>⏰ LICENSE EXPIRED</h1></div></div>';
-  throw new Error('License expired');
-}
-
-/* ═══ منع DevTools ═══ */
-(function() {
-  document.addEventListener('contextmenu', e => e.preventDefault());
-  document.addEventListener('keydown', e => {
-    if (e.key === 'F12') { e.preventDefault(); return false; }
-    if (e.ctrlKey && e.shiftKey && ['I','J','C','i','j','c'].includes(e.key)) { e.preventDefault(); return false; }
-    if (e.ctrlKey && ['u','U','s','S','a','A','p','P'].includes(e.key)) { e.preventDefault(); return false; }
-  });
-  document.addEventListener('dragstart', e => e.preventDefault());
-})();
-
-/* ═══ منع النسخ ═══ */
-document.addEventListener('copy', e => {
-  const t = e.target;
-  if (t && t.closest && t.closest('.terminal-body')) return true;
-  e.preventDefault(); return false;
-});
-document.addEventListener('cut', e => e.preventDefault());
-
-/* ═══ CSS ═══ */
-const CSS = `
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
-body { min-height: 100vh; color: #00f2fe; background: linear-gradient(135deg, #030008, #0a0118, #20003b); padding: 15px; display: flex; align-items: center; justify-content: center; }
-.terminal-container { position: relative; width: 100%; max-width: 1280px; height: 96vh; background: rgba(5, 1, 15, 0.99); border: 2px solid #00f2fe; border-radius: 18px; padding: 15px; box-shadow: 0 0 170px rgba(0,242,254,0.8); display: flex; flex-direction: column; backdrop-filter: blur(40px); }
-.top-bar { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid rgba(0,242,254,0.4); margin-bottom: 10px; font-size: 11.5px; }
-.status-badge { padding: 3px 8px; background: rgba(0,242,254,0.15); border: 1px solid #00f2fe; border-radius: 6px; color: #00f2fe; font-weight: bold; }
-.status-badge.root { background: rgba(255,0,127,0.2); border-color: #ff007f; color: #ff007f; }
-.status-badge.editing { background: rgba(255,215,0,0.2); border-color: #ffd700; color: #ffd700; }
-.main-stage { display: flex; flex: 1; gap: 12px; overflow: hidden; }
-.term-side { flex: 1; display: flex; flex-direction: column; height: 100%; min-width: 0; }
-.visual-side { width: 340px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid rgba(0,242,254,0.25); padding-right: 10px; }
-.terminal-body { flex: 1; overflow-y: auto; font-size: 12px; line-height: 1.55; color: #e5e7eb; padding-right: 5px; white-space: pre-wrap; user-select: text; -webkit-user-select: text; overflow-wrap: break-word; }
-.cmd-line { display: flex; gap: 8px; align-items: center; margin-top: 10px; border-top: 1px solid rgba(0,242,254,0.2); padding-top: 8px; }
-.prompt { color: #ff007f; font-weight: bold; font-size: 12px; white-space: nowrap; }
-.cmd-input { flex: 1; background: transparent; border: none; outline: none; color: #00f2fe; font-size: 12px; user-select: text; }
-.sys-stat { display: flex; gap: 6px; font-size: 10px; color: #38bdf8; margin-top: 6px; flex-wrap: wrap; }
-.stat-item { background: rgba(0,242,254,0.08); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(0,242,254,0.2); }
-.stat-item.root { background: rgba(255,0,127,0.15); border-color: #ff007f; color: #ff007f; }
-.stat-item.edit { background: rgba(255,215,0,0.15); border-color: #ffd700; color: #ffd700; }
-canvas { width: 100%; height: 110px; background: #020005; border: 1px solid rgba(0,242,254,0.5); border-radius: 10px; }
-.panel { background: rgba(121, 40, 202, 0.1); border: 1px dashed rgba(121, 40, 202, 0.5); border-radius: 10px; padding: 8px; font-size: 10px; color: #d946ef; overflow-y: auto; }
-.panel-title { color: #ffd700; font-weight: bold; margin-bottom: 4px; font-size: 10.5px; }
-.audit-entry { padding: 2px 0; border-bottom: 1px dashed rgba(217,70,239,0.15); font-size: 9.5px; line-height: 1.4; word-break: break-all; }
-.audit-entry .time { color: #38bdf8; }
-.audit-entry.INFO { color: #00ff66; }
-.audit-entry.WARN { color: #ffd700; }
-.audit-entry.ERROR { color: #ff0844; }
-.export-btn { padding: 6px 10px; background: linear-gradient(135deg, #00f2fe, #7928ca); border: none; border-radius: 8px; color: #fff; font-size: 10px; font-weight: bold; cursor: pointer; margin-top: 4px; width: 100%; }
-.editor-overlay { position: absolute; inset: 15px; background: rgba(0,0,0,0.97); border: 2px solid #ffd700; border-radius: 14px; display: none; flex-direction: column; z-index: 100; padding: 12px; box-shadow: 0 0 80px rgba(255,215,0,0.5); }
-.editor-overlay.active { display: flex; }
-.editor-header { display: flex; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid #ffd700; color: #ffd700; font-size: 12px; font-weight: bold; }
-.editor-status { display: flex; gap: 12px; color: #38bdf8; font-size: 10px; }
-.editor-area { flex: 1; background: #000; color: #00ff66; border: 1px solid #ffd700; border-radius: 6px; padding: 10px; margin-top: 8px; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.5; resize: none; outline: none; width: 100%; user-select: text; }
-.editor-help { color: #ffd700; font-size: 10px; margin-top: 6px; text-align: center; }
-.credit { color: #ffd700; font-size: 10px; margin-top: 8px; text-align: center; opacity: 0.8; }
-@media (max-width: 800px) {
-  body { padding: 5px; }
-  .terminal-container { padding: 8px; height: 98vh; border-radius: 12px; }
-  .top-bar { font-size: 10px; padding-bottom: 6px; margin-bottom: 6px; }
-  .main-stage { flex-direction: column; gap: 6px; }
-  .visual-side { display: none !important; }
-  .term-side { order: 1; }
-  .terminal-body { font-size: 13px; line-height: 1.5; }
-  .cmd-input { font-size: 16px !important; padding: 4px; }
-  .prompt { font-size: 13px; }
-  .sys-stat { font-size: 9px; gap: 4px; }
-  .stat-item { padding: 1px 4px; }
-  .cmd-line { margin-top: 6px; padding-top: 6px; gap: 6px; }
-  .credit { font-size: 9px; }
-}
-`;
-const styleEl = document.createElement('style');
-styleEl.textContent = CSS;
-document.head.appendChild(styleEl);
-
-/* ═══ HTML ═══ */
-document.getElementById('app').innerHTML = `
-<div class="terminal-container">
-  <div class="top-bar">
-    <span>🌌 لافي منير — SOVEREIGN OS v27.0</span>
-    <span class="status-badge root" id="kernelStatus">ROOT 👑</span>
-  </div>
-  <div class="main-stage">
-    <div class="visual-side">
-      <canvas id="paintCanvas"></canvas>
-      <div class="panel" style="max-height:140px;">
-        <div class="panel-title">👥 المستخدمون</div>
-        <div id="varsDisplay">...</div>
-      </div>
-      <div class="panel" style="flex:1;">
-        <div class="panel-title">📊 السجل</div>
-        <div id="auditDisplay" style="max-height: 100%; overflow-y: auto;">لا أحداث بعد...</div>
-      </div>
-      <button id="exportChainBtn" class="export-btn">📥 تصدير السلسلة</button>
-      <button id="exportAuditBtn" class="export-btn">📥 تصدير السجل</button>
-    </div>
-    <div class="term-side">
-      <div class="terminal-body" id="termBody"></div>
-      <div class="sys-stat">
-        <span class="stat-item root" id="userStat">User: root</span>
-        <span class="stat-item root" id="uidStat">UID: 0 (GID 0)</span>
-        <span class="stat-item" id="pathStat">PWD: /root</span>
-        <span class="stat-item" id="timeStat">--:--:--</span>
-        <span class="stat-item" id="chainStat">Blocks: 1</span>
-        <span class="stat-item edit" id="editStat" style="display:none;">EDITING ✏️</span>
-      </div>
-      <div class="cmd-line">
-        <span class="prompt" id="promptText">root@lafi:/root#</span>
-        <input type="text" class="cmd-input" id="cmdInput" autofocus autocomplete="off" spellcheck="false" autocapitalize="off">
-      </div>
-    </div>
-  </div>
-  <div class="editor-overlay" id="editorOverlay">
-    <div class="editor-header">
-      <span id="editorFilename">nano — new_file.txt</span>
-      <div class="editor-status">
-        <span id="editorLineInfo">سطر: 1 | أحرف: 0</span>
-        <span id="editorState">[ جديد ]</span>
-      </div>
-    </div>
-    <textarea class="editor-area" id="editorArea" spellcheck="false"></textarea>
-    <div class="editor-help">💾 Ctrl+S = حفظ | 🚪 Ctrl+X = خروج | 🧹 Ctrl+K = مسح</div>
-  </div>
-  <div class="credit">© لافي منير 2026 — جميع الحقوق محفوظة</div>
+<header class="relative z-10 glass-panel px-4 py-2.5 flex justify-between items-center text-xs border-b border-cyber-border">
+<div class="flex items-center gap-3">
+<span class="text-base font-black text-cyber-magenta flex items-center gap-2">
+<i class="fa-solid fa-shield-halved text-cyber-cyan animate-pulse"></i> NEXUS OMEGA
+</span>
+<span class="bg-cyber-magenta/20 text-cyber-magenta text-[10px] px-2 py-0.5 rounded border border-cyber-magenta/40 font-bold">v101 ULTRA ∞</span>
+<span class="hidden md:inline text-[11px] text-cyber-gold font-bold">👑 لافي منير</span>
 </div>
-`;
+<div class="flex items-center gap-2 text-[11px]">
+<div class="bg-cyber-bg px-3 py-1 rounded-lg border border-cyber-border">
+<span class="text-gray-400">Mesh:</span>
+<span id="meshCount" class="text-cyber-green font-bold">0</span>
+</div>
+<div class="bg-cyber-bg px-3 py-1 rounded-lg border border-cyber-border flex items-center gap-2">
+<span id="p2pDot" class="status-indicator bg-red-500"></span>
+<span id="myPeerIdDisplay" class="font-mono text-cyber-cyan font-bold cursor-pointer" onclick="copyMyId()" title="انقر للنسخ">جاري...</span>
+</div>
+<button onclick="showQR()" class="bg-cyber-cyan text-black px-2 py-1 rounded font-bold text-[10px]">📱 QR</button>
+</div>
+</header>
 
-/* ═══ Core ═══ */
-const $ = id => document.getElementById(id);
-const canvas = $('paintCanvas');
-const ctx = canvas.getContext('2d');
-function resizeCanvas() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+<main class="relative z-10 flex-1 grid grid-cols-1 md:grid-cols-12 gap-2 p-2 overflow-hidden">
+<aside class="md:col-span-4 lg:col-span-3 flex flex-col gap-2 h-full overflow-hidden">
+<div class="glass-panel p-3 rounded-xl flex flex-col gap-2">
+<div class="text-[11px] font-bold text-cyber-gold flex justify-between items-center">
+<span>👤 هويتك:</span>
+<button onclick="regenerateKeys()" class="text-cyber-cyan hover:underline text-[10px]">🔄 مفاتيح</button>
+</div>
+<input type="text" id="nickName" class="w-full bg-cyber-bg border border-cyber-border rounded px-2.5 py-1.5 text-xs text-cyber-green font-bold outline-none focus:border-cyber-cyan" value="Sovereign_Node" onchange="broadcastNameChange()">
+<div class="flex gap-1.5 mt-1">
+<input type="text" id="peerTargetInput" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[11px] text-white outline-none" placeholder="Peer ID...">
+<button onclick="connectToPeerManual()" class="bg-cyber-cyan text-black px-3 py-1 rounded font-bold text-[11px]">ربط 🔗</button>
+</div>
+</div>
 
-let blockchain = [];
-let commandHistory = [];
-let historyIndex = -1;
-let currentPath = "/root";
-let shellVars = {};
-let shellFunctions = {};
-let auditEvents = [];
-let suPending = null;
-let terminalBuffer = [];
+<div class="glass-panel p-3 rounded-xl flex-1 flex flex-col gap-2 overflow-hidden">
+<div class="flex justify-between items-center text-[11px] font-bold text-cyber-cyan border-b border-cyber-border pb-1.5">
+<span>💬 الغرف المشفرة</span>
+<button onclick="promptCreateRoom()" class="bg-cyber-magenta/20 text-cyber-magenta border border-cyber-magenta/40 px-2 py-0.5 rounded text-[10px]">+ غرفة</button>
+</div>
+<div id="roomList" class="flex-1 overflow-y-auto space-y-1 pr-1 text-xs"></div>
+<div class="border-t border-cyber-border pt-2 text-[10px] text-gray-400 flex justify-between">
+<span>🔐 <strong class="text-cyber-green">AES-256-GCM</strong></span>
+<span class="text-cyber-magenta">E2EE</span>
+</div>
+</div>
 
-// ✅ جلسة مفتوحة تلقائياً بدون كلمة سر
-let session = { uid: 0, username: "root", loginState: "LOGGED_IN", pendingUsername: null };
-let nanoState = { active: false, filename: null, originalContent: "", fullPath: null, dirty: false };
+<div class="glass-panel p-2 rounded-xl">
+<div class="text-[10px] text-cyber-gold font-bold mb-1">📊 جودة الاتصال (RTT)</div>
+<div id="qualityList" class="text-[10px] space-y-1 max-h-24 overflow-y-auto text-gray-400">لا اتصالات</div>
+</div>
+</aside>
 
-const passwdDB = new Map();
-const shadowDB = new Map();
-const groupDB = new Map();
-let VFS = {};
+<section class="md:col-span-8 lg:col-span-9 flex flex-col gap-2 h-full overflow-hidden">
+<div class="glass-panel px-4 py-2 rounded-xl flex justify-between items-center text-xs border border-cyber-border flex-wrap gap-2">
+<div>
+<div class="flex items-center gap-2">
+<h3 id="currentRoomTitle" class="font-bold text-cyber-gold text-sm"># الغرفة_العامة</h3>
+<span id="roomEncState" class="bg-cyber-green/20 text-cyber-green text-[9px] px-2 py-0.5 rounded border border-cyber-green/40 font-bold">🔐 مشفرة</span>
+</div>
+<p id="roomPeerCount" class="text-[10px] text-gray-400">العقد: 0</p>
+</div>
+<div class="flex items-center gap-1.5">
+<button onclick="startVoiceCall()" class="bg-cyber-panel border border-cyber-green text-cyber-green px-2.5 py-1.5 rounded-lg text-xs font-bold hover:bg-cyber-green hover:text-black transition" title="صوتي">📞</button>
+<button onclick="startVideoCall()" class="bg-cyber-panel border border-cyber-cyan text-cyber-cyan px-2.5 py-1.5 rounded-lg text-xs font-bold hover:bg-cyber-cyan hover:text-black transition" title="فيديو">🎥</button>
+<button onclick="shareScreenCall()" class="bg-cyber-panel border border-cyber-purple text-cyber-purple px-2.5 py-1.5 rounded-lg text-xs font-bold hover:bg-cyber-purple hover:text-white transition" title="شاشة">🖥️</button>
+<button onclick="toggleRecord()" id="recBtn" class="bg-cyber-panel border border-cyber-red text-cyber-red px-2.5 py-1.5 rounded-lg text-xs font-bold" title="تسجيل">⏺️</button>
+<button onclick="endMediaCall()" id="endCallBtn" class="hidden bg-cyber-red text-white px-2.5 py-1.5 rounded-lg text-xs font-bold" title="إنهاء">📴</button>
+</div>
+</div>
 
-/* ═══ Audit ═══ */
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function addAuditEvent(type, message) {
-  const time = new Date().toLocaleTimeString();
-  auditEvents.unshift({ time, type, message });
-  if (auditEvents.length > 60) auditEvents.pop();
-  const html = auditEvents.slice(0, 25).map(e =>
-    '<div class="audit-entry ' + e.type + '"><span class="time">[' + e.time + ']</span> [' + e.type + '] ' + escapeHtml(e.message.substring(0, 55)) + '</div>'
-  ).join('');
-  $('auditDisplay').innerHTML = html || "لا أحداث بعد...";
+<div id="videoStage" class="hidden glass-panel p-2 rounded-xl border border-cyber-cyan grid grid-cols-2 md:grid-cols-4 gap-2 min-h-[140px]">
+<div class="relative bg-black rounded-lg overflow-hidden border border-cyber-border">
+<video id="localVideo" autoplay playsinline muted class="w-full h-full object-cover"></video>
+<span class="absolute bottom-1 right-1 bg-black/70 text-cyber-cyan px-1.5 py-0.5 rounded text-[9px]">أنت</span>
+</div>
+<div id="remoteVideoContainer" class="col-span-1 md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-2"></div>
+</div>
+
+<div id="messagesContainer" class="flex-1 glass-panel p-4 rounded-xl overflow-y-auto space-y-3 flex flex-col justify-start">
+<div class="msg-sys">🛡️ نظام الدردشة السيادي v101 ULTRA — كل الرسائل مشفرة E2EE عبر Mesh</div>
+</div>
+
+<div class="glass-panel p-2 rounded-xl flex items-center gap-2 border border-cyber-border">
+<label class="cursor-pointer bg-cyber-bg border border-cyber-border hover:border-cyber-cyan text-cyber-cyan p-2.5 rounded-lg">
+📎<input type="file" id="fileInput" class="hidden" onchange="handleFileSelect(event)">
+</label>
+<input type="text" id="chatInput" class="flex-1 bg-cyber-bg border border-cyber-border rounded-lg px-3 py-2 text-xs md:text-sm text-white outline-none focus:border-cyber-cyan" placeholder="رسالة مشفرة..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+<button onclick="sendChatMessage()" class="bg-gradient-to-r from-cyber-cyan to-cyber-purple text-white font-bold px-4 py-2 rounded-lg text-xs md:text-sm">إرسال 📤</button>
+</div>
+</section>
+</main>
+
+<div id="roomModal" class="fixed inset-0 bg-black/80 z-[200] hidden flex items-center justify-center p-4">
+<div class="glass-panel p-6 rounded-2xl border border-cyber-gold max-w-sm w-full space-y-4">
+<h3 class="text-sm font-bold text-cyber-gold">🔒 إنشاء غرفة مشفرة</h3>
+<div class="space-y-2 text-xs">
+<label class="text-gray-400">اسم الغرفة:</label>
+<input type="text" id="modalRoomName" class="w-full bg-black border border-cyber-border rounded px-2.5 py-1.5 text-white outline-none mt-1">
+<label class="text-gray-400 mt-2 block">كلمة المرور (اختياري):</label>
+<input type="password" id="modalRoomPass" class="w-full bg-black border border-cyber-border rounded px-2.5 py-1.5 text-white outline-none mt-1">
+</div>
+<div class="flex gap-2 pt-2">
+<button onclick="confirmCreateRoom()" class="flex-1 bg-cyber-gold text-black font-bold py-1.5 rounded text-xs">تأكيد</button>
+<button onclick="closeRoomModal()" class="bg-gray-800 text-gray-300 font-bold px-3 py-1.5 rounded text-xs">إلغاء</button>
+</div>
+</div>
+</div>
+
+<div id="qrModal" class="fixed inset-0 bg-black/80 z-[200] hidden flex items-center justify-center p-4" onclick="closeQR()">
+<div class="glass-panel p-6 rounded-2xl border border-cyber-cyan max-w-xs w-full text-center">
+<h3 class="text-sm font-bold text-cyber-cyan mb-3">📱 شارك معرفك</h3>
+<canvas id="qrCanvas" class="bg-white p-2 rounded mx-auto"></canvas>
+<p id="qrIdText" class="text-[10px] text-cyber-green mt-3 break-all font-mono"></p>
+<button onclick="closeQR()" class="mt-3 bg-cyber-cyan text-black px-4 py-1 rounded text-xs font-bold">إغلاق</button>
+</div>
+</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+
+let peer=null,myPeerId="",myNickName="Sovereign_"+Math.floor(Math.random()*8999+1000);
+let meshConnections={},mediaCalls={},localStream=null,screenStream=null;
+let rooms={"public":{name:"الغرفة_العامة",pass:"",messages:[]}};
+let activeRoom="public";
+let myKeyPair=null,sharedKeys={};
+let mediaRecorder=null,recChunks=[];
+let db=null,qualityIntervals={};
+
+function showNotif(msg,dur){
+  dur=dur||3000;
+  const n=$("notif");
+  n.textContent=msg;
+  n.classList.remove("hidden");
+  setTimeout(()=>n.classList.add("hidden"),dur);
 }
 
-/* ═══ Blockchain ═══ */
-async function computeSHA256(message) {
-  const buf = new TextEncoder().encode(message);
-  const hash = await crypto.subtle.digest('SHA-256', buf);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+/* ═══ Web Crypto E2EE ═══ */
+async function generateECDHKeyPair(){
+  myKeyPair=await crypto.subtle.generateKey({name:"ECDH",namedCurve:"P-256"},true,["deriveKey","deriveBits"]);
 }
-async function addBlock(data) {
-  const prev = blockchain[blockchain.length - 1] || { hash: "0000000000", index: -1 };
-  const timestamp = Date.now();
-  const hash = await computeSHA256(prev.hash + data + timestamp);
-  const block = { index: prev.index + 1, timestamp, data, prevHash: prev.hash, hash };
-  blockchain.push(block);
-  $('chainStat').textContent = 'Blocks: ' + blockchain.length;
-  addAuditEvent('INFO', 'Block #' + block.index + ': ' + data.substring(0, 20));
-  try { localStorage.setItem('sovereign_chain_v27_nopass', JSON.stringify(blockchain)); } catch (e) {}
-  return block;
+async function exportPublicKey(){
+  if(!myKeyPair)await generateECDHKeyPair();
+  const exported=await crypto.subtle.exportKey("spki",myKeyPair.publicKey);
+  return btoa(String.fromCharCode.apply(null,new Uint8Array(exported)));
 }
-
-/* ═══ Crypto ═══ */
-async function hashPassword(password, salt) {
-  const data = new TextEncoder().encode(salt + ":" + password + ":LAFI-MUNIR-V27");
-  const buf = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+async function deriveSharedKey(pubKeyB64,peerId){
+  try{
+    const bin=Uint8Array.from(atob(pubKeyB64),c=>c.charCodeAt(0));
+    const pubKey=await crypto.subtle.importKey("spki",bin,{name:"ECDH",namedCurve:"P-256"},true,[]);
+    const shared=await crypto.subtle.deriveKey({name:"ECDH",public:pubKey},myKeyPair.privateKey,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+    sharedKeys[peerId]=shared;
+  }catch(e){console.error("derive err",e);}
 }
-function generateSalt() {
-  const arr = new Uint8Array(8);
-  crypto.getRandomValues(arr);
-  return Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
+async function encryptData(obj,key){
+  const enc=new TextEncoder(),data=enc.encode(JSON.stringify(obj));
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  if(!key){
+    const raw=enc.encode("SOVEREIGN_LAFI_32BYTE_E2EE!!");
+    key=await crypto.subtle.importKey("raw",raw,{name:"AES-GCM"},false,["encrypt","decrypt"]);
+  }
+  const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,data);
+  return {iv:Array.from(iv),cipher:btoa(String.fromCharCode.apply(null,new Uint8Array(ct)))};
 }
-async function verifyPassword(username, password) {
-  const s = shadowDB.get(username);
-  if (!s) return false;
-  return (await hashPassword(password, s.salt)) === s.hash;
-}
-function xorCipher(text, key) {
-  const t = new TextEncoder().encode(text);
-  const k = new TextEncoder().encode(key);
-  const out = new Uint8Array(t.length);
-  for (let i = 0; i < t.length; i++) out[i] = t[i] ^ k[i % k.length];
-  let bin = "";
-  for (let i = 0; i < out.length; i++) bin += String.fromCharCode(out[i]);
-  return "ENC:" + btoa(bin);
-}
-function xorDecipher(c, key) {
-  try {
-    if (!c.startsWith("ENC:")) return null;
-    const bin = atob(c.slice(4));
-    const bytes = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    const k = new TextEncoder().encode(key);
-    const out = new Uint8Array(bytes.length);
-    for (let i = 0; i < bytes.length; i++) out[i] = bytes[i] ^ k[i % k.length];
-    return new TextDecoder().decode(out);
-  } catch (e) { return null; }
+async function decryptData(encObj,key){
+  try{
+    const enc=new TextEncoder();
+    if(!key){
+      const raw=enc.encode("SOVEREIGN_LAFI_32BYTE_E2EE!!");
+      key=await crypto.subtle.importKey("raw",raw,{name:"AES-GCM"},false,["encrypt","decrypt"]);
+    }
+    const iv=new Uint8Array(encObj.iv);
+    const cipherBin=Uint8Array.from(atob(encObj.cipher),c=>c.charCodeAt(0));
+    const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv},key,cipherBin);
+    return JSON.parse(new TextDecoder().decode(pt));
+  }catch(e){return null;}
 }
 
-/* ═══ Users ═══ */
-async function createUser(username, uid, gid, home, shell, password, groups) {
-  groups = groups || [];
-  if (passwdDB.has(username)) return { ok: false, error: "user exists" };
-  passwdDB.set(username, { username, uid, gid, home, shell, created: Date.now() });
-  const salt = generateSalt();
-  const hash = await hashPassword(password, salt);
-  shadowDB.set(username, { hash, salt, lastChange: Date.now() });
-  groups.forEach(g => {
-    if (groupDB.has(g)) {
-      const grp = groupDB.get(g);
-      if (!grp.members.includes(username)) grp.members.push(username);
+/* ═══ IndexedDB ═══ */
+function openDB(){
+  return new Promise((res,rej)=>{
+    const r=indexedDB.open("omega_v101",1);
+    r.onupgradeneeded=e=>{
+      const d=e.target.result;
+      if(!d.objectStoreNames.contains("chatLog"))d.createObjectStore("chatLog",{keyPath:"id",autoIncrement:true});
+    };
+    r.onsuccess=e=>{db=e.target.result;res();};
+    r.onerror=()=>rej();
+  });
+}
+function saveMsg(msg){
+  if(!db)return;
+  try{
+    const tx=db.transaction("chatLog","readwrite");
+    tx.objectStore("chatLog").put(msg);
+  }catch(e){}
+}
+async function loadChatLog(){
+  if(!db)return [];
+  return new Promise(res=>{
+    const tx=db.transaction("chatLog","readonly");
+    const r=tx.objectStore("chatLog").getAll();
+    r.onsuccess=()=>res(r.result||[]);
+    r.onerror=()=>res([]);
+  });
+}
+
+/* ═══ P2P Core ═══ */
+async function initP2P(){
+  await generateECDHKeyPair();
+  $("nickName").value=myNickName;
+  peer=new Peer({debug:1,config:{iceServers:[
+    {urls:"stun:stun.l.google.com:19302"},
+    {urls:"stun:stun1.l.google.com:19302"},
+    {urls:"turn:openrelay.metered.ca:80",username:"openrelayproject",credential:"openrelayproject"},
+    {urls:"turn:openrelay.metered.ca:443",username:"openrelayproject",credential:"openrelayproject"}
+  ]}});
+  
+  peer.on("open",id=>{
+    myPeerId=id;
+    $("myPeerIdDisplay").textContent=id.slice(0,10)+"...";
+    $("p2pDot").className="status-indicator bg-cyber-green animate-pulse";
+    showNotif("🌐 متصل بالشبكة المشفرة!");
+    renderRoomList();
+    loadAndRenderHistory();
+  });
+  
+  peer.on("connection",conn=>setupConnection(conn));
+  peer.on("call",call=>handleIncomingCall(call));
+  peer.on("error",err=>showNotif("⚠️ "+err.type));
+}
+
+function setupConnection(conn){
+  conn.on("open",async()=>{
+    meshConnections[conn.peer]=conn;
+    updateMeshUI();
+    const pubKey=await exportPublicKey();
+    conn.send({type:"HANDSHAKE",sender:myPeerId,nickname:myNickName,pubKey,knownPeers:Object.keys(meshConnections)});
+  });
+  conn.on("data",async data=>{
+    if(data.type==="HANDSHAKE"){
+      await deriveSharedKey(data.pubKey,data.sender);
+      if(Array.isArray(data.knownPeers)){
+        data.knownPeers.forEach(pId=>{if(pId!==myPeerId&&!meshConnections[pId])connectToPeerId(pId);});
+      }
+      showNotif("🤝 اكتملت المصافحة مع: "+data.nickname);
+      startQualityMonitor(conn.peer);
+      return;
+    }
+    if(data.encryptedPayload){
+      const key=sharedKeys[conn.peer];
+      const dec=await decryptData(data.encryptedPayload,key);
+      if(dec)handleMeshPacket(dec,conn.peer);
     }
   });
-  VFS[home] = { type: "dir", children: [], owner: username, group: gid, mode: "rwxr-xr-x" };
-  return { ok: true };
-}
-async function createGroup(name, gid, members) {
-  members = members || [];
-  if (groupDB.has(name)) return { ok: false };
-  groupDB.set(name, { name, gid, members: members.slice() });
-  return { ok: true };
-}
-async function deleteUser(username) {
-  if (username === "root") return { ok: false, error: "cannot delete root" };
-  if (!passwdDB.has(username)) return { ok: false, error: "user not found" };
-  const u = passwdDB.get(username);
-  passwdDB.delete(username);
-  shadowDB.delete(username);
-  groupDB.forEach(g => { g.members = g.members.filter(m => m !== username); });
-  return { ok: true, home: u.home };
-}
-async function changePassword(username, newPassword) {
-  const salt = generateSalt();
-  const hash = await hashPassword(newPassword, salt);
-  shadowDB.set(username, { hash, salt, lastChange: Date.now() });
-  return true;
-}
-function getUserGroups(username) {
-  const groups = [];
-  const user = passwdDB.get(username);
-  if (user) {
-    groupDB.forEach(g => {
-      if (g.gid === user.gid && groups.indexOf(g.name) === -1) groups.unshift(g.name);
-    });
-  }
-  groupDB.forEach(g => {
-    if (g.members.indexOf(username) !== -1 && groups.indexOf(g.name) === -1) groups.push(g.name);
+  conn.on("close",()=>{
+    delete meshConnections[conn.peer];
+    delete sharedKeys[conn.peer];
+    if(qualityIntervals[conn.peer]){clearInterval(qualityIntervals[conn.peer]);delete qualityIntervals[conn.peer];}
+    updateMeshUI();
+    updateQualityUI();
   });
-  return groups;
-}
-const isRoot = () => session.username === "root";
-const getCurrentUser = () => passwdDB.get(session.username);
-function canSudo() {
-  if (!session.username) return false;
-  if (isRoot()) return true;
-  const gs = getUserGroups(session.username);
-  return gs.indexOf("sudo") !== -1 || gs.indexOf("wheel") !== -1;
 }
 
-/* ═══ Init ═══ */
-async function initSystemState() {
-  VFS = {
-    "/":                  { type: "dir",  children: ["root","etc","home","var","usr","tmp","bin"], owner: "root", group: 0, mode: "rwxr-xr-x" },
-    "/etc":               { type: "dir",  children: ["passwd","shadow","group","hosts","motd"], owner: "root", group: 0, mode: "rwxr-xr-x" },
-    "/etc/passwd":        { type: "file", content: "(managed)", restricted: true, owner: "root", group: 0, mode: "rw-r--r--" },
-    "/etc/shadow":        { type: "file", content: "(protected)", restricted: true, owner: "root", group: 0, mode: "rw-------" },
-    "/etc/group":         { type: "file", content: "(managed)", restricted: false, owner: "root", group: 0, mode: "rw-r--r--" },
-    "/etc/hosts":         { type: "file", content: "127.0.0.1  localhost\n10.0.0.1  lafi-munir.local", restricted: false, owner: "root", group: 0, mode: "rw-r--r--" },
-    "/etc/motd":          { type: "file", content: "لافي منير — SOVEREIGN OS v27.0", restricted: false, owner: "root", group: 0, mode: "rw-r--r--" },
-    "/root":              { type: "dir",  children: ["readme.txt"], owner: "root", group: 0, mode: "rwx------" },
-    "/root/readme.txt":   { type: "file", content: "لافي منير — Protected Edition", restricted: false, owner: "root", group: 0, mode: "rw-r--r--" },
-    "/home":              { type: "dir",  children: [], owner: "root", group: 0, mode: "rwxr-xr-x" },
-    "/usr":               { type: "dir",  children: ["bin"], owner: "root", group: 0, mode: "rwxr-xr-x" },
-    "/usr/bin":           { type: "dir",  children: [], owner: "root", group: 0, mode: "rwxr-xr-x" },
-    "/bin":               { type: "dir",  children: [], owner: "root", group: 0, mode: "rwxr-xr-x" },
-    "/var":               { type: "dir",  children: ["log"], owner: "root", group: 0, mode: "rwxr-xr-x" },
-    "/var/log":           { type: "dir",  children: ["auth.log","syslog"], owner: "root", group: 0, mode: "rwxr-xr-x" },
-    "/var/log/auth.log":  { type: "file", content: "", restricted: false, owner: "root", group: 0, mode: "rw-r-----" },
-    "/var/log/syslog":    { type: "file", content: "[INFO] boot ok", restricted: false, owner: "root", group: 0, mode: "rw-r--r--" },
-    "/tmp":               { type: "dir",  children: [], owner: "root", group: 0, mode: "rwxrwxrwx" }
+function connectToPeerManual(){
+  const t=$("peerTargetInput").value.trim();
+  if(t){connectToPeerId(t);$("peerTargetInput").value="";}
+}
+function connectToPeerId(targetId){
+  if(targetId===myPeerId||meshConnections[targetId])return;
+  const conn=peer.connect(targetId,{reliable:true});
+  setupConnection(conn);
+}
+
+async function broadcastMeshPacket(pkt){
+  for(const pId in meshConnections){
+    const conn=meshConnections[pId];
+    if(conn&&conn.open){
+      const enc=await encryptData(pkt,sharedKeys[pId]);
+      conn.send({encryptedPayload:enc});
+    }
+  }
+}
+
+function handleMeshPacket(pkt,sender){
+  if(pkt.kind==="CHAT_MSG"){
+    if(!rooms[pkt.roomId])rooms[pkt.roomId]={name:pkt.roomId,messages:[]};
+    rooms[pkt.roomId].messages.push(pkt);
+    if(activeRoom===pkt.roomId)appendMsgUI(pkt,false);
+    saveMsg(pkt);
+  } else if(pkt.kind==="FILE_SHARE"){
+    if(!rooms[pkt.roomId])rooms[pkt.roomId]={name:pkt.roomId,messages:[]};
+    rooms[pkt.roomId].messages.push(pkt);
+    if(activeRoom===pkt.roomId)appendFileUI(pkt,false);
+    saveMsg(pkt);
+  } else if(pkt.kind==="ROOM_CREATE"){
+    if(!rooms[pkt.roomKey]){rooms[pkt.roomKey]={name:pkt.roomName,pass:pkt.roomPass,messages:[]};renderRoomList();}
+  }
+}
+
+function updateMeshUI(){
+  const c=Object.keys(meshConnections).length;
+  $("meshCount").textContent=c;
+  $("roomPeerCount").textContent="العقد: "+c;
+}
+
+/* ═══ Quality Monitor ═══ */
+function startQualityMonitor(peerId){
+  if(qualityIntervals[peerId])clearInterval(qualityIntervals[peerId]);
+  qualityIntervals[peerId]=setInterval(()=>{
+    const call=mediaCalls[peerId];
+    if(!call||!call.peerConnection){updateQualityUI();return;}
+    call.peerConnection.getStats().then(stats=>{
+      let rtt=0,lost=0;
+      stats.forEach(r=>{
+        if(r.type==="candidate-pair"&&r.state==="succeeded")rtt=(r.currentRoundTripTime||0)*1000;
+        if(r.type==="inbound-rtp"&&r.kind==="video")lost=r.packetsLost||0;
+      });
+      updateQualityUI(peerId,rtt,lost);
+    }).catch(()=>{});
+  },3000);
+}
+function updateQualityUI(peerId,rtt,lost){
+  const box=$("qualityList");
+  const ids=Object.keys(qualityIntervals);
+  if(ids.length===0){box.innerHTML="لا اتصالات";return;}
+  box.innerHTML=ids.map(id=>{
+    const r=rtt||0,l=lost||0;
+    const icon=r>300||l>30?"🔴":r>150||l>10?"🟡":"🟢";
+    return `<div>${icon} ${id.slice(0,6)}... | RTT: ${Math.round(r)}ms | Lost: ${l}</div>`;
+  }).join("");
+}
+
+/* ═══ UI Rendering ═══ */
+function copyMyId(){
+  if(myPeerId){navigator.clipboard.writeText(myPeerId);showNotif("📋 تم نسخ معرفك");}
+}
+function renderRoomList(){
+  const box=$("roomList");
+  box.innerHTML="";
+  for(const k in rooms){
+    const r=rooms[k];
+    const div=document.createElement("div");
+    div.className=`p-2 rounded-lg cursor-pointer flex justify-between items-center ${activeRoom===k?"bg-cyber-cyan/15 border border-cyber-cyan text-cyber-cyan font-bold":"bg-cyber-bg border border-cyber-border hover:border-cyber-cyan/50 text-gray-300"}`;
+    div.onclick=()=>selectRoom(k);
+    div.innerHTML=`<span class="truncate"># ${r.name}</span>${r.pass?'<i class="fa-solid fa-key text-[10px] text-cyber-gold"></i>':''}`;
+    box.appendChild(div);
+  }
+}
+function selectRoom(k){
+  activeRoom=k;
+  renderRoomList();
+  $("currentRoomTitle").textContent="# "+rooms[k].name;
+  $("messagesContainer").innerHTML='<div class="msg-sys">🛡️ قناة مشفرة عبر Mesh</div>';
+  rooms[k].messages.forEach(m=>{
+    if(m.kind==="CHAT_MSG")appendMsgUI(m,m.senderId===myPeerId);
+    else if(m.kind==="FILE_SHARE")appendFileUI(m,m.senderId===myPeerId);
+  });
+}
+
+async function loadAndRenderHistory(){
+  const history=await loadChatLog();
+  history.slice(-20).forEach(m=>{
+    if(!rooms[m.roomId])rooms[m.roomId]={name:m.roomId,messages:[]};
+    rooms[m.roomId].messages.push(m);
+  });
+  selectRoom(activeRoom);
+}
+
+function promptCreateRoom(){$("roomModal").classList.remove("hidden");}
+function closeRoomModal(){$("roomModal").classList.add("hidden");}
+function confirmCreateRoom(){
+  const n=$("modalRoomName").value.trim();
+  const p=$("modalRoomPass").value.trim();
+  if(!n)return;
+  const k="room_"+Date.now();
+  rooms[k]={name:n,pass:p,messages:[]};
+  broadcastMeshPacket({kind:"ROOM_CREATE",roomKey:k,roomName:n,roomPass:p});
+  closeRoomModal();
+  selectRoom(k);
+  showNotif("✅ غرفة: "+n);
+}
+
+/* ═══ Chat ═══ */
+function sendChatMessage(){
+  const t=$("chatInput").value.trim();
+  if(!t)return;
+  const pkt={
+    kind:"CHAT_MSG",roomId:activeRoom,senderId:myPeerId,senderNick:myNickName,
+    text:t,time:new Date().toLocaleTimeString("ar-SA",{hour:"2-digit",minute:"2-digit"})
   };
+  rooms[activeRoom].messages.push(pkt);
+  appendMsgUI(pkt,true);
+  broadcastMeshPacket(pkt);
+  saveMsg(pkt);
+  $("chatInput").value="";
+}
+function appendMsgUI(m,isMe){
+  const c=$("messagesContainer");
+  const d=document.createElement("div");
+  d.className=`msg-bubble p-3 text-xs md:text-sm ${isMe?"msg-me":"msg-peer"}`;
+  d.innerHTML=`<div class="flex justify-between items-center gap-4 border-b border-white/10 pb-1 mb-1 text-[10px] text-gray-400">
+    <span class="font-bold ${isMe?"text-cyber-magenta":"text-cyber-cyan"}">${esc(m.senderNick)}</span>
+    <span>${m.time}</span>
+  </div>
+  <div class="text-white whitespace-pre-wrap">${esc(m.text)}</div>`;
+  c.appendChild(d);
+  c.scrollTop=c.scrollHeight;
+}
 
-  await createGroup("root", 0, ["root"]);
-  await createGroup("sudo", 27, []);
-  await createGroup("wheel", 10, []);
-  await createGroup("users", 100, []);
-  await createUser("root", 0, 0, "/root", "/bin/bash", "", ["root"]);
-  await createUser("lafi", 1000, 100, "/home/lafi", "/bin/bash", "", ["users"]);
-  groupDB.get("sudo").members.push("lafi");
+/* ═══ File ═══ */
+function handleFileSelect(evt){
+  const f=evt.target.files[0];
+  if(!f)return;
+  if(f.size>25*1024*1024){showNotif("⚠️ الحد 25MB");return;}
+  const r=new FileReader();
+  r.onload=e=>{
+    const pkt={kind:"FILE_SHARE",roomId:activeRoom,senderId:myPeerId,senderNick:myNickName,
+      fileName:f.name,fileType:f.type,fileData:e.target.result,
+      time:new Date().toLocaleTimeString("ar-SA",{hour:"2-digit",minute:"2-digit"})};
+    rooms[activeRoom].messages.push(pkt);
+    appendFileUI(pkt,true);
+    broadcastMeshPacket(pkt);
+    saveMsg(pkt);
+  };
+  r.readAsDataURL(f);
+}
+function appendFileUI(f,isMe){
+  const c=$("messagesContainer");
+  const d=document.createElement("div");
+  d.className=`msg-bubble p-3 text-xs md:text-sm ${isMe?"msg-me":"msg-peer"}`;
+  let prev="";
+  if(f.fileType.startsWith("image/"))prev=`<img src="${f.fileData}" class="max-h-48 rounded border border-cyber-border my-2">`;
+  d.innerHTML=`<div class="flex justify-between items-center gap-4 border-b border-white/10 pb-1 mb-1 text-[10px] text-gray-400">
+    <span class="font-bold ${isMe?"text-cyber-magenta":"text-cyber-cyan"}">${esc(f.senderNick)}</span>
+    <span>${f.time}</span>
+  </div>${prev}
+  <div class="flex items-center justify-between gap-2 bg-black/40 p-2 rounded border border-cyber-border">
+    <span class="truncate font-mono text-[11px]">${esc(f.fileName)}</span>
+    <a href="${f.fileData}" download="${f.fileName}" class="bg-cyber-cyan text-black font-bold px-2 py-1 rounded text-[10px]">💾 تحميل</a>
+  </div>`;
+  c.appendChild(d);
+  c.scrollTop=c.scrollHeight;
+}
 
-  VFS["/home/lafi/workspace"] = { type: "dir", children: [], owner: "lafi", group: 100, mode: "rwxr-xr-x" };
-  VFS["/home/lafi"].children.push("workspace");
-
-  const welcomeScript = '#!/bin/bash\nNAME="لافي منير"\necho "مرحباً $NAME في نظام SOVEREIGN OS"\nfor i in 1 2 3; do\n  echo "المرحلة $i"\ndone\necho "اكتمل التنفيذ ✅"\n';
-  VFS["/home/lafi/welcome.sh"] = { type: "file", content: welcomeScript, restricted: false, owner: "lafi", group: 100, mode: "rwxr-xr-x" };
-  VFS["/home/lafi"].children.push("welcome.sh");
-  VFS["/root/welcome.sh"] = { type: "file", content: welcomeScript, restricted: false, owner: "root", group: 0, mode: "rwxr-xr-x" };
-  VFS["/root"].children.push("welcome.sh");
-
-  const genesisData = "GENESIS_LAFI_MUNIR_V27";
-  const gh = await computeSHA256("0000000000" + genesisData + 1711000000000);
-  try {
-    const saved = localStorage.getItem('sovereign_chain_v27_nopass');
-    if (saved) {
-      const p = JSON.parse(saved);
-      if (Array.isArray(p) && p.length > 0 && p[0].hash) blockchain = p;
-      else throw new Error("invalid");
-    } else {
-      blockchain = [{ index: 0, timestamp: 1711000000000, data: genesisData, prevHash: "0000000000", hash: gh }];
-      localStorage.setItem('sovereign_chain_v27_nopass', JSON.stringify(blockchain));
-    }
-  } catch (e) {
-    blockchain = [{ index: 0, timestamp: 1711000000000, data: genesisData, prevHash: "0000000000", hash: gh }];
+/* ═══ Calls ═══ */
+async function startVoiceCall(){
+  try{
+    localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+    initiateMediaCall();
+  }catch(e){showNotif("❌ ميكروفون مرفوض");}
+}
+async function startVideoCall(){
+  try{
+    localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:{width:1280,height:720}});
+    $("localVideo").srcObject=localStream;
+    $("videoStage").classList.remove("hidden");
+    initiateMediaCall();
+  }catch(e){showNotif("❌ كاميرا مرفوضة");}
+}
+async function shareScreenCall(){
+  try{
+    screenStream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true});
+    localStream=screenStream;
+    $("localVideo").srcObject=screenStream;
+    $("videoStage").classList.remove("hidden");
+    initiateMediaCall();
+  }catch(e){showNotif("❌ تم إلغاء المشاركة");}
+}
+function initiateMediaCall(){
+  $("endCallBtn").classList.remove("hidden");
+  for(const pId in meshConnections){
+    const call=peer.call(pId,localStream);
+    handleCallStream(call);
   }
-  $('chainStat').textContent = 'Blocks: ' + blockchain.length;
-  renderUserList();
+  showNotif("📞 اتصال بكافة العقود...");
 }
-
-/* ═══ 3D Matrix ═══ */
-let angle = 0;
-function drawMatrix() {
-  ctx.fillStyle = '#020005';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  const cx = canvas.width / 2, cy = canvas.height / 2, size = 30;
-  angle += 0.02;
-  const cos = Math.cos(angle), sin = Math.sin(angle);
-  for (let x = -2; x <= 2; x++) {
-    for (let y = -2; y <= 2; y++) {
-      const px = x * size, py = y * size;
-      const pz = Math.sin(x + y + angle * 2) * 18;
-      const rx = px * cos - pz * sin;
-      const alpha = Math.max(0.2, Math.min(1, (pz + 40) / 80));
-      ctx.fillStyle = 'rgba(0,242,254,' + alpha + ')';
-      ctx.fillRect(cx + rx - 2, cy + py - 2, 4, 4);
-    }
+function handleIncomingCall(call){
+  showNotif("📞 مكالمة من: "+call.peer.slice(0,6));
+  if(confirm("هل تقبل المكالمة؟")){
+    navigator.mediaDevices.getUserMedia({audio:true,video:true}).then(stream=>{
+      localStream=stream;
+      $("localVideo").srcObject=localStream;
+      $("videoStage").classList.remove("hidden");
+      $("endCallBtn").classList.remove("hidden");
+      call.answer(localStream);
+      handleCallStream(call);
+    }).catch(()=>{
+      call.answer();
+      handleCallStream(call);
+    });
+  } else {
+    call.close();
+    showNotif("📴 تم رفض المكالمة");
   }
-  requestAnimationFrame(drawMatrix);
 }
-drawMatrix();
-
-/* ═══ Print + UI ═══ */
-function printTerm(text, color, capture) {
-  if (color === undefined) color = "#e5e7eb";
-  if (capture === undefined) capture = false;
-  if (capture) { terminalBuffer.push({ text, color }); return; }
-  const line = document.createElement('div');
-  line.style.color = color;
-  line.textContent = text;
-  $('termBody').appendChild(line);
-  $('termBody').scrollTop = $('termBody').scrollHeight;
-}
-function updatePrompt() {
-  const p = $('promptText');
-  if (nanoState.active) { p.textContent = "nano>"; p.style.color = "#ffd700"; return; }
-  const sym = isRoot() ? "#" : "$";
-  p.textContent = session.username + "@lafi:" + currentPath + sym;
-  p.style.color = isRoot() ? "#ff007f" : "#38bdf8";
-}
-function updateStats() {
-  const u = getCurrentUser();
-  $('userStat').textContent = 'User: ' + session.username;
-  $('uidStat').textContent = u ? ('UID: ' + u.uid + ' (GID ' + u.gid + ')') : 'UID: --';
-  $('pathStat').textContent = 'PWD: ' + currentPath;
-  $('userStat').className = isRoot() ? "stat-item root" : "stat-item";
-  $('uidStat').className = isRoot() ? "stat-item root" : "stat-item";
-  $('editStat').style.display = nanoState.active ? "" : "none";
-  updatePrompt();
-}
-function renderUserList() {
-  const panel = $('varsDisplay');
-  let html = "";
-  passwdDB.forEach(u => {
-    const gs = getUserGroups(u.username).join(",");
-    html += '<div style="padding:2px 0;border-bottom:1px dashed rgba(217,70,239,0.2);"><span style="color:#00f2fe;font-weight:bold;">[' + u.uid + ']</span> <b>' + u.username + '</b> <span style="color:#38bdf8;font-size:9px;">(' + gs + ')</span></div>';
+function handleCallStream(call){
+  mediaCalls[call.peer]=call;
+  call.on("stream",rs=>{
+    $("videoStage").classList.remove("hidden");
+    let v=document.getElementById("remoteVid_"+call.peer);
+    if(!v){
+      const w=document.createElement("div");
+      w.className="relative bg-black rounded-lg overflow-hidden border border-cyber-cyan";
+      w.id="remoteWrapper_"+call.peer;
+      w.innerHTML=`<video id="remoteVid_${call.peer}" autoplay playsinline class="w-full h-full object-cover"></video>
+        <span class="absolute bottom-1 right-1 bg-black/70 text-cyber-green px-1.5 py-0.5 rounded text-[9px]">${call.peer.slice(0,6)}</span>
+        <button class="absolute top-1 left-1 bg-cyber-gold text-black px-1.5 py-0.5 rounded text-[9px] font-bold" onclick="popOutVideo('${call.peer}')" title="فيديو عائم">🔲 PiP</button>`;
+      $("remoteVideoContainer").appendChild(w);
+      v=document.getElementById("remoteVid_"+call.peer);
+    }
+    v.srcObject=rs;
   });
-  panel.innerHTML = html;
-}
-setInterval(() => {
-  const d = new Date();
-  $('timeStat').textContent = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ':' + String(d.getSeconds()).padStart(2, '0');
-}, 1000);
-
-/* ═══ Welcome ═══ */
-function showWelcome() {
-  $('termBody').innerHTML = "";
-  printTerm("╔══════════════════════════════════════════════════╗", "#00f2fe");
-  printTerm("║   لافي منير — SOVEREIGN OS v27.0                 ║", "#00f2fe");
-  printTerm("║   🔓 No Password Required | Welcome!             ║", "#00f2fe");
-  printTerm("╚══════════════════════════════════════════════════╝", "#00f2fe");
-  printTerm("", "#fff");
-  printTerm("🎉 مرحباً لافي منير!", "#00ff66");
-  printTerm("You are logged in as: root (UID 0)", "#00ff66");
-  printTerm("⚠️  أنت تعمل بصلاحيات الجذر المطلقة.", "#ffd700");
-  printTerm("", "#fff");
-  printTerm("📋 أوامر مفيدة:", "#d946ef");
-  printTerm("   help              ← قائمة الأوامر", "#38bdf8");
-  printTerm("   ls                ← عرض الملفات", "#38bdf8");
-  printTerm("   ./welcome.sh      ← تشغيل سكربت الترحيب", "#38bdf8");
-  printTerm("   cat readme.txt    ← قراءة ملف", "#38bdf8");
-  printTerm("   clear             ← مسح الشاشة", "#38bdf8");
-  printTerm("", "#fff");
-  printTerm("✨ النظام جاهز للاستخدام!", "#ffd700");
-  printTerm("", "#fff");
-  updateStats();
-  renderUserList();
-  addAuditEvent("INFO", "User 'root' auto-logged in");
-}
-
-/* ═══ su + sudo (بدون كلمة مرور) ═══ */
-async function performSu(targetUsername) {
-  if (!passwdDB.has(targetUsername)) return { ok: false, error: "su: user not found" };
-  addAuditEvent("WARN", "su: " + session.username + " -> " + targetUsername);
-  await addBlock("SU: " + session.username + " -> " + targetUsername);
-  session.username = targetUsername;
-  session.uid = passwdDB.get(targetUsername).uid;
-  currentPath = getCurrentUser().home;
-  shellVars.USER = targetUsername;
-  shellVars.HOME = getCurrentUser().home;
-  shellVars.PWD = currentPath;
-  renderUserList(); updateStats();
-  return { ok: true };
-}
-async function performSudo(cmdLine) {
-  if (!canSudo()) { addAuditEvent("ERROR", "sudo DENIED"); return { ok: false, error: session.username + " is not in sudoers file." }; }
-  const origUser = session.username, origUID = session.uid, origHome = getCurrentUser().home;
-  addAuditEvent("WARN", "sudo: '" + origUser + "' -> " + cmdLine.substring(0, 30));
-  await addBlock("SUDO: " + origUser + " -> " + cmdLine);
-  session.username = "root"; session.uid = 0;
-  shellVars.USER = "root"; shellVars.HOME = "/root";
-  updateStats();
-  await runPipeline(cmdLine, { silent: true });
-  session.username = origUser; session.uid = origUID;
-  shellVars.USER = origUser; shellVars.HOME = origHome;
-  updateStats(); renderUserList();
-  return { ok: true };
-}
-
-/* ═══ Tokenizer ═══ */
-function tokenizeShellLine(line) {
-  const tokens = []; let current = "", quote = null;
-  for (let i = 0; i < line.length; i++) {
-    const c = line[i];
-    if (quote) { if (c === quote) quote = null; else current += c; }
-    else if (c === '"' || c === "'") quote = c;
-    else if (c === ' ' || c === '\t') { if (current) { tokens.push(current); current = ""; } }
-    else if (c === '|' || c === '>' || c === '<') {
-      if (current) { tokens.push(current); current = ""; }
-      if (c === '>' && line[i + 1] === '>') { tokens.push(">>"); i++; }
-      else tokens.push(c);
-    } else current += c;
-  }
-  if (current) tokens.push(current);
-  return tokens;
-}
-
-/* ═══ Pipeline ═══ */
-async function runPipeline(line, opts) {
-  opts = opts || {};
-  if (line.indexOf(';') !== -1 && line.indexOf('"') === -1 && line.indexOf("'") === -1) {
-    const parts = line.split(';').map(s => s.trim()).filter(Boolean);
-    for (let i = 0; i < parts.length; i++) await runPipeline(parts[i], opts);
-    return;
-  }
-  const tokens = tokenizeShellLine(line);
-  if (tokens.length === 0) return;
-  const stages = [[]]; let redirect = null;
-  for (let i = 0; i < tokens.length; i++) {
-    const t = tokens[i];
-    if (t === '|') { stages.push([]); continue; }
-    if (t === '>' || t === '>>' || t === '<') { redirect = { type: t, target: tokens[i + 1] }; i++; continue; }
-    stages[stages.length - 1].push(t);
-  }
-  const hasPipe = stages.length > 1;
-  let lastOutput = [];
-  for (let s = 0; s < stages.length; s++) {
-    terminalBuffer = [];
-    const stageTokens = stages[s];
-    if (stageTokens.length === 0) continue;
-    const expanded = stageTokens.map(expandVars);
-    const cmd = expanded[0].toLowerCase();
-    const args = expanded.slice(1);
-    const capture = hasPipe || opts.silent;
-    await executeOneCommand(cmd, args, { capture, silent: opts.silent });
-    lastOutput = terminalBuffer;
-    if (s < stages.length - 1) shellVars.STDIN = lastOutput.map(l => l.text).join("\n");
-  }
-  if (hasPipe && !opts.silent) lastOutput.forEach(l => printTerm(l.text, l.color, false));
-  if (opts.silent && !hasPipe) lastOutput.forEach(l => printTerm(l.text, l.color, false));
-  if (redirect && redirect.type !== '<') {
-    const target = resolvePath(redirect.target);
-    const content = lastOutput.map(l => l.text).join("\n");
-    if (redirect.type === ">>" && VFS[target] && VFS[target].type === "file") VFS[target].content += "\n" + content;
-    else {
-      VFS[target] = { type: "file", content, restricted: false, owner: session.username, group: getCurrentUser()?.gid || 100, mode: "rw-r--r--" };
-      const lastSlash = target.lastIndexOf("/");
-      const parent = lastSlash > 0 ? target.substring(0, lastSlash) : "/";
-      const fname = target.substring(lastSlash + 1);
-      if (VFS[parent]?.children && VFS[parent].children.indexOf(fname) === -1) VFS[parent].children.push(fname);
-    }
-    if (!opts.silent) printTerm("[REDIRECT]: " + redirect.type + " " + redirect.target, "#38bdf8");
-  }
-}
-function expandVars(token) {
-  return token.replace(/\$\{(\w+)\}|\$(\w+)/g, (_, a, b) => {
-    const name = a || b;
-    return shellVars[name] !== undefined ? shellVars[name] : "";
+  call.on("close",()=>{
+    delete mediaCalls[call.peer];
+    const w=document.getElementById("remoteWrapper_"+call.peer);
+    if(w)w.remove();
   });
 }
-
-/* ═══ Bash-lite ═══ */
-async function runScriptContent(content, opts) {
-  opts = opts || {};
-  const lines = content.split('\n');
-  await runBlock(lines, 0);
-  async function runBlock(lines, startIdx) {
-    let idx = startIdx;
-    while (idx < lines.length) {
-      const raw = lines[idx].trim();
-      if (!raw || raw.startsWith('#')) { idx++; continue; }
-      if (raw === 'done' || raw === 'fi' || raw === '}') return idx + 1;
-      if (raw.startsWith('for ')) {
-        const m = raw.match(/^for\s+(\w+)\s+in\s+(.+?)(?:;?\s*do)?$/);
-        if (m) {
-          const varName = m[1];
-          const items = m[2].replace(/;?\s*do$/, "").trim().split(/\s+/).map(expandVars);
-          const bodyLines = []; let depth = 1, j = idx + 1;
-          while (j < lines.length && depth > 0) {
-            const l = lines[j].trim();
-            if (l.startsWith('for ') || l.startsWith('while ')) depth++;
-            if (l === 'done') { depth--; if (depth === 0) break; }
-            bodyLines.push(lines[j]); j++;
-          }
-          for (let k = 0; k < items.length; k++) { shellVars[varName] = items[k]; await runScriptContent(bodyLines.join("\n"), opts); }
-          idx = j + 1; continue;
-        }
-      }
-      if (raw.startsWith('while ')) {
-        const m = raw.match(/^while\s+(.+?)(?:;?\s*do)?$/);
-        if (m) {
-          const condition = m[1].replace(/;?\s*do$/, "").trim();
-          const bodyLines = []; let depth = 1, j = idx + 1;
-          while (j < lines.length && depth > 0) {
-            const l = lines[j].trim();
-            if (l.startsWith('while ') || l.startsWith('for ')) depth++;
-            if (l === 'done') { depth--; if (depth === 0) break; }
-            bodyLines.push(lines[j]); j++;
-          }
-          let iter = 0;
-          while (iter < 20 && evaluateCondition(condition)) { await runScriptContent(bodyLines.join("\n"), opts); iter++; }
-          idx = j + 1; continue;
-        }
-      }
-      if (raw.startsWith('if ')) {
-        const result = parseIfBlock(lines, idx);
-        for (let k = 0; k < result.branches.length; k++) {
-          const br = result.branches[k];
-          if (br.cond === null || evaluateCondition(br.cond)) { await runScriptContent(br.body.join("\n"), opts); break; }
-        }
-        idx = result.nextIdx; continue;
-      }
-      const varMatch = raw.match(/^(\w+)=(.*)$/);
-      if (varMatch && !raw.startsWith("if") && !raw.startsWith("for") && !raw.startsWith("while")) {
-        shellVars[varMatch[1]] = expandVars(varMatch[2].replace(/^["']|["']$/g, "")); idx++; continue;
-      }
-      if (raw === 'exit' || raw.startsWith('exit ')) return lines.length;
-      await runPipeline(raw, opts); idx++;
-    }
-    return idx;
-  }
-}
-function parseIfBlock(lines, startIdx) {
-  const branches = []; let idx = startIdx, currentCond = null, currentBody = [], depth = 1;
-  const firstLine = lines[idx].trim();
-  const m = firstLine.match(/^if\s+(.+?)(?:;?\s*then)?$/);
-  currentCond = m ? m[1].replace(/;?\s*then$/, "").trim() : null;
-  idx++;
-  while (idx < lines.length) {
-    const raw = lines[idx].trim();
-    if (raw.startsWith('if ')) depth++;
-    if (raw === 'fi') {
-      depth--;
-      if (depth === 0) {
-        if (currentBody.length > 0 || currentCond !== null) branches.push({ cond: currentCond, body: currentBody.slice() });
-        return { branches, nextIdx: idx + 1 };
-      }
-    }
-    if (depth === 1) {
-      if (raw === 'else') { branches.push({ cond: currentCond, body: currentBody.slice() }); currentCond = null; currentBody = []; idx++; continue; }
-      if (raw.startsWith('elif ')) {
-        branches.push({ cond: currentCond, body: currentBody.slice() });
-        const em = raw.match(/^elif\s+(.+?)(?:;?\s*then)?$/);
-        currentCond = em ? em[1].replace(/;?\s*then$/, "").trim() : null;
-        currentBody = []; idx++; continue;
-      }
-    }
-    currentBody.push(lines[idx]); idx++;
-  }
-  branches.push({ cond: currentCond, body: currentBody.slice() });
-  return { branches, nextIdx: idx };
-}
-function evaluateCondition(cond) {
-  cond = cond.trim();
-  let m = cond.match(/^\[\s*(.+?)\s*\]$/) || cond.match(/^test\s+(.+)$/);
-  if (m) cond = m[1].trim();
-  const sq = s => s.replace(/^["']|["']$/g, '');
-  m = cond.match(/^(.+?)\s+(==|=)\s+(.+)$/);
-  if (m) return expandVars(sq(m[1].trim())) === expandVars(sq(m[3].trim()));
-  m = cond.match(/^(.+?)\s+!=\s+(.+)$/);
-  if (m) return expandVars(sq(m[1].trim())) !== expandVars(sq(m[2].trim()));
-  m = cond.match(/^(.+?)\s+-eq\s+(.+)$/);
-  if (m) return parseInt(expandVars(m[1]), 10) === parseInt(expandVars(m[2]), 10);
-  m = cond.match(/^(.+?)\s+-ne\s+(.+)$/);
-  if (m) return parseInt(expandVars(m[1]), 10) !== parseInt(expandVars(m[2]), 10);
-  m = cond.match(/^(.+?)\s+-gt\s+(.+)$/);
-  if (m) return parseInt(expandVars(m[1]), 10) > parseInt(expandVars(m[2]), 10);
-  m = cond.match(/^(.+?)\s+-lt\s+(.+)$/);
-  if (m) return parseInt(expandVars(m[1]), 10) < parseInt(expandVars(m[2]), 10);
-  m = cond.match(/^-z\s+(.+)$/);
-  if (m) return expandVars(m[1]).length === 0;
-  m = cond.match(/^-n\s+(.+)$/);
-  if (m) return expandVars(m[1]).length > 0;
-  return !!cond && cond !== "0" && cond !== "false";
+function endMediaCall(){
+  if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null;}
+  for(const p in mediaCalls)mediaCalls[p].close();
+  mediaCalls={};
+  $("videoStage").classList.add("hidden");
+  $("endCallBtn").classList.add("hidden");
+  showNotif("📴 انتهت المكالمات");
 }
 
-/* ═══ VFS Helpers ═══ */
-function resolvePath(arg) {
-  if (!arg) return currentPath;
-  if (arg === "~") return getCurrentUser()?.home || currentPath;
-  if (arg.startsWith("/")) { const cleaned = arg.replace(/\/+/g, "/").replace(/\/$/, ""); return cleaned || "/"; }
-  if (arg === "..") {
-    if (currentPath === "/") return "/";
-    const parts = currentPath.split("/").filter(Boolean); parts.pop();
-    return parts.length === 0 ? "/" : "/" + parts.join("/");
-  }
-  if (arg === ".") return currentPath;
-  return currentPath === "/" ? "/" + arg : currentPath + "/" + arg;
-}
-function checkPermission(node, action) {
-  action = action || "read";
-  if (!node) return false;
-  if (isRoot()) return true;
-  const user = getCurrentUser();
-  if (!user) return false;
-  if (node.owner === user.username) return true;
-  const gs = getUserGroups(user.username);
-  for (let i = 0; i < gs.length; i++) {
-    const g = groupDB.get(gs[i]);
-    if (g && g.gid === node.group) return true;
-  }
-  if (node.mode && node.mode.length >= 9) {
-    const pub = node.mode.substring(6);
-    if (action === "read" && pub[0] === "r") return true;
-    if (action === "write" && pub[1] === "w") return true;
-    if (action === "exec" && pub[2] === "x") return true;
-  }
-  return false;
-}
-
-/* ═══ Commands ═══ */
-async function executeOneCommand(cmd, args, opts) {
-  opts = opts || {};
-  const cap = opts.capture || false;
-  const out = (t, c) => printTerm(t, c, cap);
-  if (shellFunctions[cmd]) { await runScriptContent(shellFunctions[cmd], opts); return; }
-  switch (cmd) {
-    case "echo": {
-      let text = args.join(" ").replace(/^["']|["']$/g, "");
-      text = expandVars(text).replace(/\\n/g, "\n");
-      if (!text && shellVars.STDIN) text = shellVars.STDIN;
-      out(text, "#00ff66"); break;
-    }
-    case "printf": out(expandVars(args.join(" ")).replace(/\\n/g, "\n"), "#00ff66"); break;
-    case "clear": if (!cap) $('termBody').innerHTML = ""; break;
-    case "help": case "مساعدة":
-      out("═══ نظام لافي منير — الأوامر ═══", "#ffd700");
-      out(" 🐚 bash: VAR=val | if/then/fi | for/do/done", "#38bdf8");
-      out(" 🔗 Pipes: cmd1 | cmd2   Redirection: > >> <", "#38bdf8");
-      out(" 📝 nano | 🐚 ./script.sh | 📊 audit", "#38bdf8");
-      out(" 👤 whoami, id, su, sudo, useradd", "#38bdf8");
-      out(" 📁 ls, cd, cat, write, rm, mkdir", "#38bdf8");
-      out(" 🔎 grep, wc, head, tail, sort, uniq", "#38bdf8");
-      out(" 🔒 encrypt, decrypt, ps, sysinfo", "#38bdf8");
-      out(" ⛓️  chain, block, verify, logout", "#38bdf8");
-      break;
-    case "whoami": out(session.username, "#00ff66"); break;
-    case "pwd": out(currentPath, "#00ff66"); break;
-    case "id": {
-      const u = getCurrentUser();
-      const gs = getUserGroups(u.username);
-      out("uid=" + u.uid + "(" + u.username + ") gid=" + u.gid + " groups=" + gs.join(","), "#00ff66"); break;
-    }
-    case "groups": out(getUserGroups(session.username).join(" "), "#00ff66"); break;
-    case "logout": case "exit":
-      if (!cap) {
-        session.username = "root"; session.uid = 0;
-        currentPath = "/root";
-        addAuditEvent("INFO", "Logout requested - auto re-login as root");
-        printTerm("✅ Auto re-login as root", "#00ff66");
-        updateStats();
-      }
-      break;
-    case "env": case "set": Object.keys(shellVars).forEach(k => out(k + "=" + shellVars[k], "#38bdf8")); break;
-    case "su": {
-      const t = args[0];
-      if (!t) { out("su: usage: su <user>", "#ff0844"); break; }
-      if (!passwdDB.has(t)) { out("su: user not found", "#ff0844"); break; }
-      // بدون كلمة مرور
-      const r = await performSu(t);
-      if (r.ok) out("✅ Now: " + session.username, "#00ff66");
-      else out("su: " + r.error, "#ff0844");
-      break;
-    }
-    case "sudo": {
-      if (args.length === 0) { out("sudo: usage: sudo <cmd>", "#ff0844"); break; }
-      if (!cap) { const r = await performSudo(args.join(" ")); if (!r.ok) printTerm("sudo: " + r.error, "#ff0844"); }
-      break;
-    }
-    case "useradd": {
-      if (!isRoot()) { out("useradd: Permission denied", "#ff0844"); break; }
-      let uid = null, username = null, groups = ["users"];
-      for (let i = 0; i < args.length; i++) {
-        if (args[i] === "-u") uid = parseInt(args[++i], 10);
-        else if (args[i] === "-G") groups = args[++i].split(",");
-        else if (!username) username = args[i];
-      }
-      if (!username) { out("useradd: username required", "#ff0844"); break; }
-      if (passwdDB.has(username)) { out("useradd: exists", "#ff0844"); break; }
-      if (uid === null) { uid = 1000; let taken = true; while (taken) { taken = false; passwdDB.forEach(u => { if (u.uid === uid) taken = true; }); if (taken) uid++; } }
-      const r = await createUser(username, uid, 100, "/home/" + username, "/bin/bash", "", groups);
-      if (!r.ok) { out("useradd: " + r.error, "#ff0844"); break; }
-      if (VFS["/home"]) VFS["/home"].children.push(username);
-      addAuditEvent("WARN", "New user '" + username + "'");
-      await addBlock("USERADD: " + username);
-      out("✅ User '" + username + "' created (UID " + uid + ", no password)", "#00ff66");
-      renderUserList(); break;
-    }
-    case "userdel": {
-      if (!isRoot()) { out("userdel: root only", "#ff0844"); break; }
-      const r = await deleteUser(args[0]);
-      if (!r.ok) { out("userdel: " + r.error, "#ff0844"); break; }
-      if (VFS["/home"]) VFS["/home"].children = VFS["/home"].children.filter(c => c !== args[0]);
-      await addBlock("USERDEL: " + args[0]);
-      out("✅ User deleted", "#00ff66"); renderUserList(); break;
-    }
-    case "passwd": {
-      out("passwd: disabled in this edition (no password)", "#ffd700"); break;
-    }
-    case "ls": {
-      const target = args.find(a => !a.startsWith("-")) || currentPath;
-      const fp = resolvePath(target);
-      const node = VFS[fp];
-      if (!node) { out("ls: " + target + ": No such file", "#ff0844"); break; }
-      if (node.type === "file") { out(target, "#e5e7eb"); break; }
-      if (node.children.length === 0) { out("(فارغ)", "#38bdf8"); break; }
-      node.children.forEach(item => {
-        const cp = fp === "/" ? "/" + item : fp + "/" + item;
-        const child = VFS[cp]; if (!child) return;
-        const icon = child.type === "dir" ? "📁" : "📄";
-        out(" " + (child.mode || "rw-r--r--") + "  " + (child.owner || "root") + "  " + icon + " " + item,
-            child.type === "dir" ? "#38bdf8" : "#e5e7eb");
-      }); break;
-    }
-    case "cd": {
-      const target = resolvePath(args[0] || (isRoot() ? "/root" : "/home/" + session.username));
-      if (!VFS[target] || VFS[target].type !== "dir") { out("cd: no such directory", "#ff0844"); break; }
-      if (!checkPermission(VFS[target], "exec")) { out("cd: Permission denied", "#ff0844"); break; }
-      currentPath = target; shellVars.PWD = currentPath; updateStats(); break;
-    }
-    case "cat": {
-      if (!args[0]) {
-        if (shellVars.STDIN) { shellVars.STDIN.split("\n").forEach(l => out(l, "#00ff66")); break; }
-        out("cat: usage", "#ff0844"); break;
-      }
-      const fp = resolvePath(args[0]);
-      if (fp === "/etc/passwd") { passwdDB.forEach(u => out(u.username + ":x:" + u.uid + ":" + u.gid + "::" + u.home + ":" + u.shell, "#00ff66")); break; }
-      if (fp === "/etc/group") { groupDB.forEach(g => out(g.name + ":x:" + g.gid + ":" + g.members.join(","), "#00ff66")); break; }
-      if (fp === "/etc/shadow") {
-        if (!isRoot()) { out("cat: /etc/shadow: Permission denied", "#ff0844"); break; }
-        shadowDB.forEach((s, n) => out(n + ":*:*:*:*:*:*", "#ff007f")); break;
-      }
-      if (!VFS[fp] || VFS[fp].type !== "file") { out("cat: no such file", "#ff0844"); break; }
-      if (!checkPermission(VFS[fp], "read")) { out("cat: Permission denied", "#ff0844"); break; }
-      VFS[fp].content.split("\n").forEach(l => out(l, "#00ff66")); break;
-    }
-    case "write": {
-      if (args.length < 2) { out("write <file> <content>", "#ff0844"); break; }
-      const name = args[0];
-      if (name.indexOf("/") !== -1) { out("write: filename only", "#ff0844"); break; }
-      const txt = args.slice(1).join(" ");
-      const path = currentPath === "/" ? "/" + name : currentPath + "/" + name;
-      const dir = VFS[currentPath];
-      if (!checkPermission(dir, "write")) { out("write: Permission denied", "#ff0844"); break; }
-      VFS[path] = { type: "file", content: txt, restricted: false, owner: session.username, group: getCurrentUser().gid, mode: "rw-r--r--" };
-      if (dir.children.indexOf(name) === -1) dir.children.push(name);
-      await addBlock("WRITE: " + path);
-      out("[OK] ✅", "#00ff66"); break;
-    }
-    case "rm": {
-      if (!args[0]) { out("rm <file>", "#ff0844"); break; }
-      const fp = resolvePath(args[0]);
-      if (fp === "/" || fp === currentPath) { out("rm: cannot remove cwd", "#ff0844"); break; }
-      const node = VFS[fp];
-      if (!node) { out("rm: no such file", "#ff0844"); break; }
-      if (!checkPermission(node, "write")) { out("rm: Permission denied", "#ff0844"); break; }
-      const lastSlash = fp.lastIndexOf("/");
-      const parent = lastSlash > 0 ? fp.substring(0, lastSlash) : "/";
-      const name = fp.substring(lastSlash + 1);
-      delete VFS[fp];
-      if (VFS[parent]?.children) VFS[parent].children = VFS[parent].children.filter(c => c !== name);
-      await addBlock("RM: " + fp);
-      out("[OK] removed", "#00ff66"); break;
-    }
-    case "mkdir": {
-      if (!args[0]) { out("mkdir <dir>", "#ff0844"); break; }
-      const fp = resolvePath(args[0]);
-      if (VFS[fp]) { out("mkdir: exists", "#ff0844"); break; }
-      const lastSlash = fp.lastIndexOf("/");
-      const parent = lastSlash > 0 ? fp.substring(0, lastSlash) : "/";
-      const name = fp.substring(lastSlash + 1);
-      if (!VFS[parent] || VFS[parent].type !== "dir") { out("mkdir: parent missing", "#ff0844"); break; }
-      if (!checkPermission(VFS[parent], "write")) { out("mkdir: Permission denied", "#ff0844"); break; }
-      VFS[fp] = { type: "dir", children: [], owner: session.username, group: getCurrentUser().gid, mode: "rwxr-xr-x" };
-      if (VFS[parent].children.indexOf(name) === -1) VFS[parent].children.push(name);
-      out("[OK] " + args[0] + "/", "#00ff66"); break;
-    }
-    case "grep": {
-      const pattern = args[0]; if (!pattern) { out("grep <pattern>", "#ff0844"); break; }
-      const source = shellVars.STDIN ? shellVars.STDIN.split("\n") : [];
-      if (source.length === 0 && args[1]) { const fp = resolvePath(args[1]); if (VFS[fp]?.type === "file") source.push.apply(source, VFS[fp].content.split("\n")); }
-      let re = null; try { re = new RegExp(pattern, "i"); } catch (e) { re = null; }
-      source.forEach(l => { if (re ? re.test(l) : l.indexOf(pattern) !== -1) out(l, "#00ff66"); });
-      break;
-    }
-    case "wc": { const s = shellVars.STDIN || ""; out("  " + s.split("\n").length + "  " + s.split(/\s+/).filter(Boolean).length + "  " + s.length, "#ffd700"); break; }
-    case "head": { const n = args[0]?.startsWith("-") ? parseInt(args[0].slice(1), 10) : 10; (shellVars.STDIN || "").split("\n").slice(0, n).forEach(l => out(l, "#00ff66")); break; }
-    case "tail": { const n = args[0]?.startsWith("-") ? parseInt(args[0].slice(1), 10) : 10; (shellVars.STDIN || "").split("\n").slice(-n).forEach(l => out(l, "#00ff66")); break; }
-    case "sort": (shellVars.STDIN || "").split("\n").filter(Boolean).sort().forEach(l => out(l, "#00ff66")); break;
-    case "uniq": { let prev = null; (shellVars.STDIN || "").split("\n").forEach(l => { if (l !== prev) { out(l, "#00ff66"); prev = l; } }); break; }
-    case "encrypt": {
-      if (args.length < 2) { out("encrypt <file> <key>", "#ff0844"); break; }
-      const fp = resolvePath(args[0]);
-      if (!VFS[fp] || VFS[fp].type !== "file") { out("encrypt: no such file", "#ff0844"); break; }
-      if (!checkPermission(VFS[fp], "write")) { out("encrypt: Permission denied", "#ff0844"); break; }
-      if (VFS[fp].content.startsWith("ENC:")) { out("Already encrypted", "#ffd700"); break; }
-      VFS[fp].content = xorCipher(VFS[fp].content, args[1]);
-      await addBlock("ENCRYPT: " + args[0]);
-      out("[CIPHER] ✅", "#00ff66"); break;
-    }
-    case "decrypt": {
-      if (args.length < 2) { out("decrypt <file> <key>", "#ff0844"); break; }
-      const fp = resolvePath(args[0]);
-      if (!VFS[fp] || VFS[fp].type !== "file") { out("decrypt: no such file", "#ff0844"); break; }
-      if (!checkPermission(VFS[fp], "write")) { out("decrypt: Permission denied", "#ff0844"); break; }
-      const dec = xorDecipher(VFS[fp].content, args[1]);
-      if (dec !== null && dec.indexOf("\u0000") === -1) { VFS[fp].content = dec; await addBlock("DECRYPT: " + args[0]); out("[CIPHER] ✅", "#00ff66"); }
-      else out("[CIPHER ERROR]: wrong key", "#ff0844");
-      break;
-    }
-    case "ps":
-      out("  PID  USER        STAT   COMMAND", "#ffd700");
-      [{ pid: 1, user: "root", stat: "Ss", cmd: "systemd" }, { pid: 214, user: "root", stat: "S", cmd: "sshd" }, { pid: 501, user: "root", stat: "S", cmd: "kernel_apex" }, { pid: 1024, user: session.username || "none", stat: "R", cmd: "-bash" }].forEach(p => out("  " + String(p.pid).padEnd(5) + " " + p.user.padEnd(11) + " " + p.stat.padEnd(6) + " " + p.cmd, p.user === "root" ? "#ff007f" : "#38bdf8"));
-      break;
-    case "sysinfo":
-      out("═══ نظام لافي منير ═══", "#ffd700");
-      out("User       : " + session.username + " (UID " + session.uid + ")", "#e5e7eb");
-      out("Groups     : " + getUserGroups(session.username).join(", "), "#38bdf8");
-      out("Privilege  : " + (isRoot() ? "ROOT 👑" : canSudo() ? "SUDO-capable" : "User"), isRoot() ? "#ff007f" : "#38bdf8");
-      out("Blocks     : " + blockchain.length, "#00ff66");
-      out("Audit      : " + auditEvents.length + " events", "#38bdf8");
-      out("Edition    : NO PASSWORD (Auto-login)", "#ffd700");
-      out("Copyright  : © لافي منير 2026", "#ffd700");
-      break;
-    case "audit": {
-      if (args[0] === "clear") { auditEvents = []; addAuditEvent("WARN", "Audit cleared"); out("[AUDIT] ✅", "#00ff66"); }
-      else auditEvents.slice(0, 20).forEach(e => out("[" + e.time + "] [" + e.type + "] " + e.message, e.type === "ERROR" ? "#ff0844" : e.type === "WARN" ? "#ffd700" : "#00ff66"));
-      break;
-    }
-    case "nano": case "vim": case "vi":
-      if (!args[0]) { out("nano <file>", "#ff0844"); break; }
-      if (!cap) openNano(args[0]);
-      break;
-    case "bash": case "sh": {
-      const t = args[0];
-      if (!t) { out("bash <script.sh>", "#ff0844"); break; }
-      const fp = resolvePath(t);
-      if (!VFS[fp] || VFS[fp].type !== "file") { out("bash: no such file", "#ff0844"); break; }
-      await addBlock("EXEC: " + fp);
-      addAuditEvent("INFO", "Executed '" + fp + "'");
-      if (!cap) printTerm("[EXEC] " + t, "#38bdf8");
-      const savedPath = currentPath;
-      await runScriptContent(VFS[fp].content, opts);
-      currentPath = savedPath; break;
-    }
-    case "chain":
-      out("═══ LEDGER ═══", "#ffd700");
-      blockchain.slice(-12).forEach(b => out("[#" + b.index + "] " + b.hash.substring(0, 16) + "... | " + b.data, "#00f2fe"));
-      break;
-    case "block": { const nb = await addBlock(args.join(" ") || "Manual"); out("[MINED] Block #" + nb.index, "#00ff66"); break; }
-    case "verify": {
-      let ok = true;
-      for (let i = 1; i < blockchain.length; i++) {
-        const c = blockchain[i], p = blockchain[i - 1];
-        if (c.prevHash !== p.hash) { ok = false; break; }
-        if (c.hash !== await computeSHA256(p.hash + c.data + c.timestamp)) { ok = false; break; }
-      }
-      out(ok ? "[✅] سليمة" : "[❌] تلاعب!", ok ? "#00ff66" : "#ff0844");
-      break;
-    }
-    default:
-      if (cmd.indexOf("./") === 0 || cmd.endsWith(".sh")) {
-        const fp = resolvePath(cmd.indexOf("./") === 0 ? cmd.slice(2) : cmd);
-        if (VFS[fp]?.type === "file") {
-          if (!checkPermission(VFS[fp], "exec")) { out("bash: Permission denied", "#ff0844"); break; }
-          await addBlock("EXEC: " + fp);
-          addAuditEvent("INFO", "Executed '" + fp + "'");
-          if (!cap) printTerm("[EXEC] " + cmd, "#38bdf8");
-          const savedPath = currentPath;
-          await runScriptContent(VFS[fp].content, opts);
-          currentPath = savedPath; break;
-        }
-      }
-      out("Unknown command: " + cmd, "#ff0844");
-  }
+/* ═══ PiP Floating Video ═══ */
+let pipCounter=0;
+function popOutVideo(peerId){
+  const src=document.getElementById("remoteVid_"+peerId);
+  if(!src)return;
+  pipCounter++;
+  const pip=document.createElement("div");
+  pip.className="pip-video";
+  pip.id="pip_"+pipCounter;
+  const offset=pipCounter*30;
+  pip.style.top=(80+offset)+"px";
+  pip.style.right=(20+offset)+"px";
+  pip.innerHTML=`<button class="pip-close" onclick="this.parentElement.remove()">✖</button><video autoplay playsinline></video>`;
+  document.body.appendChild(pip);
+  const newVid=pip.querySelector("video");
+  newVid.srcObject=src.srcObject;
+  // drag
+  let drag=false,offX=0,offY=0;
+  pip.addEventListener("pointerdown",e=>{
+    if(e.target.classList.contains("pip-close"))return;
+    drag=true;
+    const r=pip.getBoundingClientRect();
+    offX=e.clientX-r.left;
+    offY=e.clientY-r.top;
+    pip.setPointerCapture(e.pointerId);
+  });
+  pip.addEventListener("pointermove",e=>{
+    if(!drag)return;
+    pip.style.left=(e.clientX-offX)+"px";
+    pip.style.top=(e.clientY-offY)+"px";
+    pip.style.right="auto";
+  });
+  pip.addEventListener("pointerup",()=>{drag=false;});
+  showNotif("🔲 فيديو عائم مُفعّل");
 }
 
-/* ═══ Nano ═══ */
-function openNano(filename) {
-  if (!filename) return;
-  const fp = resolvePath(filename);
-  const existing = VFS[fp];
-  if (existing && existing.type === "dir") { printTerm("nano: is directory", "#ff0844"); return; }
-  if (existing && !checkPermission(existing, "write")) { printTerm("nano: Permission denied", "#ff0844"); return; }
-  nanoState.active = true; nanoState.filename = filename; nanoState.fullPath = fp;
-  nanoState.originalContent = existing ? existing.content : ""; nanoState.dirty = false;
-  $('editorOverlay').classList.add('active');
-  $('editorFilename').textContent = "nano — " + filename;
-  $('editorArea').value = nanoState.originalContent;
-  setTimeout(() => $('editorArea').focus(), 50);
-  updateEditorInfo(); updateStats();
-}
-function updateEditorInfo() {
-  const v = $('editorArea').value;
-  const pos = $('editorArea').selectionStart;
-  $('editorLineInfo').textContent = "سطر: " + v.substring(0, pos).split("\n").length + " | أحرف: " + v.length;
-}
-async function saveNano() {
-  const v = $('editorArea').value;
-  const fp = nanoState.fullPath;
-  const lastSlash = fp.lastIndexOf("/");
-  const parent = lastSlash > 0 ? fp.substring(0, lastSlash) : "/";
-  const name = fp.substring(lastSlash + 1);
-  const existing = VFS[fp];
-  if (existing) existing.content = v;
-  else VFS[fp] = { type: "file", content: v, restricted: false, owner: session.username, group: getCurrentUser()?.gid || 100, mode: "rw-r--r--" };
-  if (VFS[parent]?.children && VFS[parent].children.indexOf(name) === -1) VFS[parent].children.push(name);
-  nanoState.dirty = false;
-  await addBlock("NANO_SAVE: " + fp);
-  printTerm("[NANO] 💾 Saved (" + v.length + " chars)", "#00ff66");
-}
-function closeNano() {
-  if (!nanoState.active) return;
-  if (nanoState.dirty) { if (confirm("⚠️ Unsave changes! OK to save?")) saveNano(); else return; }
-  nanoState.active = false;
-  $('editorOverlay').classList.remove('active');
-  $('cmdInput').focus(); updateStats();
-  printTerm("[NANO] 🚪 Closed", "#38bdf8");
+/* ═══ Recording ═══ */
+function toggleRecord(){
+  if(!localStream){showNotif("⚠️ لا يوجد بث");return;}
+  if(mediaRecorder&&mediaRecorder.state==="recording"){mediaRecorder.stop();return;}
+  try{
+    recChunks=[];
+    const mime=["video/webm;codecs=vp9,opus","video/webm"].find(t=>MediaRecorder.isTypeSupported(t));
+    mediaRecorder=new MediaRecorder(localStream,mime?{mimeType:mime}:undefined);
+    mediaRecorder.ondataavailable=e=>{if(e.data.size>0)recChunks.push(e.data);};
+    mediaRecorder.onstop=()=>{
+      const blob=new Blob(recChunks,{type:"video/webm"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url;a.download="omega_rec_"+Date.now()+".webm";
+      document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+      $("recBtn").classList.remove("bg-cyber-red");
+      showNotif("💾 تم حفظ التسجيل");
+    };
+    mediaRecorder.start();
+    $("recBtn").classList.add("bg-cyber-red");
+    showNotif("⏺️ بدأ التسجيل");
+  }catch(e){showNotif("❌ فشل التسجيل");}
 }
 
-/* ═══ Events ═══ */
-$('editorArea').addEventListener('input', () => { nanoState.dirty = true; updateEditorInfo(); });
-$('editorArea').addEventListener('keyup', updateEditorInfo);
-$('editorArea').addEventListener('click', updateEditorInfo);
-$('editorOverlay').addEventListener('keydown', e => {
-  if (e.ctrlKey && e.key === 's') { e.preventDefault(); saveNano(); }
-  else if (e.ctrlKey && e.key === 'x') { e.preventDefault(); closeNano(); }
-  else if (e.ctrlKey && e.key === 'k') { e.preventDefault(); $('editorArea').value = ""; nanoState.dirty = true; }
-});
-$('cmdInput').addEventListener('keydown', async e => {
-  if (e.key === 'ArrowUp' && !nanoState.active) {
-    e.preventDefault();
-    if (historyIndex > 0) { historyIndex--; $('cmdInput').value = commandHistory[historyIndex]; }
-    return;
+/* ═══ QR ═══ */
+function showQR(){
+  if(!myPeerId){showNotif("⚠️ انتظر");return;}
+  $("qrModal").classList.remove("hidden");
+  $("qrIdText").textContent=myPeerId;
+  if(typeof QRCode!=="undefined"){
+    QRCode.toCanvas($("qrCanvas"),myPeerId,{width:200,margin:1},err=>{if(err)console.error(err);});
   }
-  if (e.key === 'ArrowDown' && !nanoState.active) {
-    e.preventDefault();
-    if (historyIndex < commandHistory.length - 1) { historyIndex++; $('cmdInput').value = commandHistory[historyIndex]; }
-    else { historyIndex = commandHistory.length; $('cmdInput').value = ""; }
-    return;
-  }
-  if (e.key !== 'Enter' || nanoState.active) return;
-  const val = $('cmdInput').value;
-  $('cmdInput').value = "";
-  if (!val.trim()) return;
-  printTerm($('promptText').textContent + " " + val, "#00f2fe");
-  commandHistory.push(val); historyIndex = commandHistory.length;
-  await runPipeline(val);
-  updateStats();
-});
-document.addEventListener('click', e => {
-  if (nanoState.active) return;
-  if (e.target.closest('.editor-overlay')) return;
-  if (e.target.tagName === 'BUTTON' || e.target.tagName === 'TEXTAREA') return;
-  $('cmdInput').focus();
-});
-$('exportChainBtn').addEventListener('click', () => {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(blockchain, null, 2));
-  const a = document.createElement('a'); a.href = dataStr; a.download = "chain_" + Date.now() + ".json";
-  document.body.appendChild(a); a.click(); a.remove();
-  printTerm("[EXPORT] ✅ Chain exported", "#00ff66");
-});
-$('exportAuditBtn').addEventListener('click', () => {
-  const content = auditEvents.map(e => "[" + e.time + "] [" + e.type + "] " + e.message).join("\n");
-  const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(content);
-  const a = document.createElement('a'); a.href = dataStr; a.download = "audit_" + Date.now() + ".txt";
-  document.body.appendChild(a); a.click(); a.remove();
-  printTerm("[EXPORT] ✅ Audit exported", "#00ff66");
-});
+}
+function closeQR(){$("qrModal").classList.add("hidden");}
+
+/* ═══ Utils ═══ */
+function broadcastNameChange(){
+  myNickName=$("nickName").value.trim()||"Sovereign_Node";
+  showNotif("🏷️ تم تحديث الاسم");
+}
+function regenerateKeys(){
+  generateECDHKeyPair().then(()=>showNotif("🔑 مفاتيح جديدة"));
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+/* ═══ Matrix ═══ */
+function startMatrix(){
+  const c=$("matrixCanvas"),x=c.getContext("2d");
+  function resize(){c.width=innerWidth;c.height=innerHeight;}
+  resize();addEventListener("resize",resize);
+  const chars="LAFI-MUNIR-E2EE-MESH-01";
+  let drops=Array(Math.floor(c.width/16)).fill(1);
+  setInterval(()=>{
+    x.fillStyle="rgba(3,0,20,.08)";x.fillRect(0,0,c.width,c.height);
+    x.fillStyle="#00f2fe";x.font="12px monospace";
+    for(let i=0;i<drops.length;i++){
+      x.fillText(chars[Math.floor(Math.random()*chars.length)],i*16,drops[i]*16);
+      if(drops[i]*16>c.height&&Math.random()>.975)drops[i]=0;
+      drops[i]++;
+    }
+  },50);
+}
 
 /* ═══ Boot ═══ */
-(async function boot() {
-  try {
-    await initSystemState();
-    addAuditEvent("INFO", "System boot v27.0 — لافي منير");
-    showWelcome();  // ✅ مباشرة بدون تسجيل دخول
-  } catch (err) {
-    document.body.innerHTML = '<div style="color:#ff0844;padding:20px;font-family:monospace;">Boot failed: ' + err.message + '</div>';
-  }
-})();
+window.addEventListener("load",async()=>{
+  startMatrix();
+  await openDB();
+  await initP2P();
+});
 
-})();
+window.copyMyId=copyMyId;
+window.showQR=showQR;
+window.closeQR=closeQR;
+window.promptCreateRoom=promptCreateRoom;
+window.closeRoomModal=closeRoomModal;
+window.confirmCreateRoom=confirmCreateRoom;
+window.connectToPeerManual=connectToPeerManual;
+window.sendChatMessage=sendChatMessage;
+window.handleFileSelect=handleFileSelect;
+window.startVoiceCall=startVoiceCall;
+window.startVideoCall=startVideoCall;
+window.shareScreenCall=shareScreenCall;
+window.endMediaCall=endMediaCall;
+window.toggleRecord=toggleRecord;
+window.broadcastNameChange=broadcastNameChange;
+window.regenerateKeys=regenerateKeys;
+window.popOutVideo=popOutVideo;
 </script>
 </body>
 </html>
