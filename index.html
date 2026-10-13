@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>لافي منير — SOVEREIGN OS v36.0 ULTIMATE APEX 🛰️⚡</title>
+<title>لافي منير — SOVEREIGN OS v38.0 AI APEX 🛰️⚡</title>
 <meta name="theme-color" content="#030014">
 <meta name="author" content="لافي منير">
+<link rel="manifest" href='data:application/manifest+json,{"name":"Sovereign OS","short_name":"SOVOS","start_url":"./","display":"standalone","background_color":"%23030014","theme_color":"%23030014","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🛰️%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"}]}'>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config = {
@@ -41,6 +42,8 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', mono
 .modal-overlay { position: fixed; inset: 0; background: rgba(3,0,20,0.85); z-index: 100; display: none; align-items: center; justify-content: center; padding: 15px; backdrop-filter: blur(10px); }
 .modal-overlay.active { display: flex; }
 .modal-content { background: #0a0520; border: 2px solid #00f2fe; border-radius: 14px; padding: 16px; max-width: 900px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 0 60px rgba(0,242,254,0.4); }
+.dot-on { color: #00ff66; text-shadow: 0 0 6px #00ff66; }
+.dot-off { color: #ff007f; text-shadow: 0 0 6px #ff007f; }
 </style>
 </head>
 <body class="dark h-screen w-screen flex flex-col overflow-hidden">
@@ -54,21 +57,21 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', mono
       <i class="fa-solid fa-shield-halved"></i>
       <span class="hidden sm:inline">SOVEREIGN OS</span>
     </span>
-    <span class="bg-cyber-cyan/10 text-cyber-cyan text-[10px] md:text-xs px-1.5 py-0.5 rounded border border-cyber-cyan/30 font-bold">v36.0 ULTIMATE</span>
+    <span class="bg-cyber-cyan/10 text-cyber-cyan text-[10px] md:text-xs px-1.5 py-0.5 rounded border border-cyber-cyan/30 font-bold">v38.0 APEX</span>
     <span class="text-[10px] text-gray-400 hidden md:inline">| لافي منير</span>
   </div>
   <div class="flex items-center gap-1.5 md:gap-3 text-[10px] md:text-xs">
     <div class="hidden md:flex items-center gap-1.5 bg-cyber-bg px-2 py-1 rounded border border-cyber-border">
-      <i class="fa-solid fa-key text-cyber-gold"></i>
-      <span>E2E: <span id="cryptoStatus" class="text-cyber-green font-bold">AES-GCM</span></span>
+      <i class="fa-solid fa-brain text-cyber-magenta"></i>
+      <span>AI: <span id="aiStatus" class="dot-on font-bold">ACTIVE</span></span>
     </div>
     <div class="hidden md:flex items-center gap-1.5 bg-cyber-bg px-2 py-1 rounded border border-cyber-border">
-      <i class="fa-solid fa-database text-cyber-cyan"></i>
-      <span>DB: <span id="dbStatus" class="text-cyber-green font-bold">ON</span></span>
+      <i class="fa-solid fa-key text-cyber-gold"></i>
+      <span>DB: <span id="dbStatus" class="dot-on font-bold">ON</span></span>
     </div>
     <div class="flex items-center gap-1.5 bg-cyber-bg px-2 py-1 rounded border border-cyber-border">
       <i class="fa-solid fa-network-wired text-cyber-magenta"></i>
-      <span>P2P: <span id="p2pStatus" class="text-yellow-400 font-bold">OFF</span></span>
+      <span>P2P: <span id="p2pStatus" class="font-bold text-yellow-400">OFF</span></span>
     </div>
     <button id="btnToggleSide" class="md:hidden bg-cyber-magenta/20 text-cyber-magenta px-2 py-1 rounded border border-cyber-magenta/50">
       <i class="fa-solid fa-video"></i>
@@ -89,12 +92,13 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', mono
         <div class="flex gap-2">
           <button onclick="runCommand('clear')" class="hover:text-cyber-cyan"><i class="fa-solid fa-eraser"></i><span class="hidden md:inline"> Clear</span></button>
           <button onclick="runCommand('help')" class="hover:text-cyber-gold"><i class="fa-solid fa-circle-question"></i><span class="hidden md:inline"> Help</span></button>
+          <button onclick="runCommand('sysinfo')" class="hover:text-cyber-magenta"><i class="fa-solid fa-microchip"></i><span class="hidden md:inline"> Info</span></button>
         </div>
       </div>
       <div id="terminalOutput" class="flex-1 overflow-y-auto space-y-0.5 text-xs md:text-sm pr-1 terminal-output"></div>
       <div class="mt-1.5 flex items-center gap-2 bg-cyber-bg/80 px-2 md:px-3 py-1.5 rounded-lg border border-cyber-border">
         <span id="promptLabel" class="text-cyber-green font-bold text-xs md:text-sm whitespace-nowrap">root@sovereign:~#</span>
-        <input type="text" id="terminalInput" class="terminal-input text-xs md:text-sm" placeholder="اكتب أمراً... جرّب help أو call" autofocus autocomplete="off" spellcheck="false" autocapitalize="off">
+        <input type="text" id="terminalInput" class="terminal-input text-xs md:text-sm" placeholder="اكتب أمراً... جرّب ai، help، call" autofocus autocomplete="off" spellcheck="false" autocapitalize="off">
       </div>
     </div>
   </section>
@@ -103,7 +107,7 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', mono
     <div class="bg-cyber-panel/85 border border-cyber-border rounded-xl p-2 md:p-3 flex flex-col gap-2 shadow-xl backdrop-blur-sm">
       <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px] md:text-xs">
         <span class="font-bold text-cyber-magenta flex items-center gap-1">
-          <i class="fa-solid fa-tower-broadcast"></i> Mesh Studio
+          <i class="fa-solid fa-tower-broadcast"></i> Mesh & AI Studio
         </span>
         <span id="roomStatusBadge" class="text-gray-400 text-[9px] md:text-[10px]">ROOM: OFF</span>
       </div>
@@ -115,18 +119,18 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', mono
         <input type="password" id="roomKeyInput" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-cyber-gold outline-none" placeholder="مفتاح التشفير">
         <button onclick="applyCryptoKey()" class="bg-cyber-gold/20 hover:bg-cyber-gold/30 border border-cyber-gold text-cyber-gold px-2 py-1 rounded font-bold transition">🔐 ضبط</button>
       </div>
-      <div id="videoGrid" class="grid grid-cols-2 gap-1.5 bg-cyber-bg/60 p-1.5 rounded-lg border border-cyber-border min-h-[100px] max-h-[140px] overflow-y-auto">
-        <div class="relative bg-black/50 rounded border border-cyber-border flex items-center justify-center min-h-[60px]">
+      <div id="videoGrid" class="grid grid-cols-2 gap-1.5 bg-cyber-bg/60 p-1.5 rounded-lg border border-cyber-border min-h-[90px] max-h-[120px] overflow-y-auto">
+        <div class="relative bg-black/50 rounded border border-cyber-border flex items-center justify-center min-h-[50px]">
           <video id="localVideo" autoplay muted playsinline class="w-full h-full object-cover rounded"></video>
           <span class="absolute bottom-0.5 right-0.5 text-[8px] bg-black/70 px-1 rounded text-cyber-cyan">أنت</span>
         </div>
       </div>
       <div class="flex justify-around bg-cyber-bg/80 p-1 rounded-lg border border-cyber-border">
-        <button id="btnToggleMic" onclick="toggleMic()" class="text-[10px] md:text-xs text-gray-300 hover:text-cyber-cyan"><i class="fa-solid fa-microphone"></i></button>
-        <button id="btnToggleCam" onclick="toggleCam()" class="text-[10px] md:text-xs text-gray-300 hover:text-cyber-cyan"><i class="fa-solid fa-video"></i></button>
-        <button onclick="shareScreen()" class="text-[10px] md:text-xs text-gray-300 hover:text-cyber-gold"><i class="fa-solid fa-desktop"></i></button>
-        <button onclick="snapshot()" class="text-[10px] md:text-xs text-gray-300 hover:text-cyber-magenta"><i class="fa-solid fa-camera"></i></button>
-        <label class="text-[10px] md:text-xs text-cyber-magenta cursor-pointer">
+        <button id="btnToggleMic" onclick="toggleMic()" class="text-[10px] md:text-xs text-gray-300 hover:text-cyber-cyan" title="المايك"><i class="fa-solid fa-microphone"></i></button>
+        <button id="btnToggleCam" onclick="toggleCam()" class="text-[10px] md:text-xs text-gray-300 hover:text-cyber-cyan" title="الكاميرا"><i class="fa-solid fa-video"></i></button>
+        <button onclick="shareScreen()" class="text-[10px] md:text-xs text-gray-300 hover:text-cyber-gold" title="مشاركة الشاشة"><i class="fa-solid fa-desktop"></i></button>
+        <button onclick="snapshot()" class="text-[10px] md:text-xs text-gray-300 hover:text-cyber-magenta" title="لقطة"><i class="fa-solid fa-camera"></i></button>
+        <label class="text-[10px] md:text-xs text-cyber-magenta cursor-pointer" title="إرسال ملف">
           <i class="fa-solid fa-paperclip"></i>
           <input type="file" id="p2pFileInput" class="hidden" onchange="sendP2PFile(this.files[0])">
         </label>
@@ -140,10 +144,10 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', mono
           <div id="transferProgressBar" class="bg-cyber-cyan h-full w-0 transition-all duration-150"></div>
         </div>
       </div>
-      <div id="chatBox" class="bg-cyber-bg/90 border border-cyber-border rounded-lg p-2 h-24 overflow-y-auto space-y-0.5 text-[10px] md:text-xs terminal-output"></div>
+      <div id="chatBox" class="bg-cyber-bg/90 border border-cyber-border rounded-lg p-2 h-20 overflow-y-auto space-y-0.5 text-[10px] md:text-xs terminal-output"></div>
       <div class="flex gap-1.5">
         <input type="text" id="chatInput" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] md:text-xs text-white outline-none" placeholder="رسالة مشفرة..." onkeydown="if(event.key==='Enter') sendChatMessage()">
-        <button onclick="sendChatMessage()" class="bg-cyber-magenta hover:bg-magenta-600 text-white text-[10px] md:text-xs px-3 py-1 rounded font-bold transition">
+        <button onclick="sendChatMessage()" class="bg-cyber-magenta hover:bg-pink-600 text-white text-[10px] md:text-xs px-3 py-1 rounded font-bold transition">
           <i class="fa-solid fa-paper-plane"></i>
         </button>
       </div>
@@ -152,7 +156,10 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', mono
     <div class="flex-1 bg-cyber-panel/85 border border-cyber-border rounded-xl p-2 md:p-3 flex flex-col shadow-xl backdrop-blur-sm overflow-hidden">
       <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px] md:text-xs mb-1.5">
         <span class="font-bold text-cyber-gold flex items-center gap-1"><i class="fa-solid fa-link"></i> Ledger</span>
-        <button onclick="renderLedgerUI()" class="text-cyber-cyan hover:underline text-[9px]"><i class="fa-solid fa-rotate"></i></button>
+        <div class="flex gap-2">
+          <span id="cryptoStatus" class="text-cyber-green text-[9px]">AES-256</span>
+          <button onclick="renderLedgerUI()" class="text-cyber-cyan hover:underline text-[9px]"><i class="fa-solid fa-rotate"></i></button>
+        </div>
       </div>
       <div id="ledgerLog" class="flex-1 overflow-y-auto space-y-1.5 text-[10px] terminal-output"></div>
     </div>
@@ -170,7 +177,7 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', mono
       <div class="flex items-center gap-2 text-cyber-cyan font-bold text-sm">
         <i class="fa-solid fa-file-lines"></i> nano — <span id="nanoFilename" class="text-cyber-gold">file.txt</span>
       </div>
-      <div class="text-[10px] text-gray-400">Ctrl+S = حفظ | Ctrl+X = خروج</div>
+      <div class="text-[10px] text-gray-400">Ctrl+S = حفظ | Esc = خروج</div>
     </div>
     <textarea id="nanoBuffer" class="flex-1 bg-cyber-bg/90 text-cyber-green p-3 font-mono text-xs border border-cyber-border rounded-lg outline-none resize-none focus:border-cyber-cyan min-h-[300px]" spellcheck="false"></textarea>
     <div class="flex justify-end gap-2 mt-3">
@@ -184,45 +191,39 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', mono
 "use strict";
 
 /* ═══════════════════════════════════════════════════════════
-   SOVEREIGN OS v36.0 ULTIMATE APEX — FULL SYSTEM ENGINE
+   SOVEREIGN OS v38.0 AI APEX — FULL ENGINE
    ═══════════════════════════════════════════════════════════ */
 
 let currentUser = "root";
 let currentPath = "/root";
-let session = { uid: 0, username: "root" };
 let vfs = {};
 let passwdDB = new Map();
-let shadowDB = new Map();
-let groupDB = new Map();
 let auditLedger = [];
 let commandHistory = [];
 let historyIndex = -1;
-let shellVars = {};
-let suPending = null;
-let terminalBuffer = [];
+let shellVars = { USER: "root", HOME: "/root", SHELL: "/bin/bash", PWD: "/root" };
 let idb = null;
+let bootTime = Date.now();
 
 let cryptoKeyObj = null;
 let rawPasswordSecret = "SOVEREIGN_APEX_2026";
+let openAiApiKey = ""; // لا يخزّن في localStorage للأمان
 
 let peer = null;
 let myPeerId = null;
 let dataConnections = {};
-let videoCalls = {};
 let roomId = null;
-let roomMembers = {};
 let localStream = null;
 let screenStream = null;
-let isMicOn = true;
-let isCamOn = true;
-let isScreenSharing = false;
-let pendingFileChunks = {};
 let currentNanoPath = null;
+let pendingFileChunks = {};
+let incomingFileMeta = null;
 
 const $ = id => document.getElementById(id);
 const termOutput = $("terminalOutput");
 const termInput = $("terminalInput");
 
+/* ═══ UTILITIES ═══ */
 function notify(msg, ms = 3000) {
   const el = $("notification");
   el.textContent = msg;
@@ -245,8 +246,73 @@ async function sha256Hex(str) {
   const h = await crypto.subtle.digest("SHA-256", buf);
   return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
+function beep(freq = 440, dur = 80, type = "sine") {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator(); const g = ctx.createGain();
+    osc.type = type; osc.frequency.value = freq;
+    osc.connect(g); g.connect(ctx.destination);
+    g.gain.setValueAtTime(0.08, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur / 1000);
+    osc.start(); osc.stop(ctx.currentTime + dur / 1000);
+  } catch (e) {}
+}
 
-/* ─── AES-GCM Crypto ─── */
+/* ═══ AI ENGINE ═══ */
+async function queryAI(prompt) {
+  if (!prompt) return "⚠️ اكتب سؤالاً بعد الأمر ai";
+
+  if (openAiApiKey) {
+    try {
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + openAiApiKey },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: "You are Sovereign AI assistant inside Sovereign OS created by لافي منير. Answer concisely in Arabic." },
+            { role: "user", content: prompt }
+          ]
+        })
+      });
+      const data = await res.json();
+      if (data.choices && data.choices[0]) return data.choices[0].message.content;
+      if (data.error) return "❌ " + data.error.message;
+    } catch (e) { return "❌ فشل الاتصال: " + e.message; }
+  }
+
+  // Local fallback AI
+  const p = prompt.toLowerCase().trim();
+  if (p.includes("من أنت") || p.includes("who are you") || p.includes("اسمك")) return "🤖 أنا Sovereign AI — مساعد ذكي مدمج في نظام لافي منير. أعمل محلياً بدون اتصال، أو عبر OpenAI لو ضبطت مفتاحاً بـ setapikey.";
+  if (p.includes("مرحبا") || p.includes("hello") || p.includes("سلام")) return "👋 أهلاً بك! كيف أساعدك في Sovereign OS اليوم؟";
+  if (p.includes("كيف") || p.includes("how")) return "💡 استخدم help للأوامر، أو sysinfo لحالة النظام، أو call لبدء شبكة Mesh.";
+  if (p.includes("تشفير") || p.includes("encrypt")) return "🔒 النظام يدعم AES-GCM 256-bit + PBKDF2. اضبط المفتاح من الواجهة الجانبية.";
+  if (p.includes("وقت") || p.includes("time")) return "⏰ الوقت الحالي: " + new Date().toLocaleString("ar-DZ");
+  if (p.includes("تاريخ") || p.includes("date")) return "📅 التاريخ: " + new Date().toLocaleDateString("ar-DZ");
+  if (p.startsWith("احسب") || p.startsWith("calc") || /^[\d\s+\-*/()]+$/.test(p)) {
+    try {
+      const expr = p.replace("احسب", "").replace("calc", "").trim();
+      // eslint-disable-next-line no-new-func
+      const r = Function('"use strict";return (' + expr + ")")();
+      return "🧮 النتيجة: " + r;
+    } catch (e) {}
+  }
+  if (p.includes("نكتة") || p.includes("joke")) {
+    const jokes = ["لماذا لا يخاف المبرمج من الظلام؟ لأنه يعمل في بيئة terminal مظلمة أصلاً 😄", "كم مبرمج لتغيير مصباح؟ لا شيء، إنه مشكلة في الشبكة 🐛"];
+    return "😄 " + jokes[Math.floor(Math.random() * jokes.length)];
+  }
+  return "🤖 (محلي) فهمت: \"" + prompt + "\". ضبط setapikey <key> لتفعيل OpenAI، أو جرّب: احسب 2+2، نكتة، الوقت، من أنت.";
+}
+function speakAI(text) {
+  try {
+    if (!window.speechSynthesis) return;
+    const u = new SpeechSynthesisUtterance(text.replace(/[🤖👋💡🔒⏰📅🧮😄❌]/g, ""));
+    u.lang = "ar-SA"; u.rate = 1.0;
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+/* ═══ AES-GCM ═══ */
 async function deriveCryptoKey(secret) {
   try {
     const enc = new TextEncoder();
@@ -255,62 +321,51 @@ async function deriveCryptoKey(secret) {
       { name: "PBKDF2", salt: enc.encode("SOVEREIGN_SALT"), iterations: 100000, hash: "SHA-256" },
       km, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]
     );
-    $("cryptoStatus").textContent = "AES-GCM-256";
-    $("cryptoStatus").className = "text-cyber-green font-bold";
-  } catch (e) {}
+    const cs = $("cryptoStatus"); if (cs) cs.textContent = "AES-GCM-256";
+  } catch (e) { console.warn("crypto error", e); }
 }
 async function encryptPayload(text) {
   try {
     if (!cryptoKeyObj) await deriveCryptoKey(rawPasswordSecret);
-    const enc = new TextEncoder();
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const enc_data = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, cryptoKeyObj, enc.encode(text));
-    const combined = new Uint8Array(iv.length + enc_data.byteLength);
-    combined.set(iv, 0); combined.set(new Uint8Array(enc_data), iv.length);
+    const enc = new TextEncoder(); const iv = crypto.getRandomValues(new Uint8Array(12));
+    const encData = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, cryptoKeyObj, enc.encode(text));
+    const combined = new Uint8Array(iv.length + encData.byteLength);
+    combined.set(iv, 0); combined.set(new Uint8Array(encData), iv.length);
     let bin = ""; for (let i = 0; i < combined.length; i++) bin += String.fromCharCode(combined[i]);
     return "AES256:" + btoa(bin);
-  } catch (e) {
-    let bin = ""; const enc = new TextEncoder(); const data = enc.encode(text); const k = enc.encode(rawPasswordSecret);
-    for (let i = 0; i < data.length; i++) bin += String.fromCharCode(data[i] ^ k[i % k.length]);
-    return "XOR:" + btoa(bin);
-  }
+  } catch (e) { return text; }
 }
 async function decryptPayload(cipher) {
   try {
-    if (cipher.startsWith("XOR:")) {
-      const bin = atob(cipher.slice(4)); const enc = new TextEncoder(); const k = enc.encode(rawPasswordSecret); let out = "";
-      for (let i = 0; i < bin.length; i++) out += String.fromCharCode(bin.charCodeAt(i) ^ k[i % k.length]);
-      return out;
-    }
-    if (!cipher.startsWith("AES256:")) return cipher;
+    if (typeof cipher !== "string" || !cipher.startsWith("AES256:")) return cipher;
     if (!cryptoKeyObj) await deriveCryptoKey(rawPasswordSecret);
     const raw = atob(cipher.slice(7)); const combined = new Uint8Array(raw.length);
     for (let i = 0; i < raw.length; i++) combined[i] = raw.charCodeAt(i);
     const iv = combined.slice(0, 12); const ct = combined.slice(12);
     const dec = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, cryptoKeyObj, ct);
     return new TextDecoder().decode(dec);
-  } catch (e) { return "[فشل فك التشفير - مفتاح خاطئ]"; }
+  } catch (e) { return "[فشل فك التشفير]"; }
 }
 
-/* ─── IndexedDB ─── */
+/* ═══ IndexedDB ═══ */
 function initIndexedDB() {
   return new Promise(resolve => {
-    const req = indexedDB.open("SovereignOS_v36", 1);
-    req.onupgradeneeded = e => {
-      const d = e.target.result;
-      if (!d.objectStoreNames.contains("vfs")) d.createObjectStore("vfs");
-      if (!d.objectStoreNames.contains("ledger")) d.createObjectStore("ledger");
-      if (!d.objectStoreNames.contains("shadow")) d.createObjectStore("shadow");
-    };
-    req.onsuccess = e => { idb = e.target.result; $("dbStatus").textContent = "ON"; resolve(); };
-    req.onerror = () => { $("dbStatus").textContent = "ERR"; resolve(); };
+    try {
+      const req = indexedDB.open("SovereignOS_v38", 1);
+      req.onupgradeneeded = e => {
+        const d = e.target.result;
+        if (!d.objectStoreNames.contains("vfs")) d.createObjectStore("vfs");
+        if (!d.objectStoreNames.contains("ledger")) d.createObjectStore("ledger");
+      };
+      req.onsuccess = e => { idb = e.target.result; $("dbStatus").textContent = "ON"; $("dbStatus").className = "dot-on font-bold"; resolve(); };
+      req.onerror = () => { $("dbStatus").textContent = "ERR"; $("dbStatus").className = "dot-off font-bold"; resolve(); };
+    } catch (e) { resolve(); }
   });
 }
 async function saveVFSToIDB() {
   if (!idb) return;
   try {
-    const tx = idb.transaction("vfs", "readwrite");
-    const s = tx.objectStore("vfs"); s.clear();
+    const tx = idb.transaction("vfs", "readwrite"); const s = tx.objectStore("vfs"); s.clear();
     for (const [k, v] of Object.entries(vfs)) s.put(v, k);
   } catch (e) {}
 }
@@ -318,8 +373,7 @@ async function loadVFSFromIDB() {
   if (!idb) return null;
   return new Promise(resolve => {
     try {
-      const tx = idb.transaction("vfs", "readonly");
-      const s = tx.objectStore("vfs"); const req = s.getAllKeys();
+      const tx = idb.transaction("vfs", "readonly"); const s = tx.objectStore("vfs"); const req = s.getAllKeys();
       req.onsuccess = async () => {
         if (req.result.length === 0) return resolve(null);
         const result = {};
@@ -346,7 +400,7 @@ async function loadLedgerFromIDB() {
   });
 }
 
-/* ─── Blockchain ─── */
+/* ═══ BLOCKCHAIN LEDGER ═══ */
 async function createLedgerBlock(type, details, author) {
   author = author || currentUser;
   const prev = auditLedger.length > 0 ? auditLedger[auditLedger.length - 1] : null;
@@ -358,16 +412,6 @@ async function createLedgerBlock(type, details, author) {
   await saveLedgerToIDB();
   renderLedgerUI();
 }
-async function verifyBlockchain() {
-  for (let i = 0; i < auditLedger.length; i++) {
-    const b = auditLedger[i];
-    const expectedPrev = i === 0 ? "00000000000000000000000000000000" : auditLedger[i - 1].hash;
-    if (b.prevHash !== expectedPrev) return false;
-    const rehash = await sha256Hex(b.index + "|" + b.timestamp + "|" + b.type + "|" + b.details + "|" + b.author + "|" + b.prevHash);
-    if (rehash !== b.hash) return false;
-  }
-  return true;
-}
 function renderLedgerUI() {
   const box = $("ledgerLog"); if (!box) return;
   box.innerHTML = "";
@@ -376,157 +420,578 @@ function renderLedgerUI() {
     div.className = "bg-cyber-bg/90 p-1.5 rounded border border-cyber-border space-y-0.5";
     div.innerHTML = '<div class="flex justify-between text-cyber-gold font-bold text-[9px]"><span>#' + b.index + ' [' + escapeHtml(b.type) + ']</span><span>' + escapeHtml(b.author) + '</span></div>' +
       '<div class="text-gray-300 break-all">' + escapeHtml(b.details) + '</div>' +
-      '<div class="text-[8px] text-gray-500 flex justify-between"><span>HASH: ' + b.hash.substring(0, 10) + '...</span><span>' + new Date(b.timestamp).toLocaleTimeString() + '</span></div>';
+      '<div class="text-cyber-cyan text-[8px] break-all">🔗 ' + b.hash.substring(0, 24) + '…</div>';
     box.appendChild(div);
   });
 }
 
-/* ─── Users & Passwd ─── */
-async function hashPassword(password, salt) {
-  const buf = new TextEncoder().encode(salt + ":" + password + ":SOVEREIGN");
-  const h = await crypto.subtle.digest("SHA-256", buf);
-  return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, "0")).join("");
-}
-function generateSalt() {
-  const arr = new Uint8Array(8); crypto.getRandomValues(arr);
-  return Array.from(arr).map(b => b.toString(16).padStart(2, "0")).join("");
-}
-async function createUser(username, uid, gid, home, shell, password, groups) {
-  groups = groups || [];
-  if (passwdDB.has(username)) return { ok: false };
-  passwdDB.set(username, { username, uid, gid, home, shell });
-  const salt = generateSalt(); const hash = await hashPassword(password || "changeme", salt);
-  shadowDB.set(username, { hash, salt });
-  groups.forEach(g => { if (groupDB.has(g)) { const grp = groupDB.get(g); if (!grp.members.includes(username)) grp.members.push(username); } });
-  if (!vfs[home]) vfs[home] = { type: "dir", owner: username, perm: "rwxr-xr-x", children: [] };
-  await saveVFSToIDB();
-  return { ok: true };
-}
-async function createGroup(name, gid, members) {
-  if (groupDB.has(name)) return;
-  groupDB.set(name, { name, gid, members: members || [] });
+/* ═══ VFS ═══ */
+function initVFS() {
+  return {
+    "/": { type: "dir", owner: "root", children: ["root", "etc", "home", "tmp", "bin"] },
+    "/root": { type: "dir", owner: "root", children: ["readme.txt", ".bashrc"] },
+    "/root/readme.txt": { type: "file", owner: "root", content: "لافي منير — SOVEREIGN OS v38.0 AI APEX\n\nجرّب الأوامر:\n  help     — قائمة الأوامر\n  ai <..>  — اسأل الذكاء الاصطناعي\n  call     — شبكة P2P\n  sysinfo  — معلومات النظام\n  tree     — شجرة الملفات\n" },
+    "/root/.bashrc": { type: "file", owner: "root", content: "# Sovereign bashrc\nexport USER=root\n" },
+    "/etc": { type: "dir", owner: "root", children: ["hosts", "passwd"] },
+    "/etc/hosts": { type: "file", owner: "root", content: "127.0.0.1 localhost\n::1 localhost" },
+    "/etc/passwd": { type: "file", owner: "root", content: "root:x:0:0:root:/root:/bin/bash\nlafi:x:1000:1000:lafi:/home/lafi:/bin/bash" },
+    "/home": { type: "dir", owner: "root", children: ["lafi"] },
+    "/home/lafi": { type: "dir", owner: "lafi", children: [] },
+    "/tmp": { type: "dir", owner: "root", children: [] },
+    "/bin": { type: "dir", owner: "root", children: [] }
+  };
 }
 
-/* ─── VFS Init ─── */
-async function initSystemState() {
-  await initIndexedDB();
-  const loadedVFS = await loadVFSFromIDB();
-  const loadedLedger = await loadLedgerFromIDB();
-
-  if (loadedVFS) {
-    vfs = loadedVFS;
-  } else {
-    vfs = {
-      "/": { type: "dir", owner: "root", perm: "rwxr-xr-x", children: ["root","etc","home","bin","var","tmp"] },
-      "/root": { type: "dir", owner: "root", perm: "rwx------", children: ["readme.txt","welcome.sh"] },
-      "/root/readme.txt": { type: "file", owner: "root", perm: "rw-r--r--", content: "لافي منير — SOVEREIGN OS v36.0 ULTIMATE\n\nاكتب help للأوامر\nأو call للاتصال الشبكي" },
-      "/etc": { type: "dir", owner: "root", perm: "rwxr-xr-x", children: ["hosts"] },
-      "/etc/hosts": { type: "file", owner: "root", perm: "rw-r--r--", content: "127.0.0.1  localhost\n10.0.0.1  lafi-sovereign.local" },
-      "/home": { type: "dir", owner: "root", perm: "rwxr-xr-x", children: [] },
-      "/bin": { type: "dir", owner: "root", perm: "rwxr-xr-x", children: [] },
-      "/var": { type: "dir", owner: "root", perm: "rwxr-xr-x", children: [] },
-      "/tmp": { type: "dir", owner: "root", perm: "rwxrwxrwx", children: [] }
-    };
-    vfs["/root/welcome.sh"] = {
-      type: "file", owner: "root", perm: "rwxr-xr-x",
-      content: '#!/bin/bash\necho "مرحباً لافي في SOVEREIGN OS v36.0"\nfor i in 1 2 3; do\n  echo "المرحلة $i"\ndone\necho "اكتمل التنفيذ بنجاح ✅"\n'
-    };
+/* ═══ PATH RESOLUTION (with . .. ~) ═══ */
+function resolvePath(arg) {
+  if (!arg) return currentPath;
+  if (arg === "~") return "/root";
+  if (arg.startsWith("~/")) arg = "/root/" + arg.slice(2);
+  let base;
+  if (arg.startsWith("/")) base = arg;
+  else base = (currentPath === "/" ? "" : currentPath) + "/" + arg;
+  const parts = base.split("/").filter(p => p !== "" && p !== ".");
+  const stack = [];
+  for (const p of parts) {
+    if (p === "..") stack.pop();
+    else stack.push(p);
   }
+  return "/" + stack.join("");
+}
+function parentPath(p) { const idx = p.lastIndexOf("/"); return idx <= 0 ? "/" : p.slice(0, idx); }
+function baseName(p) { return p.slice(p.lastIndexOf("/") + 1); }
 
-  await createGroup("root", 0, ["root"]);
-  await createGroup("sudo", 27, ["root"]);
-  await createGroup("users", 100, []);
-  await createUser("root", 0, 0, "/root", "/bin/bash", "root", ["root"]);
-  await createUser("lafi", 1000, 100, "/home/lafi", "/bin/bash", "lafi123", ["users", "sudo"]);
-
-  if (loadedLedger && Array.isArray(loadedLedger) && loadedLedger.length > 0) {
-    auditLedger = loadedLedger;
-  } else {
-    await createLedgerBlock("GENESIS", "System Initialization", "SYSTEM");
+/* ═══ SPEECH / VOICE ═══ */
+async function listenVoice() {
+  if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
+    notify("⚠️ متصفحك لا يدعم التعرف على الصوت");
+    return;
   }
-
-  renderLedgerUI();
-  await saveVFSToIDB();
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const rec = new SR();
+  rec.lang = "ar-SA"; rec.continuous = false; rec.interimResults = false;
+  rec.onresult = e => {
+    const text = e.results[0][0].transcript;
+    printToTerm("🎤 (صوت) " + text, "text-cyber-gold");
+    runCommand(text);
+  };
+  rec.onerror = e => notify("❌ خطأ صوتي: " + e.error);
+  rec.start();
+  notify("🎤 تحدث الآن...");
 }
 
-/* ─── Space & Crystal Dust Background ─── */
+/* ═══ TERMINAL ENGINE ═══ */
+async function executeOneCommand(cmd, args, fullLine) {
+  const out = (t, c) => printToTerm(t, c || "text-gray-300");
+  const flagAll = args.includes("-a") || args.includes("-l");
+
+  switch (cmd) {
+    /* ─── AI ─── */
+    case "ai": case "ask": {
+      const prompt = args.join(" ");
+      if (!prompt) { out("ai <سؤالك>", "text-red-400"); break; }
+      out("🤖 جاري التفكير...", "text-cyber-cyan");
+      const answer = await queryAI(prompt);
+      out(answer, "text-cyber-green");
+      await createLedgerBlock("AI_QUERY", prompt.substring(0, 40));
+      beep(880, 60);
+      break;
+    }
+    case "setapikey": {
+      if (!args[0]) { out("setapikey <sk-...>", "text-red-400"); break; }
+      openAiApiKey = args[0];
+      $("aiStatus").textContent = "OPENAI";
+      out("✅ مفتاح OpenAI مفعّل لهذه الجلسة (لا يُخزّن)", "text-cyber-green");
+      break;
+    }
+    case "speak": {
+      const text = args.join(" ");
+      if (!text) { out("speak <نص>", "text-red-400"); break; }
+      speakAI(text); out("🔊 جاري النطق...", "text-cyber-gold");
+      break;
+    }
+    case "listen": case "voice":
+      listenVoice();
+      out("🎤 استمع...", "text-cyber-gold");
+      break;
+
+    /* ─── NETWORK ─── */
+    case "call": case "webrtc": case "mesh":
+      out("🛰️ فتح Mesh Studio...", "text-cyber-cyan");
+      $("sidePanel").classList.add("mobile-active");
+      await initPeer();
+      break;
+    case "peer":
+      out(myPeerId ? "🆔 " + myPeerId : "⚠️ اكتب call أولاً", "text-cyber-green");
+      break;
+    case "msg": {
+      const text = args.join(" ");
+      if (!text) { out("msg <نص>", "text-red-400"); break; }
+      if (Object.keys(dataConnections).length === 0) { out("⚠️ لا اتصالات نشطة", "text-red-400"); break; }
+      const enc = await encryptPayload(text);
+      Object.values(dataConnections).forEach(c => { if (c.open) c.send(enc); });
+      addChatMessage("أنا", text); out("✅ أُرسلت", "text-cyber-green");
+      break;
+    }
+    case "members": {
+      const ids = Object.keys(dataConnections);
+      if (ids.length === 0) out("(لا يوجد أحد متصل)", "text-gray-500");
+      else ids.forEach(id => out("👤 " + id.substring(0, 12), "text-cyber-cyan"));
+      break;
+    }
+
+    /* ─── FILE SYSTEM ─── */
+    case "ls": {
+      const target = resolvePath(args.filter(a => !a.startsWith("-"))[0] || currentPath);
+      const node = vfs[target];
+      if (!node) { out("ls: " + target + ": No such file or directory", "text-red-400"); break; }
+      if (node.type === "file") { out(baseName(target), "text-cyber-cyan"); break; }
+      const items = node.children || [];
+      if (items.length === 0) break;
+      if (flagAll || flagAll) {
+        items.forEach(item => {
+          const full = target === "/" ? "/" + item : target + "/" + item;
+          const n = vfs[full];
+          out((n?.type === "dir" ? "d " : "- ") + "root root  " + (n?.type || "?") + "  " + item, n?.type === "dir" ? "text-cyber-cyan" : "text-gray-200");
+        });
+      } else {
+        out(items.join("   "), "text-cyber-cyan");
+      }
+      break;
+    }
+    case "tree": {
+      const target = resolvePath(args[0] || currentPath);
+      if (!vfs[target]) { out("tree: not found", "text-red-400"); break; }
+      const walk = (path, prefix = "") => {
+        const node = vfs[path]; if (!node || node.type !== "dir") return;
+        const kids = node.children || [];
+        kids.forEach((k, i) => {
+          const last = i === kids.length - 1;
+          const child = path === "/" ? "/" + k : path + "/" + k;
+          out(prefix + (last ? "└── " : "├── ") + k, vfs[child]?.type === "dir" ? "text-cyber-cyan" : "text-gray-200");
+          if (vfs[child]?.type === "dir") walk(child, prefix + (last ? "    " : "│   "));
+        });
+      };
+      out(target, "text-cyber-gold"); walk(target); break;
+    }
+    case "cd": {
+      const target = resolvePath(args[0] || "/root");
+      if (vfs[target] && vfs[target].type === "dir") { currentPath = target; shellVars.PWD = target; updatePrompt(); }
+      else out("cd: " + target + ": No such directory", "text-red-400");
+      break;
+    }
+    case "pwd": out(currentPath, "text-cyber-green"); break;
+    case "cat": {
+      if (!args[0]) { out("cat <file>", "text-red-400"); break; }
+      const fp = resolvePath(args[0]);
+      if (vfs[fp] && vfs[fp].type === "file") vfs[fp].content.split("\n").forEach(l => out(l, "text-cyber-green"));
+      else out("cat: " + fp + ": No such file", "text-red-400");
+      break;
+    }
+    case "write": {
+      if (args.length < 2) { out("write <file> <content>", "text-red-400"); break; }
+      const name = args[0]; const path = resolvePath(name);
+      vfs[path] = { type: "file", content: args.slice(1).join(" "), owner: currentUser };
+      const pp = parentPath(path);
+      if (vfs[pp] && !vfs[pp].children.includes(baseName(path))) vfs[pp].children.push(baseName(path));
+      await saveVFSToIDB(); await createLedgerBlock("WRITE", path);
+      out("[OK] ✅ " + path, "text-cyber-green"); beep(660, 50);
+      break;
+    }
+    case "touch": {
+      if (!args[0]) { out("touch <file>", "text-red-400"); break; }
+      const path = resolvePath(args[0]);
+      if (!vfs[path]) {
+        vfs[path] = { type: "file", content: "", owner: currentUser };
+        const pp = parentPath(path);
+        if (vfs[pp] && !vfs[pp].children.includes(baseName(path))) vfs[pp].children.push(baseName(path));
+      }
+      await saveVFSToIDB(); out("[OK]", "text-cyber-green");
+      break;
+    }
+    case "mkdir": {
+      if (!args[0]) { out("mkdir <dir>", "text-red-400"); break; }
+      const path = resolvePath(args[0]);
+      vfs[path] = { type: "dir", owner: currentUser, children: [] };
+      const pp = parentPath(path);
+      if (vfs[pp] && !vfs[pp].children.includes(baseName(path))) vfs[pp].children.push(baseName(path));
+      await saveVFSToIDB(); out("[OK]", "text-cyber-green");
+      break;
+    }
+    case "rm": {
+      if (!args[0]) { out("rm [-r] <path>", "text-red-400"); break; }
+      const recursive = args.includes("-r") || args.includes("-rf");
+      const path = resolvePath(args.filter(a => !a.startsWith("-"))[0]);
+      if (path === "/" || path === "/root") { out("rm: cannot remove " + path, "text-red-400"); break; }
+      if (!vfs[path]) { out("rm: not found", "text-red-400"); break; }
+      if (vfs[path].type === "dir" && !recursive) { out("rm: is a directory (use -r)", "text-red-400"); break; }
+      delete vfs[path];
+      const pp = parentPath(path);
+      if (vfs[pp]) vfs[pp].children = vfs[pp].children.filter(c => c !== baseName(path));
+      await saveVFSToIDB(); await createLedgerBlock("RM", path);
+      out("[OK]", "text-cyber-green");
+      break;
+    }
+    case "cp": {
+      if (args.length < 2) { out("cp <src> <dst>", "text-red-400"); break; }
+      const src = resolvePath(args[0]); const dst = resolvePath(args[1]);
+      if (!vfs[src]) { out("cp: src not found", "text-red-400"); break; }
+      if (vfs[src].type === "dir") { out("cp: directories not supported yet", "text-red-400"); break; }
+      vfs[dst] = { ...vfs[src] };
+      const pp = parentPath(dst);
+      if (vfs[pp] && !vfs[pp].children.includes(baseName(dst))) vfs[pp].children.push(baseName(dst));
+      await saveVFSToIDB(); out("[OK]", "text-cyber-green");
+      break;
+    }
+    case "mv": {
+      if (args.length < 2) { out("mv <src> <dst>", "text-red-400"); break; }
+      const src = resolvePath(args[0]); const dst = resolvePath(args[1]);
+      if (!vfs[src]) { out("mv: not found", "text-red-400"); break; }
+      vfs[dst] = vfs[src]; delete vfs[src];
+      const sp = parentPath(src);
+      if (vfs[sp]) vfs[sp].children = vfs[sp].children.filter(c => c !== baseName(src));
+      const dp = parentPath(dst);
+      if (vfs[dp] && !vfs[dp].children.includes(baseName(dst))) vfs[dp].children.push(baseName(dst));
+      await saveVFSToIDB(); out("[OK]", "text-cyber-green");
+      break;
+    }
+    case "stat": {
+      const path = resolvePath(args[0] || currentPath);
+      const n = vfs[path]; if (!n) { out("stat: not found", "text-red-400"); break; }
+      out("File: " + path, "text-cyber-gold");
+      out("Type: " + n.type, "text-gray-200");
+      out("Owner: " + n.owner, "text-gray-200");
+      if (n.type === "file") out("Size: " + n.content.length + " bytes", "text-gray-200");
+      break;
+    }
+    case "find": {
+      const query = args[0] || "";
+      Object.keys(vfs).forEach(p => { if (p.includes(query)) out(p, "text-cyber-cyan"); });
+      break;
+    }
+    case "nano":
+      if (args[0]) openNano(args[0]);
+      else out("nano <file>", "text-red-400");
+      break;
+
+    /* ─── SYSTEM ─── */
+    case "whoami": out(currentUser, "text-cyber-green"); break;
+    case "id": out("uid=" + (currentUser === "root" ? 0 : 1000) + "(" + currentUser + ") gid=0(root) groups=0(root)", "text-cyber-green"); break;
+    case "su": {
+      const target = args[0] || "root";
+      if (passwdDB.has(target)) { currentUser = target; shellVars.USER = target; updatePrompt(); await createLedgerBlock("SU", target); out("→ " + target, "text-cyber-gold"); }
+      else out("su: user not found", "text-red-400");
+      break;
+    }
+    case "sudo": {
+      if (args.length === 0) { out("sudo <command>", "text-red-400"); break; }
+      await executeOneCommand(args[0].toLowerCase(), args.slice(1), args.join(" "));
+      break;
+    }
+    case "echo": out(args.join(" ").replace(/\$(\w+)/g, (_, k) => shellVars[k] || ""), "text-gray-200"); break;
+    case "env": Object.entries(shellVars).forEach(([k, v]) => out(k + "=" + v, "text-cyber-cyan")); break;
+    case "export": {
+      const [k, ...rest] = args;
+      if (k && k.includes("=")) { const [key, ...v] = k.split("="); shellVars[key] = v.join("=") || rest.join(" "); out("[OK]", "text-cyber-green"); }
+      break;
+    }
+    case "history": commandHistory.forEach((c, i) => out(String(i + 1).padStart(4) + "  " + c, "text-gray-300")); break;
+    case "date": out(new Date().toLocaleString("ar-DZ"), "text-cyber-green"); break;
+    case "uptime": {
+      const s = Math.floor((Date.now() - bootTime) / 1000);
+      out("up " + Math.floor(s / 60) + "m " + (s % 60) + "s — " + Object.keys(vfs).length + " inodes — " + auditLedger.length + " blocks", "text-cyber-green");
+      break;
+    }
+    case "ps": case "top": {
+      out("  PID  USER     CMD", "text-cyber-gold");
+      out("    1  root     init", "text-cyber-cyan");
+      out("   42  root     sovereign-shell", "text-cyber-cyan");
+      out(" 1337  " + currentUser.padEnd(8) + " " + cmd, "text-cyber-cyan");
+      if (performance.memory) {
+        const used = (performance.memory.usedJSHeapSize / 1048576).toFixed(1);
+        const total = (performance.memory.totalJSHeapSize / 1048576).toFixed(1);
+        out("🧠 RAM: " + used + "MB / " + total + "MB", "text-cyber-gold");
+      }
+      break;
+    }
+    case "sysinfo": {
+      out("╔══════════════════════════════════════════════════════╗", "text-cyber-cyan");
+      out("║   لافي منير — SOVEREIGN OS v38.0 AI APEX             ║", "text-cyber-cyan");
+      out("╚══════════════════════════════════════════════════════╝", "text-cyber-cyan");
+      out("User      : " + currentUser, "text-gray-200");
+      out("CWD       : " + currentPath, "text-gray-200");
+      out("AI Mode   : " + (openAiApiKey ? "OpenAI Connected" : "Local Engine"), "text-cyber-green");
+      out("Blocks    : " + auditLedger.length, "text-cyber-cyan");
+      out("Inodes    : " + Object.keys(vfs).length, "text-cyber-cyan");
+      out("Peers     : " + Object.keys(dataConnections).length, "text-cyber-magenta");
+      out("Crypto    : AES-GCM 256 / PBKDF2 100k", "text-cyber-gold");
+      if (performance.memory) out("RAM       : " + (performance.memory.usedJSHeapSize / 1048576).toFixed(1) + " MB", "text-gray-200");
+      out("© لافي منير 2026", "text-cyber-gold");
+      break;
+    }
+    case "chain":
+      auditLedger.slice(-10).forEach(b => out("[#" + b.index + "] " + b.type + " — " + b.details.substring(0, 30), "text-cyber-cyan"));
+      break;
+    case "chain-verify": {
+      let ok = true;
+      for (let i = 1; i < auditLedger.length; i++) {
+        if (auditLedger[i].prevHash !== auditLedger[i - 1].hash) { ok = false; break; }
+      }
+      out(ok ? "✅ السلسلة سليمة (" + auditLedger.length + " بلوك)" : "❌ تلاعب في السلسلة!", ok ? "text-cyber-green" : "text-red-400");
+      break;
+    }
+    case "clear": termOutput.innerHTML = ""; break;
+    case "help":
+      out("═══ SOVEREIGN OS v38.0 — قائمة الأوامر ═══", "text-cyber-gold");
+      out("", "");
+      out("🤖 AI:", "text-cyber-magenta");
+      out("   ai <سؤال>       اسأل الذكاء الاصطناعي (محلي/OpenAI)", "text-gray-200");
+      out("   setapikey <k>   تفعيل OpenAI لهذه الجلسة", "text-gray-200");
+      out("   speak <نص>      نطق صوتي عربي", "text-gray-200");
+      out("   listen          إدخال صوتي", "text-gray-200");
+      out("", "");
+      out("🌐 الشبكة:", "text-cyber-cyan");
+      out("   call            بدء شبكة Mesh P2P", "text-gray-200");
+      out("   peer / members  عرض معرّفك/الأعضاء", "text-gray-200");
+      out("   msg <نص>        إرسال مشفّر", "text-gray-200");
+      out("", "");
+      out("📁 الملفات:", "text-cyber-green");
+      out("   ls [-l]  cd  pwd  tree  find  stat", "text-gray-200");
+      out("   cat  write  touch  mkdir  rm [-r]  cp  mv  nano", "text-gray-200");
+      out("", "");
+      out("⚙️ النظام:", "text-cyber-gold");
+      out("   whoami  id  su  sudo  echo  env  export", "text-gray-200");
+      out("   date  uptime  ps  top  sysinfo  history", "text-gray-200");
+      out("   chain  chain-verify  clear  help", "text-gray-200");
+      break;
+
+    default:
+      out("Unknown: " + cmd + " — اكتب 'help'", "text-red-400");
+      beep(220, 120, "sawtooth");
+  }
+}
+
+/* ═══ SHELL PIPES / MULTI COMMANDS ═══ */
+async function runCommand(cmdLine) {
+  if (!cmdLine || !cmdLine.trim()) return;
+  printToTerm(currentUser + "@sovereign:" + (currentPath === "/root" ? "~" : currentPath) + "# " + cmdLine, "text-cyber-cyan");
+  commandHistory.push(cmdLine); historyIndex = commandHistory.length;
+
+  const segments = cmdLine.split("&&").map(s => s.trim()).filter(Boolean);
+  for (const seg of segments) {
+    const parts = seg.split(/\s+/);
+    await executeOneCommand(parts[0].toLowerCase(), parts.slice(1), seg);
+  }
+}
+function updatePrompt() {
+  $("promptLabel").textContent = currentUser + "@sovereign:" + (currentPath === "/root" ? "~" : currentPath) + "#";
+  $("currentPromptUser").textContent = currentUser;
+}
+
+/* ═══ NANO EDITOR ═══ */
+function openNano(filename) {
+  currentNanoPath = resolvePath(filename);
+  $("nanoFilename").textContent = filename;
+  $("nanoBuffer").value = vfs[currentNanoPath] ? vfs[currentNanoPath].content : "";
+  $("nanoModal").classList.add("active");
+  $("nanoBuffer").focus();
+}
+function closeNano(saved) {
+  $("nanoModal").classList.remove("active");
+  if (saved) printToTerm("[nano] 💾 تم الحفظ", "text-cyber-green");
+  currentNanoPath = null;
+}
+async function saveNano() {
+  if (!currentNanoPath) return;
+  vfs[currentNanoPath] = { type: "file", content: $("nanoBuffer").value, owner: currentUser };
+  const pp = parentPath(currentNanoPath);
+  if (vfs[pp] && !vfs[pp].children.includes(baseName(currentNanoPath))) vfs[pp].children.push(baseName(currentNanoPath));
+  await saveVFSToIDB(); await createLedgerBlock("NANO", currentNanoPath);
+  closeNano(true); beep(880, 60);
+}
+
+/* ═══ P2P MESH ═══ */
+async function initPeer() {
+  if (peer && !peer.destroyed) return;
+  try {
+    if (!localStream) {
+      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      $("localVideo").srcObject = localStream;
+    }
+  } catch (e) { notify("⚠️ تعذّر الوصول للكاميرا"); }
+
+  peer = new Peer(undefined, { config: { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] } });
+  peer.on("open", id => {
+    myPeerId = id;
+    $("p2pStatus").textContent = "ON"; $("p2pStatus").className = "dot-on font-bold";
+    addChatMessage("SYSTEM", "✅ متصل — ID: " + id.substring(0, 8));
+    printToTerm("🆔 PeerID: " + id, "text-cyber-cyan");
+    beep(990, 80);
+  });
+  peer.on("connection", conn => { setupDataConnection(conn); addChatMessage("SYSTEM", "🔗 اتصال من " + conn.peer.substring(0, 6)); });
+  peer.on("error", err => { printToTerm("⚠️ PeerJS: " + err.message, "text-red-400"); });
+}
+async function joinMeshRoom() {
+  const room = $("roomIdInput").value.trim();
+  if (!room) { notify("⚠️ اكتب اسم الغرفة"); return; }
+  roomId = room;
+  $("roomStatusBadge").textContent = "ROOM: " + room;
+  await initPeer();
+  notify("🌐 انضممت لغرفة: " + room, 2000);
+  await createLedgerBlock("JOIN_ROOM", room);
+}
+function setupDataConnection(conn) {
+  dataConnections[conn.peer] = conn;
+  conn.on("open", () => { addChatMessage("SYSTEM", "✅ اتصال مفتوح: " + conn.peer.substring(0, 6)); });
+  conn.on("data", async data => {
+    if (typeof data === "string") {
+      const dec = await decryptPayload(data);
+      addChatMessage(conn.peer.substring(0, 6), dec);
+      beep(660, 60);
+    } else if (data && data.type === "file-meta") {
+      incomingFileMeta = data; pendingFileChunks = {};
+      printToTerm("📥 استقبال: " + data.name + " (" + (data.size / 1024).toFixed(1) + "KB)", "text-cyber-gold");
+    } else if (data && data.type === "file-chunk") {
+      pendingFileChunks[data.index] = data.data;
+    } else if (data && data.type === "file-end") {
+      const chunks = Object.keys(pendingFileChunks).sort((a, b) => a - b).map(k => pendingFileChunks[k]);
+      const blob = new Blob(chunks);
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = incomingFileMeta?.name || "file.bin";
+      a.click();
+      addChatMessage("SYSTEM", "📎 تم استلام الملف: " + a.download);
+      pendingFileChunks = {}; incomingFileMeta = null;
+    }
+  });
+  conn.on("close", () => { delete dataConnections[conn.peer]; addChatMessage("SYSTEM", "❌断开"); });
+}
+function addChatMessage(sender, text) {
+  const box = $("chatBox"); const div = document.createElement("div");
+  div.className = "text-[10px]";
+  div.innerHTML = '<span class="text-cyber-cyan font-bold">' + escapeHtml(sender) + ':</span> ' + escapeHtml(text);
+  box.appendChild(div); box.scrollTop = box.scrollHeight;
+}
+async function sendChatMessage() {
+  const input = $("chatInput"); const text = input.value.trim(); if (!text) return;
+  input.value = ""; addChatMessage("أنا", text);
+  if (Object.keys(dataConnections).length === 0) { notify("⚠️ لا اتصالات"); return; }
+  const enc = await encryptPayload(text);
+  Object.values(dataConnections).forEach(c => { if (c.open) c.send(enc); });
+}
+
+/* ═══ MEDIA CONTROLS ═══ */
+function toggleMic() {
+  if (!localStream) { notify("⚠️ ابدأ call أولاً"); return; }
+  const t = localStream.getAudioTracks()[0]; if (!t) return;
+  t.enabled = !t.enabled;
+  $("btnToggleMic").style.color = t.enabled ? "" : "#ff007f";
+  notify(t.enabled ? "🎤 المايك مفتوح" : "🔇 المايك مغلق");
+}
+function toggleCam() {
+  if (!localStream) { notify("⚠️ ابدأ call أولاً"); return; }
+  const t = localStream.getVideoTracks()[0]; if (!t) return;
+  t.enabled = !t.enabled;
+  $("btnToggleCam").style.color = t.enabled ? "" : "#ff007f";
+}
+async function shareScreen() {
+  try {
+    screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+    $("localVideo").srcObject = screenStream;
+    screenStream.getVideoTracks()[0].onended = () => {
+      $("localVideo").srcObject = localStream;
+      screenStream = null;
+    };
+    notify("🖥️ مشاركة الشاشة مفعّلة");
+  } catch (e) { notify("❌ فشل مشاركة الشاشة"); }
+}
+function snapshot() {
+  const video = $("localVideo");
+  if (!video.videoWidth) { notify("⚠️ لا يوجد فيديو"); return; }
+  const canvas = document.createElement("canvas");
+  canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+  canvas.getContext("2d").drawImage(video, 0, 0);
+  canvas.toBlob(b => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(b);
+    a.download = "snapshot_" + Date.now() + ".png";
+    a.click();
+    notify("📸 تم حفظ اللقطة");
+    beep(1320, 80);
+  });
+}
+async function sendP2PFile(file) {
+  if (!file) return;
+  const conns = Object.values(dataConnections).filter(c => c.open);
+  if (conns.length === 0) { notify("⚠️ لا اتصالات نشطة"); return; }
+  const conn = conns[0];
+  const CHUNK = 16384;
+  const total = Math.ceil(file.size / CHUNK);
+  $("fileProgressContainer").classList.remove("hidden");
+  $("transferFileName").textContent = file.name;
+  conn.send({ type: "file-meta", name: file.name, size: file.size, total });
+  for (let i = 0; i < total; i++) {
+    const chunk = file.slice(i * CHUNK, (i + 1) * CHUNK);
+    const buf = await chunk.arrayBuffer();
+    conn.send({ type: "file-chunk", index: i, data: buf });
+    const pct = Math.round(((i + 1) / total) * 100);
+    $("transferPercent").textContent = pct + "%";
+    $("transferProgressBar").style.width = pct + "%";
+    await new Promise(r => setTimeout(r, 0));
+  }
+  conn.send({ type: "file-end" });
+  addChatMessage("SYSTEM", "📤 أُرسل: " + file.name);
+  beep(880, 100);
+  setTimeout(() => $("fileProgressContainer").classList.add("hidden"), 2000);
+}
+function applyCryptoKey() {
+  const key = $("roomKeyInput").value;
+  if (key.length < 6) { notify("⚠️ المفتاح قصير (6+ أحرف)"); return; }
+  rawPasswordSecret = key;
+  cryptoKeyObj = null;
+  deriveCryptoKey(key);
+  notify("🔐 تم ضبط مفتاح التشفير");
+  beep(1200, 80);
+}
+
+/* ═══ MATRIX BACKGROUND ═══ */
 function initMatrix() {
-  const canvas = $("matrixCanvas");
-  const ctx = canvas.getContext("2d");
-  let width, height;
-  let stars = [], particles = [];
-
+  const canvas = $("matrixCanvas"); const ctx = canvas.getContext("2d");
+  let width, height; let stars = [], particles = [];
   function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
   resize(); window.addEventListener("resize", resize);
 
   class Star {
     constructor() { this.reset(); }
-    reset() {
-      this.x = (Math.random() - 0.5) * width * 2;
-      this.y = (Math.random() - 0.5) * height * 2;
-      this.z = Math.random() * width; this.pz = this.z;
-    }
+    reset() { this.x = (Math.random() - 0.5) * width * 2; this.y = (Math.random() - 0.5) * height * 2; this.z = Math.random() * width; this.pz = this.z; }
     update(speed) { this.z -= speed; if (this.z < 1) this.reset(); }
     draw() {
-      let sx = (this.x / this.z) * width + width / 2;
-      let sy = (this.y / this.z) * height + height / 2;
-      let r = Math.max(0.5, (1 - this.z / width) * 3);
-      let px = (this.x / this.pz) * width + width / 2;
-      let py = (this.y / this.pz) * height + height / 2;
+      const sx = (this.x / this.z) * width + width / 2, sy = (this.y / this.z) * height + height / 2;
+      const px = (this.x / this.pz) * width + width / 2, py = (this.y / this.pz) * height + height / 2;
       ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(sx, sy);
-      ctx.strokeStyle = `rgba(200, 230, 255, ${1 - this.z / width})`;
-      ctx.lineWidth = r; ctx.stroke();
+      ctx.strokeStyle = `rgba(200, 230, 255, ${1 - this.z / width})`; ctx.lineWidth = 1; ctx.stroke();
       this.pz = this.z;
     }
   }
-
   class CrystalDust {
     constructor(x, y) {
       this.x = x; this.y = y; this.size = Math.random() * 4 + 1;
       this.speedX = Math.random() * 6 - 3; this.speedY = Math.random() * 6 - 3;
-      const colors = ['#00ffff', '#00bfff', '#8a2be2', '#ff69b4', '#ffffff'];
+      const colors = ["#00ffff", "#00bfff", "#8a2be2", "#ff69b4", "#ffffff"];
       this.color = colors[Math.floor(Math.random() * colors.length)];
       this.life = 1.0; this.decay = Math.random() * 0.02 + 0.01;
-      this.rotation = Math.random() * Math.PI * 2; this.rotSpeed = Math.random() * 0.1 - 0.05;
     }
-    update() {
-      this.x += this.speedX; this.y += this.speedY;
-      this.life -= this.decay; this.rotation += this.rotSpeed;
-      if (this.size > 0.2) this.size -= 0.06;
-    }
-    draw() {
-      ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rotation);
-      ctx.fillStyle = this.color; ctx.globalAlpha = this.life;
-      ctx.shadowBlur = 8; ctx.shadowColor = this.color;
-      ctx.beginPath(); ctx.moveTo(0, -this.size); ctx.lineTo(this.size, 0);
-      ctx.lineTo(0, this.size); ctx.lineTo(-this.size, 0); ctx.closePath(); ctx.fill();
-      ctx.restore(); ctx.globalAlpha = 1; ctx.shadowBlur = 0;
-    }
+    update() { this.x += this.speedX; this.y += this.speedY; this.life -= this.decay; if (this.size > 0.2) this.size -= 0.06; }
+    draw() { ctx.save(); ctx.translate(this.x, this.y); ctx.fillStyle = this.color; ctx.globalAlpha = this.life; ctx.beginPath(); ctx.arc(0, 0, this.size, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
   }
-
-  for (let i = 0; i < 300; i++) stars.push(new Star());
-
-  canvas.addEventListener('touchmove', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const x = e.touches[0].clientX - rect.left; const y = e.touches[0].clientY - rect.top;
-    for (let i = 0; i < 3; i++) particles.push(new CrystalDust(x, y));
-  }, { passive: true });
-
-  canvas.addEventListener('touchstart', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const x = e.touches[0].clientX - rect.left; const y = e.touches[0].clientY - rect.top;
-    for (let i = 0; i < 15; i++) particles.push(new CrystalDust(x, y));
+  for (let i = 0; i < 250; i++) stars.push(new Star());
+  canvas.addEventListener("click", e => {
+    const r = canvas.getBoundingClientRect();
+    for (let i = 0; i < 15; i++) particles.push(new CrystalDust(e.clientX - r.left, e.clientY - r.top));
   });
-  canvas.addEventListener('click', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left; const y = e.clientY - rect.top;
-    for (let i = 0; i < 15; i++) particles.push(new CrystalDust(x, y));
-  });
-
   function animate() {
-    ctx.fillStyle = 'rgba(3, 0, 20, 0.2)';
-    ctx.fillRect(0, 0, width, height);
-    stars.forEach(star => { star.update(10); star.draw(); });
+    ctx.fillStyle = "rgba(3, 0, 20, 0.2)"; ctx.fillRect(0, 0, width, height);
+    stars.forEach(s => { s.update(8); s.draw(); });
     for (let i = particles.length - 1; i >= 0; i--) {
       particles[i].update(); particles[i].draw();
       if (particles[i].life <= 0) particles.splice(i, 1);
@@ -536,729 +1001,78 @@ function initMatrix() {
   animate();
 }
 
-/* ─── Shell Engine ─── */
-function tokenizeShellLine(line) {
-  const tokens = []; let cur = "", q = null;
-  for (let i = 0; i < line.length; i++) {
-    const c = line[i];
-    if (q) { if (c === q) q = null; else cur += c; }
-    else if (c === '"' || c === "'") q = c;
-    else if (c === ' ' || c === '\t') { if (cur) { tokens.push(cur); cur = ""; } }
-    else if (c === '|' || c === '>' || c === '<') {
-      if (cur) { tokens.push(cur); cur = ""; }
-      if (c === '>' && line[i + 1] === '>') { tokens.push(">>"); i++; }
-      else tokens.push(c);
-    } else cur += c;
-  }
-  if (cur) tokens.push(cur);
-  return tokens;
-}
-function expandVars(token) {
-  return token.replace(/\$\{(\w+)\}|\$(\w+)/g, (_, a, b) => {
-    const n = a || b;
-    return shellVars[n] !== undefined ? shellVars[n] : "";
-  });
-}
-function resolvePath(arg) {
-  if (!arg) return currentPath;
-  if (arg === "~") return passwdDB.get(currentUser)?.home || "/root";
-  if (arg.startsWith("/")) { const c = arg.replace(/\/+/g, "/").replace(/\/$/, ""); return c || "/"; }
-  if (arg === "..") {
-    if (currentPath === "/") return "/";
-    const parts = currentPath.split("/").filter(Boolean); parts.pop();
-    return parts.length === 0 ? "/" : "/" + parts.join("/");
-  }
-  if (arg === ".") return currentPath;
-  return currentPath === "/" ? "/" + arg : currentPath + "/" + arg;
-}
-
-async function runPipeline(line, opts) {
-  opts = opts || {};
-  if (line.indexOf(';') !== -1 && line.indexOf('"') === -1 && line.indexOf("'") === -1) {
-    const parts = line.split(';').map(s => s.trim()).filter(Boolean);
-    for (const p of parts) await runPipeline(p, opts);
-    return;
-  }
-  const tokens = tokenizeShellLine(line);
-  if (tokens.length === 0) return;
-  const stages = [[]]; let redirect = null;
-  for (let i = 0; i < tokens.length; i++) {
-    const t = tokens[i];
-    if (t === '|') { stages.push([]); continue; }
-    if (t === '>' || t === '>>' || t === '<') { redirect = { type: t, target: tokens[i + 1] }; i++; continue; }
-    stages[stages.length - 1].push(t);
-  }
-  const hasPipe = stages.length > 1;
-  let lastOut = [];
-  for (let s = 0; s < stages.length; s++) {
-    terminalBuffer = [];
-    const st = stages[s];
-    if (st.length === 0) continue;
-    const ex = st.map(expandVars);
-    const capture = hasPipe || opts.silent;
-    await executeOneCommand(ex[0].toLowerCase(), ex.slice(1), { capture, silent: opts.silent });
-    lastOut = terminalBuffer;
-    if (s < stages.length - 1) shellVars.STDIN = lastOut.map(l => l.text).join("\n");
-  }
-  if (hasPipe && !opts.silent) lastOut.forEach(l => printToTerm(l.text, l.color));
-  if (opts.silent && !hasPipe) lastOut.forEach(l => printToTerm(l.text, l.color));
-  if (redirect && redirect.type !== '<') {
-    const target = resolvePath(redirect.target);
-    const content = lastOut.map(l => l.text).join("\n");
-    if (redirect.type === ">>" && vfs[target] && vfs[target].type === "file") vfs[target].content += "\n" + content;
-    else {
-      vfs[target] = { type: "file", content, owner: currentUser, perm: "rw-r--r--" };
-      const lastSlash = target.lastIndexOf("/");
-      const parent = lastSlash > 0 ? target.substring(0, lastSlash) : "/";
-      const fname = target.substring(lastSlash + 1);
-      if (vfs[parent] && vfs[parent].children && vfs[parent].children.indexOf(fname) === -1) vfs[parent].children.push(fname);
-    }
-    await saveVFSToIDB();
-  }
-}
-
-async function runScriptContent(content, opts) {
-  opts = opts || {};
-  const lines = content.split('\n');
-  await runBlock(lines, 0);
-  async function runBlock(lines, startIdx) {
-    let idx = startIdx;
-    while (idx < lines.length) {
-      const raw = lines[idx].trim();
-      if (!raw || raw.startsWith('#')) { idx++; continue; }
-      if (raw === 'done' || raw === 'fi' || raw === '}') return idx + 1;
-      if (raw.startsWith('for ')) {
-        const m = raw.match(/^for\s+(\w+)\s+in\s+(.+?)(?:;?\s*do)?$/);
-        if (m) {
-          const vn = m[1]; const items = m[2].replace(/;?\s*do$/, "").trim().split(/\s+/).map(expandVars);
-          const body = []; let depth = 1, j = idx + 1;
-          while (j < lines.length && depth > 0) {
-            const l = lines[j].trim();
-            if (l.startsWith('for ') || l.startsWith('while ')) depth++;
-            if (l === 'done') { depth--; if (depth === 0) break; }
-            body.push(lines[j]); j++;
-          }
-          for (let k = 0; k < items.length; k++) { shellVars[vn] = items[k]; await runScriptContent(body.join("\n"), opts); }
-          idx = j + 1; continue;
-        }
-      }
-      if (raw.startsWith('while ')) {
-        const m = raw.match(/^while\s+(.+?)(?:;?\s*do)?$/);
-        if (m) {
-          const condition = m[1].replace(/;?\s*do$/, "").trim();
-          const body = []; let depth = 1, j = idx + 1;
-          while (j < lines.length && depth > 0) {
-            const l = lines[j].trim();
-            if (l.startsWith('while ') || l.startsWith('for ')) depth++;
-            if (l === 'done') { depth--; if (depth === 0) break; }
-            body.push(lines[j]); j++;
-          }
-          let iter = 0;
-          while (iter < 20 && evaluateCondition(condition)) { await runScriptContent(body.join("\n"), opts); iter++; }
-          idx = j + 1; continue;
-        }
-      }
-      if (raw.startsWith('if ')) {
-        const result = parseIfBlock(lines, idx);
-        for (let k = 0; k < result.branches.length; k++) {
-          const br = result.branches[k];
-          if (br.cond === null || evaluateCondition(br.cond)) { await runScriptContent(br.body.join("\n"), opts); break; }
-        }
-        idx = result.nextIdx; continue;
-      }
-      const vm = raw.match(/^(\w+)=(.*)$/);
-      if (vm && !raw.startsWith("if") && !raw.startsWith("for") && !raw.startsWith("while")) {
-        shellVars[vm[1]] = expandVars(vm[2].replace(/^["']|["']$/g, "")); idx++; continue;
-      }
-      await runPipeline(raw, opts); idx++;
-    }
-    return idx;
-  }
-}
-function parseIfBlock(lines, si) {
-  const branches = []; let idx = si, cc = null, cb = [], depth = 1;
-  const fl = lines[idx].trim();
-  const m = fl.match(/^if\s+(.+?)(?:;?\s*then)?$/);
-  cc = m ? m[1].replace(/;?\s*then$/, "").trim() : null; idx++;
-  while (idx < lines.length) {
-    const raw = lines[idx].trim();
-    if (raw.startsWith('if ')) depth++;
-    if (raw === 'fi') {
-      depth--;
-      if (depth === 0) {
-        if (cb.length > 0 || cc !== null) branches.push({ cond: cc, body: cb.slice() });
-        return { branches, nextIdx: idx + 1 };
-      }
-    }
-    if (depth === 1 && raw === 'else') { branches.push({ cond: cc, body: cb.slice() }); cc = null; cb = []; idx++; continue; }
-    cb.push(lines[idx]); idx++;
-  }
-  branches.push({ cond: cc, body: cb.slice() });
-  return { branches, nextIdx: idx };
-}
-function evaluateCondition(cond) {
-  cond = cond.trim();
-  let m = cond.match(/^\[\s*(.+?)\s*\]$/) || cond.match(/^test\s+(.+)$/);
-  if (m) cond = m[1].trim();
-  const sq = s => s.replace(/^["']|["']$/g, '');
-  m = cond.match(/^(.+?)\s+(==|=)\s+(.+)$/);
-  if (m) return expandVars(sq(m[1].trim())) === expandVars(sq(m[3].trim()));
-  m = cond.match(/^(.+?)\s+!=\s+(.+)$/);
-  if (m) return expandVars(sq(m[1].trim())) !== expandVars(sq(m[2].trim()));
-  m = cond.match(/^(.+?)\s+-eq\s+(.+)$/);
-  if (m) return parseInt(expandVars(m[1]), 10) === parseInt(expandVars(m[2]), 10);
-  m = cond.match(/^(.+?)\s+-gt\s+(.+)$/);
-  if (m) return parseInt(expandVars(m[1]), 10) > parseInt(expandVars(m[2]), 10);
-  m = cond.match(/^(.+?)\s+-lt\s+(.+)$/);
-  if (m) return parseInt(expandVars(m[1]), 10) < parseInt(expandVars(m[2]), 10);
-  return !!cond;
-}
-
-/* ─── Commands ─── */
-async function executeOneCommand(cmd, args, opts) {
-  opts = opts || {};
-  const cap = opts.capture || false;
-  const out = (t, c) => {
-    if (cap) terminalBuffer.push({ text: t, color: c || "text-gray-300" });
-    else printToTerm(t, c || "text-gray-300");
-  };
-
-  switch (cmd) {
-    case "call": case "webrtc": case "video":
-      out("🛰️ جاري فتح نافذة الاتصال الشبكي...", "text-cyber-cyan");
-      $("sidePanel").classList.add("mobile-active");
-      await initPeer();
-      break;
-
-    case "peer": case "myid":
-      if (myPeerId) out("🆔 " + myPeerId, "text-cyber-green");
-      else out("⚠️ اكتب call أولاً", "text-cyber-gold");
-      break;
-
-    case "msg": {
-      const text = args.join(" ");
-      if (!text) { out("msg <نص>", "text-red-400"); break; }
-      const ids = Object.keys(dataConnections);
-      if (ids.length === 0) { out("⚠️ لا أعضاء متصلون", "text-cyber-gold"); break; }
-      const enc = await encryptPayload(text);
-      ids.forEach(pid => { const c = dataConnections[pid]; if (c && c.open) c.send(enc); });
-      addChatMessage("أنا", text);
-      out("✅ أُرسلت للشبكة", "text-cyber-green");
-      break;
-    }
-
-    case "setkey": {
-      if (!args[0]) { out("setkey <مفتاح>", "text-red-400"); break; }
-      rawPasswordSecret = args.join(" ");
-      await deriveCryptoKey(rawPasswordSecret);
-      out("🔐 تم تحديث مفتاح تشفير AES-GCM", "text-cyber-green");
-      break;
-    }
-
-    case "members":
-      out("═══ الأعضاء (" + (1 + Object.keys(roomMembers).length) + ") ═══", "text-cyber-gold");
-      out("👤 " + (myPeerId ? myPeerId.substring(0, 12) : "--") + " (أنت)", "text-cyber-green");
-      Object.keys(roomMembers).forEach(pid => out("👥 " + pid.substring(0, 12), "text-cyber-magenta"));
-      break;
-
-    case "echo": out(expandVars(args.join(" ")), "text-cyber-green"); break;
-    case "clear": if (!cap) termOutput.innerHTML = ""; break;
-
-    case "help": case "مساعدة":
-      out("═══ SOVEREIGN OS v36.0 ULTIMATE ═══", "text-cyber-gold");
-      out(" 🌐 الشبكة:  call, peer, msg, members, setkey", "text-cyber-cyan");
-      out(" 📁 الملفات: ls, cd, cat, write, mkdir, rm, nano", "text-gray-300");
-      out(" 👤 الحساب:  whoami, id, su, sudo, useradd", "text-gray-300");
-      out(" 🔎 النصوص:  grep, wc, head, tail", "text-gray-300");
-      out(" 🔒 الأمان:  encrypt, decrypt", "text-gray-300");
-      out(" ⛓️ السلسلة: chain, verify, audit", "text-gray-300");
-      out(" 🐚 النظام:  ps, sysinfo, ./script.sh, clear", "text-gray-300");
-      break;
-
-    case "whoami": out(currentUser, "text-cyber-green"); break;
-    case "pwd": out(currentPath, "text-cyber-green"); break;
-    case "id":
-      const u = passwdDB.get(currentUser);
-      out("uid=" + (u ? u.uid : 0) + "(" + currentUser + ") gid=0 groups=root,sudo", "text-cyber-green");
-      break;
-
-    case "ls": {
-      const target = args[0] || currentPath;
-      const fp = resolvePath(target);
-      const node = vfs[fp];
-      if (!node) { out("ls: not found", "text-red-400"); break; }
-      if (node.type === "file") { out(target); break; }
-      (node.children || []).forEach(item => {
-        const cp = fp === "/" ? "/" + item : fp + "/" + item;
-        const child = vfs[cp];
-        out((child && child.type === "dir" ? "📁 " : "📄 ") + item, child && child.type === "dir" ? "text-cyber-cyan" : "text-gray-300");
-      });
-      break;
-    }
-
-    case "cd": {
-      const target = resolvePath(args[0] || "/root");
-      if (vfs[target] && vfs[target].type === "dir") {
-        currentPath = target; shellVars.PWD = currentPath; updatePrompt();
-      } else out("cd: no such directory", "text-red-400");
-      break;
-    }
-
-    case "cat": {
-      if (!args[0]) { out("cat <file>", "text-red-400"); break; }
-      const fp = resolvePath(args[0]);
-      if (vfs[fp] && vfs[fp].type === "file") vfs[fp].content.split("\n").forEach(l => out(l, "text-cyber-green"));
-      else out("cat: not found", "text-red-400");
-      break;
-    }
-
-    case "write": {
-      if (args.length < 2) { out("write <file> <content>", "text-red-400"); break; }
-      const name = args[0];
-      if (name.indexOf("/") !== -1) { out("write: اسم فقط بدون مسار فرعي", "text-red-400"); break; }
-      const path = currentPath === "/" ? "/" + name : currentPath + "/" + name;
-      vfs[path] = { type: "file", content: args.slice(1).join(" "), owner: currentUser, perm: "rw-r--r--" };
-      const dir = vfs[currentPath];
-      if (dir && dir.children && dir.children.indexOf(name) === -1) dir.children.push(name);
-      await saveVFSToIDB(); await createLedgerBlock("WRITE", path);
-      out("[OK] ✅", "text-cyber-green");
-      break;
-    }
-
-    case "mkdir": {
-      if (!args[0]) { out("mkdir <dir>", "text-red-400"); break; }
-      const path = resolvePath(args[0]);
-      if (vfs[path]) { out("exists", "text-red-400"); break; }
-      const lastSlash = path.lastIndexOf("/");
-      const parent = lastSlash > 0 ? path.substring(0, lastSlash) : "/";
-      const name = path.substring(lastSlash + 1);
-      if (!vfs[parent] || vfs[parent].type !== "dir") { out("parent missing", "text-red-400"); break; }
-      vfs[path] = { type: "dir", children: [], owner: currentUser, perm: "rwxr-xr-x" };
-      if (vfs[parent].children.indexOf(name) === -1) vfs[parent].children.push(name);
-      await saveVFSToIDB();
-      out("[OK] " + args[0] + "/", "text-cyber-green");
-      break;
-    }
-
-    case "rm": {
-      if (!args[0]) { out("rm <file>", "text-red-400"); break; }
-      const fp = resolvePath(args[0]);
-      if (fp === "/" || fp === currentPath) { out("rm: cannot remove cwd", "text-red-400"); break; }
-      if (!vfs[fp]) { out("rm: not found", "text-red-400"); break; }
-      delete vfs[fp];
-      const lastSlash = fp.lastIndexOf("/");
-      const parent = lastSlash > 0 ? fp.substring(0, lastSlash) : "/";
-      const name = fp.substring(lastSlash + 1);
-      if (vfs[parent] && vfs[parent].children) vfs[parent].children = vfs[parent].children.filter(c => c !== name);
-      await saveVFSToIDB(); await createLedgerBlock("RM", fp);
-      out("[OK] removed", "text-cyber-green");
-      break;
-    }
-
-    case "nano": case "vim": case "vi":
-      if (!args[0]) { out("nano <file>", "text-red-400"); break; }
-      if (!cap) openNano(args[0]);
-      break;
-
-    case "su": {
-      const t = args[0] || "root";
-      if (!passwdDB.has(t)) { out("su: user not found", "text-red-400"); break; }
-      currentUser = t; updatePrompt();
-      out("✅ تم التبديل إلى المستخدم: " + t, "text-cyber-green");
-      break;
-    }
-
-    case "sudo": {
-      if (args.length === 0) { out("sudo <cmd>", "text-red-400"); break; }
-      const prev = currentUser; currentUser = "root"; updatePrompt();
-      await runPipeline(args.join(" "), { silent: cap });
-      currentUser = prev; updatePrompt();
-      break;
-    }
-
-    case "useradd": {
-      if (currentUser !== "root") { out("useradd: Permission denied", "text-red-400"); break; }
-      if (!args[0]) { out("useradd <username>", "text-red-400"); break; }
-      const uname = args[0];
-      const uid = 1000 + passwdDB.size;
-      await createUser(uname, uid, 100, "/home/" + uname, "/bin/bash", "123456", ["users"]);
-      out("✅ تم إنشاء المستخدم: " + uname + " (UID " + uid + ")", "text-cyber-green");
-      break;
-    }
-
-    case "grep": {
-      const pattern = args[0]; if (!pattern) { out("grep <pattern>", "text-red-400"); break; }
-      const source = shellVars.STDIN ? shellVars.STDIN.split("\n") : [];
-      if (source.length === 0 && args[1]) {
-        const fp = resolvePath(args[1]); if (vfs[fp] && vfs[fp].type === "file") source.push.apply(source, vfs[fp].content.split("\n"));
-      }
-      let re = null; try { re = new RegExp(pattern, "i"); } catch (e) {}
-      source.forEach(l => { if (re ? re.test(l) : l.indexOf(pattern) !== -1) out(l, "text-cyber-green"); });
-      break;
-    }
-
-    case "wc": {
-      const s = shellVars.STDIN || "";
-      out("  " + s.split("\n").length + "  " + s.split(/\s+/).filter(Boolean).length + "  " + s.length, "text-cyber-gold");
-      break;
-    }
-    case "head": {
-      const n = args[0] && args[0].startsWith("-") ? parseInt(args[0].slice(1), 10) : 10;
-      (shellVars.STDIN || "").split("\n").slice(0, n).forEach(l => out(l, "text-cyber-green"));
-      break;
-    }
-    case "tail": {
-      const n = args[0] && args[0].startsWith("-") ? parseInt(args[0].slice(1), 10) : 10;
-      (shellVars.STDIN || "").split("\n").slice(-n).forEach(l => out(l, "text-cyber-green"));
-      break;
-    }
-
-    case "encrypt": {
-      if (args.length < 2) { out("encrypt <file> <key>", "text-red-400"); break; }
-      const fp = resolvePath(args[0]);
-      if (!vfs[fp] || vfs[fp].type !== "file") { out("not found", "text-red-400"); break; }
-      vfs[fp].content = xorCipher(vfs[fp].content, args[1]);
-      await saveVFSToIDB(); await createLedgerBlock("ENCRYPT", args[0]);
-      out("[CIPHER] ✅", "text-cyber-green");
-      break;
-    }
-    case "decrypt": {
-      if (args.length < 2) { out("decrypt <file> <key>", "text-red-400"); break; }
-      const fp = resolvePath(args[0]);
-      if (!vfs[fp] || vfs[fp].type !== "file") { out("not found", "text-red-400"); break; }
-      const dec = xorDecipher(vfs[fp].content, args[1]);
-      if (dec !== null && dec.indexOf("\u0000") === -1) {
-        vfs[fp].content = dec; await saveVFSToIDB(); await createLedgerBlock("DECRYPT", args[0]);
-        out("[CIPHER] ✅", "text-cyber-green");
-      } else out("[CIPHER ERROR] مفتاح خاطئ", "text-red-400");
-      break;
-    }
-
-    case "ps":
-      out("  PID  USER        STAT   COMMAND", "text-cyber-gold");
-      out("  1    root        Ss     sovereign_init", "text-cyber-magenta");
-      out("  1024 " + currentUser.padEnd(11) + " R      -bash", "text-cyber-cyan");
-      break;
-
-    case "sysinfo":
-      out("═══ SOVEREIGN OS v36.0 ULTIMATE ═══", "text-cyber-gold");
-      out("User     : " + currentUser, "text-gray-200");
-      out("Path     : " + currentPath, "text-cyber-cyan");
-      out("Peer     : " + (myPeerId ? "✓ " + myPeerId.substring(0, 12) : "✗"), myPeerId ? "text-cyber-green" : "text-cyber-gold");
-      out("Room     : " + (roomId || "—"), roomId ? "text-cyber-magenta" : "text-cyber-gold");
-      out("Members  : " + (1 + Object.keys(roomMembers).length), "text-cyber-cyan");
-      out("Blocks   : " + auditLedger.length, "text-cyber-green");
-      out("© لافي منير 2026", "text-cyber-gold");
-      break;
-
-    case "chain":
-      out("═══ LEDGER ═══", "text-cyber-gold");
-      auditLedger.slice(-10).forEach(b => out("[#" + b.index + "] " + b.hash.substring(0, 14) + "... | " + b.type + " " + b.details, "text-cyber-cyan"));
-      break;
-
-    case "verify": {
-      const ok = await verifyBlockchain();
-      out(ok ? "[✅] سليمة" : "[❌] تلاعب!", ok ? "text-cyber-green" : "text-red-400");
-      break;
-    }
-
-    case "audit":
-      auditLedger.slice(-15).forEach(b => out("[" + new Date(b.timestamp).toLocaleTimeString() + "] [" + b.type + "] " + b.details, "text-cyber-green"));
-      break;
-
-    default:
-      if (cmd.indexOf("./") === 0 || cmd.endsWith(".sh")) {
-        const fp = resolvePath(cmd.indexOf("./") === 0 ? cmd.slice(2) : cmd);
-        if (vfs[fp] && vfs[fp].type === "file") {
-          await createLedgerBlock("EXEC", fp);
-          out("[EXEC] " + cmd, "text-cyber-cyan");
-          await runScriptContent(vfs[fp].content, opts);
-          break;
-        }
-      }
-      out("Unknown command: " + cmd + ". Type 'help'.", "text-red-400");
-  }
-}
-
-async function runCommand(cmdLine) {
-  if (typeof cmdLine !== "string" || !cmdLine.trim()) return;
-  printToTerm(currentUser + "@sovereign:" + currentPath + "# " + cmdLine, "text-cyber-cyan");
-  commandHistory.push(cmdLine); historyIndex = commandHistory.length;
-  await runPipeline(cmdLine);
-}
-
-function updatePrompt() {
-  $("promptLabel").textContent = currentUser + "@sovereign:" + (currentPath === "/root" ? "~" : currentPath) + "#";
-  $("currentPromptUser").textContent = currentUser;
-  $("footerStatus").textContent = "READY — " + new Date().toLocaleTimeString();
-}
-
-/* ─── Nano Editor Modal ─── */
-function openNano(filename) {
-  currentNanoPath = resolvePath(filename);
-  const content = vfs[currentNanoPath] ? vfs[currentNanoPath].content : "";
-  $("nanoFilename").textContent = filename;
-  $("nanoBuffer").value = content;
-  $("nanoModal").classList.add("active");
-  setTimeout(() => $("nanoBuffer").focus(), 100);
-}
-function closeNano(saved) {
-  $("nanoModal").classList.remove("active");
-  if (saved) printToTerm("[nano] Saved " + currentNanoPath, "text-cyber-green");
-  else printToTerm("[nano] Discarded changes", "text-cyber-gold");
-  currentNanoPath = null;
-}
-async function saveNano() {
-  if (!currentNanoPath) return;
-  const content = $("nanoBuffer").value;
-  vfs[currentNanoPath] = { type: "file", content, owner: currentUser, perm: "rw-r--r--" };
-  const lastSlash = currentNanoPath.lastIndexOf("/");
-  const parent = lastSlash > 0 ? currentNanoPath.substring(0, lastSlash) : "/";
-  const name = currentNanoPath.substring(lastSlash + 1);
-  if (vfs[parent] && vfs[parent].children && vfs[parent].children.indexOf(name) === -1) vfs[parent].children.push(name);
-  await saveVFSToIDB(); await createLedgerBlock("NANO_SAVE", currentNanoPath);
-  closeNano(true);
-}
-
-/* ─── P2P Mesh & Video Studio ─── */
-async function initPeer() {
-  if (peer) return;
-  try {
-    localStream = await navigator.mediaDevices.getUserMedia({ video: { width: {ideal:640}, height:{ideal:480} }, audio: true });
-    $("localVideo").srcObject = localStream;
-  } catch (e) { notify("⚠️ لا كاميرا: " + e.message, 4000); }
-
-  peer = new Peer({
-    config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] }
-  });
-  peer.on("open", id => {
-    myPeerId = id;
-    $("p2pStatus").textContent = "ON"; $("p2pStatus").className = "text-cyber-green font-bold";
-    addChatMessage("SYSTEM", "✅ متصل بالشبكة — ID: " + id.substring(0, 12) + "...");
-    createLedgerBlock("PEER_ONLINE", id.substring(0, 12));
-  });
-  peer.on("call", async call => {
-    if (!localStream) {
-      try { localStream = await navigator.mediaDevices.getUserMedia({video:true, audio:true}); $("localVideo").srcObject = localStream; }
-      catch (e) { call.close(); return; }
-    }
-    call.answer(localStream); handleCall(call);
-  });
-  peer.on("connection", conn => setupDataConnection(conn));
-}
-async function joinMeshRoom() {
-  const room = $("roomIdInput").value.trim();
-  if (!room) { notify("⚠️ اكتب اسم الغرفة", 2000); return; }
-  roomId = room; $("roomStatusBadge").textContent = "ROOM: " + room.toUpperCase();
-  await initPeer(); addChatMessage("SYSTEM", "🌐 انضممت لغرفة: " + room);
-  await createLedgerBlock("JOIN_ROOM", room); notify("🌐 غرفة: " + room, 2500);
-}
-async function applyCryptoKey() {
-  const key = $("roomKeyInput").value;
-  if (!key) { notify("⚠️ أدخل المفتاح", 2000); return; }
-  rawPasswordSecret = key; await deriveCryptoKey(key);
-  notify("🔐 تم ضبط مفتاح التشفير", 2500); await createLedgerBlock("SET_KEY", "Key updated");
-}
-function handleCall(call) {
-  if (videoCalls[call.peer]) return;
-  videoCalls[call.peer] = call; roomMembers[call.peer] = { joinedAt: Date.now() };
-  call.on("stream", remoteStream => {
-    let existing = document.getElementById("remote-" + call.peer);
-    if (!existing) {
-      const card = document.createElement("div");
-      card.className = "relative bg-black/50 rounded border border-cyber-border flex items-center justify-center min-h-[60px]";
-      card.id = "card-" + call.peer;
-      const v = document.createElement("video");
-      v.id = "remote-" + call.peer; v.autoplay = true; v.playsinline = true; v.srcObject = remoteStream;
-      v.className = "w-full h-full object-cover rounded";
-      const label = document.createElement("span");
-      label.className = "absolute bottom-0.5 right-0.5 text-[8px] bg-black/70 px-1 rounded text-cyber-magenta";
-      label.textContent = call.peer.substring(0, 6);
-      card.appendChild(v); card.appendChild(label); $("videoGrid").appendChild(card);
-    }
-  });
-  call.on("close", () => {
-    const card = document.getElementById("card-" + call.peer); if (card) card.remove();
-    delete videoCalls[call.peer]; delete roomMembers[call.peer];
-  });
-}
-function setupDataConnection(conn) {
-  dataConnections[conn.peer] = conn; roomMembers[conn.peer] = { joinedAt: Date.now() };
-  conn.on("open", () => {
-    addChatMessage("SYSTEM", "💬 " + conn.peer.substring(0, 6) + " انضم للقناة");
-    conn.send({ type: "hello", peerId: myPeerId }); createLedgerBlock("CONN", conn.peer.substring(0, 8));
-  });
-  conn.on("data", async data => {
-    if (typeof data === "string") {
-      if (data.startsWith("AES256:") || data.startsWith("XOR:")) {
-        const dec = await decryptPayload(data); appendChatMessage(conn.peer.substring(0, 6), dec);
-      }
-    } else if (data && typeof data === "object" && data.type === "FILE_CHUNK") {
-      handleIncomingChunk(data);
-    }
-  });
-  conn.on("close", () => { delete dataConnections[conn.peer]; delete roomMembers[conn.peer]; });
-}
-function addChatMessage(sender, text) {
-  const box = $("chatBox"); const div = document.createElement("div");
-  div.className = "text-[10px] leading-tight";
-  div.innerHTML = '<span class="text-cyber-cyan font-bold">' + escapeHtml(sender) + ':</span> <span class="text-gray-200">' + escapeHtml(text) + '</span>';
-  box.appendChild(div); box.scrollTop = box.scrollHeight;
-}
-async function sendChatMessage() {
-  const input = $("chatInput"); const text = input.value.trim(); if (!text) return;
-  input.value = ""; addChatMessage("أنا", text);
-  const enc = await encryptPayload(text);
-  Object.values(dataConnections).forEach(conn => { if (conn.open) conn.send(enc); });
-}
-
-/* ─── File Transfer (16KB Chunks) ─── */
-const CHUNK_SIZE = 16384;
-async function sendP2PFile(file) {
-  if (!file) return;
-  if (file.size > 5 * 1024 * 1024) { notify("⚠️ الحد الأقصى 5MB", 3000); return; }
-  const conns = Object.values(dataConnections).filter(c => c.open);
-  if (conns.length === 0) { notify("⚠️ لا أعضاء متصلون لإرسال الملف", 2000); return; }
-
-  const prog = $("fileProgressContainer"); prog.classList.remove("hidden");
-  $("transferFileName").textContent = file.name;
-
-  const buf = await file.arrayBuffer(); const total = Math.ceil(buf.byteLength / CHUNK_SIZE);
-  const tid = Math.random().toString(36).substring(2);
-
-  for (let i = 0; i < total; i++) {
-    const start = i * CHUNK_SIZE; const end = Math.min(start + CHUNK_SIZE, buf.byteLength);
-    const chunk = new Uint8Array(buf.slice(start, end));
-    const packet = { type: "FILE_CHUNK", transferId: tid, fileName: file.name, chunkIndex: i, totalChunks: total, data: chunk };
-    conns.forEach(c => c.send(packet));
-    const pct = Math.round(((i + 1) / total) * 100);
-    $("transferProgressBar").style.width = pct + "%"; $("transferPercent").textContent = pct + "%";
-    await new Promise(r => setTimeout(r, 5));
-  }
-  addChatMessage("SYSTEM", "📁 تم إرسال الملف: " + file.name);
-  await createLedgerBlock("FILE_SENT", file.name);
-  setTimeout(() => prog.classList.add("hidden"), 2500);
-}
-function handleIncomingChunk(packet) {
-  const { transferId, fileName, chunkIndex, totalChunks, data } = packet;
-  if (!pendingFileChunks[transferId]) {
-    pendingFileChunks[transferId] = { fileName, chunks: new Array(totalChunks), received: 0, startedAt: Date.now() };
-  }
-  const t = pendingFileChunks[transferId];
-  t.chunks[chunkIndex] = new Uint8Array(data); t.received++;
-  if (t.received === totalChunks) {
-    try {
-      const blob = new Blob(t.chunks); const url = URL.createObjectURL(blob);
-      const line = document.createElement("div"); line.className = "text-[10px]";
-      line.innerHTML = '📁 <a href="' + url + '" download="' + escapeHtml(fileName) + '" class="text-cyber-gold underline">تنزيل: ' + escapeHtml(fileName) + '</a>';
-      $("chatBox").appendChild(line); $("chatBox").scrollTop = $("chatBox").scrollHeight;
-      createLedgerBlock("FILE_RECV", fileName);
-    } catch (e) {}
-    delete pendingFileChunks[transferId];
-  }
-}
-
-/* ─── Media Controls ─── */
-function toggleMic() {
-  if (localStream) {
-    const t = localStream.getAudioTracks()[0];
-    if (t) { t.enabled = !t.enabled; $("btnToggleMic").classList.toggle("text-red-400", !t.enabled); }
-  }
-}
-async function toggleCam() {
-  if (!localStream) {
-    try { localStream = await navigator.mediaDevices.getUserMedia({video:true, audio:true}); $("localVideo").srcObject = localStream; }
-    catch (e) { notify("⚠️ تعذّر تشغيل الكاميرا", 2000); }
-    return;
-  }
-  const t = localStream.getVideoTracks()[0];
-  if (t) { t.enabled = !t.enabled; $("btnToggleCam").classList.toggle("text-red-400", !t.enabled); }
-}
-async function shareScreen() {
-  try {
-    screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-    $("localVideo").srcObject = screenStream;
-    const st = screenStream.getVideoTracks()[0];
-    Object.values(videoCalls).forEach(call => {
-      if (call.peerConnection) {
-        const s = call.peerConnection.getSenders().find(x => x.track && x.track.kind === "video");
-        if (s) s.replaceTrack(st);
-      }
-    });
-    st.onended = () => { if (localStream) $("localVideo").srcObject = localStream; };
-  } catch (e) { notify("⚠️ رُفضت مشاركة الشاشة", 2000); }
-}
-function snapshot() {
-  const v = $("localVideo"); if (!v.srcObject) return;
-  const c = document.createElement("canvas"); c.width = v.videoWidth; c.height = v.videoHeight;
-  c.getContext("2d").drawImage(v, 0, 0);
-  c.toBlob(b => {
-    const url = URL.createObjectURL(b); const a = document.createElement("a");
-    a.href = url; a.download = "snap_" + Date.now() + ".png"; a.click();
-    notify("📸 تم التقاط الصورة", 1500);
-  });
-  createLedgerBlock("SNAPSHOT", "Screen captured");
-}
-
-/* ─── Events ─── */
+/* ═══ EVENTS ═══ */
 termInput.addEventListener("keydown", async e => {
-  if (e.key === "ArrowUp") {
-    e.preventDefault(); if (historyIndex > 0) { historyIndex--; termInput.value = commandHistory[historyIndex]; } return;
+  if (e.key === "Enter") {
+    const val = termInput.value; termInput.value = "";
+    await runCommand(val);
+  } else if (e.key === "ArrowUp") {
+    if (historyIndex > 0) { historyIndex--; termInput.value = commandHistory[historyIndex] || ""; }
+    e.preventDefault();
+  } else if (e.key === "ArrowDown") {
+    if (historyIndex < commandHistory.length - 1) { historyIndex++; termInput.value = commandHistory[historyIndex] || ""; }
+    else { historyIndex = commandHistory.length; termInput.value = ""; }
+    e.preventDefault();
+  } else if (e.key === "Tab") {
+    e.preventDefault();
+    const partial = termInput.value.trim();
+    if (!partial) return;
+    const cmds = ["help","ai","call","ls","cd","cat","pwd","write","nano","mkdir","rm","cp","mv","touch","tree","find","stat","sysinfo","whoami","id","su","sudo","echo","env","export","date","uptime","ps","top","chain","chain-verify","clear","history","speak","listen","msg","members","peer"];
+    const matches = cmds.filter(c => c.startsWith(partial));
+    if (matches.length === 1) termInput.value = matches[0] + " ";
+    else if (matches.length > 1) printToTerm(matches.join("  "), "text-cyber-cyan");
   }
-  if (e.key === "ArrowDown") {
-    e.preventDefault(); if (historyIndex < commandHistory.length - 1) { historyIndex++; termInput.value = commandHistory[historyIndex]; }
-    else { historyIndex = commandHistory.length; termInput.value = ""; } return;
-  }
-  if (e.key !== "Enter") return;
-  const val = termInput.value; termInput.value = "";
-  if (!val.trim()) return;
-  printToTerm(currentUser + "@sovereign:" + currentPath + "# " + val, "text-cyber-cyan");
-  commandHistory.push(val); historyIndex = commandHistory.length;
-  await runPipeline(val);
 });
+$("btnToggleSide").addEventListener("click", () => $("sidePanel").classList.toggle("mobile-active"));
 
 document.addEventListener("keydown", e => {
   if ($("nanoModal").classList.contains("active")) {
-    if (e.ctrlKey && e.key.toLowerCase() === "s") { e.preventDefault(); saveNano(); }
-    if (e.ctrlKey && e.key.toLowerCase() === "x") { e.preventDefault(); closeNano(false); }
+    if (e.ctrlKey && e.key === "s") { e.preventDefault(); saveNano(); }
+    if (e.key === "Escape") closeNano(false);
   }
 });
 
-$("btnToggleSide") && $("btnToggleSide").addEventListener("click", () => {
-  $("sidePanel").classList.toggle("mobile-active");
+/* ═══ CLEANUP ═══ */
+window.addEventListener("beforeunload", () => {
+  try {
+    if (localStream) localStream.getTracks().forEach(t => t.stop());
+    if (screenStream) screenStream.getTracks().forEach(t => t.stop());
+    if (peer && !peer.destroyed) peer.destroy();
+  } catch (e) {}
 });
 
-document.addEventListener("click", e => {
-  if (e.target.tagName === "BUTTON" || e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.tagName === "A" || e.target.tagName === "VIDEO" || e.target.tagName === "LABEL") return;
-  if ($("nanoModal").classList.contains("active")) return;
-  termInput.focus();
+/* ═══ EXPOSE GLOBALLY (must be before boot) ═══ */
+Object.assign(window, {
+  runCommand, joinMeshRoom, applyCryptoKey, toggleMic, toggleCam,
+  shareScreen, snapshot, sendP2PFile, sendChatMessage, renderLedgerUI,
+  closeNano, saveNano, notify, openNano, speakAI, listenVoice
 });
 
-/* ─── Boot Sequence ─── */
+/* ═══ BOOT ═══ */
 async function boot() {
   initMatrix();
-  await initSystemState();
-  await deriveCryptoKey(rawPasswordSecret);
-  updatePrompt();
+  await initIndexedDB();
+  const loadedVFS = await loadVFSFromIDB();
+  vfs = loadedVFS || initVFS();
+  await createUser("root", 0, "/root", "/bin/bash");
+  await createUser("lafi", 1000, "/home/lafi", "/bin/bash");
+  const loadedLedger = await loadLedgerFromIDB();
+  if (loadedLedger && Array.isArray(loadedLedger) && loadedLedger.length > 0) auditLedger = loadedLedger;
+  else await createLedgerBlock("GENESIS", "System v38.0 Initialized", "SYSTEM");
+  renderLedgerUI(); await saveVFSToIDB(); updatePrompt();
 
   printToTerm("╔══════════════════════════════════════════════════════╗", "text-cyber-cyan");
-  printToTerm("║   لافي منير — SOVEREIGN OS v36.0 ULTIMATE            ║", "text-cyber-cyan");
-  printToTerm("║   🛰️ Mesh P2P + AES-GCM + POSIX Shell + IndexedDB    ║", "text-cyber-cyan");
+  printToTerm("║   لافي منير — SOVEREIGN OS v38.0 AI APEX             ║", "text-cyber-cyan");
+  printToTerm("║   🤖 AI + Mesh P2P + AES-GCM + IndexedDB + Ledger    ║", "text-cyber-cyan");
   printToTerm("╚══════════════════════════════════════════════════════╝", "text-cyber-cyan");
-  printToTerm("", "text-gray-200");
-  printToTerm("🎉 مرحباً لافي منير (root)", "text-cyber-green");
-  printToTerm("", "text-gray-200");
-  printToTerm("🌐 الشبكة:  call | peer | msg <نص> | members", "text-cyber-cyan");
-  printToTerm("📁 الملفات: ls, cd, cat, write, mkdir, nano", "text-gray-300");
-  printToTerm("👤 الحساب:  whoami, id, su, sudo, useradd", "text-gray-300");
-  printToTerm("🔒 الأمان:  encrypt, decrypt, setkey", "text-gray-300");
-  printToTerm("⛓️ السلسلة: chain, verify, audit", "text-gray-300");
-  printToTerm("🐚 النظام:  ps, sysinfo, ./script.sh, help", "text-gray-300");
-  printToTerm("", "text-gray-200");
-  printToTerm("📌 المس الشاشة لتناثر غبار الكريستال الكوني، أو جرّب: call", "text-cyber-gold");
-  printToTerm("", "text-gray-200");
-
-  await createLedgerBlock("BOOT", "System v36.0 ULTIMATE initialized");
+  printToTerm("", "");
+  printToTerm("🎉 مرحباً لافي منير (root).", "text-cyber-green");
+  printToTerm("   جرّب: ai مرحبا  |  help  |  call  |  tree  |  sysinfo  |  chain-verify", "text-gray-400");
+  printToTerm("", "");
+  beep(880, 100); setTimeout(() => beep(1320, 100), 100);
+}
+async function createUser(username, uid, home, shell) {
+  passwdDB.set(username, { username, uid, home, shell });
 }
 
 window.addEventListener("load", boot);
