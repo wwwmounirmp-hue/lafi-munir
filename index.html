@@ -1,1720 +1,1094 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" class="dark">
+<html lang="ar" dir="rtl" translate="no">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>لافي منير — SOVEREIGN OS v50.1 NEXUS OMEGA ∞</title>
-<meta name="theme-color" content="#030014">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>لافي منير — SOVEREIGN OS v27.0 🔐</title>
+<meta name="theme-color" content="#030008">
 <meta name="author" content="لافي منير">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="description" content="نظام تشغيل ويب ذاتي — 3D Globe, P2P, AI, Memory">
-
-<link rel="manifest" href='data:application/manifest+json,{"name":"SOVEREIGN OS — NEXUS OMEGA","short_name":"OMEGA Ω","lang":"ar","dir":"rtl","start_url":"./","scope":"./","display":"standalone","background_color":"%23030014","theme_color":"%2300f2fe","description":"نظام تشغيل ويب ذاتي","categories":["utilities","productivity"],"icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 192 192%27%3E%3Crect width=%27192%27 height=%27192%27 fill=%27%23030014%27 rx=%2732%27/%3E%3Ctext x=%2796%27 y=%27132%27 font-size=%27120%27 text-anchor=%27middle%27 fill=%27%2300f2fe%27 font-family=%27monospace%27 font-weight=%27bold%27%3E%CE%A9%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml","purpose":"any maskable"}]}'>
-
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%23030014' rx='32'/%3E%3Ctext x='96' y='130' font-size='110' text-anchor='middle' fill='%2300f2fe' font-family='monospace'%3EΩ%3C/text%3E%3C/svg%3E">
-
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = {
-  darkMode: 'class',
-  theme: { extend: {
-    colors: { cyber: { bg:'#030014', panel:'#0a0520', border:'#1f1345', cyan:'#00f2fe', magenta:'#ff007f', gold:'#ffd700', green:'#00ff66', purple:'#7928ca' } },
-    fontFamily: { mono: ['Fira Code','Courier New','monospace'], sans: ['Cairo','Tajawal','sans-serif'] }
-  }}
-}
-</script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/satellite.js@5.0.0/dist/satellite.min.js"></script>
-<script src="https://unpkg.com/globe.gl@2.32.0/dist/globe.gl.min.js"></script>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&family=Cairo:wght@400;700;900&display=swap');
-* { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; padding: 0; }
-body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', 'Cairo', monospace; overflow: hidden; user-select: none; padding-top: env(safe-area-inset-top); }
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-thumb { background: #00f2fe; border-radius: 3px; }
-.neon-cyan { color: #00f2fe; text-shadow: 0 0 10px rgba(0,242,254,0.8); }
-.neon-magenta { color: #ff007f; text-shadow: 0 0 10px rgba(255,0,127,0.8); }
-.neon-gold { color: #ffd700; text-shadow: 0 0 10px rgba(255,215,0,0.8); }
-#matrixCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.08; }
-.terminal-input { background: transparent; outline: none; border: none; color: #00ff66; width: 100%; font-family: inherit; }
-.terminal-output { white-space: pre-wrap; word-break: break-word; user-select: text; }
-.omni-card { border-right: 3px solid #00f2fe; padding-right: 8px; margin-bottom: 4px; background: rgba(0,242,254,0.05); }
-#mapContainer { width: 100%; height: 200px; border-radius: 8px; border: 1px solid #1f1345; z-index: 10; background: #000; }
-#globeContainer { width: 100%; height: 200px; border-radius: 8px; border: 1px solid #1f1345; z-index: 10; background: #000; position: relative; }
-#apodImage { width: 100%; height: 130px; object-fit: cover; border-radius: 8px; border: 1px solid #1f1345; }
-#videoPreview, #remoteVideo { width: 100%; height: 130px; object-fit: cover; border-radius: 8px; border: 1px solid #1f1345; background: #000; }
-.dot-pulse { animation: pulse 1.2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-.status-live { color: #00ff66; }
-.leaflet-container { background: #030014 !important; }
-.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #0a0520; color: #00f2fe; border: 1px solid #1f1345; }
-.tab-btn { transition: all 0.2s; }
-.tab-btn.active { background: rgba(0,242,254,0.15); border-color: #00f2fe; color: #00f2fe; }
-.launch-card { border-right: 2px solid #ffd700; padding-right: 6px; margin-bottom: 4px; font-size: 9px; }
-.install-banner { position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%); z-index: 300; }
-#audioLevel { border-radius: 4px; background: #000; height: 14px; position: relative; overflow: hidden; border: 1px solid #1f1345; }
-#audioBar { height: 100%; width: 0%; background: linear-gradient(90deg, #00ff66, #00f2fe); transition: width 0.1s; }
-.memory-item { border-right: 2px solid #7928ca; padding: 3px 6px; margin-bottom: 3px; font-size: 9px; background: rgba(121,40,202,0.05); }
-.voice-pulse { animation: voiceGlow 0.8s infinite; }
-@keyframes voiceGlow { 0%,100% { box-shadow: 0 0 5px #ff007f; } 50% { box-shadow: 0 0 20px #ff007f, 0 0 30px #ff007f; } }
-.offline-badge { background: #ffd700; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; }
-.globe-fallback { display:flex; align-items:center; justify-content:center; height:100%; color:#ffd700; font-size:11px; text-align:center; padding:10px; }
-.call-banner { position:fixed; top:80px; left:50%; transform:translateX(-50%); background:#0a0520; border:2px solid #ff007f; border-radius:12px; padding:16px; z-index:9999; box-shadow:0 0 30px #ff007f; text-align:center; color:#fff; font-family:'Cairo',monospace; direction:rtl; min-width:260px; }
-.call-banner button { border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; flex:1; }
-</style>
 </head>
-<body class="dark h-screen w-screen flex flex-col overflow-hidden">
-
-<canvas id="matrixCanvas"></canvas>
-<div id="notification" class="fixed top-20 left-1/2 -translate-x-1/2 bg-cyber-cyan text-black px-6 py-3 rounded-lg font-bold z-[200] hidden shadow-2xl text-sm text-center max-w-[90%]"></div>
-<button id="installBtn" class="install-banner hidden bg-cyber-cyan text-black px-4 py-2 rounded-lg font-bold text-xs shadow-2xl">
-  <i class="fa-solid fa-download"></i> تثبيت
-</button>
-
-<header class="relative z-10 bg-cyber-panel/95 border-b border-cyber-border px-3 py-2 flex justify-between items-center backdrop-blur-md">
-  <div class="flex items-center gap-2">
-    <span class="text-base md:text-lg font-black neon-magenta flex items-center gap-1">
-      <i class="fa-solid fa-atom dot-pulse"></i>
-      <span class="hidden sm:inline">NEXUS OMEGA</span>
-    </span>
-    <span class="bg-cyber-magenta/20 text-cyber-magenta text-[10px] px-1.5 py-0.5 rounded border border-cyber-magenta/40 font-bold">v50.1 Ω</span>
-    <span id="offlineBadge" class="hidden offline-badge">OFFLINE</span>
-  </div>
-  <div class="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-xs overflow-x-auto">
-    <div class="bg-cyber-bg px-2 py-1 rounded border border-cyber-border whitespace-nowrap">
-      <span>SATS: <span id="satCount" class="text-cyber-gold font-bold">0</span></span>
-    </div>
-    <div class="bg-cyber-bg px-2 py-1 rounded border border-cyber-border whitespace-nowrap">
-      <span>MEM: <span id="memCount" class="text-cyber-purple font-bold">0</span></span>
-    </div>
-    <div class="bg-cyber-bg px-2 py-1 rounded border border-cyber-border whitespace-nowrap">
-      <span>VOICE: <span id="voiceStatus" class="text-gray-500 font-bold">OFF</span></span>
-    </div>
-    <div class="bg-cyber-bg px-2 py-1 rounded border border-cyber-border whitespace-nowrap">
-      <span>⛓️ <span id="chainCount" class="text-cyber-green font-bold">1</span></span>
-    </div>
-    <button id="btnToggleSide" class="md:hidden bg-cyber-magenta/20 text-cyber-magenta px-2 py-1 rounded border border-cyber-magenta/50">
-      <i class="fa-solid fa-chevron-down"></i>
-    </button>
-  </div>
-</header>
-
-<main class="relative z-10 flex-1 grid grid-cols-1 md:grid-cols-12 gap-2 p-2 overflow-hidden main-grid">
-  <section class="md:col-span-7 lg:col-span-8 flex flex-col gap-2 h-full overflow-hidden">
-    <div class="flex-1 bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex flex-col shadow-2xl backdrop-blur-sm overflow-hidden">
-      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 mb-2 text-[10px]">
-        <div class="flex items-center gap-1.5">
-          <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
-          <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
-          <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
-          <span class="mr-2 font-bold text-gray-200">omega@nexus ~ root</span>
-        </div>
-        <div class="flex gap-2">
-          <button data-cmd="clear" class="hover:text-cyber-cyan" title="مسح"><i class="fa-solid fa-eraser"></i></button>
-          <button data-cmd="help" class="hover:text-cyber-gold" title="مساعدة"><i class="fa-solid fa-circle-question"></i></button>
-          <button id="btnVoice" class="hover:text-cyber-magenta" title="أوامر صوتية"><i class="fa-solid fa-microphone"></i></button>
-          <button id="btnLoop" class="hover:text-cyber-green" title="حلقة ذاتية"><i class="fa-solid fa-infinity"></i></button>
-          <button data-cmd="stats" class="hover:text-cyber-magenta" title="إحصائيات"><i class="fa-solid fa-chart-line"></i></button>
-        </div>
-      </div>
-      <div id="terminalOutput" class="flex-1 overflow-y-auto space-y-1 text-xs md:text-sm pr-1 terminal-output"></div>
-      <div class="mt-1.5 flex items-center gap-2 bg-cyber-bg/90 px-3 py-1.5 rounded-lg border border-cyber-border">
-        <span id="promptLabel" class="text-cyber-green font-bold text-xs md:text-sm whitespace-nowrap">Ω:~#</span>
-        <input type="text" id="terminalInput" class="terminal-input text-xs md:text-sm" placeholder="help | globe | video | voice | memory | agent" autofocus autocomplete="off" spellcheck="false">
-      </div>
-    </div>
-  </section>
-
-  <section id="sidePanel" class="md:col-span-5 lg:col-span-4 flex flex-col gap-2 h-full overflow-hidden side-panel">
-    <div class="bg-cyber-panel/90 border border-cyber-border rounded-xl p-2 flex gap-1 shadow-xl overflow-x-auto">
-      <button data-tab="globe" class="tab-btn active bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-globe"></i> 3D</button>
-      <button data-tab="map" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-map"></i> 2D</button>
-      <button data-tab="space" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-rocket"></i> Space</button>
-      <button data-tab="video" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-video"></i> Video</button>
-      <button data-tab="memory" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-brain"></i> Memory</button>
-      <button data-tab="agent" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-robot"></i> Agent</button>
-    </div>
-
-    <div id="tabGlobe" class="tab-content bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex flex-col gap-2 shadow-xl backdrop-blur-sm">
-      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px]">
-        <span class="font-bold text-cyber-cyan flex items-center gap-1"><i class="fa-solid fa-globe"></i> Globe 3D — Real-time Sats</span>
-        <span id="globeSatCount" class="text-cyber-gold text-[9px]">0</span>
-      </div>
-      <div id="globeContainer"></div>
-      <div class="grid grid-cols-3 gap-1 text-[9px]">
-        <div class="bg-cyber-bg/80 p-1 rounded border border-cyber-border text-center">
-          <div class="text-gray-500">Lat</div>
-          <div id="globeLat" class="text-cyber-cyan font-bold">—</div>
-        </div>
-        <div class="bg-cyber-bg/80 p-1 rounded border border-cyber-border text-center">
-          <div class="text-gray-500">Lon</div>
-          <div id="globeLon" class="text-cyber-cyan font-bold">—</div>
-        </div>
-        <div class="bg-cyber-bg/80 p-1 rounded border border-cyber-border text-center">
-          <div class="text-gray-500">Alt</div>
-          <div id="globeAlt" class="text-cyber-cyan font-bold">—</div>
-        </div>
-      </div>
-      <div class="flex gap-1">
-        <button data-globe="stations" class="flex-1 bg-cyber-cyan text-black text-[9px] py-1 rounded font-bold">Stations</button>
-        <button data-globe="starlink" class="flex-1 bg-cyber-gold text-black text-[9px] py-1 rounded font-bold">Starlink</button>
-        <button data-globe="gps-ops" class="flex-1 bg-cyber-green text-black text-[9px] py-1 rounded font-bold">GPS</button>
-      </div>
-    </div>
-
-    <div id="tabMap" class="tab-content hidden bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex-col gap-2 shadow-xl backdrop-blur-sm">
-      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px]">
-        <span class="font-bold text-cyber-cyan flex items-center gap-1"><i class="fa-solid fa-map"></i> Leaflet 2D Map</span>
-        <span id="issCoords" class="text-gray-400 text-[9px]">---</span>
-      </div>
-      <div id="mapContainer"></div>
-      <div class="grid grid-cols-4 gap-1 text-[9px]">
-        <div class="bg-cyber-bg/80 p-1 rounded border border-cyber-border text-center">
-          <div class="text-gray-500">Lat</div>
-          <div id="issLat" class="text-cyber-cyan font-bold">—</div>
-        </div>
-        <div class="bg-cyber-bg/80 p-1 rounded border border-cyber-border text-center">
-          <div class="text-gray-500">Lon</div>
-          <div id="issLon" class="text-cyber-cyan font-bold">—</div>
-        </div>
-        <div class="bg-cyber-bg/80 p-1 rounded border border-cyber-border text-center">
-          <div class="text-gray-500">Alt</div>
-          <div id="issAlt" class="text-cyber-cyan font-bold">—</div>
-        </div>
-        <div class="bg-cyber-bg/80 p-1 rounded border border-cyber-border text-center">
-          <div class="text-gray-500">Vis</div>
-          <div id="issVis" class="text-cyber-cyan font-bold">—</div>
-        </div>
-      </div>
-      <button id="btnUpdateISS" class="bg-cyber-cyan text-black text-[10px] py-1 rounded font-bold">تحديث ISS</button>
-    </div>
-
-    <div id="tabSpace" class="tab-content hidden bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex-col gap-2 shadow-xl backdrop-blur-sm max-h-[55vh] overflow-y-auto">
-      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px]">
-        <span class="font-bold neon-gold flex items-center gap-1"><i class="fa-solid fa-image"></i> NASA APOD</span>
-        <button data-cmd="apod" class="text-gray-500 hover:text-cyber-cyan text-[9px]">🔄</button>
-      </div>
-      <img id="apodImage" src="" alt="NASA APOD" onerror="this.style.display='none'">
-      <div id="apodInfo" class="text-[9px] text-gray-400 max-h-16 overflow-y-auto"></div>
-      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px] mt-2">
-        <span class="font-bold text-cyber-magenta"><i class="fa-solid fa-rocket"></i> SpaceX</span>
-      </div>
-      <div id="launchesBox" class="max-h-32 overflow-y-auto space-y-1 text-[9px]"></div>
-    </div>
-
-    <div id="tabVideo" class="tab-content hidden bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex-col gap-2 shadow-xl backdrop-blur-sm">
-      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px]">
-        <span class="font-bold text-cyber-magenta flex items-center gap-1"><i class="fa-solid fa-video"></i> Video P2P</span>
-        <span id="videoState" class="text-gray-500 text-[9px]">متوقف</span>
-      </div>
-      <div class="relative">
-        <video id="videoPreview" autoplay playsinline muted></video>
-        <div class="absolute top-1 right-1 bg-black/70 px-2 py-0.5 rounded text-[8px]">📷 أنت</div>
-      </div>
-      <div class="relative">
-        <video id="remoteVideo" autoplay playsinline></video>
-        <div class="absolute top-1 right-1 bg-black/70 px-2 py-0.5 rounded text-[8px]">🎥 الطرف الآخر</div>
-      </div>
-      <div class="flex gap-1">
-        <button data-cmd="start-video" class="flex-1 bg-cyber-cyan text-black text-[10px] py-1 rounded font-bold">📹 بدء</button>
-        <button data-cmd="stop-video" class="flex-1 bg-cyber-magenta text-white text-[10px] py-1 rounded font-bold">⏹ إيقاف</button>
-      </div>
-      <div class="flex gap-1">
-        <input type="text" id="videoPeerId" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-white outline-none" placeholder="معرّف الطرف...">
-        <button id="btnCallPeer" class="bg-cyber-green text-black text-[10px] px-2 py-1 rounded font-bold">📞 اتصال</button>
-      </div>
-      <div class="text-[9px] text-gray-500">معرّفك: <span id="myVideoId" class="text-cyber-green">—</span></div>
-      <div class="text-[9px] text-gray-500">مستوى الصوت:</div>
-      <div id="audioLevel"><div id="audioBar"></div></div>
-    </div>
-
-    <div id="tabMemory" class="tab-content hidden bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex-col gap-2 shadow-xl backdrop-blur-sm">
-      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px]">
-        <span class="font-bold text-cyber-purple flex items-center gap-1"><i class="fa-solid fa-brain"></i> Semantic Memory</span>
-        <span id="memVecCount" class="text-cyber-gold text-[9px]">0 vec</span>
-      </div>
-      <div class="flex gap-1">
-        <input type="text" id="memInput" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-white outline-none" placeholder="أضف ذكرى...">
-        <button id="btnAddMem" class="bg-cyber-purple text-white text-[10px] px-2 py-1 rounded font-bold">+</button>
-      </div>
-      <div class="flex gap-1">
-        <input type="text" id="memQuery" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-white outline-none" placeholder="ابحث دلالياً...">
-        <button id="btnSearchMem" class="bg-cyber-cyan text-black text-[10px] px-2 py-1 rounded font-bold">🔍</button>
-      </div>
-      <div id="memResults" class="bg-cyber-bg/90 border border-cyber-border rounded p-2 h-28 overflow-y-auto text-[9px]"></div>
-      <div class="flex justify-between text-[9px]">
-        <button id="btnDumpMem" class="text-cyber-cyan hover:text-white">عرض الكل</button>
-        <button id="btnClearMem" class="text-red-400 hover:text-red-300">مسح الذاكرة</button>
-      </div>
-    </div>
-
-    <div id="tabAgent" class="tab-content hidden bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex-col gap-2 shadow-xl backdrop-blur-sm">
-      <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px]">
-        <span class="font-bold text-cyber-magenta flex items-center gap-1"><i class="fa-solid fa-robot"></i> Self-Healing Agent</span>
-        <span id="queueCount" class="text-cyber-gold text-[9px]">0</span>
-      </div>
-      <div class="flex gap-1">
-        <input type="text" id="agentInput" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-white outline-none" placeholder="هدف للوكيل...">
-        <button id="btnAgent" class="bg-cyber-cyan text-black text-[10px] px-3 py-1 rounded font-bold">تنفيذ</button>
-      </div>
-      <div id="agentLogBox" class="bg-cyber-bg/90 border border-cyber-border rounded p-2 h-32 overflow-y-auto text-[9px] space-y-1">
-        <div class="text-gray-500">جاهز...</div>
-      </div>
-    </div>
-
-    <div class="bg-cyber-panel/90 border border-cyber-border rounded-xl p-2 flex flex-col shadow-xl max-h-24">
-      <div class="flex justify-between items-center border-b border-cyber-border pb-1 text-[10px] mb-1">
-        <span class="font-bold text-cyber-magenta"><i class="fa-solid fa-shield-halved"></i> CTF</span>
-        <span id="ctfScore" class="text-cyber-gold text-[9px]">0 pts</span>
-      </div>
-      <div id="ctfBox" class="flex-1 overflow-y-auto space-y-1 text-[9px] terminal-output"></div>
-    </div>
-
-    <div class="flex-1 bg-cyber-panel/90 border border-cyber-border rounded-xl p-2 flex flex-col shadow-xl overflow-hidden min-h-20">
-      <div class="flex justify-between items-center border-b border-cyber-border pb-1 text-[10px] mb-1">
-        <span class="font-bold text-cyber-gold"><i class="fa-solid fa-link"></i> Ledger</span>
-        <span id="chainValid" class="text-cyber-green text-[9px]">✓</span>
-      </div>
-      <div id="ledgerLog" class="flex-1 overflow-y-auto space-y-1 text-[9px] terminal-output"></div>
-    </div>
-  </section>
-</main>
-
-<footer class="relative z-10 bg-cyber-panel/95 border-t border-cyber-border px-3 py-1 flex justify-between items-center text-[10px] text-gray-400">
-  <div>© 2026 <span class="text-cyber-magenta font-bold">لافي منير</span> — v50.1 OMEGA Ω</div>
-  <div id="footerStatus" class="text-cyber-green font-bold">OMEGA ONLINE</div>
-</footer>
-
+<body>
+<div id="app"></div>
 <script>
-/* ═══════════════════════════════════════════════════════════════
-   SOVEREIGN OS v50.1 NEXUS OMEGA — SINGLE FILE BUILD (FIXED)
-   ═══════════════════════════════════════════════════════════════ */
+(function() {
 "use strict";
 
-const $ = id => document.getElementById(id);
-window.$ = $;
+/* ═══ قفل الدومين ═══ */
+const ALLOWED_DOMAINS = ['localhost','127.0.0.1','wwwmournirp-hue.github.io','lafi-munir.vercel.app','lafi-munir.netlify.app'];
+function checkDomain() {
+  const host = window.location.hostname;
+  if (window.location.protocol === 'file:') return;
+  const allowed = ALLOWED_DOMAINS.some(d => host === d || host.endsWith('.' + d) || host.endsWith('.github.io') || host.endsWith('.vercel.app') || host.endsWith('.netlify.app'));
+  if (!allowed) {
+    document.body.innerHTML = '<div style="color:#ff0844;font-family:monospace;padding:50px;text-align:center;background:#030008;min-height:100vh;display:flex;align-items:center;justify-content:center;"><div><h1>🚫 ACCESS DENIED</h1><p style="margin-top:20px;">© لافي منير 2026</p></div></div>';
+    throw new Error('Domain not authorized');
+  }
+}
+checkDomain();
 
-/* ─── State ─── */
-let currentPath = "/root";
-let vfs = {};
-let auditLedger = [];
+/* ═══ قفل التاريخ ═══ */
+const LICENSE_EXPIRY = new Date('2027-12-31T23:59:59').getTime();
+const LICENSE_START = new Date('2025-01-01').getTime();
+if (Date.now() > LICENSE_EXPIRY || Date.now() < LICENSE_START) {
+  document.body.innerHTML = '<div style="color:#ff0844;font-family:monospace;padding:50px;text-align:center;background:#030008;min-height:100vh;display:flex;align-items:center;justify-content:center;"><div><h1>⏰ LICENSE EXPIRED</h1></div></div>';
+  throw new Error('License expired');
+}
+
+/* ═══ منع DevTools ═══ */
+(function() {
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('keydown', e => {
+    if (e.key === 'F12') { e.preventDefault(); return false; }
+    if (e.ctrlKey && e.shiftKey && ['I','J','C','i','j','c'].includes(e.key)) { e.preventDefault(); return false; }
+    if (e.ctrlKey && ['u','U','s','S','a','A','p','P'].includes(e.key)) { e.preventDefault(); return false; }
+  });
+  document.addEventListener('dragstart', e => e.preventDefault());
+})();
+
+/* ═══ منع النسخ ═══ */
+document.addEventListener('copy', e => {
+  const t = e.target;
+  if (t && t.closest && t.closest('.terminal-body')) return true;
+  e.preventDefault(); return false;
+});
+document.addEventListener('cut', e => e.preventDefault());
+
+/* ═══ CSS ═══ */
+const CSS = `
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+body { min-height: 100vh; color: #00f2fe; background: linear-gradient(135deg, #030008, #0a0118, #20003b); padding: 15px; display: flex; align-items: center; justify-content: center; }
+.terminal-container { position: relative; width: 100%; max-width: 1280px; height: 96vh; background: rgba(5, 1, 15, 0.99); border: 2px solid #00f2fe; border-radius: 18px; padding: 15px; box-shadow: 0 0 170px rgba(0,242,254,0.8); display: flex; flex-direction: column; backdrop-filter: blur(40px); }
+.top-bar { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid rgba(0,242,254,0.4); margin-bottom: 10px; font-size: 11.5px; }
+.status-badge { padding: 3px 8px; background: rgba(0,242,254,0.15); border: 1px solid #00f2fe; border-radius: 6px; color: #00f2fe; font-weight: bold; }
+.status-badge.root { background: rgba(255,0,127,0.2); border-color: #ff007f; color: #ff007f; }
+.status-badge.editing { background: rgba(255,215,0,0.2); border-color: #ffd700; color: #ffd700; }
+.main-stage { display: flex; flex: 1; gap: 12px; overflow: hidden; }
+.term-side { flex: 1; display: flex; flex-direction: column; height: 100%; min-width: 0; }
+.visual-side { width: 340px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid rgba(0,242,254,0.25); padding-right: 10px; }
+.terminal-body { flex: 1; overflow-y: auto; font-size: 12px; line-height: 1.55; color: #e5e7eb; padding-right: 5px; white-space: pre-wrap; user-select: text; -webkit-user-select: text; overflow-wrap: break-word; }
+.cmd-line { display: flex; gap: 8px; align-items: center; margin-top: 10px; border-top: 1px solid rgba(0,242,254,0.2); padding-top: 8px; }
+.prompt { color: #ff007f; font-weight: bold; font-size: 12px; white-space: nowrap; }
+.cmd-input { flex: 1; background: transparent; border: none; outline: none; color: #00f2fe; font-size: 12px; user-select: text; }
+.sys-stat { display: flex; gap: 6px; font-size: 10px; color: #38bdf8; margin-top: 6px; flex-wrap: wrap; }
+.stat-item { background: rgba(0,242,254,0.08); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(0,242,254,0.2); }
+.stat-item.root { background: rgba(255,0,127,0.15); border-color: #ff007f; color: #ff007f; }
+.stat-item.edit { background: rgba(255,215,0,0.15); border-color: #ffd700; color: #ffd700; }
+canvas { width: 100%; height: 110px; background: #020005; border: 1px solid rgba(0,242,254,0.5); border-radius: 10px; }
+.panel { background: rgba(121, 40, 202, 0.1); border: 1px dashed rgba(121, 40, 202, 0.5); border-radius: 10px; padding: 8px; font-size: 10px; color: #d946ef; overflow-y: auto; }
+.panel-title { color: #ffd700; font-weight: bold; margin-bottom: 4px; font-size: 10.5px; }
+.audit-entry { padding: 2px 0; border-bottom: 1px dashed rgba(217,70,239,0.15); font-size: 9.5px; line-height: 1.4; word-break: break-all; }
+.audit-entry .time { color: #38bdf8; }
+.audit-entry.INFO { color: #00ff66; }
+.audit-entry.WARN { color: #ffd700; }
+.audit-entry.ERROR { color: #ff0844; }
+.export-btn { padding: 6px 10px; background: linear-gradient(135deg, #00f2fe, #7928ca); border: none; border-radius: 8px; color: #fff; font-size: 10px; font-weight: bold; cursor: pointer; margin-top: 4px; width: 100%; }
+.editor-overlay { position: absolute; inset: 15px; background: rgba(0,0,0,0.97); border: 2px solid #ffd700; border-radius: 14px; display: none; flex-direction: column; z-index: 100; padding: 12px; box-shadow: 0 0 80px rgba(255,215,0,0.5); }
+.editor-overlay.active { display: flex; }
+.editor-header { display: flex; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid #ffd700; color: #ffd700; font-size: 12px; font-weight: bold; }
+.editor-status { display: flex; gap: 12px; color: #38bdf8; font-size: 10px; }
+.editor-area { flex: 1; background: #000; color: #00ff66; border: 1px solid #ffd700; border-radius: 6px; padding: 10px; margin-top: 8px; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.5; resize: none; outline: none; width: 100%; user-select: text; }
+.editor-help { color: #ffd700; font-size: 10px; margin-top: 6px; text-align: center; }
+.credit { color: #ffd700; font-size: 10px; margin-top: 8px; text-align: center; opacity: 0.8; }
+@media (max-width: 800px) {
+  body { padding: 5px; }
+  .terminal-container { padding: 8px; height: 98vh; border-radius: 12px; }
+  .top-bar { font-size: 10px; padding-bottom: 6px; margin-bottom: 6px; }
+  .main-stage { flex-direction: column; gap: 6px; }
+  .visual-side { display: none !important; }
+  .term-side { order: 1; }
+  .terminal-body { font-size: 13px; line-height: 1.5; }
+  .cmd-input { font-size: 16px !important; padding: 4px; }
+  .prompt { font-size: 13px; }
+  .sys-stat { font-size: 9px; gap: 4px; }
+  .stat-item { padding: 1px 4px; }
+  .cmd-line { margin-top: 6px; padding-top: 6px; gap: 6px; }
+  .credit { font-size: 9px; }
+}
+`;
+const styleEl = document.createElement('style');
+styleEl.textContent = CSS;
+document.head.appendChild(styleEl);
+
+/* ═══ HTML ═══ */
+document.getElementById('app').innerHTML = `
+<div class="terminal-container">
+  <div class="top-bar">
+    <span>🌌 لافي منير — SOVEREIGN OS v27.0</span>
+    <span class="status-badge root" id="kernelStatus">ROOT 👑</span>
+  </div>
+  <div class="main-stage">
+    <div class="visual-side">
+      <canvas id="paintCanvas"></canvas>
+      <div class="panel" style="max-height:140px;">
+        <div class="panel-title">👥 المستخدمون</div>
+        <div id="varsDisplay">...</div>
+      </div>
+      <div class="panel" style="flex:1;">
+        <div class="panel-title">📊 السجل</div>
+        <div id="auditDisplay" style="max-height: 100%; overflow-y: auto;">لا أحداث بعد...</div>
+      </div>
+      <button id="exportChainBtn" class="export-btn">📥 تصدير السلسلة</button>
+      <button id="exportAuditBtn" class="export-btn">📥 تصدير السجل</button>
+    </div>
+    <div class="term-side">
+      <div class="terminal-body" id="termBody"></div>
+      <div class="sys-stat">
+        <span class="stat-item root" id="userStat">User: root</span>
+        <span class="stat-item root" id="uidStat">UID: 0 (GID 0)</span>
+        <span class="stat-item" id="pathStat">PWD: /root</span>
+        <span class="stat-item" id="timeStat">--:--:--</span>
+        <span class="stat-item" id="chainStat">Blocks: 1</span>
+        <span class="stat-item edit" id="editStat" style="display:none;">EDITING ✏️</span>
+      </div>
+      <div class="cmd-line">
+        <span class="prompt" id="promptText">root@lafi:/root#</span>
+        <input type="text" class="cmd-input" id="cmdInput" autofocus autocomplete="off" spellcheck="false" autocapitalize="off">
+      </div>
+    </div>
+  </div>
+  <div class="editor-overlay" id="editorOverlay">
+    <div class="editor-header">
+      <span id="editorFilename">nano — new_file.txt</span>
+      <div class="editor-status">
+        <span id="editorLineInfo">سطر: 1 | أحرف: 0</span>
+        <span id="editorState">[ جديد ]</span>
+      </div>
+    </div>
+    <textarea class="editor-area" id="editorArea" spellcheck="false"></textarea>
+    <div class="editor-help">💾 Ctrl+S = حفظ | 🚪 Ctrl+X = خروج | 🧹 Ctrl+K = مسح</div>
+  </div>
+  <div class="credit">© لافي منير 2026 — جميع الحقوق محفوظة</div>
+</div>
+`;
+
+/* ═══ Core ═══ */
+const $ = id => document.getElementById(id);
+const canvas = $('paintCanvas');
+const ctx = canvas.getContext('2d');
+function resizeCanvas() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+let blockchain = [];
 let commandHistory = [];
 let historyIndex = -1;
-let idb = null;
+let currentPath = "/root";
+let shellVars = {};
+let shellFunctions = {};
+let auditEvents = [];
+let suPending = null;
+let terminalBuffer = [];
 
-let issMap = null, issMarker = null, issTrail = null, issTrailPoints = [];
-let globeWorld = null, globeResizeObserver = null;
-let satData = [], globeSatData = [];
-let issInterval = null, globeInterval = null;
-let globeInitialized = false;
+// ✅ جلسة مفتوحة تلقائياً بدون كلمة سر
+let session = { uid: 0, username: "root", loginState: "LOGGED_IN", pendingUsername: null };
+let nanoState = { active: false, filename: null, originalContent: "", fullPath: null, dirty: false };
 
-let ctfScore = 0;
-let stats = { goalsDone:0, goalsFail:0, goalsRetried:0, loops:0, aiQueries:0, p2pMessages:0, photos:0, memories:0, voiceCmds:0 };
-let goalQueue = [];
-let loopActive = false;
-let loopInterval = null;
-let agentBusy = false;
+const passwdDB = new Map();
+const shadowDB = new Map();
+const groupDB = new Map();
+let VFS = {};
 
-let peer = null, connections = {}, myPeerId = "";
-let currentCall = null, mediaCallStream = null;
-
-let llmEngine = null, llmLoading = false, aiDrivesAgent = false;
-
-let cameraStream = null, micStream = null, audioCtx = null, audioAnalyser = null;
-let recognition = null, voiceActive = false;
-
-let memoryVectors = [];
-let embedderPipeline = null;
-
-const termOutput = $("terminalOutput");
-const termInput = $("terminalInput");
-
-/* ─── Utils ─── */
-const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-  .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
-
-function printToTerm(text, color = "text-gray-300") {
-  const div = document.createElement("div");
-  div.className = "font-mono " + color;
-  div.textContent = text;
-  termOutput.appendChild(div);
-  termOutput.scrollTop = termOutput.scrollHeight;
-  while (termOutput.children.length > 500) termOutput.removeChild(termOutput.firstChild);
+/* ═══ Audit ═══ */
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function addAuditEvent(type, message) {
+  const time = new Date().toLocaleTimeString();
+  auditEvents.unshift({ time, type, message });
+  if (auditEvents.length > 60) auditEvents.pop();
+  const html = auditEvents.slice(0, 25).map(e =>
+    '<div class="audit-entry ' + e.type + '"><span class="time">[' + e.time + ']</span> [' + e.type + '] ' + escapeHtml(e.message.substring(0, 55)) + '</div>'
+  ).join('');
+  $('auditDisplay').innerHTML = html || "لا أحداث بعد...";
 }
 
-function notify(msg, color) {
-  const n = $("notification");
-  n.textContent = msg;
-  n.className = "fixed top-20 left-1/2 -translate-x-1/2 " + (color || "bg-cyber-cyan text-black") +
-    " px-6 py-3 rounded-lg font-bold z-[200] shadow-2xl text-sm text-center max-w-[90%]";
-  n.classList.remove("hidden");
-  clearTimeout(n._t);
-  n._t = setTimeout(() => n.classList.add("hidden"), 2500);
+/* ═══ Blockchain ═══ */
+async function computeSHA256(message) {
+  const buf = new TextEncoder().encode(message);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+async function addBlock(data) {
+  const prev = blockchain[blockchain.length - 1] || { hash: "0000000000", index: -1 };
+  const timestamp = Date.now();
+  const hash = await computeSHA256(prev.hash + data + timestamp);
+  const block = { index: prev.index + 1, timestamp, data, prevHash: prev.hash, hash };
+  blockchain.push(block);
+  $('chainStat').textContent = 'Blocks: ' + blockchain.length;
+  addAuditEvent('INFO', 'Block #' + block.index + ': ' + data.substring(0, 20));
+  try { localStorage.setItem('sovereign_chain_v27_nopass', JSON.stringify(blockchain)); } catch (e) {}
+  return block;
 }
 
-const setStatus = (id, text, cls) => {
-  const el = $(id); if (!el) return;
-  el.textContent = text;
-  el.className = "font-bold " + (cls || "");
-};
-
-function safeEval(expr) {
-  if (!/^[\d\s+\-*/().%^]+$/.test(expr)) return null;
+/* ═══ Crypto ═══ */
+async function hashPassword(password, salt) {
+  const data = new TextEncoder().encode(salt + ":" + password + ":LAFI-MUNIR-V27");
+  const buf = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+function generateSalt() {
+  const arr = new Uint8Array(8);
+  crypto.getRandomValues(arr);
+  return Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+async function verifyPassword(username, password) {
+  const s = shadowDB.get(username);
+  if (!s) return false;
+  return (await hashPassword(password, s.salt)) === s.hash;
+}
+function xorCipher(text, key) {
+  const t = new TextEncoder().encode(text);
+  const k = new TextEncoder().encode(key);
+  const out = new Uint8Array(t.length);
+  for (let i = 0; i < t.length; i++) out[i] = t[i] ^ k[i % k.length];
+  let bin = "";
+  for (let i = 0; i < out.length; i++) bin += String.fromCharCode(out[i]);
+  return "ENC:" + btoa(bin);
+}
+function xorDecipher(c, key) {
   try {
-    const sanitized = expr.replace(/\^/g, "**");
-    return Function('"use strict";return (' + sanitized + ')')();
-  } catch { return null; }
+    if (!c.startsWith("ENC:")) return null;
+    const bin = atob(c.slice(4));
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const k = new TextEncoder().encode(key);
+    const out = new Uint8Array(bytes.length);
+    for (let i = 0; i < bytes.length; i++) out[i] = bytes[i] ^ k[i % k.length];
+    return new TextDecoder().decode(out);
+  } catch (e) { return null; }
 }
 
-/* ─── safeFetch مع مهلة حقيقية ─── */
-async function safeFetch(url, options = {}, timeoutMs = 8000) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const r = await fetch(url, { ...options, signal: controller.signal });
-    clearTimeout(timer);
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    return await r.json();
-  } catch (e) {
-    clearTimeout(timer);
-    if (e.name === "AbortError") {
-      throw new Error("انتهت المهلة — " + (url.split("/")[2] || ""));
+/* ═══ Users ═══ */
+async function createUser(username, uid, gid, home, shell, password, groups) {
+  groups = groups || [];
+  if (passwdDB.has(username)) return { ok: false, error: "user exists" };
+  passwdDB.set(username, { username, uid, gid, home, shell, created: Date.now() });
+  const salt = generateSalt();
+  const hash = await hashPassword(password, salt);
+  shadowDB.set(username, { hash, salt, lastChange: Date.now() });
+  groups.forEach(g => {
+    if (groupDB.has(g)) {
+      const grp = groupDB.get(g);
+      if (!grp.members.includes(username)) grp.members.push(username);
     }
-    const msg = navigator.onLine ? "تعذّر الوصول للمصدر" : "أنت غير متصل بالإنترنت";
-    throw new Error(msg + " — " + (url.split("/")[2] || ""));
-  }
-}
-
-/* ─── IndexedDB ─── */
-function initIDB() {
-  return new Promise(res => {
-    try {
-      const r = indexedDB.open("Omega_v50_1", 1);
-      r.onupgradeneeded = e => {
-        const d = e.target.result;
-        if (!d.objectStoreNames.contains("vfs")) d.createObjectStore("vfs");
-        if (!d.objectStoreNames.contains("ledger")) d.createObjectStore("ledger");
-        if (!d.objectStoreNames.contains("memory")) d.createObjectStore("memory", { keyPath: "id" });
-      };
-      r.onsuccess = e => { idb = e.target.result; res(true); };
-      r.onerror = () => res(false);
-    } catch { res(false); }
   });
+  VFS[home] = { type: "dir", children: [], owner: username, group: gid, mode: "rwxr-xr-x" };
+  return { ok: true };
 }
-async function saveVFS() {
-  if (!idb) return;
-  try {
-    const tx = idb.transaction("vfs","readwrite");
-    const s = tx.objectStore("vfs");
-    s.clear();
-    for (const [k,v] of Object.entries(vfs)) {
-      if (v.data && typeof v.data === "string" && v.data.length > 400000) continue;
-      s.put(v, k);
-    }
-  } catch {}
+async function createGroup(name, gid, members) {
+  members = members || [];
+  if (groupDB.has(name)) return { ok: false };
+  groupDB.set(name, { name, gid, members: members.slice() });
+  return { ok: true };
 }
-async function loadVFS() {
-  if (!idb) return null;
-  return new Promise(res => {
-    try {
-      const tx = idb.transaction("vfs","readonly");
-      const s = tx.objectStore("vfs");
-      const r = s.getAll(), k = s.getAllKeys();
-      tx.oncomplete = () => {
-        const o = {};
-        (r.result||[]).forEach((v,i) => o[(k.result||[])[i]] = v);
-        res(Object.keys(o).length ? o : null);
-      };
-      tx.onerror = () => res(null);
-    } catch { res(null); }
-  });
+async function deleteUser(username) {
+  if (username === "root") return { ok: false, error: "cannot delete root" };
+  if (!passwdDB.has(username)) return { ok: false, error: "user not found" };
+  const u = passwdDB.get(username);
+  passwdDB.delete(username);
+  shadowDB.delete(username);
+  groupDB.forEach(g => { g.members = g.members.filter(m => m !== username); });
+  return { ok: true, home: u.home };
 }
-async function saveLedger() {
-  if (!idb) return;
-  try { idb.transaction("ledger","readwrite").objectStore("ledger").put(auditLedger,"chain"); } catch {}
-}
-async function loadLedger() {
-  if (!idb) return null;
-  return new Promise(res => {
-    try {
-      const tx = idb.transaction("ledger","readonly");
-      const req = tx.objectStore("ledger").get("chain");
-      tx.oncomplete = () => res(req.result || null);
-      tx.onerror = () => res(null);
-    } catch { res(null); }
-  });
-}
-async function saveMemory() {
-  if (!idb) return;
-  try {
-    const tx = idb.transaction("memory","readwrite");
-    const s = tx.objectStore("memory");
-    s.clear();
-    memoryVectors.forEach(m => s.put(m));
-  } catch {}
-}
-async function loadMemory() {
-  if (!idb) return [];
-  return new Promise(res => {
-    try {
-      const tx = idb.transaction("memory","readonly");
-      const req = tx.objectStore("memory").getAll();
-      tx.oncomplete = () => res(req.result || []);
-      tx.onerror = () => res([]);
-    } catch { res([]); }
-  });
-}
-
-/* ─── Blockchain ─── */
-async function sha256(str) {
-  const b = new TextEncoder().encode(str);
-  const h = await crypto.subtle.digest("SHA-256", b);
-  return Array.from(new Uint8Array(h)).map(x => x.toString(16).padStart(2,"0")).join("");
-}
-async function addBlock(type, details) {
-  const prev = auditLedger.length ? auditLedger[auditLedger.length-1] : null;
-  const prevHash = prev ? prev.hash : "0".repeat(64);
-  const ts = new Date().toISOString();
-  const idx = auditLedger.length;
-  const hash = await sha256(idx + "|" + ts + "|" + type + "|" + details + "|" + prevHash);
-  auditLedger.push({ index: idx, timestamp: ts, type, details, prevHash, hash });
-  await saveLedger();
-  renderLedgerUI();
-  $("chainCount").textContent = auditLedger.length;
-}
-async function verifyChain(silent) {
-  let ok = true;
-  for (let i = 0; i < auditLedger.length; i++) {
-    const b = auditLedger[i];
-    const exp = await sha256(b.index + "|" + b.timestamp + "|" + b.type + "|" + b.details + "|" + b.prevHash);
-    if (exp !== b.hash) { ok = false; break; }
-    if (i > 0 && b.prevHash !== auditLedger[i-1].hash) { ok = false; break; }
-  }
-  $("chainValid").textContent = ok ? "✓" : "✗";
-  $("chainValid").className = "text-[9px] " + (ok ? "text-cyber-green" : "text-red-400");
-  if (!silent) printToTerm(ok ? "✅ السلسلة سليمة" : "❌ مكسورة", ok ? "text-cyber-green" : "text-red-400");
-  return ok;
-}
-function renderLedgerUI() {
-  const box = $("ledgerLog"); if (!box) return;
-  box.innerHTML = "";
-  auditLedger.slice().reverse().slice(0, 12).forEach(b => {
-    const div = document.createElement("div");
-    div.className = "bg-cyber-bg/90 p-1 rounded border border-cyber-border";
-    div.innerHTML = '<span class="text-cyber-cyan font-bold">#' + b.index + '</span> <span class="text-cyber-magenta">[' + esc(b.type) + ']</span> <span class="text-gray-400 text-[8px]">' + esc(String(b.details).slice(0,40)) + '</span>';
-    box.appendChild(div);
-  });
-}
-
-/* ─── VFS ─── */
-const initVFS = () => ({
-  "/": { type:"dir", children:["root","etc","space","photos","ctf","tmp"] },
-  "/root": { type:"dir", children:["readme.txt"] },
-  "/root/readme.txt": { type:"file", content:"SOVEREIGN OS v50.1 OMEGA ∞" },
-  "/etc": { type:"dir", children:[] },
-  "/space": { type:"dir", children:["iss.json"] },
-  "/space/iss.json": { type:"file", content:"{}" },
-  "/photos": { type:"dir", children:[] },
-  "/ctf": { type:"dir", children:[] },
-  "/tmp": { type:"dir", children:[] }
-});
-function resolvePath(a) {
-  if (!a) return currentPath;
-  if (a === "~") return "/root";
-  let base = a.startsWith("/") ? a : (currentPath === "/" ? "" : currentPath) + "/" + a;
-  const stack = [];
-  for (const p of base.split("/").filter(Boolean)) {
-    if (p === ".") continue;
-    if (p === "..") stack.pop();
-    else stack.push(p);
-  }
-  return "/" + stack.join("/") || "/";
-}
-const parentOf = p => p === "/" ? "/" : (p.lastIndexOf("/") <= 0 ? "/" : p.slice(0, p.lastIndexOf("/")));
-const baseName = p => p === "/" ? "/" : p.slice(p.lastIndexOf("/")+1);
-function ensureParent(path) {
-  const par = parentOf(path), name = baseName(path);
-  if (vfs[par]?.children && !vfs[par].children.includes(name)) vfs[par].children.push(name);
-}
-
-/* ─── Globe 3D ─── */
-function initGlobe() {
-  if (typeof Globe === "undefined") {
-    printToTerm("⚠️ Globe.gl لم تُحمّل — 2D فقط", "text-yellow-400");
-    return;
-  }
-  const container = $("globeContainer");
-  if (!container) return;
-  try {
-    globeWorld = Globe()(container)
-      .globeImageUrl("//unpkg.com/three-globe/example/img/earth-blue-marble.jpg")
-      .bumpImageUrl("//unpkg.com/three-globe/example/img/earth-topology.png")
-      .backgroundImageUrl("//unpkg.com/three-globe/example/img/night-sky.png")
-      .backgroundColor("#030014")
-      .showAtmosphere(true)
-      .atmosphereColor("#00f2fe")
-      .atmosphereAltitude(0.22)
-      .pointOfView({ lat: 20, lng: 0, altitude: 2.5 }, 1000);
-
-    globeWorld
-      .pointsData(globeSatData)
-      .pointLat("lat").pointLng("lng")
-      .pointColor(d => d.type === "iss" ? "#00f2fe" : "#ffd700")
-      .pointAltitude(d => d.type === "iss" ? 0.15 : 0.05)
-      .pointRadius(d => d.type === "iss" ? 0.6 : 0.3)
-      .pointLabel(d => '<b style="color:' + (d.type==="iss"?"#00f2fe":"#ffd700") + '">' + esc(d.name) + '</b><br>' + d.norad);
-
-    globeWorld
-      .ringsData([])
-      .ringColor(() => "#ff007f")
-      .ringMaxRadius(3)
-      .ringPropagationSpeed(3)
-      .ringRepeatPeriod(800);
-
-    globeResizeObserver = new ResizeObserver(() => {
-      if (!globeWorld || !container) return;
-      const w = container.clientWidth;
-      if (w > 0) globeWorld.width(w).height(container.clientHeight || 200);
-    });
-    globeResizeObserver.observe(container);
-
-    globeInitialized = true;
-    printToTerm("🌍 Globe 3D جاهز", "text-cyber-green");
-  } catch (e) {
-    container.innerHTML = '<div class="globe-fallback">⚠️ Globe 3D غير متاح<br>استخدم تبويب 2D</div>';
-    printToTerm("❌ Globe: " + e.message, "text-red-400");
-  }
-}
-
-const CORS_PROXY = "https://corsproxy.io/?";
-const proxyUrl = u => CORS_PROXY + encodeURIComponent(u);
-
-async function fetchTLE(group) {
-  const urls = [
-    proxyUrl("https://celestrak.org/NORAD/elements/gp.php?GROUP=" + group + "&FORMAT=json"),
-    "https://tle.ivanstanojevic.me/api/tle?search=" + group,
-    "https://celestrak.org/NORAD/elements/gp.php?GROUP=" + group + "&FORMAT=json"
-  ];
-  for (const u of urls) {
-    try {
-      const data = await safeFetch(u, {}, 10000);
-      if (data.member) {
-        return data.member.map(m => ({
-          OBJECT_NAME: m.name, NORAD_CAT_ID: m.satelliteId,
-          TLE_LINE1: m.line1, TLE_LINE2: m.line2
-        }));
-      }
-      if (Array.isArray(data)) return data;
-    } catch (e) { console.warn("TLE fail:", u, e.message); }
-  }
-  throw new Error("فشل جلب TLE — تحقق من الاتصال");
-}
-
-async function loadGlobeSats(group) {
-  group = group || "stations";
-  printToTerm("🌍 تحميل " + group + "...", "text-cyber-cyan");
-  try {
-    const sats = await fetchTLE(group);
-    globeSatData = []; satData = [];
-    sats.forEach(s => {
-      try {
-        const satrec = satellite.twoline2satrec(s.TLE_LINE1, s.TLE_LINE2);
-        const rec = { name: s.OBJECT_NAME, norad: s.NORAD_CAT_ID, satrec };
-        satData.push(rec); globeSatData.push(rec);
-      } catch {}
-    });
-    $("globeSatCount").textContent = globeSatData.length;
-    $("satCount").textContent = satData.length;
-    printToTerm("  ✅ " + globeSatData.length + " قمر", "text-cyber-green");
-    updateGlobePositions();
-    if (globeInterval) clearInterval(globeInterval);
-    globeInterval = setInterval(() => { if (!document.hidden) updateGlobePositions(); }, 5000);
-    await addBlock("GLOBE_LOAD", globeSatData.length + " sats " + group);
-  } catch (e) {
-    printToTerm("❌ " + e.message, "text-red-400");
-  }
-}
-function updateGlobePositions() {
-  if (!globeInitialized) return;
-  const now = new Date();
-  globeSatData.forEach(sd => {
-    if (!sd.satrec) return;
-    try {
-      const pv = satellite.propagate(sd.satrec, now);
-      if (!pv?.position) return;
-      const gmst = satellite.gstime(now);
-      const geo = satellite.eciToGeodetic(pv.position, gmst);
-      const lat = satellite.degreesLat(geo.latitude);
-      const lon = satellite.degreesLong(geo.longitude);
-      if (isNaN(lat) || isNaN(lon)) return;
-      sd.lat = lat; sd.lng = lon; sd.alt = geo.height;
-    } catch {}
-  });
-  if (globeWorld) globeWorld.pointsData([...globeSatData]);
-}
-
-/* ✅ إصلاح: تستقبل {lat, lon, alt} وتُحوّل داخليًا إلى lng لـ Globe */
-function updateISSOnGlobe(d) {
-  if (!globeWorld || !d) return;
-  const idx = globeSatData.findIndex(s => s.type === "iss");
-  const rec = { name: "ISS", norad: "25544", lat: d.lat, lng: d.lon, alt: d.alt, type: "iss" };
-  if (idx >= 0) globeSatData[idx] = rec;
-  else globeSatData.push(rec);
-  globeWorld.pointsData([...globeSatData]);
-  globeWorld.ringsData([{ lat: d.lat, lng: d.lon }]);
-}
-
-/* ─── Leaflet 2D ─── */
-function initMap() {
-  if (typeof L === "undefined") {
-    printToTerm("⚠️ Leaflet غير محمّل", "text-yellow-400");
-    const c = $("mapContainer");
-    if (c) c.innerHTML = '<div class="globe-fallback">⚠️ Leaflet غير متاح</div>';
-    return false;
-  }
-  try {
-    issMap = L.map('mapContainer', { zoomControl: false, attributionControl: false, worldCopyJump: true }).setView([0,0], 2);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 6 }).addTo(issMap);
-    issMarker = L.circleMarker([0,0], { radius: 7, color: '#00f2fe', fillColor: '#00f2fe', fillOpacity: 0.9, weight: 2 }).addTo(issMap);
-    issMarker.bindPopup("<b style='color:#00f2fe'>🛰️ ISS</b>");
-    issTrail = L.polyline([], { color: '#ff007f', weight: 2, opacity: 0.7 }).addTo(issMap);
-    return true;
-  } catch (e) {
-    printToTerm("❌ Leaflet: " + e.message, "text-red-400");
-    return false;
-  }
-}
-async function fetchISS() {
-  try {
-    return await safeFetch("https://api.wheretheiss.at/v1/satellites/25544", {}, 5000);
-  } catch { return null; }
-}
-async function updateISS(center) {
-  const d = await fetchISS();
-  if (!d) { $("issCoords").textContent = "NO DATA"; return; }
-  const lat = d.latitude, lon = d.longitude, alt = d.altitude;
-  $("issLat").textContent = lat.toFixed(2) + "°";
-  $("issLon").textContent = lon.toFixed(2) + "°";
-  $("issAlt").textContent = alt.toFixed(0) + "km";
-  $("issVis").textContent = d.visibility === "daylight" ? "☀️" : "🌙";
-  $("issCoords").textContent = lat.toFixed(1) + "°, " + lon.toFixed(1) + "°";
-  $("globeLat").textContent = lat.toFixed(2) + "°";
-  $("globeLon").textContent = lon.toFixed(2) + "°";
-  $("globeAlt").textContent = alt.toFixed(0) + "km";
-
-  if (issMarker) {
-    issMarker.setLatLng([lat, lon]);
-    issMarker.getPopup()?.setContent(
-      '<b style="color:#00f2fe">🛰️ ISS</b><br>' + lat.toFixed(2) + '°, ' + lon.toFixed(2) + '<br>' + alt.toFixed(0) + ' km'
-    );
-  }
-  issTrailPoints.push([lat, lon]);
-  if (issTrailPoints.length > 100) issTrailPoints.shift();
-  if (issTrail) issTrail.setLatLngs(issTrailPoints);
-  if (center && issMap) issMap.panTo([lat, lon], { animate: true });
-  if (vfs["/space/iss.json"]) vfs["/space/iss.json"].content = JSON.stringify(d, null, 2);
-
-  /* ✅ إصلاح: نرسل lon (وليس lng) */
-  updateISSOnGlobe({ lat, lon, alt });
-}
-
-/* ─── NASA + SpaceX ─── */
-async function loadAPOD() {
-  try {
-    const d = await safeFetch("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY", {}, 10000);
-    $("apodImage").src = d.url;
-    $("apodImage").style.display = "block";
-    $("apodInfo").innerHTML =
-      '<div class="text-cyber-gold font-bold">' + esc(d.title) + '</div>' +
-      '<div class="text-gray-400">' + esc(d.date) + '</div>' +
-      '<div class="text-gray-300 mt-1">' + esc((d.explanation||"").slice(0, 200)) + '...</div>';
-    printToTerm("🌌 APOD: " + d.title, "text-cyber-cyan");
-    await addBlock("APOD", d.title.slice(0,50));
-    await addMemory("NASA APOD: " + d.title + " — " + (d.explanation||"").slice(0,100));
-  } catch (e) { printToTerm("❌ APOD: " + e.message, "text-red-400"); }
-}
-async function loadLaunches() {
-  try {
-    const ls = await safeFetch("https://api.spacexdata.com/v5/launches/upcoming?limit=6", {}, 10000);
-    const box = $("launchesBox");
-    box.innerHTML = "";
-    ls.forEach(l => {
-      const date = new Date(l.date_utc);
-      const days = Math.ceil((date - Date.now()) / 86400000);
-      const div = document.createElement("div");
-      div.className = "launch-card";
-      div.innerHTML = '<div class="text-cyber-gold font-bold">🚀 ' + esc(l.name) + '</div>' +
-        '<div class="text-gray-400">📅 ' + date.toLocaleDateString('ar-EG') + ' • ' + days + ' يوم</div>';
-      box.appendChild(div);
-    });
-    printToTerm("🚀 " + ls.length + " إطلاق SpaceX", "text-cyber-green");
-  } catch (e) { printToTerm("❌ SpaceX: " + e.message, "text-red-400"); }
-}
-
-/* ─── WebLLM ─── */
-async function loadWebLLM() {
-  if (llmEngine || llmLoading) return;
-  if (!navigator.gpu) {
-    printToTerm("⚠️ WebGPU غير مدعوم — استخدم 'ai'", "text-yellow-400");
-    return;
-  }
-  llmLoading = true;
-  printToTerm("🧠 تحميل Phi-3...", "text-cyber-green");
-  try {
-    const webllm = await import("https://esm.run/@mlc-ai/web-llm@0.2.72");
-    llmEngine = await webllm.CreateMLCEngine("Phi-3-mini-4k-instruct-q4f16_1-MLC", {
-      initProgressCallback: r => printToTerm("   " + (r.text||"") + " " + ((r.progress||0)*100).toFixed(0) + "%", "text-gray-500")
-    });
-    printToTerm("✅ Phi-3 جاهز", "text-cyber-green");
-    await addBlock("LLM_LOAD", "Phi-3-mini");
-  } catch (e) { printToTerm("❌ Phi-3: " + e.message, "text-red-400"); }
-  finally { llmLoading = false; }
-}
-async function llmAsk(q, system) {
-  if (!llmEngine) throw new Error("LLM not loaded — شغّل llm-load أولاً");
-  const reply = await llmEngine.chat.completions.create({
-    messages: [
-      { role: "system", content: system || "أنت مساعد في SOVEREIGN OMEGA. أجب بالعربية بإيجاز." },
-      { role: "user", content: q }
-    ],
-    temperature: 0.7, max_tokens: 300
-  });
-  return reply.choices[0].message.content;
-}
-async function llmPlanGoal(goal) {
-  if (!llmEngine || !aiDrivesAgent) return null;
-  try {
-    const txt = await llmAsk(goal, "أنت وكيل أوامر. الأوامر: iss, sats, apod, launches, ctf, sysinfo, ls, cat, chain, globe, stats, help. أرجع JSON فقط: {\"steps\":[\"cmd1\",\"cmd2\"]}.");
-    const m = txt.match(/\{[\s\S]*\}/);
-    if (m) { const p = JSON.parse(m[0]); if (Array.isArray(p.steps)) return p.steps; }
-  } catch {}
-  return null;
-}
-
-/* ─── Video P2P ─── */
-function initPeer() {
-  if (typeof Peer === "undefined") {
-    printToTerm("⚠️ PeerJS غير محمّل — P2P معطّل", "text-yellow-400");
-    return false;
-  }
-  try {
-    peer = new Peer({
-      config: { iceServers: [
-        { urls: "stun:stun.l.google.com:19302" },
-        { urls: "stun:global.stun.twilio.com:3478" }
-      ]}
-    });
-    const connectTimeout = setTimeout(() => {
-      if (!myPeerId) printToTerm("⚠️ PeerJS لم يستجب — قد تكون الشبكة محجوبة", "text-yellow-400");
-    }, 10000);
-
-    peer.on("open", id => {
-      clearTimeout(connectTimeout);
-      myPeerId = id;
-      $("myVideoId").textContent = id;
-      printToTerm("🌐 P2P متصل: " + id, "text-cyber-green");
-    });
-    peer.on("connection", conn => setupConnection(conn));
-    peer.on("call", call => handleIncomingCall(call));
-    peer.on("error", err => {
-      clearTimeout(connectTimeout);
-      printToTerm("🌐 P2P: " + err.message, "text-red-400");
-    });
-    return true;
-  } catch (e) {
-    printToTerm("❌ PeerJS: " + e.message, "text-red-400");
-    return false;
-  }
-}
-function handleIncomingCall(call) {
-  printToTerm("📞 مكالمة واردة من: " + call.peer.slice(0,8), "text-cyber-cyan");
-  const banner = document.createElement("div");
-  banner.className = "call-banner";
-  banner.innerHTML =
-    '<div style="color:#ff007f;font-weight:bold;margin-bottom:8px;">📞 مكالمة فيديو واردة</div>' +
-    '<div style="font-size:11px;color:#00f2fe;margin-bottom:12px;">من: ' + call.peer.slice(0,12) + '...</div>' +
-    '<div style="display:flex;gap:8px;">' +
-    '<button id="callAccept" style="background:#00ff66;color:#000;">✅ قبول</button>' +
-    '<button id="callReject" style="background:#ff4444;color:#fff;">❌ رفض</button>' +
-    '</div>';
-  document.body.appendChild(banner);
-  const cleanup = () => banner.remove();
-  banner.querySelector("#callAccept").onclick = () => {
-    cleanup();
-    if (!mediaCallStream) { notify("⚠️ شغّل الكاميرا أولاً"); call.close(); return; }
-    call.answer(mediaCallStream);
-    currentCall = call;
-    handleCallStream(call);
-  };
-  banner.querySelector("#callReject").onclick = () => { cleanup(); call.close(); };
-  setTimeout(() => { if (document.body.contains(banner)) { cleanup(); call.close(); } }, 30000);
-}
-async function startVideo() {
-  try {
-    mediaCallStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    $("videoPreview").srcObject = mediaCallStream;
-    $("videoState").textContent = "📹 يعمل";
-    $("videoState").className = "text-cyber-green text-[9px]";
-    await addBlock("VIDEO_START", "Local stream ready");
-  } catch (e) { printToTerm("❌ " + e.message, "text-red-400"); }
-}
-function stopVideo() {
-  if (mediaCallStream) { mediaCallStream.getTracks().forEach(t => t.stop()); mediaCallStream = null; }
-  $("videoPreview").srcObject = null;
-  if (currentCall) { try { currentCall.close(); } catch {} currentCall = null; }
-  $("remoteVideo").srcObject = null;
-  $("videoState").textContent = "متوقف";
-  $("videoState").className = "text-gray-500 text-[9px]";
-}
-function callVideoPeer() {
-  const id = $("videoPeerId").value.trim();
-  if (!id) { notify("⚠️ معرّف مطلوب"); return; }
-  if (!mediaCallStream) { notify("⚠️ شغّل الكاميرا أولاً"); return; }
-  if (!peer) { notify("⚠️ P2P غير جاهز"); return; }
-  printToTerm("📞 اتصال بـ: " + id.slice(0,8), "text-cyber-cyan");
-  const call = peer.call(id, mediaCallStream);
-  currentCall = call;
-  handleCallStream(call);
-}
-function handleCallStream(call) {
-  call.on("stream", remoteStream => {
-    $("remoteVideo").srcObject = remoteStream;
-    $("videoState").textContent = "🎥 متصل";
-    $("videoState").className = "text-cyber-green text-[9px]";
-    notify("✅ فيديو الطرف وصل!");
-  });
-  call.on("close", () => {
-    $("remoteVideo").srcObject = null;
-    $("videoState").textContent = "انتهت";
-  });
-  call.on("error", e => printToTerm("❌ مكالمة: " + e.message, "text-red-400"));
-}
-function setupConnection(conn) {
-  conn.on("open", () => {
-    connections[conn.peer] = conn;
-    notify("🌐 متصل", "bg-cyber-green text-black");
-    printToTerm("🌐 peer متصل: " + conn.peer.slice(0,8), "text-cyber-green");
-  });
-  conn.on("data", d => { stats.p2pMessages++; handleP2PData(d, conn); });
-  conn.on("close", () => delete connections[conn.peer]);
-}
-function handleP2PData(data, conn) {
-  if (!data?.type) return;
-  switch (data.type) {
-    case "chain-broadcast":
-      if (Array.isArray(data.chain) && data.chain.length > auditLedger.length) {
-        auditLedger = data.chain;
-        saveLedger();
-        $("chainCount").textContent = auditLedger.length;
-        renderLedgerUI();
-        printToTerm("📥 سلسلة من " + conn.peer.slice(0,8), "text-cyber-green");
-      }
-      break;
-    case "chain-request":
-      conn.send({ type: "chain-broadcast", chain: auditLedger });
-      break;
-    case "chat":
-      printToTerm("💬 [" + conn.peer.slice(0,8) + "]: " + (data.text || ""), "text-cyber-gold");
-      break;
-    case "memory-sync":
-      if (Array.isArray(data.memories)) {
-        data.memories.forEach(m => { if (!memoryVectors.find(x => x.id === m.id)) memoryVectors.push(m); });
-        saveMemory(); updateMemoryUI();
-        printToTerm("🧠 ذكريات من " + conn.peer.slice(0,8), "text-cyber-purple");
-      }
-      break;
-  }
-}
-function broadcastChain() {
-  const ps = Object.values(connections);
-  if (!ps.length) { notify("⚠️ لا أقران"); return; }
-  ps.forEach(c => c.send({ type: "chain-broadcast", chain: auditLedger }));
-  printToTerm("📤 بُثّت السلسلة", "text-cyber-green");
-}
-function requestChain() {
-  const ps = Object.values(connections);
-  if (!ps.length) { notify("⚠️ لا أقران"); return; }
-  ps.forEach(c => c.send({ type: "chain-request" }));
-}
-function broadcastMemory() {
-  const ps = Object.values(connections);
-  if (!ps.length) { notify("⚠️ لا أقران"); return; }
-  ps.forEach(c => c.send({ type: "memory-sync", memories: memoryVectors }));
-  printToTerm("🧠 بُثّت الذاكرة", "text-cyber-purple");
-}
-function broadcastChat() {
-  const t = prompt("رسالة:");
-  if (!t) return;
-  const ps = Object.values(connections);
-  if (!ps.length) { notify("⚠️ لا أقران"); return; }
-  ps.forEach(c => c.send({ type: "chat", text: t }));
-  printToTerm("💬 [أنت]: " + t, "text-cyber-cyan");
-}
-
-/* ─── Voice ─── */
-function initVoice() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { printToTerm("⚠️ Web Speech API غير مدعوم", "text-yellow-400"); return false; }
-  recognition = new SR();
-  recognition.lang = "ar-SA";
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.onstart = () => {
-    voiceActive = true;
-    setStatus("voiceStatus", "LISTENING", "status-live");
-    $("btnVoice")?.classList.add("voice-pulse");
-    printToTerm("🎤 استمع...", "text-cyber-magenta");
-  };
-  recognition.onend = () => {
-    if (voiceActive) { try { recognition.start(); } catch {} }
-    else {
-      $("btnVoice")?.classList.remove("voice-pulse");
-      setStatus("voiceStatus", "OFF", "text-gray-500");
-    }
-  };
-  recognition.onerror = e => printToTerm("🎤 خطأ: " + e.error, "text-red-400");
-  recognition.onresult = event => {
-    const last = event.results[event.results.length-1];
-    if (last.isFinal) {
-      const text = last[0].transcript.trim();
-      printToTerm("🎤 [قال]: " + text, "text-cyber-magenta");
-      stats.voiceCmds++;
-      runCommand(mapVoiceToCommand(text));
-    }
-  };
+async function changePassword(username, newPassword) {
+  const salt = generateSalt();
+  const hash = await hashPassword(newPassword, salt);
+  shadowDB.set(username, { hash, salt, lastChange: Date.now() });
   return true;
 }
-function mapVoiceToCommand(text) {
-  const t = text.toLowerCase();
-  if (/كرة|أرضي|globe|عالم/i.test(t)) return "globe";
-  if (/قمر|محطة|iss/i.test(t)) return "iss";
-  if (/صورة|فضاء|nasa|apod/i.test(t)) return "apod";
-  if (/إطلاق|صاروخ|spacex/i.test(t)) return "launches";
-  if (/ذاكرة|احفظ|تذكر/i.test(t)) {
-    const m = text.match(/(?:احفظ|تذكر|ذاكرة)\s+(.+)/i);
-    return m ? "mem " + m[1] : "mems";
+function getUserGroups(username) {
+  const groups = [];
+  const user = passwdDB.get(username);
+  if (user) {
+    groupDB.forEach(g => {
+      if (g.gid === user.gid && groups.indexOf(g.name) === -1) groups.unshift(g.name);
+    });
   }
-  if (/ابحث|recall/i.test(t)) {
-    const m = text.match(/(?:ابحث عن|تذكر لي|recall)\s+(.+)/i);
-    return m ? "recall " + m[1] : "recall";
-  }
-  if (/فيديو|كاميرا|video/i.test(t)) return "video";
-  if (/إحصاء|stats/i.test(t)) return "stats";
-  if (/مساعدة|help/i.test(t)) return "help";
-  if (/مسح|clear/i.test(t)) return "clear";
-  return text;
+  groupDB.forEach(g => {
+    if (g.members.indexOf(username) !== -1 && groups.indexOf(g.name) === -1) groups.push(g.name);
+  });
+  return groups;
 }
-function toggleVoice() {
-  if (!recognition && !initVoice()) { notify("❌ غير مدعوم"); return; }
-  if (voiceActive) {
-    voiceActive = false;
-    recognition.stop();
-    setStatus("voiceStatus", "OFF", "text-gray-500");
-    $("btnVoice")?.classList.remove("voice-pulse");
-  } else {
-    voiceActive = true;
-    try { recognition.start(); } catch {}
-  }
+const isRoot = () => session.username === "root";
+const getCurrentUser = () => passwdDB.get(session.username);
+function canSudo() {
+  if (!session.username) return false;
+  if (isRoot()) return true;
+  const gs = getUserGroups(session.username);
+  return gs.indexOf("sudo") !== -1 || gs.indexOf("wheel") !== -1;
 }
 
-/* ─── Memory ─── */
-async function initEmbedder() {
-  if (embedderPipeline) return embedderPipeline;
+/* ═══ Init ═══ */
+async function initSystemState() {
+  VFS = {
+    "/":                  { type: "dir",  children: ["root","etc","home","var","usr","tmp","bin"], owner: "root", group: 0, mode: "rwxr-xr-x" },
+    "/etc":               { type: "dir",  children: ["passwd","shadow","group","hosts","motd"], owner: "root", group: 0, mode: "rwxr-xr-x" },
+    "/etc/passwd":        { type: "file", content: "(managed)", restricted: true, owner: "root", group: 0, mode: "rw-r--r--" },
+    "/etc/shadow":        { type: "file", content: "(protected)", restricted: true, owner: "root", group: 0, mode: "rw-------" },
+    "/etc/group":         { type: "file", content: "(managed)", restricted: false, owner: "root", group: 0, mode: "rw-r--r--" },
+    "/etc/hosts":         { type: "file", content: "127.0.0.1  localhost\n10.0.0.1  lafi-munir.local", restricted: false, owner: "root", group: 0, mode: "rw-r--r--" },
+    "/etc/motd":          { type: "file", content: "لافي منير — SOVEREIGN OS v27.0", restricted: false, owner: "root", group: 0, mode: "rw-r--r--" },
+    "/root":              { type: "dir",  children: ["readme.txt"], owner: "root", group: 0, mode: "rwx------" },
+    "/root/readme.txt":   { type: "file", content: "لافي منير — Protected Edition", restricted: false, owner: "root", group: 0, mode: "rw-r--r--" },
+    "/home":              { type: "dir",  children: [], owner: "root", group: 0, mode: "rwxr-xr-x" },
+    "/usr":               { type: "dir",  children: ["bin"], owner: "root", group: 0, mode: "rwxr-xr-x" },
+    "/usr/bin":           { type: "dir",  children: [], owner: "root", group: 0, mode: "rwxr-xr-x" },
+    "/bin":               { type: "dir",  children: [], owner: "root", group: 0, mode: "rwxr-xr-x" },
+    "/var":               { type: "dir",  children: ["log"], owner: "root", group: 0, mode: "rwxr-xr-x" },
+    "/var/log":           { type: "dir",  children: ["auth.log","syslog"], owner: "root", group: 0, mode: "rwxr-xr-x" },
+    "/var/log/auth.log":  { type: "file", content: "", restricted: false, owner: "root", group: 0, mode: "rw-r-----" },
+    "/var/log/syslog":    { type: "file", content: "[INFO] boot ok", restricted: false, owner: "root", group: 0, mode: "rw-r--r--" },
+    "/tmp":               { type: "dir",  children: [], owner: "root", group: 0, mode: "rwxrwxrwx" }
+  };
+
+  await createGroup("root", 0, ["root"]);
+  await createGroup("sudo", 27, []);
+  await createGroup("wheel", 10, []);
+  await createGroup("users", 100, []);
+  await createUser("root", 0, 0, "/root", "/bin/bash", "", ["root"]);
+  await createUser("lafi", 1000, 100, "/home/lafi", "/bin/bash", "", ["users"]);
+  groupDB.get("sudo").members.push("lafi");
+
+  VFS["/home/lafi/workspace"] = { type: "dir", children: [], owner: "lafi", group: 100, mode: "rwxr-xr-x" };
+  VFS["/home/lafi"].children.push("workspace");
+
+  const welcomeScript = '#!/bin/bash\nNAME="لافي منير"\necho "مرحباً $NAME في نظام SOVEREIGN OS"\nfor i in 1 2 3; do\n  echo "المرحلة $i"\ndone\necho "اكتمل التنفيذ ✅"\n';
+  VFS["/home/lafi/welcome.sh"] = { type: "file", content: welcomeScript, restricted: false, owner: "lafi", group: 100, mode: "rwxr-xr-x" };
+  VFS["/home/lafi"].children.push("welcome.sh");
+  VFS["/root/welcome.sh"] = { type: "file", content: welcomeScript, restricted: false, owner: "root", group: 0, mode: "rwxr-xr-x" };
+  VFS["/root"].children.push("welcome.sh");
+
+  const genesisData = "GENESIS_LAFI_MUNIR_V27";
+  const gh = await computeSHA256("0000000000" + genesisData + 1711000000000);
   try {
-    const { pipeline } = await import("https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1");
-    embedderPipeline = await pipeline(
-      "feature-extraction",
-      "Xenova/paraphrase-multilingual-MiniLM-L12-v2",
-      { quantized: true }
-    );
-    printToTerm("🧠 Embedder محمّل", "text-cyber-purple");
+    const saved = localStorage.getItem('sovereign_chain_v27_nopass');
+    if (saved) {
+      const p = JSON.parse(saved);
+      if (Array.isArray(p) && p.length > 0 && p[0].hash) blockchain = p;
+      else throw new Error("invalid");
+    } else {
+      blockchain = [{ index: 0, timestamp: 1711000000000, data: genesisData, prevHash: "0000000000", hash: gh }];
+      localStorage.setItem('sovereign_chain_v27_nopass', JSON.stringify(blockchain));
+    }
   } catch (e) {
-    printToTerm("⚠️ Embedder فشل — BOW", "text-yellow-400");
-    embedderPipeline = null;
+    blockchain = [{ index: 0, timestamp: 1711000000000, data: genesisData, prevHash: "0000000000", hash: gh }];
   }
-  return embedderPipeline;
+  $('chainStat').textContent = 'Blocks: ' + blockchain.length;
+  renderUserList();
 }
-function bowEmbed(text) {
-  const tokens = (text || "").toLowerCase().replace(/[^\w\u0600-\u06FF\s]/g," ").split(/\s+/).filter(t => t.length > 1);
-  const dim = 128;
-  const v = new Array(dim).fill(0);
-  tokens.forEach(t => {
-    let h = 0;
-    for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0;
-    v[h % dim] += 1;
-  });
-  const mag = Math.sqrt(v.reduce((a,b) => a + b*b, 0)) || 1;
-  return v.map(x => x / mag);
-}
-async function embed(text) {
-  if (embedderPipeline) {
-    try {
-      const out = await embedderPipeline(text, { pooling: "mean", normalize: true });
-      return Array.from(out.data);
-    } catch {}
+
+/* ═══ 3D Matrix ═══ */
+let angle = 0;
+function drawMatrix() {
+  ctx.fillStyle = '#020005';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const cx = canvas.width / 2, cy = canvas.height / 2, size = 30;
+  angle += 0.02;
+  const cos = Math.cos(angle), sin = Math.sin(angle);
+  for (let x = -2; x <= 2; x++) {
+    for (let y = -2; y <= 2; y++) {
+      const px = x * size, py = y * size;
+      const pz = Math.sin(x + y + angle * 2) * 18;
+      const rx = px * cos - pz * sin;
+      const alpha = Math.max(0.2, Math.min(1, (pz + 40) / 80));
+      ctx.fillStyle = 'rgba(0,242,254,' + alpha + ')';
+      ctx.fillRect(cx + rx - 2, cy + py - 2, 4, 4);
+    }
   }
-  return bowEmbed(text);
+  requestAnimationFrame(drawMatrix);
 }
-function cosine(a, b) {
-  const len = Math.min(a.length, b.length);
-  let d = 0;
-  for (let i = 0; i < len; i++) d += a[i] * b[i];
-  return d;
+drawMatrix();
+
+/* ═══ Print + UI ═══ */
+function printTerm(text, color, capture) {
+  if (color === undefined) color = "#e5e7eb";
+  if (capture === undefined) capture = false;
+  if (capture) { terminalBuffer.push({ text, color }); return; }
+  const line = document.createElement('div');
+  line.style.color = color;
+  line.textContent = text;
+  $('termBody').appendChild(line);
+  $('termBody').scrollTop = $('termBody').scrollHeight;
 }
-async function addMemory(text, meta) {
-  if (!text?.trim()) return;
-  const vec = await embed(text);
-  const id = "m_" + Date.now() + "_" + Math.random().toString(36).slice(2,6);
-  memoryVectors.push({ id, text, vec, meta: meta || {}, ts: new Date().toISOString() });
-  await saveMemory();
-  updateMemoryUI();
-  stats.memories++;
-  if ($("memInput")) $("memInput").value = "";
+function updatePrompt() {
+  const p = $('promptText');
+  if (nanoState.active) { p.textContent = "nano>"; p.style.color = "#ffd700"; return; }
+  const sym = isRoot() ? "#" : "$";
+  p.textContent = session.username + "@lafi:" + currentPath + sym;
+  p.style.color = isRoot() ? "#ff007f" : "#38bdf8";
 }
-async function searchMemory(query, topK = 5) {
-  if (!query) return [];
-  const qVec = await embed(query);
-  const scored = memoryVectors
-    .map(m => ({ ...m, score: cosine(qVec, m.vec) }))
-    .filter(m => m.score > 0.01)
-    .sort((a,b) => b.score - a.score)
-    .slice(0, topK);
-  renderMemResults(scored, query);
-  return scored;
+function updateStats() {
+  const u = getCurrentUser();
+  $('userStat').textContent = 'User: ' + session.username;
+  $('uidStat').textContent = u ? ('UID: ' + u.uid + ' (GID ' + u.gid + ')') : 'UID: --';
+  $('pathStat').textContent = 'PWD: ' + currentPath;
+  $('userStat').className = isRoot() ? "stat-item root" : "stat-item";
+  $('uidStat').className = isRoot() ? "stat-item root" : "stat-item";
+  $('editStat').style.display = nanoState.active ? "" : "none";
+  updatePrompt();
 }
-function renderMemResults(results, query) {
-  const box = $("memResults"); if (!box) return;
-  box.innerHTML = '<div class="text-cyber-gold mb-1">نتائج: "' + esc(query) + '"</div>';
-  if (!results.length) { box.innerHTML += '<div class="text-gray-500">لا نتائج</div>'; return; }
-  results.forEach(r => {
-    const d = document.createElement("div");
-    d.className = "memory-item";
-    d.innerHTML = '<div class="text-cyber-cyan">[' + (r.score*100).toFixed(1) + '%] ' + esc(r.text.slice(0,100)) + '</div>';
-    box.appendChild(d);
+function renderUserList() {
+  const panel = $('varsDisplay');
+  let html = "";
+  passwdDB.forEach(u => {
+    const gs = getUserGroups(u.username).join(",");
+    html += '<div style="padding:2px 0;border-bottom:1px dashed rgba(217,70,239,0.2);"><span style="color:#00f2fe;font-weight:bold;">[' + u.uid + ']</span> <b>' + u.username + '</b> <span style="color:#38bdf8;font-size:9px;">(' + gs + ')</span></div>';
   });
+  panel.innerHTML = html;
 }
-function dumpMemory() {
-  const box = $("memResults");
-  box.innerHTML = '<div class="text-cyber-gold mb-1">كل الذكريات (' + memoryVectors.length + '):</div>';
-  memoryVectors.slice().reverse().slice(0, 30).forEach(m => {
-    const d = document.createElement("div");
-    d.className = "memory-item";
-    d.textContent = m.text.slice(0, 100);
-    box.appendChild(d);
-  });
+setInterval(() => {
+  const d = new Date();
+  $('timeStat').textContent = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ':' + String(d.getSeconds()).padStart(2, '0');
+}, 1000);
+
+/* ═══ Welcome ═══ */
+function showWelcome() {
+  $('termBody').innerHTML = "";
+  printTerm("╔══════════════════════════════════════════════════╗", "#00f2fe");
+  printTerm("║   لافي منير — SOVEREIGN OS v27.0                 ║", "#00f2fe");
+  printTerm("║   🔓 No Password Required | Welcome!             ║", "#00f2fe");
+  printTerm("╚══════════════════════════════════════════════════╝", "#00f2fe");
+  printTerm("", "#fff");
+  printTerm("🎉 مرحباً لافي منير!", "#00ff66");
+  printTerm("You are logged in as: root (UID 0)", "#00ff66");
+  printTerm("⚠️  أنت تعمل بصلاحيات الجذر المطلقة.", "#ffd700");
+  printTerm("", "#fff");
+  printTerm("📋 أوامر مفيدة:", "#d946ef");
+  printTerm("   help              ← قائمة الأوامر", "#38bdf8");
+  printTerm("   ls                ← عرض الملفات", "#38bdf8");
+  printTerm("   ./welcome.sh      ← تشغيل سكربت الترحيب", "#38bdf8");
+  printTerm("   cat readme.txt    ← قراءة ملف", "#38bdf8");
+  printTerm("   clear             ← مسح الشاشة", "#38bdf8");
+  printTerm("", "#fff");
+  printTerm("✨ النظام جاهز للاستخدام!", "#ffd700");
+  printTerm("", "#fff");
+  updateStats();
+  renderUserList();
+  addAuditEvent("INFO", "User 'root' auto-logged in");
 }
-async function clearMemory() {
-  if (!confirm("مسح كل الذاكرة؟")) return;
-  memoryVectors = [];
-  await saveMemory();
-  updateMemoryUI();
-  $("memResults").innerHTML = '<div class="text-gray-500">مُسحت</div>';
+
+/* ═══ su + sudo (بدون كلمة مرور) ═══ */
+async function performSu(targetUsername) {
+  if (!passwdDB.has(targetUsername)) return { ok: false, error: "su: user not found" };
+  addAuditEvent("WARN", "su: " + session.username + " -> " + targetUsername);
+  await addBlock("SU: " + session.username + " -> " + targetUsername);
+  session.username = targetUsername;
+  session.uid = passwdDB.get(targetUsername).uid;
+  currentPath = getCurrentUser().home;
+  shellVars.USER = targetUsername;
+  shellVars.HOME = getCurrentUser().home;
+  shellVars.PWD = currentPath;
+  renderUserList(); updateStats();
+  return { ok: true };
 }
-function updateMemoryUI() {
-  $("memCount").textContent = memoryVectors.length;
-  $("memVecCount").textContent = memoryVectors.length + " vec";
+async function performSudo(cmdLine) {
+  if (!canSudo()) { addAuditEvent("ERROR", "sudo DENIED"); return { ok: false, error: session.username + " is not in sudoers file." }; }
+  const origUser = session.username, origUID = session.uid, origHome = getCurrentUser().home;
+  addAuditEvent("WARN", "sudo: '" + origUser + "' -> " + cmdLine.substring(0, 30));
+  await addBlock("SUDO: " + origUser + " -> " + cmdLine);
+  session.username = "root"; session.uid = 0;
+  shellVars.USER = "root"; shellVars.HOME = "/root";
+  updateStats();
+  await runPipeline(cmdLine, { silent: true });
+  session.username = origUser; session.uid = origUID;
+  shellVars.USER = origUser; shellVars.HOME = origHome;
+  updateStats(); renderUserList();
+  return { ok: true };
 }
-async function ragAnswer(query) {
-  const ctx = await searchMemory(query, 3);
-  const context = ctx.map(c => "- " + c.text).join("\n");
-  if (!llmEngine) {
-    printToTerm("🧠 (بدون LLM) الذكريات المتعلقة:\n" + (context || "لا شيء"), "text-cyber-purple");
+
+/* ═══ Tokenizer ═══ */
+function tokenizeShellLine(line) {
+  const tokens = []; let current = "", quote = null;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (quote) { if (c === quote) quote = null; else current += c; }
+    else if (c === '"' || c === "'") quote = c;
+    else if (c === ' ' || c === '\t') { if (current) { tokens.push(current); current = ""; } }
+    else if (c === '|' || c === '>' || c === '<') {
+      if (current) { tokens.push(current); current = ""; }
+      if (c === '>' && line[i + 1] === '>') { tokens.push(">>"); i++; }
+      else tokens.push(c);
+    } else current += c;
+  }
+  if (current) tokens.push(current);
+  return tokens;
+}
+
+/* ═══ Pipeline ═══ */
+async function runPipeline(line, opts) {
+  opts = opts || {};
+  if (line.indexOf(';') !== -1 && line.indexOf('"') === -1 && line.indexOf("'") === -1) {
+    const parts = line.split(';').map(s => s.trim()).filter(Boolean);
+    for (let i = 0; i < parts.length; i++) await runPipeline(parts[i], opts);
     return;
   }
-  try {
-    const ans = await llmAsk(
-      "استخدم الذكريات التالية للإجابة:\n" + context + "\n\nالسؤال: " + query,
-      "أجب بالعربية من الذكريات فقط."
-    );
-    printToTerm("🧠 RAG: " + ans, "text-cyber-green");
-  } catch (e) { printToTerm("❌ " + e.message, "text-red-400"); }
-}
-
-/* ─── Camera + Mic ─── */
-async function startCamera() {
-  try {
-    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-    $("videoPreview").srcObject = cameraStream;
-    printToTerm("📷 كاميرا تعمل", "text-cyber-green");
-  } catch (e) { printToTerm("❌ " + e.message, "text-red-400"); }
-}
-function stopCamera() {
-  if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
-  $("videoPreview").srcObject = null;
-}
-async function capturePhoto() {
-  const v = $("videoPreview");
-  if (!v.srcObject) { notify("⚠️ شغّل الكاميرا"); return; }
-  const c = document.createElement("canvas");
-  c.width = v.videoWidth || 640; c.height = v.videoHeight || 480;
-  c.getContext("2d").drawImage(v, 0, 0);
-  const dataUrl = c.toDataURL("image/jpeg", 0.7);
-  const path = "/photos/photo_" + Date.now() + ".jpg";
-  vfs[path] = { type:"file", content:"[image]", data:dataUrl };
-  ensureParent(path);
-  await saveVFS();
-  stats.photos++;
-  printToTerm("📸 " + path, "text-cyber-green");
-  await addBlock("PHOTO", path);
-}
-async function startMic() {
-  try {
-    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const src = audioCtx.createMediaStreamSource(micStream);
-    audioAnalyser = audioCtx.createAnalyser();
-    audioAnalyser.fftSize = 256;
-    src.connect(audioAnalyser);
-    const buf = new Uint8Array(audioAnalyser.frequencyBinCount);
-    (function loop() {
-      if (!audioAnalyser) return;
-      audioAnalyser.getByteFrequencyData(buf);
-      let s = 0; for (let i = 0; i < buf.length; i++) s += buf[i];
-      const bar = $("audioBar");
-      if (bar) bar.style.width = Math.min(100, (s/buf.length)*1.5) + "%";
-      requestAnimationFrame(loop);
-    })();
-    printToTerm("🎤 ميك يعمل", "text-cyber-green");
-  } catch (e) { printToTerm("❌ " + e.message, "text-red-400"); }
-}
-function stopMic() {
-  if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
-  if (audioCtx) { audioCtx.close(); audioCtx = null; }
-  audioAnalyser = null;
-  const bar = $("audioBar");
-  if (bar) bar.style.width = "0%";
-}
-
-/* ─── Agent + Loop ─── */
-function logAgent(msg, color) {
-  const box = $("agentLogBox"); if (!box) return;
-  const d = document.createElement("div");
-  d.className = color || "text-cyber-cyan";
-  d.textContent = msg;
-  box.appendChild(d);
-  box.scrollTop = box.scrollHeight;
-  while (box.children.length > 60) box.removeChild(box.firstChild);
-}
-function enqueueGoal(goal) {
-  if (!goal?.trim()) return;
-  goalQueue.push({ id:"g_"+Date.now(), goal:goal.trim(), status:"pending", retries:0 });
-  const inp = $("agentInput"); if (inp) inp.value = "";
-  $("queueCount").textContent = goalQueue.filter(g => g.status === "pending").length;
-  processQueue();
-}
-async function processQueue() {
-  if (agentBusy) return;
-  const next = goalQueue.find(g => g.status === "pending");
-  if (!next) return;
-  agentBusy = true; next.status = "running";
-  try {
-    logAgent("🚀 " + next.goal);
-    await addMemory("هدف منفّذ: " + next.goal, { type: "goal" });
-    let steps = null;
-    if (aiDrivesAgent && llmEngine) {
-      steps = await llmPlanGoal(next.goal);
-      if (steps) logAgent("🧠 Phi-3: " + steps.length + " خطوة", "text-cyber-purple");
+  const tokens = tokenizeShellLine(line);
+  if (tokens.length === 0) return;
+  const stages = [[]]; let redirect = null;
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
+    if (t === '|') { stages.push([]); continue; }
+    if (t === '>' || t === '>>' || t === '<') { redirect = { type: t, target: tokens[i + 1] }; i++; continue; }
+    stages[stages.length - 1].push(t);
+  }
+  const hasPipe = stages.length > 1;
+  let lastOutput = [];
+  for (let s = 0; s < stages.length; s++) {
+    terminalBuffer = [];
+    const stageTokens = stages[s];
+    if (stageTokens.length === 0) continue;
+    const expanded = stageTokens.map(expandVars);
+    const cmd = expanded[0].toLowerCase();
+    const args = expanded.slice(1);
+    const capture = hasPipe || opts.silent;
+    await executeOneCommand(cmd, args, { capture, silent: opts.silent });
+    lastOutput = terminalBuffer;
+    if (s < stages.length - 1) shellVars.STDIN = lastOutput.map(l => l.text).join("\n");
+  }
+  if (hasPipe && !opts.silent) lastOutput.forEach(l => printTerm(l.text, l.color, false));
+  if (opts.silent && !hasPipe) lastOutput.forEach(l => printTerm(l.text, l.color, false));
+  if (redirect && redirect.type !== '<') {
+    const target = resolvePath(redirect.target);
+    const content = lastOutput.map(l => l.text).join("\n");
+    if (redirect.type === ">>" && VFS[target] && VFS[target].type === "file") VFS[target].content += "\n" + content;
+    else {
+      VFS[target] = { type: "file", content, restricted: false, owner: session.username, group: getCurrentUser()?.gid || 100, mode: "rw-r--r--" };
+      const lastSlash = target.lastIndexOf("/");
+      const parent = lastSlash > 0 ? target.substring(0, lastSlash) : "/";
+      const fname = target.substring(lastSlash + 1);
+      if (VFS[parent]?.children && VFS[parent].children.indexOf(fname) === -1) VFS[parent].children.push(fname);
     }
-    if (steps?.length) {
-      for (const s of steps) {
-        logAgent("   ⚙️ " + s, "text-gray-400");
-        await executeCommand(s);
-        await new Promise(r => setTimeout(r, 300));
-      }
-    } else {
-      await executeCommand(next.goal);
-    }
-    next.status = "done";
-    stats.goalsDone++;
-    logAgent("✅ اكتمل", "text-cyber-green");
-  } catch (e) {
-    next.retries++;
-    stats.goalsRetried++;
-    if (next.retries <= 2) {
-      const fixMap = { ls:"ls /", cat:"ls /root", cd:"pwd", mkdir:"ls /", write:"sysinfo", chain:"stats" };
-      const base = next.goal.split(/\s+/)[0].toLowerCase();
-      const fixed = fixMap[base] || "sysinfo";
-      logAgent("⚠️ إصلاح: " + fixed, "text-yellow-400");
-      next.goal = fixed;
-      next.status = "pending";
-      await addBlock("AGENT_FIX", base + " → " + fixed);
-    } else {
-      next.status = "failed";
-      stats.goalsFail++;
-      logAgent("❌ فشل", "text-red-400");
-    }
-  } finally {
-    agentBusy = false;
-    $("queueCount").textContent = goalQueue.filter(g => g.status === "pending").length;
-    if (goalQueue.some(g => g.status === "pending")) setTimeout(processQueue, 500);
+    if (!opts.silent) printTerm("[REDIRECT]: " + redirect.type + " " + redirect.target, "#38bdf8");
   }
 }
-function toggleLoop() {
-  loopActive = !loopActive;
-  $("footerStatus").textContent = loopActive ? "LOOP ∞ ACTIVE" : "OMEGA ONLINE";
-  $("footerStatus").className = "font-bold " + (loopActive ? "status-live" : "text-cyber-green");
-  if (loopActive) {
-    printToTerm("♾️ حلقة ذاتية", "text-cyber-green");
-    if (loopInterval) clearInterval(loopInterval);
-    loopInterval = setInterval(() => {
-      stats.loops++;
-      if (goalQueue.filter(g => g.status === "pending").length < 2) {
-        const pool = ["iss", "apod", "launches", "sysinfo", "stats", "mems"];
-        enqueueGoal(pool[Math.floor(Math.random()*pool.length)]);
-      }
-      processQueue();
-    }, 15000);
-  } else if (loopInterval) { clearInterval(loopInterval); loopInterval = null; }
-}
-
-/* ─── CTF ─── */
-const CTF = [
-  { id:"b64_1", cat:"base64", desc:"SGV sbG8=", ans:"Hello", pts:5, solved:false },
-  { id:"b64_2", cat:"base64", desc:"TGFmaQ==", ans:"Lafi", pts:5, solved:false },
-  { id:"hex_1", cat:"hex", desc:"4c616669", ans:"Lafi", pts:10, solved:false },
-  { id:"rot13", cat:"rot13", desc:"Uryyb", ans:"Hello", pts:5, solved:false },
-  { id:"math_1", cat:"math", desc:"15×7=?", ans:"105", pts:5, solved:false },
-  { id:"logic_1", cat:"logic", desc:"2,4,8,16,__", ans:"32", pts:10, solved:false }
-];
-function normalize(s) {
-  return String(s || "").toLowerCase().trim()
-    .replace(/[أإآ]/g, "ا").replace(/ة/g, "ه").replace(/ى/g, "ي")
-    .replace(/\s+/g, " ");
-}
-function renderCTF() {
-  const box = $("ctfBox"); if (!box) return;
-  box.innerHTML = '<div class="text-cyber-gold mb-1">' + CTF.filter(c => c.solved).length + '/' + CTF.length + '</div>';
-  CTF.forEach(c => {
-    const d = document.createElement("div");
-    d.className = "omni-card " + (c.solved ? "opacity-40" : "");
-    d.innerHTML = (c.solved ? "✅" : "🔓") + " " + esc(c.desc);
-    box.appendChild(d);
+function expandVars(token) {
+  return token.replace(/\$\{(\w+)\}|\$(\w+)/g, (_, a, b) => {
+    const name = a || b;
+    return shellVars[name] !== undefined ? shellVars[name] : "";
   });
-  $("ctfScore").textContent = ctfScore + " pts";
 }
-function solveCTF(id, ans) {
-  const c = CTF.find(x => x.id === id);
-  if (!c || c.solved) return { ok:false, msg:"غير صالح" };
-  if (normalize(c.ans) === normalize(ans)) {
-    c.solved = true; ctfScore += c.pts; renderCTF();
-    return { ok:true, msg:"✅ +" + c.pts };
+
+/* ═══ Bash-lite ═══ */
+async function runScriptContent(content, opts) {
+  opts = opts || {};
+  const lines = content.split('\n');
+  await runBlock(lines, 0);
+  async function runBlock(lines, startIdx) {
+    let idx = startIdx;
+    while (idx < lines.length) {
+      const raw = lines[idx].trim();
+      if (!raw || raw.startsWith('#')) { idx++; continue; }
+      if (raw === 'done' || raw === 'fi' || raw === '}') return idx + 1;
+      if (raw.startsWith('for ')) {
+        const m = raw.match(/^for\s+(\w+)\s+in\s+(.+?)(?:;?\s*do)?$/);
+        if (m) {
+          const varName = m[1];
+          const items = m[2].replace(/;?\s*do$/, "").trim().split(/\s+/).map(expandVars);
+          const bodyLines = []; let depth = 1, j = idx + 1;
+          while (j < lines.length && depth > 0) {
+            const l = lines[j].trim();
+            if (l.startsWith('for ') || l.startsWith('while ')) depth++;
+            if (l === 'done') { depth--; if (depth === 0) break; }
+            bodyLines.push(lines[j]); j++;
+          }
+          for (let k = 0; k < items.length; k++) { shellVars[varName] = items[k]; await runScriptContent(bodyLines.join("\n"), opts); }
+          idx = j + 1; continue;
+        }
+      }
+      if (raw.startsWith('while ')) {
+        const m = raw.match(/^while\s+(.+?)(?:;?\s*do)?$/);
+        if (m) {
+          const condition = m[1].replace(/;?\s*do$/, "").trim();
+          const bodyLines = []; let depth = 1, j = idx + 1;
+          while (j < lines.length && depth > 0) {
+            const l = lines[j].trim();
+            if (l.startsWith('while ') || l.startsWith('for ')) depth++;
+            if (l === 'done') { depth--; if (depth === 0) break; }
+            bodyLines.push(lines[j]); j++;
+          }
+          let iter = 0;
+          while (iter < 20 && evaluateCondition(condition)) { await runScriptContent(bodyLines.join("\n"), opts); iter++; }
+          idx = j + 1; continue;
+        }
+      }
+      if (raw.startsWith('if ')) {
+        const result = parseIfBlock(lines, idx);
+        for (let k = 0; k < result.branches.length; k++) {
+          const br = result.branches[k];
+          if (br.cond === null || evaluateCondition(br.cond)) { await runScriptContent(br.body.join("\n"), opts); break; }
+        }
+        idx = result.nextIdx; continue;
+      }
+      const varMatch = raw.match(/^(\w+)=(.*)$/);
+      if (varMatch && !raw.startsWith("if") && !raw.startsWith("for") && !raw.startsWith("while")) {
+        shellVars[varMatch[1]] = expandVars(varMatch[2].replace(/^["']|["']$/g, "")); idx++; continue;
+      }
+      if (raw === 'exit' || raw.startsWith('exit ')) return lines.length;
+      await runPipeline(raw, opts); idx++;
+    }
+    return idx;
   }
-  return { ok:false, msg:"❌ إجابة خاطئة" };
 }
-
-/* ─── Local AI ─── */
-function localAI(query) {
-  const q = query.trim(); const ql = q.toLowerCase();
-  stats.aiQueries++;
-  const r = safeEval(q);
-  if (typeof r === "number" && isFinite(r)) return "🧮 = " + r;
-  if (/(جذر|sqrt)/i.test(ql)) {
-    const m = q.match(/(\d+)/);
-    if (m) return "🧮 √" + m[1] + " = " + Math.sqrt(+m[1]).toFixed(4);
+function parseIfBlock(lines, startIdx) {
+  const branches = []; let idx = startIdx, currentCond = null, currentBody = [], depth = 1;
+  const firstLine = lines[idx].trim();
+  const m = firstLine.match(/^if\s+(.+?)(?:;?\s*then)?$/);
+  currentCond = m ? m[1].replace(/;?\s*then$/, "").trim() : null;
+  idx++;
+  while (idx < lines.length) {
+    const raw = lines[idx].trim();
+    if (raw.startsWith('if ')) depth++;
+    if (raw === 'fi') {
+      depth--;
+      if (depth === 0) {
+        if (currentBody.length > 0 || currentCond !== null) branches.push({ cond: currentCond, body: currentBody.slice() });
+        return { branches, nextIdx: idx + 1 };
+      }
+    }
+    if (depth === 1) {
+      if (raw === 'else') { branches.push({ cond: currentCond, body: currentBody.slice() }); currentCond = null; currentBody = []; idx++; continue; }
+      if (raw.startsWith('elif ')) {
+        branches.push({ cond: currentCond, body: currentBody.slice() });
+        const em = raw.match(/^elif\s+(.+?)(?:;?\s*then)?$/);
+        currentCond = em ? em[1].replace(/;?\s*then$/, "").trim() : null;
+        currentBody = []; idx++; continue;
+      }
+    }
+    currentBody.push(lines[idx]); idx++;
   }
-  if (/(سلام|مرحبا|hi|hello)/i.test(ql)) return "👋 أهلاً لافي!";
-  if (/(لافي|منير)/i.test(ql)) return "👑 لافي منير — مالك OMEGA";
-  return "💡 للنقاش الذكي: llm-load ثم llm <سؤال>";
+  branches.push({ cond: currentCond, body: currentBody.slice() });
+  return { branches, nextIdx: idx };
+}
+function evaluateCondition(cond) {
+  cond = cond.trim();
+  let m = cond.match(/^\[\s*(.+?)\s*\]$/) || cond.match(/^test\s+(.+)$/);
+  if (m) cond = m[1].trim();
+  const sq = s => s.replace(/^["']|["']$/g, '');
+  m = cond.match(/^(.+?)\s+(==|=)\s+(.+)$/);
+  if (m) return expandVars(sq(m[1].trim())) === expandVars(sq(m[3].trim()));
+  m = cond.match(/^(.+?)\s+!=\s+(.+)$/);
+  if (m) return expandVars(sq(m[1].trim())) !== expandVars(sq(m[2].trim()));
+  m = cond.match(/^(.+?)\s+-eq\s+(.+)$/);
+  if (m) return parseInt(expandVars(m[1]), 10) === parseInt(expandVars(m[2]), 10);
+  m = cond.match(/^(.+?)\s+-ne\s+(.+)$/);
+  if (m) return parseInt(expandVars(m[1]), 10) !== parseInt(expandVars(m[2]), 10);
+  m = cond.match(/^(.+?)\s+-gt\s+(.+)$/);
+  if (m) return parseInt(expandVars(m[1]), 10) > parseInt(expandVars(m[2]), 10);
+  m = cond.match(/^(.+?)\s+-lt\s+(.+)$/);
+  if (m) return parseInt(expandVars(m[1]), 10) < parseInt(expandVars(m[2]), 10);
+  m = cond.match(/^-z\s+(.+)$/);
+  if (m) return expandVars(m[1]).length === 0;
+  m = cond.match(/^-n\s+(.+)$/);
+  if (m) return expandVars(m[1]).length > 0;
+  return !!cond && cond !== "0" && cond !== "false";
 }
 
-/* ─── Commands ─── */
-async function executeCommand(line) {
-  const parts = line.trim().split(/\s+/);
-  const cmd = (parts[0] || "").toLowerCase();
-  const args = parts.slice(1);
-  const out = (t,c) => printToTerm(t, c || "text-gray-300");
+/* ═══ VFS Helpers ═══ */
+function resolvePath(arg) {
+  if (!arg) return currentPath;
+  if (arg === "~") return getCurrentUser()?.home || currentPath;
+  if (arg.startsWith("/")) { const cleaned = arg.replace(/\/+/g, "/").replace(/\/$/, ""); return cleaned || "/"; }
+  if (arg === "..") {
+    if (currentPath === "/") return "/";
+    const parts = currentPath.split("/").filter(Boolean); parts.pop();
+    return parts.length === 0 ? "/" : "/" + parts.join("/");
+  }
+  if (arg === ".") return currentPath;
+  return currentPath === "/" ? "/" + arg : currentPath + "/" + arg;
+}
+function checkPermission(node, action) {
+  action = action || "read";
+  if (!node) return false;
+  if (isRoot()) return true;
+  const user = getCurrentUser();
+  if (!user) return false;
+  if (node.owner === user.username) return true;
+  const gs = getUserGroups(user.username);
+  for (let i = 0; i < gs.length; i++) {
+    const g = groupDB.get(gs[i]);
+    if (g && g.gid === node.group) return true;
+  }
+  if (node.mode && node.mode.length >= 9) {
+    const pub = node.mode.substring(6);
+    if (action === "read" && pub[0] === "r") return true;
+    if (action === "write" && pub[1] === "w") return true;
+    if (action === "exec" && pub[2] === "x") return true;
+  }
+  return false;
+}
 
+/* ═══ Commands ═══ */
+async function executeOneCommand(cmd, args, opts) {
+  opts = opts || {};
+  const cap = opts.capture || false;
+  const out = (t, c) => printTerm(t, c, cap);
+  if (shellFunctions[cmd]) { await runScriptContent(shellFunctions[cmd], opts); return; }
   switch (cmd) {
-    case "help":
-      out("═══ OMEGA v50.1 Ω ═══", "text-cyber-gold");
-      out(" 🌍 globe [grp] / iss / sats", "text-cyber-cyan");
-      out(" 🌌 apod / launches", "text-cyber-cyan");
-      out(" 🧠 llm-load, llm <q>, rag <q>", "text-cyber-green");
-      out(" 📹 video / stop-video / call <id>", "text-cyber-magenta");
-      out(" 🗣️ voice (toggle)", "text-cyber-magenta");
-      out(" 💭 mem <text> / recall <q> / mems / forget", "text-cyber-purple");
-      out(" 📸 cam-on/off, mic-on/off, snap", "text-cyber-magenta");
-      out(" 🌐 p2p, p2p-id, p2p-broadcast, p2p-request, p2p-chat, p2p-mem", "text-cyber-green");
-      out(" 🤖 agent <goal>, loop, think", "text-cyber-purple");
-      out(" 🏴 ctf / ctf solve <id> <ans>", "text-cyber-magenta");
-      out(" 📁 ls, cd, pwd, tree, mkdir, write, cat, rm, echo", "text-gray-300");
-      out(" ⛓️ chain, chain-verify, stats, sysinfo", "text-gray-300");
-      out(" 💾 save, export, clear, history, whoami, date", "text-gray-300");
+    case "echo": {
+      let text = args.join(" ").replace(/^["']|["']$/g, "");
+      text = expandVars(text).replace(/\\n/g, "\n");
+      if (!text && shellVars.STDIN) text = shellVars.STDIN;
+      out(text, "#00ff66"); break;
+    }
+    case "printf": out(expandVars(args.join(" ")).replace(/\\n/g, "\n"), "#00ff66"); break;
+    case "clear": if (!cap) $('termBody').innerHTML = ""; break;
+    case "help": case "مساعدة":
+      out("═══ نظام لافي منير — الأوامر ═══", "#ffd700");
+      out(" 🐚 bash: VAR=val | if/then/fi | for/do/done", "#38bdf8");
+      out(" 🔗 Pipes: cmd1 | cmd2   Redirection: > >> <", "#38bdf8");
+      out(" 📝 nano | 🐚 ./script.sh | 📊 audit", "#38bdf8");
+      out(" 👤 whoami, id, su, sudo, useradd", "#38bdf8");
+      out(" 📁 ls, cd, cat, write, rm, mkdir", "#38bdf8");
+      out(" 🔎 grep, wc, head, tail, sort, uniq", "#38bdf8");
+      out(" 🔒 encrypt, decrypt, ps, sysinfo", "#38bdf8");
+      out(" ⛓️  chain, block, verify, logout", "#38bdf8");
       break;
-
-    case "globe": await loadGlobeSats(args[0] || "stations"); break;
-    case "iss": await updateISS(true); out("🛰️ محدّث", "text-cyber-green"); break;
-    case "sats": await loadGlobeSats(args[0]); break;
-    case "apod": await loadAPOD(); break;
-    case "launches": case "spacex": await loadLaunches(); break;
-
-    case "llm":
-      if (!llmEngine) { out("⚠️ llm-load أولاً", "text-yellow-400"); break; }
-      try { out("🧠 " + (await llmAsk(args.join(" "))), "text-cyber-green"); }
-      catch (e) { out("❌ " + e.message, "text-red-400"); }
+    case "whoami": out(session.username, "#00ff66"); break;
+    case "pwd": out(currentPath, "#00ff66"); break;
+    case "id": {
+      const u = getCurrentUser();
+      const gs = getUserGroups(u.username);
+      out("uid=" + u.uid + "(" + u.username + ") gid=" + u.gid + " groups=" + gs.join(","), "#00ff66"); break;
+    }
+    case "groups": out(getUserGroups(session.username).join(" "), "#00ff66"); break;
+    case "logout": case "exit":
+      if (!cap) {
+        session.username = "root"; session.uid = 0;
+        currentPath = "/root";
+        addAuditEvent("INFO", "Logout requested - auto re-login as root");
+        printTerm("✅ Auto re-login as root", "#00ff66");
+        updateStats();
+      }
       break;
-    case "llm-load": await loadWebLLM(); break;
-    case "rag": await ragAnswer(args.join(" ")); break;
-
-    case "video": case "start-video": await startVideo(); break;
-    case "stop-video": stopVideo(); break;
-    case "call": $("videoPeerId").value = args[0] || ""; callVideoPeer(); break;
-
-    case "voice": toggleVoice(); break;
-
-    case "mem": case "remember": await addMemory(args.join(" ")); out("🧠 حُفظت", "text-cyber-purple"); break;
-    case "recall": await ragAnswer(args.join(" ")); break;
-    case "mems": case "memory-dump": dumpMemory(); break;
-    case "forget": await clearMemory(); break;
-
-    case "cam-on": await startCamera(); break;
-    case "cam-off": stopCamera(); break;
-    case "mic-on": await startMic(); break;
-    case "mic-off": stopMic(); break;
-    case "snap": await capturePhoto(); break;
-
-    case "p2p": out("🌐 " + (myPeerId||"—") + " | " + Object.keys(connections).length + " أقران", "text-cyber-cyan"); break;
-    case "p2p-id": out(myPeerId||"—", "text-cyber-cyan"); break;
-    case "p2p-broadcast": broadcastChain(); break;
-    case "p2p-request": requestChain(); break;
-    case "p2p-chat": broadcastChat(); break;
-    case "p2p-mem": broadcastMemory(); break;
-
-    case "think": aiDrivesAgent = !aiDrivesAgent; out(aiDrivesAgent ? "🧠 Phi-3 يقود" : "🤖 محلي", "text-cyber-purple"); break;
-    case "ai": out("🤖 " + localAI(args.join(" ")), "text-cyber-green"); break;
-
-    case "ctf":
-      if (args[0] === "solve") {
-        const r = solveCTF(args[1], args.slice(2).join(" "));
-        out(r.msg, r.ok ? "text-cyber-green" : "text-red-400");
-      } else { renderCTF(); out("ctf solve <id> <ans>", "text-cyber-gold"); }
+    case "env": case "set": Object.keys(shellVars).forEach(k => out(k + "=" + shellVars[k], "#38bdf8")); break;
+    case "su": {
+      const t = args[0];
+      if (!t) { out("su: usage: su <user>", "#ff0844"); break; }
+      if (!passwdDB.has(t)) { out("su: user not found", "#ff0844"); break; }
+      // بدون كلمة مرور
+      const r = await performSu(t);
+      if (r.ok) out("✅ Now: " + session.username, "#00ff66");
+      else out("su: " + r.error, "#ff0844");
       break;
-
-    case "agent": enqueueGoal(args.join(" ")); break;
-    case "loop": toggleLoop(); break;
-
+    }
+    case "sudo": {
+      if (args.length === 0) { out("sudo: usage: sudo <cmd>", "#ff0844"); break; }
+      if (!cap) { const r = await performSudo(args.join(" ")); if (!r.ok) printTerm("sudo: " + r.error, "#ff0844"); }
+      break;
+    }
+    case "useradd": {
+      if (!isRoot()) { out("useradd: Permission denied", "#ff0844"); break; }
+      let uid = null, username = null, groups = ["users"];
+      for (let i = 0; i < args.length; i++) {
+        if (args[i] === "-u") uid = parseInt(args[++i], 10);
+        else if (args[i] === "-G") groups = args[++i].split(",");
+        else if (!username) username = args[i];
+      }
+      if (!username) { out("useradd: username required", "#ff0844"); break; }
+      if (passwdDB.has(username)) { out("useradd: exists", "#ff0844"); break; }
+      if (uid === null) { uid = 1000; let taken = true; while (taken) { taken = false; passwdDB.forEach(u => { if (u.uid === uid) taken = true; }); if (taken) uid++; } }
+      const r = await createUser(username, uid, 100, "/home/" + username, "/bin/bash", "", groups);
+      if (!r.ok) { out("useradd: " + r.error, "#ff0844"); break; }
+      if (VFS["/home"]) VFS["/home"].children.push(username);
+      addAuditEvent("WARN", "New user '" + username + "'");
+      await addBlock("USERADD: " + username);
+      out("✅ User '" + username + "' created (UID " + uid + ", no password)", "#00ff66");
+      renderUserList(); break;
+    }
+    case "userdel": {
+      if (!isRoot()) { out("userdel: root only", "#ff0844"); break; }
+      const r = await deleteUser(args[0]);
+      if (!r.ok) { out("userdel: " + r.error, "#ff0844"); break; }
+      if (VFS["/home"]) VFS["/home"].children = VFS["/home"].children.filter(c => c !== args[0]);
+      await addBlock("USERDEL: " + args[0]);
+      out("✅ User deleted", "#00ff66"); renderUserList(); break;
+    }
+    case "passwd": {
+      out("passwd: disabled in this edition (no password)", "#ffd700"); break;
+    }
     case "ls": {
-      const t = resolvePath(args[0] || currentPath); const n = vfs[t];
-      if (n?.type === "dir") out((n.children||[]).join("   ") || "(فارغ)", "text-cyber-cyan");
-      else throw new Error("غير موجود");
-      break;
+      const target = args.find(a => !a.startsWith("-")) || currentPath;
+      const fp = resolvePath(target);
+      const node = VFS[fp];
+      if (!node) { out("ls: " + target + ": No such file", "#ff0844"); break; }
+      if (node.type === "file") { out(target, "#e5e7eb"); break; }
+      if (node.children.length === 0) { out("(فارغ)", "#38bdf8"); break; }
+      node.children.forEach(item => {
+        const cp = fp === "/" ? "/" + item : fp + "/" + item;
+        const child = VFS[cp]; if (!child) return;
+        const icon = child.type === "dir" ? "📁" : "📄";
+        out(" " + (child.mode || "rw-r--r--") + "  " + (child.owner || "root") + "  " + icon + " " + item,
+            child.type === "dir" ? "#38bdf8" : "#e5e7eb");
+      }); break;
     }
     case "cd": {
-      const t = resolvePath(args[0] || "/root");
-      if (vfs[t]?.type === "dir") {
-        currentPath = t;
-        $("promptLabel").textContent = "Ω:" + (t === "/root" ? "~" : t) + "#";
-        out("→ " + t, "text-cyber-green");
-      } else throw new Error("غير موجود");
-      break;
-    }
-    case "pwd": out(currentPath, "text-cyber-cyan"); break;
-    case "mkdir": {
-      if (!args[0]) throw new Error("اسم مفقود");
-      const p = resolvePath(args[0]);
-      if (vfs[p]) break;
-      const par = parentOf(p);
-      if (vfs[par]?.type !== "dir") throw new Error("أب غير موجود");
-      vfs[p] = { type:"dir", children:[] }; ensureParent(p); await saveVFS();
-      out("[OK]", "text-cyber-green"); break;
-    }
-    case "touch": {
-      if (!args[0]) throw new Error("اسم");
-      const p = resolvePath(args[0]);
-      if (!vfs[p]) { vfs[p] = { type:"file", content:"" }; ensureParent(p); await saveVFS(); }
-      out("[OK]", "text-cyber-green"); break;
+      const target = resolvePath(args[0] || (isRoot() ? "/root" : "/home/" + session.username));
+      if (!VFS[target] || VFS[target].type !== "dir") { out("cd: no such directory", "#ff0844"); break; }
+      if (!checkPermission(VFS[target], "exec")) { out("cd: Permission denied", "#ff0844"); break; }
+      currentPath = target; shellVars.PWD = currentPath; updateStats(); break;
     }
     case "cat": {
-      if (!args[0]) throw new Error("اسم");
-      const p = resolvePath(args[0]);
-      if (vfs[p]?.type === "file") out(vfs[p].data ? "(binary)" : (vfs[p].content || "(فارغ)"), "text-gray-200");
-      else throw new Error("غير موجود");
-      break;
+      if (!args[0]) {
+        if (shellVars.STDIN) { shellVars.STDIN.split("\n").forEach(l => out(l, "#00ff66")); break; }
+        out("cat: usage", "#ff0844"); break;
+      }
+      const fp = resolvePath(args[0]);
+      if (fp === "/etc/passwd") { passwdDB.forEach(u => out(u.username + ":x:" + u.uid + ":" + u.gid + "::" + u.home + ":" + u.shell, "#00ff66")); break; }
+      if (fp === "/etc/group") { groupDB.forEach(g => out(g.name + ":x:" + g.gid + ":" + g.members.join(","), "#00ff66")); break; }
+      if (fp === "/etc/shadow") {
+        if (!isRoot()) { out("cat: /etc/shadow: Permission denied", "#ff0844"); break; }
+        shadowDB.forEach((s, n) => out(n + ":*:*:*:*:*:*", "#ff007f")); break;
+      }
+      if (!VFS[fp] || VFS[fp].type !== "file") { out("cat: no such file", "#ff0844"); break; }
+      if (!checkPermission(VFS[fp], "read")) { out("cat: Permission denied", "#ff0844"); break; }
+      VFS[fp].content.split("\n").forEach(l => out(l, "#00ff66")); break;
     }
     case "write": {
-      if (args.length < 2) throw new Error("write <path> <content>");
-      const p = resolvePath(args[0]);
-      vfs[p] = { type:"file", content:args.slice(1).join(" ") }; ensureParent(p); await saveVFS();
-      out("[OK]", "text-cyber-green"); break;
+      if (args.length < 2) { out("write <file> <content>", "#ff0844"); break; }
+      const name = args[0];
+      if (name.indexOf("/") !== -1) { out("write: filename only", "#ff0844"); break; }
+      const txt = args.slice(1).join(" ");
+      const path = currentPath === "/" ? "/" + name : currentPath + "/" + name;
+      const dir = VFS[currentPath];
+      if (!checkPermission(dir, "write")) { out("write: Permission denied", "#ff0844"); break; }
+      VFS[path] = { type: "file", content: txt, restricted: false, owner: session.username, group: getCurrentUser().gid, mode: "rw-r--r--" };
+      if (dir.children.indexOf(name) === -1) dir.children.push(name);
+      await addBlock("WRITE: " + path);
+      out("[OK] ✅", "#00ff66"); break;
     }
     case "rm": {
-      if (!args[0]) throw new Error("اسم");
-      const p = resolvePath(args[0]);
-      if (p === "/" || p === "/root") throw new Error("محظور");
-      if (!vfs[p]) throw new Error("غير موجود");
-      const rec = x => {
-        if (vfs[x]?.type === "dir") (vfs[x].children||[]).forEach(c => rec(x === "/" ? "/"+c : x+"/"+c));
-        delete vfs[x];
-      };
-      rec(p);
-      const par = parentOf(p), nm = baseName(p);
-      if (vfs[par]?.children) vfs[par].children = vfs[par].children.filter(c => c !== nm);
-      await saveVFS(); out("[OK]", "text-cyber-green"); break;
+      if (!args[0]) { out("rm <file>", "#ff0844"); break; }
+      const fp = resolvePath(args[0]);
+      if (fp === "/" || fp === currentPath) { out("rm: cannot remove cwd", "#ff0844"); break; }
+      const node = VFS[fp];
+      if (!node) { out("rm: no such file", "#ff0844"); break; }
+      if (!checkPermission(node, "write")) { out("rm: Permission denied", "#ff0844"); break; }
+      const lastSlash = fp.lastIndexOf("/");
+      const parent = lastSlash > 0 ? fp.substring(0, lastSlash) : "/";
+      const name = fp.substring(lastSlash + 1);
+      delete VFS[fp];
+      if (VFS[parent]?.children) VFS[parent].children = VFS[parent].children.filter(c => c !== name);
+      await addBlock("RM: " + fp);
+      out("[OK] removed", "#00ff66"); break;
     }
-    case "tree": {
-      const walk = (p, pre) => {
-        const n = vfs[p]; if (!n) return;
-        out(pre + (p === "/" ? "/" : baseName(p)) + (n.type === "dir" ? "/" : ""), "text-cyber-cyan");
-        if (n.type === "dir") (n.children||[]).forEach(c => walk(p === "/" ? "/"+c : p+"/"+c, pre + "  "));
-      };
-      walk("/",""); break;
+    case "mkdir": {
+      if (!args[0]) { out("mkdir <dir>", "#ff0844"); break; }
+      const fp = resolvePath(args[0]);
+      if (VFS[fp]) { out("mkdir: exists", "#ff0844"); break; }
+      const lastSlash = fp.lastIndexOf("/");
+      const parent = lastSlash > 0 ? fp.substring(0, lastSlash) : "/";
+      const name = fp.substring(lastSlash + 1);
+      if (!VFS[parent] || VFS[parent].type !== "dir") { out("mkdir: parent missing", "#ff0844"); break; }
+      if (!checkPermission(VFS[parent], "write")) { out("mkdir: Permission denied", "#ff0844"); break; }
+      VFS[fp] = { type: "dir", children: [], owner: session.username, group: getCurrentUser().gid, mode: "rwxr-xr-x" };
+      if (VFS[parent].children.indexOf(name) === -1) VFS[parent].children.push(name);
+      out("[OK] " + args[0] + "/", "#00ff66"); break;
     }
-    case "echo": {
-      const raw = line.slice(line.indexOf("echo") + 4).trim();
-      if (raw.includes(">")) {
-        const [t,f] = raw.split(">").map(s => s.trim());
-        const p = resolvePath(f);
-        vfs[p] = { type:"file", content:t.replace(/^["']|["']$/g, "") };
-        ensureParent(p); await saveVFS();
-        out("[OK]", "text-cyber-green");
-      } else out(raw.replace(/^["']|["']$/g, ""), "text-gray-200");
+    case "grep": {
+      const pattern = args[0]; if (!pattern) { out("grep <pattern>", "#ff0844"); break; }
+      const source = shellVars.STDIN ? shellVars.STDIN.split("\n") : [];
+      if (source.length === 0 && args[1]) { const fp = resolvePath(args[1]); if (VFS[fp]?.type === "file") source.push.apply(source, VFS[fp].content.split("\n")); }
+      let re = null; try { re = new RegExp(pattern, "i"); } catch (e) { re = null; }
+      source.forEach(l => { if (re ? re.test(l) : l.indexOf(pattern) !== -1) out(l, "#00ff66"); });
       break;
     }
-
-    case "chain":
-      auditLedger.slice(-8).forEach(b => out("[#" + b.index + "] " + b.type + " | " + String(b.details).slice(0,50), "text-cyber-cyan"));
+    case "wc": { const s = shellVars.STDIN || ""; out("  " + s.split("\n").length + "  " + s.split(/\s+/).filter(Boolean).length + "  " + s.length, "#ffd700"); break; }
+    case "head": { const n = args[0]?.startsWith("-") ? parseInt(args[0].slice(1), 10) : 10; (shellVars.STDIN || "").split("\n").slice(0, n).forEach(l => out(l, "#00ff66")); break; }
+    case "tail": { const n = args[0]?.startsWith("-") ? parseInt(args[0].slice(1), 10) : 10; (shellVars.STDIN || "").split("\n").slice(-n).forEach(l => out(l, "#00ff66")); break; }
+    case "sort": (shellVars.STDIN || "").split("\n").filter(Boolean).sort().forEach(l => out(l, "#00ff66")); break;
+    case "uniq": { let prev = null; (shellVars.STDIN || "").split("\n").forEach(l => { if (l !== prev) { out(l, "#00ff66"); prev = l; } }); break; }
+    case "encrypt": {
+      if (args.length < 2) { out("encrypt <file> <key>", "#ff0844"); break; }
+      const fp = resolvePath(args[0]);
+      if (!VFS[fp] || VFS[fp].type !== "file") { out("encrypt: no such file", "#ff0844"); break; }
+      if (!checkPermission(VFS[fp], "write")) { out("encrypt: Permission denied", "#ff0844"); break; }
+      if (VFS[fp].content.startsWith("ENC:")) { out("Already encrypted", "#ffd700"); break; }
+      VFS[fp].content = xorCipher(VFS[fp].content, args[1]);
+      await addBlock("ENCRYPT: " + args[0]);
+      out("[CIPHER] ✅", "#00ff66"); break;
+    }
+    case "decrypt": {
+      if (args.length < 2) { out("decrypt <file> <key>", "#ff0844"); break; }
+      const fp = resolvePath(args[0]);
+      if (!VFS[fp] || VFS[fp].type !== "file") { out("decrypt: no such file", "#ff0844"); break; }
+      if (!checkPermission(VFS[fp], "write")) { out("decrypt: Permission denied", "#ff0844"); break; }
+      const dec = xorDecipher(VFS[fp].content, args[1]);
+      if (dec !== null && dec.indexOf("\u0000") === -1) { VFS[fp].content = dec; await addBlock("DECRYPT: " + args[0]); out("[CIPHER] ✅", "#00ff66"); }
+      else out("[CIPHER ERROR]: wrong key", "#ff0844");
       break;
-    case "chain-verify": await verifyChain(false); break;
-
-    case "stats":
-      out("📊 OMEGA Stats:", "text-cyber-gold");
-      out("  Blocks: " + auditLedger.length, "text-cyber-green");
-      out("  CTF: " + ctfScore + " pts", "text-cyber-green");
-      out("  Sats: " + satData.length, "text-cyber-cyan");
-      out("  Memory: " + memoryVectors.length + " vectors", "text-cyber-purple");
-      out("  Goals: " + stats.goalsDone + "✓/" + stats.goalsFail + "✗ (retry: " + stats.goalsRetried + ")", "text-cyber-cyan");
-      out("  Photos: " + stats.photos + " | Voice: " + stats.voiceCmds, "text-cyber-cyan");
-      out("  Loops: " + stats.loops + " | AI: " + stats.aiQueries + " | P2P: " + stats.p2pMessages, "text-cyber-cyan");
-      out("  VFS: " + Object.keys(vfs).length + " | Peers: " + Object.keys(connections).length, "text-gray-300");
+    }
+    case "ps":
+      out("  PID  USER        STAT   COMMAND", "#ffd700");
+      [{ pid: 1, user: "root", stat: "Ss", cmd: "systemd" }, { pid: 214, user: "root", stat: "S", cmd: "sshd" }, { pid: 501, user: "root", stat: "S", cmd: "kernel_apex" }, { pid: 1024, user: session.username || "none", stat: "R", cmd: "-bash" }].forEach(p => out("  " + String(p.pid).padEnd(5) + " " + p.user.padEnd(11) + " " + p.stat.padEnd(6) + " " + p.cmd, p.user === "root" ? "#ff007f" : "#38bdf8"));
       break;
     case "sysinfo":
-      out("SOVEREIGN OS v50.1 OMEGA ∞", "text-cyber-gold");
-      out("3D Globe • Video P2P • Voice • Memory DB • PWA", "text-cyber-cyan");
-      out("SGP4 • Phi-3 • NASA • SpaceX • IndexedDB", "text-cyber-green");
+      out("═══ نظام لافي منير ═══", "#ffd700");
+      out("User       : " + session.username + " (UID " + session.uid + ")", "#e5e7eb");
+      out("Groups     : " + getUserGroups(session.username).join(", "), "#38bdf8");
+      out("Privilege  : " + (isRoot() ? "ROOT 👑" : canSudo() ? "SUDO-capable" : "User"), isRoot() ? "#ff007f" : "#38bdf8");
+      out("Blocks     : " + blockchain.length, "#00ff66");
+      out("Audit      : " + auditEvents.length + " events", "#38bdf8");
+      out("Edition    : NO PASSWORD (Auto-login)", "#ffd700");
+      out("Copyright  : © لافي منير 2026", "#ffd700");
       break;
-
-    case "save": await saveVFS(); await saveLedger(); await saveMemory(); out("💾", "text-cyber-green"); break;
-    case "export": {
-      const data = JSON.stringify({
-        vfs: Object.fromEntries(Object.entries(vfs).map(([k,v]) => [k, v.data ? {...v, data:"[omitted]"} : v])),
-        auditLedger, memory: memoryVectors.map(m => ({ id:m.id, text:m.text, ts:m.ts })),
-        ctf: CTF.map(c => ({ id:c.id, solved:c.solved })),
-        score: ctfScore, stats
-      }, null, 2);
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(new Blob([data], { type:"application/json" }));
-      a.download = "omega_v50_1_backup.json"; a.click();
-      out("📤", "text-cyber-green"); break;
+    case "audit": {
+      if (args[0] === "clear") { auditEvents = []; addAuditEvent("WARN", "Audit cleared"); out("[AUDIT] ✅", "#00ff66"); }
+      else auditEvents.slice(0, 20).forEach(e => out("[" + e.time + "] [" + e.type + "] " + e.message, e.type === "ERROR" ? "#ff0844" : e.type === "WARN" ? "#ffd700" : "#00ff66"));
+      break;
     }
-
-    case "clear": termOutput.innerHTML = ""; break;
-    case "history": commandHistory.slice(-30).forEach((h,i) => out(String(i+1).padStart(3) + "  " + h, "text-gray-400")); break;
-    case "whoami": out("root (لافي منير)", "text-cyber-cyan"); break;
-    case "date": out(new Date().toString(), "text-cyber-cyan"); break;
-
+    case "nano": case "vim": case "vi":
+      if (!args[0]) { out("nano <file>", "#ff0844"); break; }
+      if (!cap) openNano(args[0]);
+      break;
+    case "bash": case "sh": {
+      const t = args[0];
+      if (!t) { out("bash <script.sh>", "#ff0844"); break; }
+      const fp = resolvePath(t);
+      if (!VFS[fp] || VFS[fp].type !== "file") { out("bash: no such file", "#ff0844"); break; }
+      await addBlock("EXEC: " + fp);
+      addAuditEvent("INFO", "Executed '" + fp + "'");
+      if (!cap) printTerm("[EXEC] " + t, "#38bdf8");
+      const savedPath = currentPath;
+      await runScriptContent(VFS[fp].content, opts);
+      currentPath = savedPath; break;
+    }
+    case "chain":
+      out("═══ LEDGER ═══", "#ffd700");
+      blockchain.slice(-12).forEach(b => out("[#" + b.index + "] " + b.hash.substring(0, 16) + "... | " + b.data, "#00f2fe"));
+      break;
+    case "block": { const nb = await addBlock(args.join(" ") || "Manual"); out("[MINED] Block #" + nb.index, "#00ff66"); break; }
+    case "verify": {
+      let ok = true;
+      for (let i = 1; i < blockchain.length; i++) {
+        const c = blockchain[i], p = blockchain[i - 1];
+        if (c.prevHash !== p.hash) { ok = false; break; }
+        if (c.hash !== await computeSHA256(p.hash + c.data + c.timestamp)) { ok = false; break; }
+      }
+      out(ok ? "[✅] سليمة" : "[❌] تلاعب!", ok ? "#00ff66" : "#ff0844");
+      break;
+    }
     default:
-      if (cmd && line.length > 2) out("🤖 " + localAI(line), "text-cyber-green");
-      else throw new Error("أمر غير معروف");
+      if (cmd.indexOf("./") === 0 || cmd.endsWith(".sh")) {
+        const fp = resolvePath(cmd.indexOf("./") === 0 ? cmd.slice(2) : cmd);
+        if (VFS[fp]?.type === "file") {
+          if (!checkPermission(VFS[fp], "exec")) { out("bash: Permission denied", "#ff0844"); break; }
+          await addBlock("EXEC: " + fp);
+          addAuditEvent("INFO", "Executed '" + fp + "'");
+          if (!cap) printTerm("[EXEC] " + cmd, "#38bdf8");
+          const savedPath = currentPath;
+          await runScriptContent(VFS[fp].content, opts);
+          currentPath = savedPath; break;
+        }
+      }
+      out("Unknown command: " + cmd, "#ff0844");
   }
 }
-async function runCommand(line) {
-  if (!line?.trim()) return;
-  printToTerm("Ω:~# " + line, "text-cyber-cyan");
-  commandHistory.push(line); historyIndex = commandHistory.length;
-  try { await executeCommand(line); }
-  catch (e) { printToTerm("❌ " + e.message, "text-red-400"); }
-  await addBlock("CMD", line.slice(0, 60));
+
+/* ═══ Nano ═══ */
+function openNano(filename) {
+  if (!filename) return;
+  const fp = resolvePath(filename);
+  const existing = VFS[fp];
+  if (existing && existing.type === "dir") { printTerm("nano: is directory", "#ff0844"); return; }
+  if (existing && !checkPermission(existing, "write")) { printTerm("nano: Permission denied", "#ff0844"); return; }
+  nanoState.active = true; nanoState.filename = filename; nanoState.fullPath = fp;
+  nanoState.originalContent = existing ? existing.content : ""; nanoState.dirty = false;
+  $('editorOverlay').classList.add('active');
+  $('editorFilename').textContent = "nano — " + filename;
+  $('editorArea').value = nanoState.originalContent;
+  setTimeout(() => $('editorArea').focus(), 50);
+  updateEditorInfo(); updateStats();
+}
+function updateEditorInfo() {
+  const v = $('editorArea').value;
+  const pos = $('editorArea').selectionStart;
+  $('editorLineInfo').textContent = "سطر: " + v.substring(0, pos).split("\n").length + " | أحرف: " + v.length;
+}
+async function saveNano() {
+  const v = $('editorArea').value;
+  const fp = nanoState.fullPath;
+  const lastSlash = fp.lastIndexOf("/");
+  const parent = lastSlash > 0 ? fp.substring(0, lastSlash) : "/";
+  const name = fp.substring(lastSlash + 1);
+  const existing = VFS[fp];
+  if (existing) existing.content = v;
+  else VFS[fp] = { type: "file", content: v, restricted: false, owner: session.username, group: getCurrentUser()?.gid || 100, mode: "rw-r--r--" };
+  if (VFS[parent]?.children && VFS[parent].children.indexOf(name) === -1) VFS[parent].children.push(name);
+  nanoState.dirty = false;
+  await addBlock("NANO_SAVE: " + fp);
+  printTerm("[NANO] 💾 Saved (" + v.length + " chars)", "#00ff66");
+}
+function closeNano() {
+  if (!nanoState.active) return;
+  if (nanoState.dirty) { if (confirm("⚠️ Unsave changes! OK to save?")) saveNano(); else return; }
+  nanoState.active = false;
+  $('editorOverlay').classList.remove('active');
+  $('cmdInput').focus(); updateStats();
+  printTerm("[NANO] 🚪 Closed", "#38bdf8");
 }
 
-/* ─── Tabs ─── */
-function switchTab(name, ev) {
-  document.querySelectorAll(".tab-content").forEach(el => { el.classList.add("hidden"); el.classList.remove("flex"); });
-  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-  const tab = $("tab" + name.charAt(0).toUpperCase() + name.slice(1));
-  if (tab) { tab.classList.remove("hidden"); tab.classList.add("flex"); }
-  const btn = ev?.target?.closest(".tab-btn") || document.querySelector('[data-tab="' + name + '"]');
-  if (btn) btn.classList.add("active");
-  if (name === "space" && !$("apodImage").src) { loadAPOD(); loadLaunches(); }
-  if (name === "globe" && globeWorld) {
-    setTimeout(() => {
-      const c = $("globeContainer");
-      if (c && c.clientWidth > 0) globeWorld.width(c.clientWidth).height(c.clientHeight || 200);
-    }, 100);
-  }
-  if (name === "map" && issMap) setTimeout(() => issMap.invalidateSize(), 100);
-  if (name === "memory") updateMemoryUI();
-}
-
-/* ─── Matrix ─── */
-function startMatrix() {
-  const c = $("matrixCanvas"), ctx = c.getContext("2d");
-  const resize = () => { c.width = innerWidth; c.height = innerHeight; };
-  resize(); window.addEventListener("resize", resize);
-  const chars = "01ΩOMEGA-GLOBE-VOICE-MEM-NEXUS";
-  let drops = Array(Math.floor(c.width/16)).fill(1);
-  setInterval(() => {
-    ctx.fillStyle = "rgba(3,0,20,0.08)";
-    ctx.fillRect(0, 0, c.width, c.height);
-    ctx.fillStyle = "#ff007f";
-    ctx.font = "12px 'Fira Code'";
-    for (let i = 0; i < drops.length; i++) {
-      ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*16, drops[i]*16);
-      if (drops[i]*16 > c.height && Math.random() > 0.975) drops[i] = 0;
-      drops[i]++;
-    }
-  }, 55);
-}
-
-/* ─── Listeners ─── */
-function attachListeners() {
-  termInput.addEventListener("keydown", async e => {
-    if (e.key === "Enter") {
-      const v = termInput.value; termInput.value = "";
-      await runCommand(v);
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      if (historyIndex > 0) { historyIndex--; termInput.value = commandHistory[historyIndex] || ""; }
-    } else if (e.key === "ArrowDown") {
-      e.preventDefault();
-      if (historyIndex < commandHistory.length-1) { historyIndex++; termInput.value = commandHistory[historyIndex] || ""; }
-    }
-  });
-  document.querySelectorAll("[data-cmd]").forEach(b => b.addEventListener("click", () => runCommand(b.dataset.cmd)));
-  document.querySelectorAll("[data-globe]").forEach(b => b.addEventListener("click", () => loadGlobeSats(b.dataset.globe)));
-  document.querySelectorAll("[data-tab]").forEach(b => b.addEventListener("click", e => switchTab(b.dataset.tab, e)));
-  $("btnVoice")?.addEventListener("click", toggleVoice);
-  $("btnLoop")?.addEventListener("click", toggleLoop);
-  $("btnToggleSide")?.addEventListener("click", () => $("sidePanel").classList.toggle("mobile-active"));
-  $("btnUpdateISS")?.addEventListener("click", () => updateISS(true));
-  $("btnCallPeer")?.addEventListener("click", callVideoPeer);
-  $("btnAddMem")?.addEventListener("click", () => addMemory($("memInput").value));
-  $("btnSearchMem")?.addEventListener("click", () => searchMemory($("memQuery").value));
-  $("btnDumpMem")?.addEventListener("click", dumpMemory);
-  $("btnClearMem")?.addEventListener("click", clearMemory);
-  $("memInput")?.addEventListener("keydown", e => { if (e.key === "Enter") addMemory($("memInput").value); });
-  $("memQuery")?.addEventListener("keydown", e => { if (e.key === "Enter") searchMemory($("memQuery").value); });
-  $("btnAgent")?.addEventListener("click", () => enqueueGoal($("agentInput").value));
-  $("agentInput")?.addEventListener("keydown", e => { if (e.key === "Enter") enqueueGoal($("agentInput").value); });
-}
-
-/* ─── PWA ─── */
-let deferredInstallPrompt = null;
-window.addEventListener("beforeinstallprompt", e => {
-  e.preventDefault();
-  deferredInstallPrompt = e;
-  $("installBtn")?.classList.remove("hidden");
+/* ═══ Events ═══ */
+$('editorArea').addEventListener('input', () => { nanoState.dirty = true; updateEditorInfo(); });
+$('editorArea').addEventListener('keyup', updateEditorInfo);
+$('editorArea').addEventListener('click', updateEditorInfo);
+$('editorOverlay').addEventListener('keydown', e => {
+  if (e.ctrlKey && e.key === 's') { e.preventDefault(); saveNano(); }
+  else if (e.ctrlKey && e.key === 'x') { e.preventDefault(); closeNano(); }
+  else if (e.ctrlKey && e.key === 'k') { e.preventDefault(); $('editorArea').value = ""; nanoState.dirty = true; }
 });
-$("installBtn")?.addEventListener("click", async () => {
-  if (!deferredInstallPrompt) return;
-  deferredInstallPrompt.prompt();
-  const { outcome } = await deferredInstallPrompt.userChoice;
-  if (outcome === "accepted") {
-    notify("✅ تم التثبيت");
-    $("installBtn")?.classList.add("hidden");
-  }
-  deferredInstallPrompt = null;
-});
-
-/* ✅ SW من ملف ./sw.js إن وُجد، وإلا يعمل التطبيق بدون offline */
-async function registerSW() {
-  // حالة الاتصال دائمًا
-  const updateOnline = () => {
-    const b = $("offlineBadge");
-    if (b) b.classList.toggle("hidden", navigator.onLine);
-  };
-  window.addEventListener("online", updateOnline);
-  window.addEventListener("offline", updateOnline);
-  updateOnline();
-
-  if (!("serviceWorker" in navigator)) {
-    printToTerm("ℹ️ SW غير مدعوم — بدون offline", "text-yellow-400");
+$('cmdInput').addEventListener('keydown', async e => {
+  if (e.key === 'ArrowUp' && !nanoState.active) {
+    e.preventDefault();
+    if (historyIndex > 0) { historyIndex--; $('cmdInput').value = commandHistory[historyIndex]; }
     return;
   }
-  if (location.protocol !== "https:" && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
-    printToTerm("ℹ️ يحتاج HTTPS — بدون offline", "text-yellow-400");
+  if (e.key === 'ArrowDown' && !nanoState.active) {
+    e.preventDefault();
+    if (historyIndex < commandHistory.length - 1) { historyIndex++; $('cmdInput').value = commandHistory[historyIndex]; }
+    else { historyIndex = commandHistory.length; $('cmdInput').value = ""; }
     return;
   }
+  if (e.key !== 'Enter' || nanoState.active) return;
+  const val = $('cmdInput').value;
+  $('cmdInput').value = "";
+  if (!val.trim()) return;
+  printTerm($('promptText').textContent + " " + val, "#00f2fe");
+  commandHistory.push(val); historyIndex = commandHistory.length;
+  await runPipeline(val);
+  updateStats();
+});
+document.addEventListener('click', e => {
+  if (nanoState.active) return;
+  if (e.target.closest('.editor-overlay')) return;
+  if (e.target.tagName === 'BUTTON' || e.target.tagName === 'TEXTAREA') return;
+  $('cmdInput').focus();
+});
+$('exportChainBtn').addEventListener('click', () => {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(blockchain, null, 2));
+  const a = document.createElement('a'); a.href = dataStr; a.download = "chain_" + Date.now() + ".json";
+  document.body.appendChild(a); a.click(); a.remove();
+  printTerm("[EXPORT] ✅ Chain exported", "#00ff66");
+});
+$('exportAuditBtn').addEventListener('click', () => {
+  const content = auditEvents.map(e => "[" + e.time + "] [" + e.type + "] " + e.message).join("\n");
+  const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(content);
+  const a = document.createElement('a'); a.href = dataStr; a.download = "audit_" + Date.now() + ".txt";
+  document.body.appendChild(a); a.click(); a.remove();
+  printTerm("[EXPORT] ✅ Audit exported", "#00ff66");
+});
+
+/* ═══ Boot ═══ */
+(async function boot() {
   try {
-    // فحص وجود sw.js قبل التسجيل
-    const head = await fetch("./sw.js", { method: "HEAD" }).catch(() => null);
-    if (!head || !head.ok) {
-      printToTerm("ℹ️ sw.js غير موجود — التطبيق يعمل بدون offline cache", "text-yellow-400");
-      return;
-    }
-    await navigator.serviceWorker.register("./sw.js", { scope: "./" });
-    printToTerm("📲 PWA مسجّل (offline مُفعّل)", "text-cyber-green");
-  } catch (e) {
-    printToTerm("⚠️ SW فشل: " + e.message, "text-yellow-400");
+    await initSystemState();
+    addAuditEvent("INFO", "System boot v27.0 — لافي منير");
+    showWelcome();  // ✅ مباشرة بدون تسجيل دخول
+  } catch (err) {
+    document.body.innerHTML = '<div style="color:#ff0844;padding:20px;font-family:monospace;">Boot failed: ' + err.message + '</div>';
   }
-}
+})();
 
-/* ─── Boot ─── */
-async function boot() {
-  await initIDB();
-  const sv = await loadVFS(); vfs = sv || initVFS();
-  const sc = await loadLedger(); if (sc && Array.isArray(sc)) auditLedger = sc;
-  memoryVectors = await loadMemory();
-
-  startMatrix();
-  const mapOK = initMap();
-  if (!mapOK) printToTerm("ℹ️ 2D Map معطّل", "text-gray-500");
-  initGlobe();
-  renderCTF();
-  renderLedgerUI();
-  updateMemoryUI();
-
-  const peerOK = initPeer();
-  if (!peerOK) printToTerm("ℹ️ P2P معطّل", "text-gray-500");
-
-  registerSW();
-  attachListeners();
-
-  Object.assign(window, {
-    $, runCommand, executeCommand, switchTab, toggleVoice, toggleLoop,
-    loadGlobeSats, updateISS, loadAPOD, loadLaunches, loadWebLLM,
-    startVideo, stopVideo, callVideoPeer, addMemory, searchMemory,
-    dumpMemory, clearMemory, enqueueGoal, startCamera, stopCamera,
-    capturePhoto, startMic, stopMic, broadcastChain,
-    requestChain, broadcastChat, broadcastMemory
-  });
-
-  if (!auditLedger.length) await addBlock("GENESIS", "OMEGA v50.1");
-  else await addBlock("BOOT", auditLedger.length + " blocks");
-
-  printToTerm("╔════════════════════════════════════════════════╗", "text-cyber-magenta");
-  printToTerm("║  لافي منير — SOVEREIGN OS v50.1 OMEGA Ω      ║", "text-cyber-magenta");
-  printToTerm("║  🌍 3D • 🎥 P2P • 🗣️ Voice • 🧠 Memory • 📲  ║", "text-cyber-magenta");
-  printToTerm("╚════════════════════════════════════════════════╝", "text-cyber-magenta");
-  printToTerm("", "");
-  printToTerm("اكتب: help", "text-cyber-cyan");
-  printToTerm("", "");
-
-  await updateISS(false);
-  if (issInterval) clearInterval(issInterval);
-  issInterval = setInterval(() => { if (!document.hidden) updateISS(false); }, 15000);
-
-  // ✅ الحلقة الذاتية لا تعمل تلقائيًا
-  setTimeout(async () => {
-    await loadGlobeSats("stations");
-    await loadAPOD();
-    await loadLaunches();
-    initEmbedder().catch(() => {});
-    await addMemory("بدأت جلسة OMEGA في " + new Date().toLocaleString("ar-EG"), { type: "session" });
-  }, 3000);
-}
-
-window.addEventListener("load", boot);
-window.addEventListener("beforeunload", () => {
-  saveVFS(); saveLedger(); saveMemory();
-  if (issInterval) clearInterval(issInterval);
-  if (globeInterval) clearInterval(globeInterval);
-  if (loopInterval) clearInterval(loopInterval);
-});
+})();
 </script>
 </body>
 </html>
