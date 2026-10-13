@@ -3,905 +3,972 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>V503 HONEST EDITION — صادق ومُحصَّن</title>
-<meta name="theme-color" content="#030014">
+<title>LAFI OMNI-SCREEN — كل شيء في شاشة</title>
+<meta name="theme-color" content="#000010">
 <meta name="author" content="لافي منير">
 <script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config={darkMode:'class',theme:{extend:{colors:{cyber:{bg:'#030014',panel:'#0a0520',border:'#1f1345',cyan:'#00f2fe',magenta:'#ff007f',gold:'#ffd700',green:'#00ff66',purple:'#7928ca',red:'#ff0844',orange:'#ff6b35'}}}}}
-</script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <style>
-:root{--t1:#00f2fe;--t2:#ff007f;--tbg:#030014;--tpanel:#0a0520;--tborder:#1f1345}
-body.theme-matrix{--t1:#00ff66;--t2:#003b00}
-body.theme-cyber{--t1:#f9f871;--t2:#ff007f}
-body.theme-gold{--t1:#ffd700;--t2:#d4af37}
-body.theme-neon{--t1:#f472b6;--t2:#7928ca}
-body.theme-sunset{--t1:#ff6b35;--t2:#ffd700}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:'Courier New',monospace;background:var(--tbg);color:#e2e8f0;overflow:hidden;user-select:none;-webkit-user-select:none}
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-thumb{background:var(--t1);border-radius:4px}
-canvas#matrix{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.05}
-.glass{background:rgba(10,5,32,.9);backdrop-filter:blur(16px);border:1px solid var(--tborder)}
-.msg{max-width:85%;word-break:break-word;padding:10px 14px;font-size:12px;border-radius:14px;user-select:text}
-.msg-me{background:rgba(255,0,127,.15);border:1px solid var(--t2);margin-left:auto;border-radius:14px 14px 2px 14px}
-.msg-peer{background:rgba(0,242,254,.12);border:1px solid var(--t1);margin-right:auto;border-radius:14px 14px 14px 2px}
-.msg-sys{background:rgba(255,215,0,.1);border:1px solid var(--t2);color:var(--t2);font-size:11px;text-align:center;margin:6px auto;padding:3px 14px;border-radius:12px;width:fit-content}
-.msg-ai{background:linear-gradient(135deg,rgba(255,215,0,.2),rgba(255,107,53,.15));border:1px solid #ffd700;padding:10px;border-radius:12px;margin:6px auto;max-width:90%;text-align:center;font-size:12px}
-.tab.active{background:rgba(0,242,254,.15);border-color:var(--t1);color:var(--t1)}
-.btn-primary{background:linear-gradient(135deg,var(--t1),var(--t2));color:#fff;font-weight:bold;border:none;border-radius:8px;cursor:pointer;font-family:inherit}
-.sec-warn{background:rgba(255,215,0,.15);border:1px solid #ffd700;color:#ffd700;padding:8px;border-radius:8px;font-size:11px;margin-bottom:8px}
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Fira+Code&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Cairo',sans-serif}
+html,body{height:100%;background:#000010;color:#e2e8f0;overflow:hidden;user-select:none;-webkit-user-select:none}
+body{display:flex;flex-direction:column;height:100vh}
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+.content{position:relative;z-index:1;display:flex;flex-direction:column;height:100vh}
+
+/* Header */
+.top{background:rgba(5,5,20,0.85);backdrop-filter:blur(16px);border-bottom:1px solid #1a1a3a;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:11px}
+.brand{font-size:14px;font-weight:900;background:linear-gradient(90deg,#00f2fe,#ff007f);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.badge{padding:3px 8px;border-radius:12px;font-size:10px;font-weight:bold;display:inline-flex;align-items:center;gap:4px}
+.b-on{background:rgba(0,255,136,0.15);color:#00ff88;border:1px solid #00ff8855}
+.b-warn{background:rgba(255,215,0,0.15);color:#ffd700;border:1px solid #ffd70055}
+.b-off{background:rgba(255,8,68,0.15);color:#ff0844;border:1px solid #ff084455}
+.b-id{background:rgba(0,242,254,0.1);color:#00f2fe;border:1px solid #00f2fe55;font-family:monospace;cursor:pointer;font-size:9px}
+.b-live{background:#ff0844;color:#fff;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
+/* Main Grid - 3 columns on wide, 1 column on mobile */
+.main{flex:1;display:grid;grid-template-columns:1fr;gap:6px;padding:6px;overflow:hidden;min-height:0}
+@media(min-width:900px){
+  .main{grid-template-columns:280px 1fr 280px}
+}
+
+/* Panels */
+.panel{background:rgba(8,8,25,0.92);backdrop-filter:blur(12px);border:1px solid #1a1a3a;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.panel:hover{border-color:rgba(0,242,254,0.3)}
+.panel-h{padding:6px 10px;font-size:11px;font-weight:bold;color:#ffd700;border-bottom:1px solid #1a1a3a;display:flex;justify-content:space-between;align-items:center;gap:6px;flex-shrink:0}
+.panel-h .icon{color:#00f2fe;margin-left:4px}
+.panel-body{flex:1;overflow-y:auto;padding:8px;min-height:0}
+
+/* Left column - Video + Chat */
+.left-col{display:flex;flex-direction:column;gap:6px;min-height:0}
+.video-area{flex-shrink:0;position:relative;background:#000;border-radius:10px;overflow:hidden;aspect-ratio:16/10;min-height:120px}
+.video-area video{width:100%;height:100%;object-fit:cover}
+.video-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:#5a5a78;font-size:11px}
+.video-placeholder .i{font-size:36px;color:#00f2fe;filter:drop-shadow(0 0 12px #00f2fe)}
+
+/* Chat */
+.chat-body{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:6px;font-size:12px;min-height:0}
+.msg{max-width:90%;padding:6px 10px;border-radius:10px;word-break:break-word;font-size:12px;user-select:text;line-height:1.4}
+.msg-me{background:rgba(0,242,254,0.12);border:1px solid #00f2fe66;margin-left:auto}
+.msg-peer{background:rgba(0,255,136,0.1);border:1px solid #00ff8866;margin-right:auto}
+.msg-sys{background:rgba(255,215,0,0.08);border:1px solid #ffd70055;color:#ffd700;font-size:10px;text-align:center;margin:4px auto;padding:3px 10px;border-radius:10px;width:fit-content}
+.msg-gift{background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,8,68,0.15));border:1px solid #ffd700;font-size:13px;text-align:center;margin:4px auto;padding:6px 12px;border-radius:10px;max-width:70%}
+.msg-ai{background:linear-gradient(135deg,rgba(0,242,254,0.1),rgba(121,40,202,0.1));border:1px solid #00f2fe;font-size:11px;margin:4px auto;padding:6px 10px;border-radius:10px;max-width:85%}
+
+/* Input bar */
+.input-bar{display:flex;gap:4px;padding:6px;background:rgba(5,5,20,0.9);border-top:1px solid #1a1a3a;flex-shrink:0}
+.input-bar input{flex:1;background:#000008;border:1px solid #1a1a3a;color:#fff;border-radius:8px;padding:8px 10px;font-size:12px;outline:none;font-family:inherit;min-width:0}
+.input-bar input:focus{border-color:#00f2fe;box-shadow:0 0 12px rgba(0,242,254,0.4)}
+.btn{padding:8px 10px;border:none;border-radius:8px;font-weight:bold;cursor:pointer;font-size:11px;font-family:inherit;transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:4px}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn-cyan{background:linear-gradient(135deg,#00f2fe,#0088cc);color:#000}
+.btn-green{background:linear-gradient(135deg,#00ff88,#00aa55);color:#000}
+.btn-red{background:linear-gradient(135deg,#ff0844,#cc0033);color:#fff}
+.btn-gold{background:linear-gradient(135deg,#ffd700,#cc9900);color:#000}
+.btn-gray{background:#1a1a3a;color:#fff;border:1px solid #2a2a4a}
+.btn-gray:hover{background:#2a2a4a}
+
+/* Right column tabs as compact buttons */
+.qbar{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:6px;flex-shrink:0;border-bottom:1px solid #1a1a3a}
+.qbar .btn{padding:6px 4px;font-size:10px;flex-direction:column;gap:2px}
+.qbar .btn .ic{font-size:16px}
+
+/* Tool views inside right panel */
+.tool-view{display:none;height:100%;flex-direction:column}
+.tool-view.active{display:flex}
+
+/* Terminal */
+.term-body{font-family:'Fira Code',monospace;font-size:11px;line-height:1.6;white-space:pre-wrap;word-break:break-word;padding:8px;overflow-y:auto;color:#e5e7eb;flex:1}
+.term-input-row{display:flex;gap:4px;padding:6px;border-top:1px solid #1a1a3a;flex-shrink:0}
+.term-input-row input{flex:1;background:#000008;border:1px solid #1a1a3a;color:#00ff88;border-radius:6px;padding:6px 8px;font-size:11px;outline:none;font-family:'Fira Code',monospace;min-width:0}
+
+/* Chain list */
+.chain-item{padding:6px 8px;background:rgba(255,215,0,0.06);border:1px solid #ffd70033;border-radius:6px;font-size:10px;margin-bottom:4px;font-family:monospace;word-break:break-all}
+.chain-item .idx{color:#ffd700;font-weight:bold}
+
+/* Users */
+.user-item{padding:6px 8px;background:rgba(0,242,254,0.06);border:1px solid #00f2fe33;border-radius:6px;font-size:11px;margin-bottom:4px}
+
+/* VFS */
+.vfs-item{padding:6px 8px;background:rgba(0,242,254,0.04);border:1px solid #1a1a3a;border-radius:6px;font-size:11px;cursor:pointer;margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.vfs-item:hover{border-color:#00f2fe55}
+
+/* Stats */
+.stat-mini{display:flex;justify-content:space-between;font-size:10px;color:#8a8aa8;padding:4px 0;border-bottom:1px dashed #1a1a3a}
+.stat-mini b{color:#00f2fe}
+
+/* Nano modal */
+#nanoModal{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:100;display:none;flex-direction:column;padding:12px}
+#nanoModal.active{display:flex}
+.nano-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:1px solid #ffd700;color:#ffd700;font-size:12px;font-weight:bold}
+.nano-area{flex:1;background:#000008;color:#00ff88;font-family:'Fira Code',monospace;font-size:13px;border:1px solid #ffd700;border-radius:8px;padding:10px;margin-top:8px;resize:none;outline:none;width:100%;user-select:text}
+
+/* Gift modal */
+#giftModal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:100;display:none;align-items:center;justify-content:center;padding:16px}
+#giftModal.active{display:flex}
+.gift-panel{background:linear-gradient(135deg,#0a0520,#1a0a30);border:2px solid #ffd700;border-radius:16px;padding:16px;max-width:320px;width:100%}
+.gift-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:12px 0}
+
+/* Floating tools button for mobile */
+.float-btn{position:fixed;bottom:70px;right:12px;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#00f2fe,#7928ca);border:none;color:#fff;font-size:20px;cursor:pointer;box-shadow:0 0 20px rgba(0,242,254,0.6);z-index:50;display:none}
+@media(max-width:899px){.float-btn{display:flex;align-items:center;justify-content:center}}
 </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden">
-<canvas id="matrix"></canvas>
-<div id="notif" class="fixed top-4 left-1/2 -translate-x-1/2 z-[400] bg-black border-2 border-cyan-400 text-cyan-300 px-5 py-2 rounded-full text-xs font-bold hidden"></div>
+<body>
 
-<header class="relative z-10 glass px-3 py-2 flex justify-between items-center text-xs flex-wrap gap-2">
-<div class="flex items-center gap-2 flex-wrap">
-<span class="text-sm font-black text-pink-500">🛡️ HONEST SECURE</span>
-<span class="bg-pink-500/20 text-pink-300 text-[10px] px-2 py-0.5 rounded border border-pink-500/40 font-bold">V503</span>
-<span class="text-[10px] text-yellow-400">👑 لافي منير</span>
-</div>
-<div class="flex items-center gap-1.5 text-[10px] flex-wrap">
-<span id="secStatus" class="px-2 py-1 rounded bg-red-500/20 border border-red-500 text-red-300 font-bold">🔴 Unencrypted</span>
-<span class="px-2 py-1 rounded bg-black border border-gray-700">Nodes: <b id="nodeCount" class="text-green-400">0</b></span>
-<span id="peerIdDisplay" class="px-2 py-1 rounded bg-black border border-gray-700 font-mono cursor-pointer text-cyan-300" onclick="copyPeerId()">...</span>
-<button onclick="toggleTheme()" class="px-2 py-1 rounded bg-yellow-500 text-black font-bold">🎨</button>
-<button onclick="openCommandPalette()" class="px-2 py-1 rounded bg-pink-500 text-white font-bold">⚡</button>
-</div>
-</header>
+<canvas id="stars"></canvas>
 
-<div class="relative z-10 mx-2 mt-2 sec-warn">
-⚠️ <b>تنبيه صادق:</b> هذا التشفير مبدئي (ECDH P-256 + AES-GCM) — <b>ليس</b> بمستوى Signal Protocol. لا تستخدمه لأسرار حقيقية. لمزيد من الأمان استخدم Signal أو Element.
+<div class="content">
+
+<!-- ═══ TOP BAR ═══ -->
+<div class="top">
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <span class="brand">🌌 LAFI OMNI</span>
+    <span id="secStatus" class="badge b-off">🔴</span>
+    <span id="liveBadge" class="badge b-live" style="display:none">● LIVE</span>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+    <span class="badge" style="background:rgba(0,255,136,0.1);border:1px solid #00ff8855">👥 <b id="vCount" style="color:#00ff88">0</b></span>
+    <span class="badge" style="background:rgba(255,215,0,0.1);border:1px solid #ffd70055">⛓️ <b id="bCount" style="color:#ffd700">1</b></span>
+    <span class="badge" style="background:rgba(255,215,0,0.1);border:1px solid #ffd70055">💰 <b id="gTotal" style="color:#ffd700">$0</b></span>
+    <span id="myId" class="badge b-id" onclick="copyId()">جاري...</span>
+  </div>
 </div>
 
-<main class="relative z-10 flex-1 grid grid-cols-1 md:grid-cols-12 gap-2 p-2 overflow-hidden">
-<aside class="md:col-span-4 lg:col-span-3 flex flex-col gap-2 h-full overflow-hidden">
-<div class="glass p-2 rounded-xl">
-<div class="text-[10px] text-yellow-400 font-bold mb-1">👤 اسمك</div>
-<input id="nickname" class="w-full bg-black border border-gray-700 rounded px-2 py-1 text-xs text-green-400 font-bold outline-none" value="Node_"+Math.floor(Math.random()*9999) onchange="saveNickname()">
-<div class="flex gap-1 mt-2">
-<input id="peerTarget" class="flex-1 bg-black border border-gray-700 rounded px-2 py-1 text-[10px] text-white outline-none" placeholder="Peer ID...">
-<button onclick="manualConnect()" class="btn-primary px-3 py-1 text-[10px]">ربط</button>
-</div>
+<!-- ═══ MAIN GRID ═══ -->
+<div class="main">
+
+  <!-- LEFT COLUMN: Video + Chat -->
+  <div class="left-col">
+    <!-- Video -->
+    <div class="panel" style="flex:0 0 auto">
+      <div class="panel-h">
+        <span><span class="icon">📹</span> البث المباشر</span>
+        <span id="streamState" style="color:#ff0844;font-size:10px">غير نشط</span>
+      </div>
+      <div style="padding:6px">
+        <div class="video-area">
+          <video id="localVideo" autoplay playsinline muted style="display:none"></video>
+          <div id="remoteWrap" style="position:absolute;inset:0;display:none"></div>
+          <div id="videoPlaceholder" class="video-placeholder">
+            <div class="i">📹</div>
+            <div>لا يوجد بث</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:6px">
+          <button onclick="startStream()" id="btnStream" class="btn btn-red" style="grid-column:span 2;font-size:10px">🎬 بدء</button>
+          <button onclick="startCamera()" class="btn btn-cyan" title="كاميرا">📷</button>
+          <button onclick="startMic()" class="btn btn-green" title="صوت">🎤</button>
+          <button onclick="shareScreen()" class="btn btn-gray" title="شاشة">🖥️</button>
+          <button onclick="endStream()" id="btnEnd" class="btn btn-gray" style="display:none;grid-column:span 5" title="إنهاء">📴 إنهاء</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat -->
+    <div class="panel" style="flex:1 1 auto;min-height:200px">
+      <div class="panel-h">
+        <span><span class="icon">💬</span> الدردشة المشفرة</span>
+        <span id="encInfo" style="font-size:9px;color:#ffd700">🔐 E2EE</span>
+      </div>
+      <div id="chat" class="chat-body">
+        <div class="msg-sys">🎬 مرحباً في LAFI OMNI-SCREEN</div>
+        <div class="msg-sys">💡 اكتب @ai سؤالاً</div>
+      </div>
+      <div class="input-bar">
+        <input id="chatInput" placeholder="رسالة أو @ai سؤال..." onkeydown="if(event.key==='Enter')sendMsg()">
+        <button onclick="showGifts()" class="btn btn-gold" title="هدية">🎁</button>
+        <button onclick="sendMsg()" class="btn btn-cyan" title="إرسال">📤</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MIDDLE COLUMN: Quick Actions + Stats -->
+  <div class="panel" style="display:flex;flex-direction:column">
+    <div class="panel-h">
+      <span><span class="icon">🌐</span> الشبكة والاتصال</span>
+      <span id="peerInfo" style="font-size:9px;color:#8a8aa8">0 عقدة</span>
+    </div>
+    <div class="panel-body">
+      <!-- Nickname -->
+      <div style="margin-bottom:8px">
+        <div style="font-size:10px;color:#8a8aa8;margin-bottom:3px">👤 اسمك</div>
+        <input id="nickname" style="width:100%;background:#000008;border:1px solid #1a1a3a;color:#00ff88;border-radius:6px;padding:6px 8px;font-size:11px;outline:none;font-family:inherit" value="Host">
+      </div>
+
+      <!-- Connect Peer -->
+      <div style="margin-bottom:8px">
+        <div style="font-size:10px;color:#8a8aa8;margin-bottom:3px">🔗 الاتصال</div>
+        <div style="display:flex;gap:4px">
+          <input id="targetPeer" style="flex:1;background:#000008;border:1px solid #1a1a3a;color:#fff;border-radius:6px;padding:6px 8px;font-size:10px;outline:none;font-family:inherit;min-width:0" placeholder="Peer ID">
+          <button onclick="connectPeer()" class="btn btn-cyan" style="padding:6px 10px">ربط</button>
+        </div>
+      </div>
+
+      <!-- Role -->
+      <div style="margin-bottom:8px">
+        <div style="font-size:10px;color:#8a8aa8;margin-bottom:3px">🎭 دورك</div>
+        <select id="roleSelect" style="width:100%;background:#000008;border:1px solid #1a1a3a;color:#fff;border-radius:6px;padding:6px 8px;font-size:11px;outline:none;font-family:inherit">
+          <option value="viewer">👤 مشاهد</option>
+          <option value="host">🎬 مذيع</option>
+          <option value="mod">🎙️ مشرف</option>
+        </select>
+      </div>
+
+      <!-- Stats -->
+      <div style="margin-bottom:8px">
+        <div style="font-size:10px;color:#8a8aa8;margin-bottom:4px">📊 إحصائيات</div>
+        <div class="stat-mini"><span>مدة البث</span><b id="sDur">00:00</b></div>
+        <div class="stat-mini"><span>الرسائل</span><b id="mCount">0</b></div>
+        <div class="stat-mini"><span>الهدايا</span><b id="gCount">0</b></div>
+      </div>
+
+      <!-- AI -->
+      <div style="margin-bottom:8px">
+        <div style="font-size:10px;color:#8a8aa8;margin-bottom:4px">🤖 الذكاء المحلي</div>
+        <button onclick="askAI()" class="btn btn-gray" style="width:100%;font-size:10px">🧪 اسأل AI</button>
+      </div>
+
+      <!-- Viewers -->
+      <div>
+        <div style="font-size:10px;color:#8a8aa8;margin-bottom:4px">👥 المشاهدون</div>
+        <div id="viewerList" style="font-size:10px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN: Tools with compact tabs -->
+  <div class="panel" style="display:flex;flex-direction:column">
+    <div class="qbar">
+      <button class="btn btn-gray active" data-tool="term" onclick="showTool('term')"><span class="ic">⌨️</span>طرفية</button>
+      <button class="btn btn-gray" data-tool="chain" onclick="showTool('chain')"><span class="ic">⛓️</span>بلوك</button>
+      <button class="btn btn-gray" data-tool="users" onclick="showTool('users')"><span class="ic">👥</span>مستخدم</button>
+      <button class="btn btn-gray" data-tool="vfs" onclick="showTool('vfs')"><span class="ic">📁</span>ملفات</button>
+    </div>
+
+    <!-- Tool: Terminal -->
+    <div id="tool-term" class="tool-view active" style="flex:1">
+      <div style="padding:4px 8px;border-bottom:1px solid #1a1a3a;display:flex;justify-content:space-between;font-size:10px;color:#00f2fe">
+        <span id="termPrompt">root@lafi:/root#</span>
+        <span style="cursor:pointer;color:#ff0844" onclick="termCmd('clear')">🧹 مسح</span>
+      </div>
+      <div id="termBody" class="term-body"></div>
+      <div class="term-input-row">
+        <input id="termInput" placeholder="help | ls | chain | nano..." onkeydown="termKey(event)" autocomplete="off">
+      </div>
+    </div>
+
+    <!-- Tool: Chain -->
+    <div id="tool-chain" class="tool-view" style="flex:1">
+      <div style="padding:6px;border-bottom:1px solid #1a1a3a;display:flex;gap:4px;flex-wrap:wrap">
+        <span style="font-size:10px;color:#00ff88" id="chainLen">1 بلوك</span>
+        <button onclick="verifyChain()" class="btn btn-green" style="padding:4px 8px;font-size:9px;flex:1">✅ تحقق</button>
+        <button onclick="mineBlock()" class="btn btn-gold" style="padding:4px 8px;font-size:9px;flex:1">⛏️ تعدين</button>
+      </div>
+      <div id="chainList" class="panel-body" style="padding:6px;font-family:monospace"></div>
+    </div>
+
+    <!-- Tool: Users -->
+    <div id="tool-users" class="tool-view" style="flex:1">
+      <div style="padding:6px;border-bottom:1px solid #1a1a3a;font-size:9px;color:#8a8aa8">
+        جرّب: whoami • id • su lafi
+      </div>
+      <div id="usersList" class="panel-body"></div>
+    </div>
+
+    <!-- Tool: VFS -->
+    <div id="tool-vfs" class="tool-view" style="flex:1">
+      <div style="padding:6px;border-bottom:1px solid #1a1a3a;display:flex;justify-content:space-between;gap:4px;flex-wrap:wrap">
+        <span style="font-size:10px;color:#00f2fe" id="vfsPath">/root</span>
+        <div style="display:flex;gap:3px">
+          <button onclick="termCmd('cd /')" class="btn btn-gray" style="padding:3px 6px;font-size:9px">🏠</button>
+          <button onclick="termCmd('nano test.txt')" class="btn btn-gold" style="padding:3px 6px;font-size:9px">📝</button>
+        </div>
+      </div>
+      <div id="vfsList" class="panel-body"></div>
+    </div>
+  </div>
+
 </div>
 
-<div class="glass p-2 rounded-xl">
-<div class="text-[10px] text-cyan-300 font-bold mb-1">🌐 الشبكة</div>
-<canvas id="topology" class="w-full h-20 bg-black rounded border border-gray-700"></canvas>
+<!-- ═══ MODALS ═══ -->
+<div id="nanoModal">
+  <div class="nano-header">
+    <span id="nanoFile">nano — file.txt</span>
+    <div style="display:flex;gap:6px;align-items:center">
+      <span id="nanoInfo" style="font-size:10px;color:#00f2fe">سطر: 1</span>
+      <button onclick="saveNano()" class="btn btn-green" style="padding:4px 10px;font-size:11px">💾</button>
+      <button onclick="closeNano()" class="btn btn-red" style="padding:4px 10px;font-size:11px">✖</button>
+    </div>
+  </div>
+  <textarea id="nanoArea" class="nano-area" spellcheck="false" oninput="updateNanoInfo()"></textarea>
 </div>
 
-<div class="glass p-3 rounded-xl flex flex-col gap-2">
-<div class="text-[10px] text-yellow-400 font-bold">🤖 AI Leader</div>
-<div id="aiLeaderStatus" class="text-[10px] text-gray-400">جاري التحديد...</div>
-<select id="aiPersonality" class="w-full bg-black border border-gray-700 rounded px-2 py-1 text-[10px] text-white outline-none">
-<option value="helpful">🤝 مساعد ودود</option>
-<option value="coder">👨‍💻 مبرمج</option>
-<option value="wise">🧙 حكيم</option>
-<option value="funny">😄 مرح</option>
-</select>
+<div id="giftModal" onclick="if(event.target===this)hideGifts()">
+  <div class="gift-panel">
+    <div style="text-align:center;color:#ffd700;font-weight:bold;font-size:14px;margin-bottom:8px">🎁 أرسل هدية</div>
+    <div class="gift-grid">
+      <button onclick="sendGift('🌹',1)" class="btn btn-gray" style="padding:10px;flex-direction:column;font-size:20px">🌹<span style="font-size:10px;color:#ffd700">$1</span></button>
+      <button onclick="sendGift('💎',5)" class="btn btn-gray" style="padding:10px;flex-direction:column;font-size:20px">💎<span style="font-size:10px;color:#ffd700">$5</span></button>
+      <button onclick="sendGift('👑',10)" class="btn btn-gray" style="padding:10px;flex-direction:column;font-size:20px">👑<span style="font-size:10px;color:#ffd700">$10</span></button>
+      <button onclick="sendGift('🚀',25)" class="btn btn-gray" style="padding:10px;flex-direction:column;font-size:20px">🚀<span style="font-size:10px;color:#ffd700">$25</span></button>
+      <button onclick="sendGift('⭐',50)" class="btn btn-gray" style="padding:10px;flex-direction:column;font-size:20px">⭐<span style="font-size:10px;color:#ffd700">$50</span></button>
+      <button onclick="sendGift('💝',100)" class="btn btn-gray" style="padding:10px;flex-direction:column;font-size:20px">💝<span style="font-size:10px;color:#ffd700">$100</span></button>
+    </div>
+    <button onclick="hideGifts()" class="btn btn-gray" style="width:100%">إغلاق</button>
+  </div>
 </div>
 
-<div class="glass p-2 rounded-xl flex-1 flex flex-col overflow-hidden">
-<div class="flex justify-between items-center text-[10px] font-bold text-cyan-300 border-b border-gray-700 pb-1 mb-1">
-<span>💬 الغرف</span>
-<button onclick="promptCreateRoom()" class="bg-pink-500/20 text-pink-300 border border-pink-500/40 px-2 py-0.5 rounded">+</button>
-</div>
-<div id="roomList" class="flex-1 overflow-y-auto space-y-1 text-xs"></div>
-</div>
-</aside>
-
-<section class="md:col-span-8 lg:col-span-9 flex flex-col gap-2 h-full overflow-hidden">
-<div class="glass px-3 py-2 rounded-xl flex justify-between items-center flex-wrap gap-2">
-<div>
-<h3 id="roomTitle" class="font-bold text-yellow-400 text-sm"># العامة</h3>
-<p id="roomInfo" class="text-[10px] text-gray-400">العقد: 0 | تشفير: <span id="encInfo">لا</span></p>
-</div>
-<div class="flex gap-1">
-<button onclick="callVoice()" class="px-2 py-1 rounded border border-green-500 text-green-400 text-xs">📞</button>
-<button onclick="callVideo()" class="px-2 py-1 rounded border border-cyan-400 text-cyan-300 text-xs">🎥</button>
-<button onclick="shareScreen()" class="px-2 py-1 rounded border border-purple-500 text-purple-300 text-xs">🖥️</button>
-<button onclick="endCall()" id="endBtn" class="hidden px-2 py-1 rounded bg-red-500 text-white text-xs">📴</button>
-</div>
-</div>
-
-<div id="videoStage" class="hidden glass p-2 rounded-xl grid grid-cols-2 md:grid-cols-3 gap-2 min-h-[140px]">
-<video id="localVideo" autoplay playsinline muted class="w-full h-32 bg-black rounded object-cover"></video>
-<div id="remoteVideos" class="col-span-1 md:col-span-2 grid grid-cols-2 gap-2"></div>
-</div>
-
-<div id="messages" class="flex-1 glass p-3 rounded-xl overflow-y-auto space-y-2 flex flex-col"></div>
-
-<div class="glass p-2 rounded-xl flex items-center gap-2">
-<label class="cursor-pointer px-2 py-2 rounded border border-gray-700 text-cyan-300">📎<input type="file" id="fileInput" class="hidden" onchange="handleFile(event)"></label>
-<input id="chatInput" class="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-xs text-white outline-none" placeholder="رسالة أو @ai سؤال..." onkeydown="if(event.key==='Enter')sendMessage()">
-<button onclick="sendMessage()" class="btn-primary px-4 py-2 text-xs">🚀</button>
-</div>
-</section>
-</main>
-
-<div id="roomModal" class="fixed inset-0 bg-black/80 z-[300] hidden flex items-center justify-center p-4">
-<div class="glass p-5 rounded-xl max-w-sm w-full">
-<h3 class="text-sm font-bold text-yellow-400 mb-3">غرفة جديدة</h3>
-<input id="modalRoomName" class="w-full bg-black border border-gray-700 rounded px-2 py-1 text-xs text-white outline-none mb-2" placeholder="اسم الغرفة">
-<div class="flex gap-2">
-<button onclick="createRoom()" class="flex-1 btn-primary py-1 text-xs">تأكيد</button>
-<button onclick="closeRoomModal()" class="px-3 py-1 rounded bg-gray-800 text-gray-300 text-xs">إلغاء</button>
-</div>
-</div>
-</div>
-
-<div id="qrModal" class="fixed inset-0 bg-black/80 z-[300] hidden flex items-center justify-center p-4" onclick="closeQR()">
-<div class="glass p-5 rounded-xl max-w-xs w-full text-center">
-<canvas id="qrCanvas" class="bg-white p-2 rounded mx-auto"></canvas>
-<p id="qrText" class="text-[9px] text-green-400 mt-2 break-all font-mono"></p>
-</div>
 </div>
 
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
 
-/* ═══════════════════════════════════════════════════
-   V503 HONEST SECURE — كل الإصلاحات
-   ═══════════════════════════════════════════════════ */
+/* ═══ Stars background ═══ */
+(function(){
+  const c=$("stars"),ctx=c.getContext("2d");
+  let stars=[];
+  function resize(){c.width=innerWidth;c.height=innerHeight;stars=[];for(let i=0;i<80;i++){stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.5+0.3,a:Math.random()*0.6+0.3,s:Math.random()*0.3+0.05});}}
+  resize();addEventListener("resize",resize);
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    stars.forEach(st=>{
+      ctx.globalAlpha=st.a;
+      ctx.fillStyle=Math.random()>0.9?"#00f2fe":"#fff";
+      ctx.beginPath();ctx.arc(st.x,st.y,st.r,0,Math.PI*2);ctx.fill();
+      st.y-=st.s;
+      if(st.y<-5){st.y=c.height+5;st.x=Math.random()*c.width;}
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
 
-// State
-let peer=null,myPeerId="",myNickname=localStorage.getItem("nickname")||("Node_"+Math.floor(Math.random()*9999));
-let connections={},keys={},aiLeaderId=null,isAILeader=false;
-let currentRoom="general",rooms={general:{name:"العامة",messages:[]}};
-let localStream=null,mediaCalls={};
-let db=null;
+/* ═══ State ═══ */
+let peer=null,myId="",nickname=localStorage.getItem("lafi_nick")||"Host";
+let connections={},keys={},myKeys=null;
+let localStream=null,remoteStreams={};
+let blockchain=[],gifts=0,msgCount=0;
+let isStreaming=false,streamStart=0,role="viewer";
+let db=null,currentPath="/root",commandHistory=[],hIdx=-1;
+let session={username:"root",uid:0};
+let nano={active:false,filename:null,dirty:false};
+let VFS={},passwdDB=new Map(),groupDB=new Map(),shadowDB=new Map();
 
-const ALLOWED_IFRAME_HOSTS=["youtube.com","www.youtube.com","youtube-nocookie.com","www.youtube-nocookie.com","youtu.be","vimeo.com","www.vimeo.com","player.vimeo.com"];
-const CHUNK_SIZE=64*1024; // 64KB chunks
-const MAX_FILE_SIZE=20*1024*1024; // 20MB limit
-
-/* ═══ UI Helpers ═══ */
-function showNotif(msg,dur){
-  dur=dur||3000;
-  const n=$("notif");
+/* ═══ Utils ═══ */
+function notif(msg,dur=2500){
+  const n=document.createElement("div");
   n.textContent=msg;
-  n.classList.remove("hidden");
-  setTimeout(()=>n.classList.add("hidden"),dur);
+  n.style.cssText="position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#0a0520;border:2px solid #00f2fe;color:#00f2fe;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:bold;z-index:999;box-shadow:0 0 20px rgba(0,242,254,0.5);animation:fadein .2s";
+  document.body.appendChild(n);
+  setTimeout(()=>n.remove(),dur);
 }
+function esc(s){const d=document.createElement("div");d.textContent=String(s);return d.innerHTML;}
 
-// FIX: آمن ضد XSS
-function escapeHTML(s){
-  const div=document.createElement("div");
-  div.textContent=String(s);
-  return div.innerHTML;
-}
-
-// FIX: إضافة عنصر بأمان
-function safeAppend(parent, tag, props, text){
-  const el=document.createElement(tag);
-  for(const k in (props||{}))el[k]=props[k];
-  if(text!==undefined)el.textContent=text;
-  parent.appendChild(el);
-  return el;
-}
-
-/* ═══ E2EE — بدون Fallback ═══ */
-async function generateKeyPair(){
-  return crypto.subtle.generateKey({name:"ECDH",namedCurve:"P-256"},true,["deriveKey"]);
-}
-async function exportPublicKey(kp){
-  const spki=await crypto.subtle.exportKey("spki",kp.publicKey);
-  return btoa(String.fromCharCode.apply(null,new Uint8Array(spki)));
-}
-async function importPublicKey(b64){
-  const bin=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
-  return crypto.subtle.importKey("spki",bin,{name:"ECDH",namedCurve:"P-256"},true,[]);
-}
-async function deriveSharedKey(myPrivate, theirPublic){
-  return crypto.subtle.deriveKey(
-    {name:"ECDH",public:theirPublic},
-    myPrivate,
-    {name:"AES-GCM",length:256},
-    false,
-    ["encrypt","decrypt"]
-  );
-}
-
-let myKeyPair=null;
-
-async function encrypt(obj, key){
-  if(!key) throw new Error("SECURITY: no shared key");
-  const iv=crypto.getRandomValues(new Uint8Array(12));
-  const data=new TextEncoder().encode(JSON.stringify(obj));
-  const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,data);
-  return {iv:Array.from(iv),ct:btoa(String.fromCharCode.apply(null,new Uint8Array(ct)))};
-}
-
-async function decrypt(encObj, key){
-  if(!key) throw new Error("SECURITY: no shared key");
-  const iv=new Uint8Array(encObj.iv);
-  const ct=Uint8Array.from(atob(encObj.ct),c=>c.charCodeAt(0));
-  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv},key,ct);
-  return JSON.parse(new TextDecoder().decode(pt));
+/* ═══ Tools switcher ═══ */
+function showTool(t){
+  document.querySelectorAll(".tool-view").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".qbar .btn").forEach(x=>x.classList.remove("active"));
+  $("tool-"+t).classList.add("active");
+  document.querySelector(`[data-tool="${t}"]`).classList.add("active");
+  if(t==="chain")renderChain();
+  if(t==="users")renderUsers();
+  if(t==="vfs")renderVFS();
 }
 
 /* ═══ IndexedDB ═══ */
-function openDB(){
-  return new Promise(res=>{
-    const r=indexedDB.open("v503",1);
-    r.onupgradeneeded=e=>{
-      const d=e.target.result;
-      if(!d.objectStoreNames.contains("messages"))d.createObjectStore("messages",{keyPath:"id",autoIncrement:true});
-      if(!d.objectStoreNames.contains("rooms"))d.createObjectStore("rooms",{keyPath:"id"});
-    };
-    r.onsuccess=e=>{db=e.target.result;res();};
-    r.onerror=()=>res();
+function openDB(){return new Promise(r=>{const q=indexedDB.open("lafi_omni",1);q.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains("blocks"))d.createObjectStore("blocks",{keyPath:"index"});};q.onsuccess=e=>{db=e.target.result;r();};q.onerror=()=>r();});}
+function dbPut(s,v){return new Promise(r=>{if(!db)return r();const tx=db.transaction(s,"readwrite");tx.objectStore(s).put(v);tx.oncomplete=()=>r();tx.onerror=()=>r();});}
+function dbAll(s){return new Promise(r=>{if(!db)return r([]);const tx=db.transaction(s,"readonly");const q=tx.objectStore(s).getAll();q.onsuccess=()=>r(q.result||[]);q.onerror=()=>r([]);});}
+
+/* ═══ Blockchain ═══ */
+async function sha256(m){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(m));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("");}
+async function addBlock(data){
+  const prev=blockchain[blockchain.length-1]||{hash:"0",index:-1};
+  const ts=Date.now();
+  const hash=await sha256(prev.hash+data+ts);
+  const b={index:prev.index+1,ts,data,prev:prev.hash,hash};
+  blockchain.push(b);await dbPut("blocks",b);
+  $("bCount").textContent=blockchain.length;
+  $("chainLen").textContent=blockchain.length+" بلوك";
+  if($("tool-chain").classList.contains("active"))renderChain();
+  return b;
+}
+function renderChain(){
+  const list=$("chainList");list.innerHTML="";
+  blockchain.slice(-15).reverse().forEach(b=>{
+    const d=document.createElement("div");
+    d.className="chain-item";
+    d.innerHTML=`<div class="idx">#${b.index}</div><div style="color:#00f2fe;font-size:9px">${b.hash.slice(0,24)}...</div><div style="color:#fff">${esc(b.data)}</div>`;
+    list.appendChild(d);
   });
 }
-function dbPut(store,val){return new Promise(res=>{if(!db)return res();const tx=db.transaction(store,"readwrite");tx.objectStore(store).put(val);tx.oncomplete=()=>res();tx.onerror=()=>res();});}
-function dbAll(store){return new Promise(res=>{if(!db)return res([]);const tx=db.transaction(store,"readonly");const r=tx.objectStore(store).getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>res([]);});}
+async function verifyChain(){
+  let ok=true;
+  for(let i=1;i<blockchain.length;i++){
+    const c=blockchain[i],p=blockchain[i-1];
+    if(c.prev!==p.hash){ok=false;break;}
+    const h=await sha256(p.hash+c.data+c.ts);
+    if(h!==c.hash){ok=false;break;}
+  }
+  notif(ok?"✅ السلسلة سليمة":"❌ تلاعب");
+}
+async function mineBlock(){
+  const d=prompt("بيانات البلوك:","Block "+new Date().toLocaleTimeString("ar"));
+  if(!d)return;
+  const b=await addBlock(d);
+  notif("⛏️ بلوك #"+b.index);
+}
 
-/* ═══ P2P ═══ */
+/* ═══ E2EE ═══ */
+async function genKeys(){return crypto.subtle.generateKey({name:"ECDH",namedCurve:"P-256"},true,["deriveKey"]);}
+async function exportPub(kp){const s=await crypto.subtle.exportKey("spki",kp.publicKey);return btoa(String.fromCharCode(...new Uint8Array(s)));}
+async function importPub(b64){const bin=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));return crypto.subtle.importKey("spki",bin,{name:"ECDH",namedCurve:"P-256"},true,[]);}
+async function deriveKey(priv,pub){return crypto.subtle.deriveKey({name:"ECDH",public:pub},priv,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);}
+async function encrypt(o,k){if(!k)throw new Error("no key");const iv=crypto.getRandomValues(new Uint8Array(12));const d=new TextEncoder().encode(JSON.stringify(o));const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},k,d);return{iv:Array.from(iv),ct:btoa(String.fromCharCode(...new Uint8Array(ct)))};}
+async function decrypt(e,k){if(!k)throw new Error("no key");const iv=new Uint8Array(e.iv);const ct=Uint8Array.from(atob(e.ct),c=>c.charCodeAt(0));const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv},k,ct);return JSON.parse(new TextDecoder().decode(pt));}
+
+/* ═══ VFS ═══ */
+function initVFS(){
+  VFS={
+    "/":{type:"dir",children:["root","etc","home","tmp"],owner:"root",mode:"rwxr-xr-x"},
+    "/etc":{type:"dir",children:["passwd","motd"],owner:"root",mode:"rwxr-xr-x"},
+    "/etc/passwd":{type:"file",content:"(managed)",owner:"root",mode:"rw-r--r--"},
+    "/etc/motd":{type:"file",content:"LAFI OMNI-SCREEN ∞",owner:"root",mode:"rw-r--r--"},
+    "/root":{type:"dir",children:["readme.txt"],owner:"root",mode:"rwx------"},
+    "/root/readme.txt":{type:"file",content:"لافي منير — علم 30 سنة\nكل شيء في شاشة واحدة.",owner:"root",mode:"rw-r--r--"},
+    "/home":{type:"dir",children:[],owner:"root",mode:"rwxr-xr-x"},
+    "/tmp":{type:"dir",children:[],owner:"root",mode:"rwxrwxrwx"}
+  };
+}
+function initUsers(){
+  passwdDB.set("root",{username:"root",uid:0,gid:0,home:"/root"});
+  passwdDB.set("lafi",{username:"lafi",uid:1000,gid:100,home:"/home/lafi"});
+  groupDB.set("root",{name:"root",gid:0,members:["root"]});
+  groupDB.set("sudo",{name:"sudo",gid:27,members:["lafi"]});
+  groupDB.set("users",{name:"users",gid:100,members:["lafi"]});
+}
+function getUserGroups(u){const gs=[];groupDB.forEach(g=>{if(g.members.includes(u))gs.push(g.name);});return gs;}
+function isRoot(){return session.username==="root";}
+function renderUsers(){
+  const l=$("usersList");l.innerHTML="";
+  passwdDB.forEach(u=>{
+    const d=document.createElement("div");
+    d.className="user-item";
+    d.innerHTML=`<b style="color:#00f2fe">${esc(u.username)}</b> <span style="color:#8a8aa8">UID:${u.uid}</span> <span style="color:#00ff88;font-size:10px">${esc(getUserGroups(u.username).join(","))}</span>`;
+    l.appendChild(d);
+  });
+}
+function resolvePath(a){
+  if(!a)return currentPath;
+  if(a.startsWith("/"))return a.replace(/\/+/g,"/").replace(/\/$/,"")||"/";
+  if(a===".."){const p=currentPath.split("/").filter(Boolean);p.pop();return p.length?"/"+p.join("/"):"/";}
+  if(a===".")return currentPath;
+  return currentPath==="/"?"/"+a:currentPath+"/"+a;
+}
+function renderVFS(){
+  $("vfsPath").textContent=currentPath;
+  const l=$("vfsList");l.innerHTML="";
+  const n=VFS[currentPath];
+  if(!n||n.type!=="dir")return;
+  if(n.children.length===0){l.innerHTML='<div style="color:#5a5a78;text-align:center;padding:12px;font-size:11px">📂 فارغ</div>';return;}
+  n.children.forEach(c=>{
+    const cp=currentPath==="/"?"/"+c:currentPath+"/"+c;
+    const child=VFS[cp];if(!child)return;
+    const d=document.createElement("div");
+    d.className="vfs-item";
+    d.innerHTML=`<span style="font-size:14px">${child.type==="dir"?"📁":"📄"}</span><span style="flex:1">${esc(c)}</span>`;
+    d.onclick=()=>{if(child.type==="dir"){currentPath=cp;renderVFS();updatePrompt();}else openNano(c);};
+    l.appendChild(d);
+  });
+}
+function updatePrompt(){$("termPrompt").textContent=session.username+"@lafi:"+currentPath+(isRoot()?"#":"$");}
+function printTerm(t,c){
+  c=c||"#e5e7eb";
+  const b=$("termBody");
+  const d=document.createElement("div");
+  d.style.color=c;
+  d.textContent=t;
+  b.appendChild(d);
+  b.scrollTop=b.scrollHeight;
+}
+async function termCmd(line){
+  if(!line||!line.trim())return;
+  printTerm(session.username+"@lafi:"+currentPath+(isRoot()?"#":"$")+" "+line,"#00f2fe");
+  commandHistory.push(line);hIdx=commandHistory.length;
+  const p=line.trim().split(/\s+/);
+  const cmd=p[0].toLowerCase();
+  const args=p.slice(1);
+  try{
+    switch(cmd){
+      case "help":
+        printTerm("═══ LAFI OMNI ═══","#ffd700");
+        printTerm("ls, cd, cat, pwd, mkdir, write, rm","#00f2fe");
+        printTerm("whoami, id, su, groups, users","#00f2fe");
+        printTerm("nano <file>","#00f2fe");
+        printTerm("chain, block <data>, verify","#00f2fe");
+        printTerm("hash <text>","#00f2fe");
+        printTerm("clear","#00f2fe");
+        break;
+      case "clear":$("termBody").innerHTML="";break;
+      case "whoami":printTerm(session.username,"#00ff88");break;
+      case "id":{const u=passwdDB.get(session.username);printTerm(`uid=${u.uid} gid=${u.gid} groups=${getUserGroups(u.username).join(",")}`,"#00ff88");break;}
+      case "pwd":printTerm(currentPath,"#00ff88");break;
+      case "cd":{
+        const t=resolvePath(args[0]||"/root");
+        if(!VFS[t]||VFS[t].type!=="dir"){printTerm("cd: no dir","#ff0844");break;}
+        currentPath=t;updatePrompt();renderVFS();
+        break;
+      }
+      case "ls":{
+        const n=VFS[currentPath];
+        if(!n||n.type!=="dir")break;
+        n.children.forEach(c=>{
+          const cp=currentPath==="/"?"/"+c:currentPath+"/"+c;
+          const ch=VFS[cp];if(!ch)return;
+          printTerm((ch.type==="dir"?"📁 ":"📄 ")+c,ch.type==="dir"?"#00f2fe":"#e5e7eb");
+        });
+        break;
+      }
+      case "cat":{
+        const fp=resolvePath(args[0]);
+        if(fp==="/etc/passwd"){passwdDB.forEach(u=>printTerm(u.username+":x:"+u.uid+":"+u.gid,"#00ff88"));break;}
+        const n=VFS[fp];
+        if(!n||n.type!=="file"){printTerm("no file","#ff0844");break;}
+        n.content.split("\n").forEach(l=>printTerm(l,"#00ff88"));
+        break;
+      }
+      case "write":{
+        if(args.length<2){printTerm("write <file> <text>","#ff0844");break;}
+        const nm=args[0],tx=args.slice(1).join(" ");
+        const fp=currentPath==="/"?"/"+nm:currentPath+"/"+nm;
+        VFS[fp]={type:"file",content:tx,owner:session.username,mode:"rw-r--r--"};
+        if(!VFS[currentPath].children.includes(nm))VFS[currentPath].children.push(nm);
+        await addBlock("WRITE:"+fp);
+        printTerm("[OK]","#00ff88");
+        break;
+      }
+      case "mkdir":{
+        if(!args[0]){printTerm("mkdir <dir>","#ff0844");break;}
+        const fp=resolvePath(args[0]);
+        if(VFS[fp]){printTerm("exists","#ff0844");break;}
+        VFS[fp]={type:"dir",children:[],owner:session.username,mode:"rwxr-xr-x"};
+        const nm=args[0].split("/").pop();
+        if(!VFS[currentPath].children.includes(nm))VFS[currentPath].children.push(nm);
+        printTerm("[OK]","#00ff88");
+        break;
+      }
+      case "rm":{
+        if(!args[0]){printTerm("rm <file>","#ff0844");break;}
+        const fp=resolvePath(args[0]);
+        if(!VFS[fp]){printTerm("not found","#ff0844");break;}
+        delete VFS[fp];
+        const nm=args[0].split("/").pop();
+        VFS[currentPath].children=VFS[currentPath].children.filter(c=>c!==nm);
+        printTerm("[OK]","#00ff88");
+        break;
+      }
+      case "su":{
+        const t=args[0];
+        if(!t||!passwdDB.has(t)){printTerm("su: user not found","#ff0844");break;}
+        session.username=t;session.uid=passwdDB.get(t).uid;
+        currentPath=passwdDB.get(t).home;
+        updatePrompt();
+        await addBlock("SU:"+t);
+        printTerm("✅ Now: "+t,"#00ff88");
+        break;
+      }
+      case "groups":printTerm(getUserGroups(session.username).join(" "),"#00ff88");break;
+      case "users":passwdDB.forEach(u=>printTerm(u.username,"#00ff88"));break;
+      case "nano":if(args[0])openNano(args[0]);else printTerm("nano <file>","#ff0844");break;
+      case "chain":blockchain.slice(-10).forEach(b=>printTerm("[#"+b.index+"] "+b.hash.slice(0,20)+" | "+b.data.slice(0,30),"#00f2fe"));break;
+      case "block":{const b=await addBlock(args.join(" ")||"manual");printTerm("[MINED] #"+b.index,"#00ff88");break;}
+      case "verify":await verifyChain();break;
+      case "hash":{const h=await sha256(args.join(" "));printTerm("[SHA-256] "+h,"#00ff88");break;}
+      default:
+        if(cmd.startsWith("./")||cmd.endsWith(".sh")){
+          const fp=resolvePath(cmd.startsWith("./")?cmd.slice(2):cmd);
+          if(VFS[fp]&&VFS[fp].type==="file"){
+            VFS[fp].content.split("\n").forEach(l=>{if(l.trim().startsWith("echo "))printTerm(l.trim().slice(5).replace(/"/g,""),"#00ff88");});
+            break;
+          }
+        }
+        printTerm("Unknown: "+cmd,"#ff0844");
+    }
+  }catch(e){printTerm("[ERR] "+e.message,"#ff0844");}
+}
+function termKey(e){
+  if(e.key==="ArrowUp"){e.preventDefault();if(hIdx>0){hIdx--;e.target.value=commandHistory[hIdx];}}
+  else if(e.key==="ArrowDown"){e.preventDefault();if(hIdx<commandHistory.length-1){hIdx++;e.target.value=commandHistory[hIdx];}else{hIdx=commandHistory.length;e.target.value="";}}
+  else if(e.key==="Enter"){const v=e.target.value;e.target.value="";termCmd(v);}
+}
+function openNano(n){
+  nano.active=true;nano.filename=n;nano.dirty=false;
+  const fp=resolvePath(n);
+  $("nanoFile").textContent="nano — "+n;
+  $("nanoArea").value=VFS[fp]?VFS[fp].content:"";
+  $("nanoModal").classList.add("active");
+  setTimeout(()=>$("nanoArea").focus(),50);
+  updateNanoInfo();
+}
+function updateNanoInfo(){
+  const v=$("nanoArea").value;
+  $("nanoInfo").textContent="سطر: "+v.split("\n").length+" | أحرف: "+v.length;
+  nano.dirty=true;
+}
+async function saveNano(){
+  const fp=resolvePath(nano.filename);
+  const nm=nano.filename.split("/").pop();
+  VFS[fp]={type:"file",content:$("nanoArea").value,owner:session.username,mode:"rw-r--r--"};
+  if(!VFS[currentPath].children.includes(nm))VFS[currentPath].children.push(nm);
+  nano.dirty=false;
+  await addBlock("SAVE:"+fp);
+  notif("💾 تم الحفظ");
+  renderVFS();
+}
+function closeNano(){
+  if(nano.dirty&&!confirm("حفظ التغييرات؟"))return;
+  $("nanoModal").classList.remove("active");
+  nano.active=false;
+}
+document.addEventListener("keydown",e=>{
+  if(!nano.active)return;
+  if(e.ctrlKey&&e.key==="s"){e.preventDefault();saveNano();}
+  if(e.ctrlKey&&e.key==="x"){e.preventDefault();closeNano();}
+});
+
+/* ═══ Peer ═══ */
 async function initPeer(){
-  myKeyPair=await generateKeyPair();
-  peer=new Peer({debug:1,config:{iceServers:[
-    {urls:"stun:stun.l.google.com:19302"},
-    {urls:"stun:stun1.l.google.com:19302"}
-  ]}});
-
+  myKeys=await genKeys();
+  peer=new Peer({debug:1,config:{iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun1.l.google.com:19302"}]}});
   peer.on("open",id=>{
-    myPeerId=id;
-    $("peerIdDisplay").textContent=id.slice(0,10)+"...";
-    $("secStatus").textContent="🟡 Ready (Handshake pending)";
-    $("secStatus").className="px-2 py-1 rounded bg-yellow-500/20 border border-yellow-500 text-yellow-300 font-bold";
-    showNotif("🌐 Connected. Waiting for peers.");
-    loadRooms();
-    renderRoomList();
+    myId=id;
+    $("myId").textContent=id.slice(0,10)+"...";
+    notif("✅ متصل");
   });
-
-  peer.on("connection",conn=>setupConnection(conn));
-  peer.on("call",handleIncomingCall);
-  peer.on("error",err=>showNotif("⚠️ "+err.type));
+  peer.on("connection",c=>setupConn(c));
+  peer.on("call",handleCall);
+  peer.on("error",e=>notif("⚠️ "+e.type));
 }
-
-function setupConnection(conn){
+function setupConn(conn){
   conn.on("open",async()=>{
     connections[conn.peer]=conn;
-    updateUI();
-    // Handshake: أرسل مفتاحي العام
-    const pubKey=await exportPublicKey(myKeyPair);
-    conn.send({type:"HS",id:myPeerId,nick:myNickname,pub:pubKey,peers:Object.keys(connections)});
-    // أعد انتخاب قائد AI بعد تغيير الشبكة
-    electAILeader();
+    const pub=await exportPub(myKeys);
+    conn.send({type:"HS",id:myId,nick:nickname,role,pub});
+    updateViewers();
   });
-
   conn.on("data",async data=>{
-    // Handshake
     if(data.type==="HS"){
       try{
-        const theirPub=await importPublicKey(data.pub);
-        keys[data.sender||conn.peer]=await deriveSharedKey(myKeyPair.privateKey,theirPub);
-        // أرسل مفتاحي إذا لم أرسله
-        if(!data.replied){
-          const pubKey=await exportPublicKey(myKeyPair);
-          conn.send({type:"HS_ACK",id:myPeerId,nick:myNickname,pub:pubKey,replied:true});
-        }
-        // تسجيل الاسم
-        addPeerToList(conn.peer,data.nick);
-        // اتصل بمن يعرفهم (Mesh)
-        if(Array.isArray(data.peers)){
-          data.peers.forEach(pId=>{
-            if(pId!==myPeerId&&!connections[pId]){
-              const newConn=peer.connect(pId,{reliable:true});
-              setupConnection(newConn);
-            }
-          });
-        }
-        updateEncryptionStatus();
-      }catch(e){
-        console.error("HS failed:",e);
-      }
+        const p=await importPub(data.pub);
+        keys[conn.peer]=await deriveKey(myKeys.privateKey,p);
+        const myPub=await exportPub(myKeys);
+        conn.send({type:"HS_ACK",id:myId,nick:nickname,role,pub:myPub});
+        connections[conn.peer].nick=data.nick;
+        connections[conn.peer].role=data.role||"viewer";
+        addSys("🟢 "+esc(data.nick)+" انضم");
+        await addBlock("JOIN:"+data.id.slice(0,8));
+        updateViewers();updateSec();
+      }catch(e){}
       return;
     }
-    // ACK للـ HS
     if(data.type==="HS_ACK"){
       try{
-        const theirPub=await importPublicKey(data.pub);
-        keys[conn.peer]=await deriveSharedKey(myKeyPair.privateKey,theirPub);
-        addPeerToList(conn.peer,data.nick);
-        updateEncryptionStatus();
-      }catch(e){console.error(e);}
+        const p=await importPub(data.pub);
+        keys[conn.peer]=await deriveKey(myKeys.privateKey,p);
+        connections[conn.peer].nick=data.nick;
+        connections[conn.peer].role=data.role||"viewer";
+        updateSec();
+      }catch(e){}
       return;
     }
-    // محتوى مشفر
     if(data.payload){
-      const key=keys[conn.peer];
-      if(!key){
-        console.warn("Dropped: no key from",conn.peer);
-        return;
-      }
-      const dec=await decrypt(data.payload,key);
-      if(dec)handleMessage(dec,conn.peer);
+      const k=keys[conn.peer];if(!k)return;
+      const dec=await decrypt(data.payload,k);
+      if(dec)handleMsg(dec);
     }
   });
-
-  conn.on("close",()=>{
-    delete connections[conn.peer];
-    delete keys[conn.peer];
-    updateUI();
-    electAILeader();
+  conn.on("close",async()=>{
+    const n=connections[conn.peer]?.nick||"?";
+    delete connections[conn.peer];delete keys[conn.peer];
+    addSys("🔴 "+esc(n)+" خرج");
+    await addBlock("LEAVE:"+conn.peer.slice(0,8));
+    updateViewers();updateSec();
   });
 }
-
-/* ═══ Handshake FIX ═══ */
-// في setupConnection، بدلاً من data.sender
-// نستخدم conn.peer مباشرة
-
-function addPeerToList(peerId,nickname){
-  connections[peerId]=connections[peerId]||{peer:peerId};
-  connections[peerId].nickname=nickname;
-}
-
-async function sendEncrypted(pkt){
-  let sent=0;
-  for(const peerId in connections){
-    const conn=connections[peerId];
-    const key=keys[peerId];
-    if(!key){
-      console.warn("Skip",peerId,"(no key)");
-      continue;
-    }
-    try{
-      const enc=await encrypt(pkt,key);
-      conn.send({payload:enc});
-      sent++;
-    }catch(e){console.error(e);}
+async function sendToAll(p){
+  let s=0;
+  for(const pid in connections){
+    const c=connections[pid],k=keys[pid];
+    if(!c||!k)continue;
+    try{const e=await encrypt(p,k);c.send({payload:e});s++;}catch(e){}
   }
-  return sent;
+  return s;
 }
-
-/* ═══ AI Leader Election ═══ */
-function electAILeader(){
-  const peers=[myPeerId,...Object.keys(connections)].filter(p=>p);
-  peers.sort();
-  aiLeaderId=peers[0];
-  isAILeader=(aiLeaderId===myPeerId);
-  const status=$("aiLeaderStatus");
-  if(isAILeader){
-    status.textContent="✅ أنت القائد";
-    status.className="text-[10px] text-green-400";
-  } else {
-    status.textContent="👥 "+aiLeaderId.slice(0,8)+"...";
-    status.className="text-[10px] text-gray-400";
+function handleMsg(p){
+  if(p.kind==="chat"){
+    addMsg(p,false);
+    msgCount++;$("mCount").textContent=msgCount;
+  } else if(p.kind==="gift"){
+    gifts+=p.amount;
+    $("gTotal").textContent="$"+gifts;
+    $("gCount").textContent=gifts;
+    addGift(p);
+    addBlock("GIFT:"+p.amount);
+  } else if(p.kind==="ai"){
+    addAI(p.text,p.nick);
   }
 }
 
-/* ═══ Message Router ═══ */
-function handleMessage(pkt,fromPeer){
-  if(pkt.kind==="chat"){
-    if(!rooms[pkt.room])rooms[pkt.room]={name:pkt.room,messages:[]};
-    rooms[pkt.room].messages.push(pkt);
-    if(currentRoom===pkt.room)renderMessage(pkt,false);
-    dbPut("messages",pkt);
-    notify("💬 "+pkt.nick, pkt.text.slice(0,60));
-  }
-  else if(pkt.kind==="file"){
-    if(!rooms[pkt.room])rooms[pkt.room]={name:pkt.room,messages:[]};
-    rooms[pkt.room].messages.push(pkt);
-    if(currentRoom===pkt.room)renderFile(pkt,false);
-    dbPut("messages",pkt);
-    notify("📎 "+pkt.nick, pkt.fileName);
-  }
-  else if(pkt.kind==="room_create"){
-    if(!rooms[pkt.room]){
-      rooms[pkt.room]={name:pkt.name,messages:[]};
-      dbPut("rooms",{id:pkt.room,name:pkt.name});
-      renderRoomList();
-      notify("🏠","غرفة جديدة: "+pkt.name);
-    }
-  }
-  else if(pkt.kind==="ai"){
-    if(currentRoom===pkt.room)renderAI(pkt.text,pkt.nick);
-  }
-}
-
-/* ═══ UI Render ═══ */
-function renderMessage(pkt,isMe){
-  const c=$("messages");
+/* ═══ UI ═══ */
+function addMsg(p,isMe){
+  const c=$("chat");
   const d=document.createElement("div");
   d.className="msg "+(isMe?"msg-me":"msg-peer");
-  // XSS-SAFE
-  const header=document.createElement("div");
-  header.style.cssText="font-size:10px;color:#94a3b8;border-bottom:1px solid #333;padding-bottom:3px;margin-bottom:4px;display:flex;justify-content:space-between";
-  const sName=document.createElement("span");
-  sName.textContent=pkt.nick||"???";
-  sName.style.color=isMe?"#ff007f":"#00f2fe";
-  sName.style.fontWeight="bold";
-  const sTime=document.createElement("span");
-  sTime.textContent=pkt.time||"";
-  header.appendChild(sName);
-  header.appendChild(sTime);
-  d.appendChild(header);
-  const body=document.createElement("div");
-  body.textContent=pkt.text||"";
-  d.appendChild(body);
-  c.appendChild(d);
-  c.scrollTop=c.scrollHeight;
+  d.innerHTML=`<div style="font-size:9px;color:#8a8aa8;margin-bottom:2px"><b>${esc(p.nick||"?")}</b> • ${p.time||""}</div><div>${esc(p.text)}</div>`;
+  c.appendChild(d);c.scrollTop=c.scrollHeight;
 }
-
-function renderAI(text,nick){
-  const c=$("messages");
+function addSys(t){
+  const c=$("chat");
+  const d=document.createElement("div");
+  d.className="msg-sys";d.textContent=t;
+  c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+function addGift(p){
+  const c=$("chat");
+  const d=document.createElement("div");
+  d.className="msg-gift";
+  d.innerHTML=`${p.emoji} <b>${esc(p.nick)}</b> أرسل <b style="color:#00ff88">$${p.amount}</b>`;
+  c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+function addAI(t,n){
+  const c=$("chat");
   const d=document.createElement("div");
   d.className="msg-ai";
-  const t=document.createElement("div");
-  t.textContent="🤖 AI ("+(nick||"bot")+")";
-  t.style.cssText="color:#ffd700;font-weight:bold;font-size:11px;margin-bottom:4px";
-  d.appendChild(t);
-  const b=document.createElement("div");
-  b.textContent=text;
-  b.style.color="#fde68a";
-  d.appendChild(b);
-  c.appendChild(d);
-  c.scrollTop=c.scrollHeight;
+  d.innerHTML=`<b style="color:#00f2fe">🤖 AI</b><br>${esc(t)}`;
+  c.appendChild(d);c.scrollTop=c.scrollHeight;
 }
-
-function renderFile(pkt,isMe){
-  const c=$("messages");
-  const d=document.createElement("div");
-  d.className="msg "+(isMe?"msg-me":"msg-peer");
-  const header=document.createElement("div");
-  header.style.cssText="font-size:10px;color:#94a3b8;border-bottom:1px solid #333;padding-bottom:3px;margin-bottom:6px";
-  header.textContent=(pkt.nick||"???")+" • "+pkt.time;
-  d.appendChild(header);
-  
-  // XSS-SAFE: عرض الصورة فقط إذا كانت data URL
-  if(pkt.fileType&&pkt.fileType.startsWith("image/")&&pkt.fileData&&pkt.fileData.startsWith("data:image/")){
-    const img=document.createElement("img");
-    img.src=pkt.fileData;
-    img.style.cssText="max-height:200px;border-radius:6px;margin-bottom:4px;display:block";
-    d.appendChild(img);
-  }
-  const fileRow=document.createElement("div");
-  fileRow.style.cssText="display:flex;justify-content:space-between;align-items:center;gap:8px;background:rgba(0,0,0,.4);padding:6px;border-radius:6px";
-  const name=document.createElement("span");
-  name.textContent=pkt.fileName||"file";
-  name.style.cssText="font-size:11px;font-family:monospace;overflow:hidden;text-overflow:ellipsis";
-  fileRow.appendChild(name);
-  const link=document.createElement("a");
-  link.href=pkt.fileData;
-  link.download=pkt.fileName||"file";
-  link.textContent="💾";
-  link.style.cssText="background:#00f2fe;color:#000;padding:4px 8px;border-radius:4px;font-weight:bold;text-decoration:none";
-  fileRow.appendChild(link);
-  d.appendChild(fileRow);
-  c.appendChild(d);
-  c.scrollTop=c.scrollHeight;
-}
-
-function renderRoomList(){
-  const box=$("roomList");
-  box.innerHTML="";
-  for(const k in rooms){
-    const div=document.createElement("div");
-    div.className="p-2 rounded cursor-pointer text-xs "+(currentRoom===k?"bg-cyan-400/20 border border-cyan-400 text-cyan-300":"bg-black border border-gray-700 text-gray-300");
-    div.textContent="# "+rooms[k].name;
-    div.onclick=()=>switchRoom(k);
-    box.appendChild(div);
-  }
-}
-
-function switchRoom(k){
-  currentRoom=k;
-  renderRoomList();
-  $("roomTitle").textContent="# "+rooms[k].name;
-  $("messages").innerHTML="";
-  rooms[k].messages.forEach(m=>{
-    if(m.kind==="chat")renderMessage(m,m.sender===myPeerId);
-    else if(m.kind==="file")renderFile(m,m.sender===myPeerId);
+function updateViewers(){
+  const ids=Object.keys(connections);
+  $("vCount").textContent=ids.length;
+  $("peerInfo").textContent=ids.length+" عقدة";
+  const l=$("viewerList");l.innerHTML="";
+  if(!ids.length){l.innerHTML='<div style="color:#5a5a78;font-size:10px;padding:4px">لا مشاهدين</div>';return;}
+  ids.forEach(pid=>{
+    const c=connections[pid];
+    const d=document.createElement("div");
+    d.style.cssText="padding:4px 6px;background:rgba(0,255,136,0.08);border-radius:6px;font-size:10px;margin-bottom:3px";
+    d.textContent=(c.role==="host"?"🎬 ":c.role==="mod"?"🎙️ ":"👤 ")+(c.nick||pid.slice(0,6));
+    l.appendChild(d);
   });
 }
-
-function updateUI(){
-  $("nodeCount").textContent=Object.keys(connections).length;
-  $("roomInfo").textContent="العقد: "+Object.keys(connections).length+" | تشفير: "+Object.keys(keys).length;
-  drawTopology();
-}
-
-function updateEncryptionStatus(){
-  const totalPeers=Object.keys(connections).length;
-  const encryptedPeers=Object.keys(keys).length;
+function updateSec(){
+  const t=Object.keys(connections).length,e=Object.keys(keys).length;
   const s=$("secStatus");
-  const s2=$("encInfo");
-  if(totalPeers===0){
-    s.textContent="🔴 لا اتصالات";
-    s.className="px-2 py-1 rounded bg-red-500/20 border border-red-500 text-red-300 font-bold";
-  } else if(encryptedPeers===totalPeers){
-    s.textContent="🟢 Encrypted ("+encryptedPeers+")";
-    s.className="px-2 py-1 rounded bg-green-500/20 border border-green-500 text-green-300 font-bold";
-  } else {
-    s.textContent="🟡 Handshake "+encryptedPeers+"/"+totalPeers;
-    s.className="px-2 py-1 rounded bg-yellow-500/20 border border-yellow-500 text-yellow-300 font-bold";
-  }
-  if(s2)s2.textContent=(encryptedPeers===totalPeers&&totalPeers>0)?"✅":"⏳";
+  s.className="badge";
+  if(!t){s.className+=" b-off";s.textContent="🔴";}
+  else if(e===t){s.className+=" b-on";s.textContent="🟢 "+e;}
+  else{s.className+=" b-warn";s.textContent="🟡 "+e+"/"+t;}
 }
 
 /* ═══ Actions ═══ */
-function copyPeerId(){
-  if(myPeerId){
-    navigator.clipboard.writeText(myPeerId);
-    showNotif("📋 تم نسخ Peer ID");
-  }
+function copyId(){if(myId){navigator.clipboard.writeText(myId);notif("📋 تم النسخ");}}
+function connectPeer(){
+  const t=$("targetPeer").value.trim();
+  if(!t||t===myId)return;
+  const c=peer.connect(t,{reliable:true});
+  setupConn(c);$("targetPeer").value="";
 }
-
-function saveNickname(){
-  myNickname=$("nickname").value.trim()||"Node";
-  localStorage.setItem("nickname",myNickname);
-  showNotif("✅ تم حفظ الاسم");
-}
-
-function manualConnect(){
-  const target=$("peerTarget").value.trim();
-  if(!target||target===myPeerId)return;
-  if(connections[target]){showNotif("متصل بالفعل");return;}
-  const conn=peer.connect(target,{reliable:true});
-  setupConnection(conn);
-  $("peerTarget").value="";
-  showNotif("🔗 جاري الربط...");
-}
-
-async function sendMessage(){
-  const input=$("chatInput");
-  const text=input.value.trim();
+async function sendMsg(){
+  const inp=$("chatInput");
+  const text=inp.value.trim();
   if(!text)return;
-  
-  const pkt={
-    kind:"chat",
-    room:currentRoom,
-    sender:myPeerId,
-    nick:myNickname,
-    text:text,
-    time:new Date().toLocaleTimeString("ar",{hour:"2-digit",minute:"2-digit"})
-  };
-  
-  // عرض محلياً
-  if(!rooms[currentRoom])rooms[currentRoom]={name:currentRoom,messages:[]};
-  rooms[currentRoom].messages.push(pkt);
-  renderMessage(pkt,true);
-  dbPut("messages",pkt);
-  input.value="";
-  
-  // إرسال مشفر
-  const sent=await sendEncrypted(pkt);
-  if(sent===0&&Object.keys(connections).length>0){
-    showNotif("⚠️ لم يُرسل — انتظر المصافحة");
-  }
-  
-  // AI
-  if(isAILeader&&text.toLowerCase().includes("@ai")){
-    const question=text.replace(/@ai/gi,"").trim();
-    setTimeout(()=>{
-      const response=aiRespond(question);
-      const aiPkt={kind:"ai",room:currentRoom,nick:myNickname,text:response};
-      renderAI(response,myNickname);
-      sendEncrypted(aiPkt);
-    },400);
+  const p={kind:"chat",nick:nickname,text,time:new Date().toLocaleTimeString("ar",{hour:"2-digit",minute:"2-digit"})};
+  addMsg(p,true);
+  msgCount++;$("mCount").textContent=msgCount;
+  inp.value="";
+  await sendToAll(p);
+  if(text.toLowerCase().includes("@ai")){
+    const q=text.replace(/@ai/gi,"").trim();
+    setTimeout(async()=>{
+      const r=aiRespond(q);
+      addAI(r,nickname);
+      await sendToAll({kind:"ai",nick:nickname,text:r});
+    },300);
   }
 }
-
-/* ═══ AI (Rule-based — صادق) ═══ */
 function aiRespond(q){
-  const query=(q||"").toLowerCase();
-  if(!query)return "اكتب سؤالاً بعد @ai";
+  const s=(q||"").toLowerCase();
+  if(!s)return "اكتب سؤالاً";
   const rules=[
-    {p:["مرحب","سلام","أهلا"],r:["أهلاً! 👋","مرحباً!"],},
-    {p:["كيف حالك"],r:["بخير، شكراً!"]},
-    {p:["شكرا"],r:["العفو!","بكل سرور."]},
-    {p:["وقت","ساعة"],r:()=>["الوقت: "+new Date().toLocaleTimeString("ar")]},
-    {p:["تشفير","مشفر"],r:["التشفير E2EE محلي. لكن تنبيه: هذا ليس Signal Protocol."]},
-    {p:["help","مساعدة"],r:["جرب @ai للأسئلة، أو اسأل عن أي شيء."]}
+    {p:["مرحب","سلام","أهلا","هاي"],r:["أهلاً! 👋","مرحباً!"]},
+    {p:["كيف حالك"],r:["بخير! شكراً"]},
+    {p:["شكرا"],r:["العفو! 🌟"]},
+    {p:["من انت"],r:["AI محلي في LAFI OMNI"]},
+    {p:["وقت"],r:()=>["الوقت: "+new Date().toLocaleTimeString("ar")]},
+    {p:["بث"],r:["اضغط 🎬 ابدأ البث"]},
+    {p:["هدية"],r:["اضغط 🎁"]},
+    {p:["طرفية","terminal"],r:["افتح تبويب ⌨️ طرفية"]},
+    {p:["بلوك","chain"],r:["افتح تبويب ⛓️ بلوك"]}
   ];
-  for(const rule of rules){
-    for(const p of rule.p){
-      if(query.includes(p)){
-        const r=typeof rule.r==="function"?rule.r():rule.r;
-        return r[Math.floor(Math.random()*r.length)];
-      }
+  for(const rl of rules){
+    for(const p of rl.p){
+      if(s.includes(p)){const r=typeof rl.r==="function"?rl.r():rl.r;return r[Math.floor(Math.random()*r.length)];}
     }
   }
-  return "لم أفهم. أنا AI بقواعد بسيطة — ليس نموذجاً حقيقياً.";
+  return "لم أفهم. جرّب: مرحبا / وقت / من انت";
+}
+function askAI(){$("chatInput").value="@ai ";$("chatInput").focus();}
+
+/* ═══ Gifts ═══ */
+function showGifts(){$("giftModal").classList.add("active");}
+function hideGifts(){$("giftModal").classList.remove("active");}
+async function sendGift(emoji,amt){
+  const p={kind:"gift",emoji,amount:amt,nick:nickname,time:new Date().toLocaleTimeString("ar")};
+  gifts+=amt;$("gTotal").textContent="$"+gifts;$("gCount").textContent=gifts;
+  addGift(p);
+  await sendToAll(p);
+  await addBlock("GIFT:"+amt);
+  hideGifts();notif("🎁 تم");
 }
 
-/* ═══ Files — CHUNKED ═══ */
-async function handleFile(evt){
-  const f=evt.target.files[0];
-  if(!f)return;
-  if(f.size>MAX_FILE_SIZE){
-    showNotif("⚠️ الحد الأقصى "+Math.round(MAX_FILE_SIZE/1024/1024)+"MB");
-    return;
-  }
-  if(Object.keys(keys).length===0){
-    showNotif("⚠️ لا يمكن إرسال — لم تكتمل المصافحة");
-    return;
-  }
-  const reader=new FileReader();
-  reader.onload=async e=>{
-    const pkt={
-      kind:"file",
-      room:currentRoom,
-      sender:myPeerId,
-      nick:myNickname,
-      fileName:f.name,
-      fileType:f.type,
-      fileSize:f.size,
-      fileData:e.target.result,
-      time:new Date().toLocaleTimeString("ar",{hour:"2-digit",minute:"2-digit"})
-    };
-    if(!rooms[currentRoom])rooms[currentRoom]={name:currentRoom,messages:[]};
-    rooms[currentRoom].messages.push(pkt);
-    renderFile(pkt,true);
-    dbPut("messages",pkt);
-    const sent=await sendEncrypted(pkt);
-    if(sent>0)showNotif("📎 تم الإرسال");
-  };
-  reader.readAsDataURL(f);
-  evt.target.value="";
-}
-
-/* ═══ Cinema — WHITELIST ═══ */
-function isAllowedCinemaUrl(url){
+/* ═══ Streaming ═══ */
+async function startCamera(){
   try{
-    const u=new URL(url);
-    if(u.protocol!=="https:")return false;
-    return ALLOWED_IFRAME_HOSTS.some(h=>u.hostname===h||u.hostname.endsWith("."+h));
-  }catch(e){return false;}
-}
-function showCinema(url){
-  if(!isAllowedCinemaUrl(url)){
-    showNotif("⚠️ رابط غير مسموح");
-    return;
-  }
-  let box=document.getElementById("cinemaBox");
-  if(box)box.remove();
-  box=document.createElement("div");
-  box.id="cinemaBox";
-  box.style.cssText="position:fixed;bottom:10px;right:10px;width:360px;height:220px;background:#000;border:2px solid #00f2fe;border-radius:12px;z-index:250;overflow:hidden";
-  const iframe=document.createElement("iframe");
-  iframe.src=url;
-  iframe.sandbox="allow-scripts allow-same-origin allow-presentation";
-  iframe.style.cssText="width:100%;height:100%;border:none";
-  iframe.allowFullscreen=true;
-  box.appendChild(iframe);
-  const close=document.createElement("button");
-  close.textContent="✖";
-  close.style.cssText="position:absolute;top:6px;left:6px;background:#ff0844;color:#fff;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-weight:bold";
-  close.onclick=()=>box.remove();
-  box.appendChild(close);
-  document.body.appendChild(box);
-  showNotif("🎬 سينما مشغلة");
-}
-
-/* ═══ Calls ═══ */
-async function callVoice(){
-  try{
-    localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
-    startCall();
-  }catch(e){showNotif("❌ ميكروفون مرفوض");}
-}
-async function callVideo(){
-  try{
-    localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:{width:1280,height:720}});
+    if(localStream)localStream.getTracks().forEach(t=>t.stop());
+    localStream=await navigator.mediaDevices.getUserMedia({video:{width:640,height:480},audio:true});
     $("localVideo").srcObject=localStream;
-    $("videoStage").classList.remove("hidden");
-    startCall();
-  }catch(e){showNotif("❌ كاميرا مرفوضة");}
+    $("localVideo").style.display="block";
+    $("videoPlaceholder").style.display="none";
+    notif("📷 كاميرا");
+  }catch(e){notif("❌ "+e.message);}
+}
+async function startMic(){
+  try{
+    if(localStream)localStream.getTracks().forEach(t=>t.stop());
+    localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+    notif("🎤 ميكروفون");
+  }catch(e){notif("❌ "+e.message);}
 }
 async function shareScreen(){
   try{
+    if(localStream)localStream.getTracks().forEach(t=>t.stop());
     localStream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true});
     $("localVideo").srcObject=localStream;
-    $("videoStage").classList.remove("hidden");
-    startCall();
-  }catch(e){showNotif("❌ إلغاء");}
+    $("localVideo").style.display="block";
+    $("videoPlaceholder").style.display="none";
+    notif("🖥️ شاشة");
+  }catch(e){notif("❌ إلغاء");}
 }
-function startCall(){
-  $("endBtn").classList.remove("hidden");
-  for(const pId in connections){
-    const call=peer.call(pId,localStream);
-    handleCall(call);
+async function startStream(){
+  if(!localStream){await startCamera();if(!localStream)return;}
+  isStreaming=true;streamStart=Date.now();
+  $("streamState").textContent="🔴 LIVE";
+  $("streamState").style.color="#ff0844";
+  $("btnStream").style.display="none";
+  $("btnEnd").style.display="inline-flex";
+  $("liveBadge").style.display="inline-flex";
+  await addBlock("STREAM_START");
+  await sendToAll({kind:"stream_start",nick:nickname});
+  for(const pid in connections){
+    try{const c=peer.call(pid,localStream);handleOutCall(c,pid);}catch(e){}
   }
+  notif("🔴 بدأ البث");
 }
-function handleIncomingCall(call){
-  if(!confirm("📞 مكالمة من "+call.peer.slice(0,8)+"؟")){call.close();return;}
-  navigator.mediaDevices.getUserMedia({audio:true,video:true}).then(stream=>{
-    localStream=stream;
-    $("localVideo").srcObject=stream;
-    $("videoStage").classList.remove("hidden");
-    $("endBtn").classList.remove("hidden");
-    call.answer(stream);
-    handleCall(call);
-  }).catch(()=>{
-    call.answer();
-    handleCall(call);
-  });
+async function endStream(){
+  isStreaming=false;
+  if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null;}
+  $("localVideo").srcObject=null;
+  $("localVideo").style.display="none";
+  $("videoPlaceholder").style.display="flex";
+  $("streamState").textContent="غير نشط";
+  $("streamState").style.color="#ff0844";
+  $("btnStream").style.display="inline-flex";
+  $("btnEnd").style.display="none";
+  $("liveBadge").style.display="none";
+  await addBlock("STREAM_END");
 }
 function handleCall(call){
-  mediaCalls[call.peer]=call;
+  call.answer(localStream||undefined);
   call.on("stream",rs=>{
+    $("remoteWrap").style.display="block";
     let v=document.getElementById("rem_"+call.peer);
     if(!v){
-      const wrap=document.createElement("div");
-      wrap.className="relative bg-black rounded overflow-hidden border border-cyan-400";
-      const vid=document.createElement("video");
-      vid.id="rem_"+call.peer;
-      vid.autoplay=true;vid.playsInline=true;
-      vid.className="w-full h-32 object-cover";
-      const label=document.createElement("span");
-      label.textContent=call.peer.slice(0,6);
-      label.style.cssText="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.7);color:#00ff66;padding:2px 6px;border-radius:4px;font-size:9px";
-      wrap.appendChild(vid);
-      wrap.appendChild(label);
-      $("remoteVideos").appendChild(wrap);
-      v=vid;
+      v=document.createElement("video");
+      v.id="rem_"+call.peer;v.autoplay=true;v.playsInline=true;
+      v.style.cssText="width:100%;height:100%;object-fit:cover";
+      $("remoteWrap").appendChild(v);
+      $("videoPlaceholder").style.display="none";
+      $("localVideo").style.display="none";
     }
     v.srcObject=rs;
+    remoteStreams[call.peer]=rs;
   });
   call.on("close",()=>{
-    delete mediaCalls[call.peer];
     const v=document.getElementById("rem_"+call.peer);
-    if(v&&v.parentElement)v.parentElement.remove();
-  });
-}
-function endCall(){
-  if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null;}
-  for(const p in mediaCalls)mediaCalls[p].close();
-  mediaCalls={};
-  $("videoStage").classList.add("hidden");
-  $("endBtn").classList.add("hidden");
-}
-
-/* ═══ Rooms ═══ */
-function promptCreateRoom(){$("roomModal").classList.remove("hidden");}
-function closeRoomModal(){$("roomModal").classList.add("hidden");}
-async function createRoom(){
-  const name=$("modalRoomName").value.trim();
-  if(!name)return;
-  const k="room_"+Date.now();
-  rooms[k]={name:name,messages:[]};
-  dbPut("rooms",{id:k,name:name});
-  closeRoomModal();
-  switchRoom(k);
-  // بث مشفر
-  await sendEncrypted({kind:"room_create",room:k,name:name});
-  showNotif("✅ غرفة: "+name);
-}
-async function loadRooms(){
-  const stored=await dbAll("rooms");
-  stored.forEach(r=>{rooms[r.id]={name:r.name,messages:[]};});
-  const storedMsgs=await dbAll("messages");
-  storedMsgs.slice(-100).forEach(m=>{
-    if(!rooms[m.room])rooms[m.room]={name:m.room,messages:[]};
-    rooms[m.room].messages.push(m);
-  });
-  switchRoom("general");
-}
-
-/* ═══ Theme — يشتغل فعلاً ═══ */
-const THEMES=["","theme-matrix","theme-cyber","theme-gold","theme-neon","theme-sunset"];
-let themeIdx=0;
-function toggleTheme(){
-  document.body.classList.remove(...THEMES.filter(t=>t));
-  themeIdx=(themeIdx+1)%THEMES.length;
-  if(THEMES[themeIdx])document.body.classList.add(THEMES[themeIdx]);
-  localStorage.setItem("theme",THEMES[themeIdx]);
-  showNotif("🎨 ثيم "+themeIdx);
-}
-
-/* ═══ Topology ═══ */
-function drawTopology(){
-  const c=$("topology");
-  if(!c)return;
-  c.width=c.clientWidth;c.height=c.clientHeight;
-  const ctx=c.getContext("2d");
-  ctx.clearRect(0,0,c.width,c.height);
-  const cx=c.width/2,cy=c.height/2;
-  ctx.fillStyle="#00f2fe";
-  ctx.beginPath();ctx.arc(cx,cy,6,0,Math.PI*2);ctx.fill();
-  const peers=Object.keys(connections);
-  peers.forEach((id,i)=>{
-    const angle=(i/Math.max(1,peers.length))*Math.PI*2;
-    const x=cx+Math.cos(angle)*35,y=cy+Math.sin(angle)*35;
-    ctx.strokeStyle=keys[id]?"#00ff66":"#ffd700";
-    ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x,y);ctx.stroke();
-    ctx.fillStyle=keys[id]?"#ff007f":"#888";
-    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();
-  });
-}
-
-/* ═══ Command Palette ═══ */
-function openCommandPalette(){
-  const ex=document.getElementById("paletteModal");
-  if(ex){ex.remove();return;}
-  const cmds=[
-    {n:"📞 مكالمة صوتية",a:callVoice},
-    {n:"🎥 فيديو",a:callVideo},
-    {n:"🖥️ شاشة",a:shareScreen},
-    {n:"🔗 ربط",a:()=>{$("peerTarget").focus();}},
-    {n:"📱 QR",a:showQR},
-    {n:"🎨 ثيم",a:toggleTheme},
-  ];
-  const m=document.createElement("div");
-  m.id="paletteModal";
-  m.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:350;display:flex;align-items:flex-start;justify-content:center;padding-top:80px";
-  m.innerHTML=`<div style="background:#0a0520;border:2px solid #00f2fe;border-radius:12px;width:90%;max-width:400px;overflow:hidden">
-    <input id="paletteInput" style="width:100%;background:transparent;border:none;outline:none;padding:14px;color:#00f2fe;font-size:13px;border-bottom:1px solid #1f1345" placeholder="ابحث..." autofocus>
-    <div id="paletteList" style="max-height:300px;overflow-y:auto"></div>
-  </div>`;
-  document.body.appendChild(m);
-  const render=function(f){
-    const list=document.getElementById("paletteList");
-    list.innerHTML="";
-    cmds.filter(c=>!f||c.n.includes(f)).forEach(c=>{
-      const d=document.createElement("div");
-      d.style.cssText="padding:12px;cursor:pointer;color:#e2e8f0;font-size:12px;border-bottom:1px solid #1f1345";
-      d.textContent=c.n;
-      d.onclick=()=>{m.remove();c.a();};
-      list.appendChild(d);
-    });
-  };
-  render("");
-  document.getElementById("paletteInput").oninput=e=>render(e.target.value);
-  m.onclick=e=>{if(e.target===m)m.remove();};
-}
-
-/* ═══ QR ═══ */
-function showQR(){
-  if(!myPeerId)return;
-  $("qrModal").classList.remove("hidden");
-  $("qrText").textContent=myPeerId;
-  if(typeof QRCode!=="undefined")QRCode.toCanvas($("qrCanvas"),myPeerId,{width:180,margin:1});
-}
-function closeQR(){$("qrModal").classList.add("hidden");}
-
-/* ═══ Matrix ═══ */
-function startMatrix(){
-  const c=$("matrix"),x=c.getContext("2d");
-  function resize(){c.width=innerWidth;c.height=innerHeight;}
-  resize();addEventListener("resize",resize);
-  const chars="V503-SECURE-∞";
-  let drops=Array(Math.floor(c.width/16)).fill(1);
-  setInterval(()=>{
-    x.fillStyle="rgba(3,0,20,.08)";x.fillRect(0,0,c.width,c.height);
-    x.fillStyle="#00f2fe";x.font="12px monospace";
-    for(let i=0;i<drops.length;i++){
-      x.fillText(chars[Math.floor(Math.random()*chars.length)],i*16,drops[i]*16);
-      if(drops[i]*16>c.height&&Math.random()>.975)drops[i]=0;
-      drops[i]++;
+    if(v)v.remove();
+    delete remoteStreams[call.peer];
+    if(!Object.keys(remoteStreams).length){
+      $("remoteWrap").style.display="none";
+      $("videoPlaceholder").style.display="flex";
+      if(localStream)$("localVideo").style.display="block";
     }
-  },60);
+  });
 }
+function handleOutCall(call,pid){
+  call.on("stream",rs=>{
+    $("remoteWrap").style.display="block";
+    let v=document.getElementById("rem_"+pid);
+    if(!v){
+      v=document.createElement("video");
+      v.id="rem_"+pid;v.autoplay=true;v.playsInline=true;
+      v.style.cssText="width:100%;height:100%;object-fit:cover";
+      $("remoteWrap").appendChild(v);
+      $("videoPlaceholder").style.display="none";
+    }
+    v.srcObject=rs;
+    remoteStreams[pid]=rs;
+  });
+}
+
+/* ═══ Timer ═══ */
+setInterval(()=>{
+  if(isStreaming){
+    const s=Math.floor((Date.now()-streamStart)/1000);
+    $("sDur").textContent=String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+  }
+},1000);
+
+/* ═══ Nickname sync ═══ */
+setInterval(()=>{
+  const n=$("nickname").value.trim();
+  if(n&&n!==nickname){nickname=n;localStorage.setItem("lafi_nick",n);}
+},2000);
 
 /* ═══ Boot ═══ */
 window.addEventListener("load",async()=>{
-  startMatrix();
-  // theme من localStorage
-  const savedTheme=localStorage.getItem("theme");
-  if(savedTheme&&THEMES.includes(savedTheme)){
-    themeIdx=THEMES.indexOf(savedTheme);
-    if(savedTheme)document.body.classList.add(savedTheme);
-  }
-  // nickname
-  $("nickname").value=myNickname;
   await openDB();
+  blockchain=await dbAll("blocks");
+  blockchain.sort((a,b)=>a.index-b.index);
+  if(!blockchain.length){
+    const b={index:0,ts:Date.now(),data:"GENESIS — لافي منير",prev:"0",hash:await sha256("genesis")};
+    blockchain=[b];await dbPut("blocks",b);
+  }
+  $("bCount").textContent=blockchain.length;
+  $("chainLen").textContent=blockchain.length+" بلوك";
+  initVFS();initUsers();
+  $("nickname").value=nickname;
+  renderChain();renderUsers();renderVFS();updatePrompt();
+  printTerm("╔══════════════════════════╗","#ffd700");
+  printTerm("║  LAFI OMNI-SCREEN ∞     ║","#ffd700");
+  printTerm("╚══════════════════════════╝","#ffd700");
+  printTerm("اكتب help للأوامر","#00f2fe");
   await initPeer();
-  setTimeout(()=>showNotif("🛡️ V503 صادق ومُحصَّن — جاهز"),1500);
+  notif("🌌 جاهز");
 });
-
-// Expose
-Object.assign(window,{copyPeerId,saveNickname,manualConnect,sendMessage,handleFile,
-  promptCreateRoom,closeRoomModal,createRoom,toggleTheme,openCommandPalette,
-  showQR,closeQR,callVoice,callVideo,shareScreen,endCall,showCinema});
 </script>
 </body>
 </html>
