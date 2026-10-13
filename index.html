@@ -20,7 +20,7 @@ function checkDomain() {
   if (window.location.protocol === 'file:') return;
   const allowed = ALLOWED_DOMAINS.some(d => host === d || host.endsWith('.' + d) || host.endsWith('.github.io') || host.endsWith('.vercel.app') || host.endsWith('.netlify.app'));
   if (!allowed) {
-    document.body.innerHTML = '<div style="color:#ff0844;font-family:monospace;padding:50px;text-align:center;background:#030008;min-height:100vh;display:flex;align-items:center;justify-content:center;"><div><h1>🚫 ACCESS DENIED</h1><p style="margin-top:20px;">هذا الكود مرخّص فقط للنطاقات المعتمدة.</p><p style="color:#ffd700;margin-top:10px;">Hostname: ' + host + '</p><p style="color:#38bdf8;margin-top:20px;">© لافي منير 2026</p></div></div>';
+    document.body.innerHTML = '<div style="color:#ff0844;font-family:monospace;padding:50px;text-align:center;background:#030008;min-height:100vh;display:flex;align-items:center;justify-content:center;"><div><h1>🚫 ACCESS DENIED</h1><p style="margin-top:20px;">© لافي منير 2026</p></div></div>';
     throw new Error('Domain not authorized');
   }
 }
@@ -30,7 +30,7 @@ checkDomain();
 const LICENSE_EXPIRY = new Date('2027-12-31T23:59:59').getTime();
 const LICENSE_START = new Date('2025-01-01').getTime();
 if (Date.now() > LICENSE_EXPIRY || Date.now() < LICENSE_START) {
-  document.body.innerHTML = '<div style="color:#ff0844;font-family:monospace;padding:50px;text-align:center;background:#030008;min-height:100vh;display:flex;align-items:center;justify-content:center;"><div><h1>⏰ LICENSE EXPIRED</h1><p style="margin-top:20px;">© لافي منير 2026</p></div></div>';
+  document.body.innerHTML = '<div style="color:#ff0844;font-family:monospace;padding:50px;text-align:center;background:#030008;min-height:100vh;display:flex;align-items:center;justify-content:center;"><div><h1>⏰ LICENSE EXPIRED</h1></div></div>';
   throw new Error('License expired');
 }
 
@@ -43,17 +43,6 @@ if (Date.now() > LICENSE_EXPIRY || Date.now() < LICENSE_START) {
     if (e.ctrlKey && ['u','U','s','S','a','A','p','P'].includes(e.key)) { e.preventDefault(); return false; }
   });
   document.addEventListener('dragstart', e => e.preventDefault());
-  let devtoolsOpen = false;
-  setInterval(() => {
-    const wd = window.outerWidth - window.innerWidth;
-    const hd = window.outerHeight - window.innerHeight;
-    if (wd > 160 || hd > 160) {
-      if (!devtoolsOpen) {
-        devtoolsOpen = true;
-        document.body.innerHTML = '<div style="color:#ff0844;font-family:monospace;padding:50px;text-align:center;background:#030008;min-height:100vh;display:flex;align-items:center;justify-content:center;"><div><h1>🛡️ SECURITY ALERT</h1><p style="margin-top:20px;">تم اكتشاف أدوات المطور.</p></div></div>';
-      }
-    } else devtoolsOpen = false;
-  }, 1000);
 })();
 
 /* ═══ منع النسخ ═══ */
@@ -100,7 +89,6 @@ canvas { width: 100%; height: 110px; background: #020005; border: 1px solid rgba
 .editor-area { flex: 1; background: #000; color: #00ff66; border: 1px solid #ffd700; border-radius: 6px; padding: 10px; margin-top: 8px; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.5; resize: none; outline: none; width: 100%; user-select: text; }
 .editor-help { color: #ffd700; font-size: 10px; margin-top: 6px; text-align: center; }
 .credit { color: #ffd700; font-size: 10px; margin-top: 8px; text-align: center; opacity: 0.8; }
-/* ═══ تحسينات الجوال ═══ */
 @media (max-width: 800px) {
   body { padding: 5px; }
   .terminal-container { padding: 8px; height: 98vh; border-radius: 12px; }
@@ -126,7 +114,7 @@ document.getElementById('app').innerHTML = `
 <div class="terminal-container">
   <div class="top-bar">
     <span>🌌 لافي منير — SOVEREIGN OS v27.0</span>
-    <span class="status-badge" id="kernelStatus">SECURE 🟢</span>
+    <span class="status-badge root" id="kernelStatus">ROOT 👑</span>
   </div>
   <div class="main-stage">
     <div class="visual-side">
@@ -145,15 +133,15 @@ document.getElementById('app').innerHTML = `
     <div class="term-side">
       <div class="terminal-body" id="termBody"></div>
       <div class="sys-stat">
-        <span class="stat-item" id="userStat">User: --</span>
-        <span class="stat-item" id="uidStat">UID: --</span>
-        <span class="stat-item" id="pathStat">PWD: /</span>
+        <span class="stat-item root" id="userStat">User: root</span>
+        <span class="stat-item root" id="uidStat">UID: 0 (GID 0)</span>
+        <span class="stat-item" id="pathStat">PWD: /root</span>
         <span class="stat-item" id="timeStat">--:--:--</span>
         <span class="stat-item" id="chainStat">Blocks: 1</span>
         <span class="stat-item edit" id="editStat" style="display:none;">EDITING ✏️</span>
       </div>
       <div class="cmd-line">
-        <span class="prompt" id="promptText">login:</span>
+        <span class="prompt" id="promptText">root@lafi:/root#</span>
         <input type="text" class="cmd-input" id="cmdInput" autofocus autocomplete="off" spellcheck="false" autocapitalize="off">
       </div>
     </div>
@@ -191,7 +179,8 @@ let auditEvents = [];
 let suPending = null;
 let terminalBuffer = [];
 
-let session = { uid: null, username: null, loginState: "AWAITING_USERNAME", pendingUsername: null };
+// ✅ جلسة مفتوحة تلقائياً بدون كلمة سر
+let session = { uid: 0, username: "root", loginState: "LOGGED_IN", pendingUsername: null };
 let nanoState = { active: false, filename: null, originalContent: "", fullPath: null, dirty: false };
 
 const passwdDB = new Map();
@@ -227,7 +216,7 @@ async function addBlock(data) {
   blockchain.push(block);
   $('chainStat').textContent = 'Blocks: ' + blockchain.length;
   addAuditEvent('INFO', 'Block #' + block.index + ': ' + data.substring(0, 20));
-  try { localStorage.setItem('sovereign_chain_v27', JSON.stringify(blockchain)); } catch (e) {}
+  try { localStorage.setItem('sovereign_chain_v27_nopass', JSON.stringify(blockchain)); } catch (e) {}
   return block;
 }
 
@@ -356,8 +345,8 @@ async function initSystemState() {
   await createGroup("sudo", 27, []);
   await createGroup("wheel", 10, []);
   await createGroup("users", 100, []);
-  await createUser("root", 0, 0, "/root", "/bin/bash", "root", ["root"]);
-  await createUser("lafi", 1000, 100, "/home/lafi", "/bin/bash", "lafi123", ["users"]);
+  await createUser("root", 0, 0, "/root", "/bin/bash", "", ["root"]);
+  await createUser("lafi", 1000, 100, "/home/lafi", "/bin/bash", "", ["users"]);
   groupDB.get("sudo").members.push("lafi");
 
   VFS["/home/lafi/workspace"] = { type: "dir", children: [], owner: "lafi", group: 100, mode: "rwxr-xr-x" };
@@ -372,14 +361,14 @@ async function initSystemState() {
   const genesisData = "GENESIS_LAFI_MUNIR_V27";
   const gh = await computeSHA256("0000000000" + genesisData + 1711000000000);
   try {
-    const saved = localStorage.getItem('sovereign_chain_v27');
+    const saved = localStorage.getItem('sovereign_chain_v27_nopass');
     if (saved) {
       const p = JSON.parse(saved);
       if (Array.isArray(p) && p.length > 0 && p[0].hash) blockchain = p;
       else throw new Error("invalid");
     } else {
       blockchain = [{ index: 0, timestamp: 1711000000000, data: genesisData, prevHash: "0000000000", hash: gh }];
-      localStorage.setItem('sovereign_chain_v27', JSON.stringify(blockchain));
+      localStorage.setItem('sovereign_chain_v27_nopass', JSON.stringify(blockchain));
     }
   } catch (e) {
     blockchain = [{ index: 0, timestamp: 1711000000000, data: genesisData, prevHash: "0000000000", hash: gh }];
@@ -422,23 +411,17 @@ function printTerm(text, color, capture) {
   $('termBody').scrollTop = $('termBody').scrollHeight;
 }
 function updatePrompt() {
-  const p = $('promptText'), badge = $('kernelStatus');
-  if (nanoState.active) { p.textContent = "nano>"; p.style.color = "#ffd700"; badge.textContent = "EDITING ✏️"; badge.className = "status-badge editing"; return; }
-  if (session.loginState === "AWAITING_USERNAME") { p.textContent = "login:"; p.style.color = "#38bdf8"; badge.textContent = "LOCKED 🔒"; badge.className = "status-badge"; }
-  else if (session.loginState === "AWAITING_PASSWORD") { p.textContent = "Password:"; p.style.color = "#ffd700"; badge.textContent = "AUTH..."; badge.className = "status-badge"; }
-  else {
-    const sym = isRoot() ? "#" : "$";
-    p.textContent = session.username + "@lafi:" + currentPath + sym;
-    p.style.color = isRoot() ? "#ff007f" : "#38bdf8";
-    badge.textContent = isRoot() ? "ROOT 👑" : "USER 🟢";
-    badge.className = isRoot() ? "status-badge root" : "status-badge";
-  }
+  const p = $('promptText');
+  if (nanoState.active) { p.textContent = "nano>"; p.style.color = "#ffd700"; return; }
+  const sym = isRoot() ? "#" : "$";
+  p.textContent = session.username + "@lafi:" + currentPath + sym;
+  p.style.color = isRoot() ? "#ff007f" : "#38bdf8";
 }
 function updateStats() {
   const u = getCurrentUser();
-  $('userStat').textContent = 'User: ' + (session.username || '--');
+  $('userStat').textContent = 'User: ' + session.username;
   $('uidStat').textContent = u ? ('UID: ' + u.uid + ' (GID ' + u.gid + ')') : 'UID: --';
-  $('pathStat').textContent = 'PWD: ' + (session.loginState === "LOGGED_IN" ? currentPath : "/");
+  $('pathStat').textContent = 'PWD: ' + currentPath;
   $('userStat').className = isRoot() ? "stat-item root" : "stat-item";
   $('uidStat').className = isRoot() ? "stat-item root" : "stat-item";
   $('editStat').style.display = nanoState.active ? "" : "none";
@@ -458,78 +441,48 @@ setInterval(() => {
   $('timeStat').textContent = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ':' + String(d.getSeconds()).padStart(2, '0');
 }, 1000);
 
-/* ═══ Login ═══ */
-function showLoginScreen() {
+/* ═══ Welcome ═══ */
+function showWelcome() {
   $('termBody').innerHTML = "";
   printTerm("╔══════════════════════════════════════════════════╗", "#00f2fe");
   printTerm("║   لافي منير — SOVEREIGN OS v27.0                 ║", "#00f2fe");
-  printTerm("║   🔐 Protected Build | All Rights Reserved       ║", "#00f2fe");
+  printTerm("║   🔓 No Password Required | Welcome!             ║", "#00f2fe");
   printTerm("╚══════════════════════════════════════════════════╝", "#00f2fe");
   printTerm("", "#fff");
-  printTerm("💡 للدخول:", "#ffd700");
-  printTerm("   👤 root / 🔑 root", "#ff007f");
-  printTerm("   👤 lafi / 🔑 lafi123", "#38bdf8");
+  printTerm("🎉 مرحباً لافي منير!", "#00ff66");
+  printTerm("You are logged in as: root (UID 0)", "#00ff66");
+  printTerm("⚠️  أنت تعمل بصلاحيات الجذر المطلقة.", "#ffd700");
   printTerm("", "#fff");
-  session.loginState = "AWAITING_USERNAME";
-  session.username = null; session.uid = null;
+  printTerm("📋 أوامر مفيدة:", "#d946ef");
+  printTerm("   help              ← قائمة الأوامر", "#38bdf8");
+  printTerm("   ls                ← عرض الملفات", "#38bdf8");
+  printTerm("   ./welcome.sh      ← تشغيل سكربت الترحيب", "#38bdf8");
+  printTerm("   cat readme.txt    ← قراءة ملف", "#38bdf8");
+  printTerm("   clear             ← مسح الشاشة", "#38bdf8");
+  printTerm("", "#fff");
+  printTerm("✨ النظام جاهز للاستخدام!", "#ffd700");
+  printTerm("", "#fff");
   updateStats();
-}
-async function handleLoginInput(value) {
-  if (session.loginState === "AWAITING_USERNAME") {
-    const u = value.trim().toLowerCase();
-    if (!u || !passwdDB.has(u)) { printTerm("Login incorrect", "#ff0844"); addAuditEvent("WARN", "Failed login: '" + u + "'"); return; }
-    session.pendingUsername = u; session.loginState = "AWAITING_PASSWORD"; updateStats();
-  } else if (session.loginState === "AWAITING_PASSWORD") {
-    const u = session.pendingUsername;
-    if (await verifyPassword(u, value)) {
-      session.username = u; session.uid = passwdDB.get(u).uid;
-      session.loginState = "LOGGED_IN"; session.pendingUsername = null;
-      currentPath = getCurrentUser().home;
-      shellVars = { USER: u, HOME: currentPath, PWD: currentPath, SHELL: "/bin/bash" };
-      addAuditEvent("INFO", "User '" + u + "' logged in");
-      await addBlock("LOGIN: " + u);
-      printTerm("", "#fff");
-      printTerm("مرحباً بك في نظام لافي منير", "#00ff66");
-      printTerm("You are logged in as: " + u + " (UID " + session.uid + ")", "#00ff66");
-      if (u === "root") printTerm("⚠️  أنت تعمل بصلاحيات الجذر.", "#ffd700");
-      printTerm("", "#fff");
-      printTerm("اكتب 'help' أو 'مساعدة'", "#d946ef");
-      printTerm("جرّب: ./welcome.sh", "#38bdf8");
-      printTerm("", "#fff");
-      updateStats(); renderUserList();
-    } else {
-      printTerm("Login incorrect", "#ff0844");
-      addAuditEvent("ERROR", "Failed password for '" + u + "'");
-      session.loginState = "AWAITING_USERNAME"; session.pendingUsername = null; updateStats();
-    }
-  }
-}
-async function performLogout() {
-  if (session.username) { addAuditEvent("INFO", "User '" + session.username + "' logged out"); await addBlock("LOGOUT: " + session.username); }
-  session.username = null; session.uid = null;
-  session.loginState = "AWAITING_USERNAME";
-  currentPath = "/";
-  showLoginScreen();
+  renderUserList();
+  addAuditEvent("INFO", "User 'root' auto-logged in");
 }
 
-/* ═══ su + sudo ═══ */
-async function performSu(targetUsername, password) {
+/* ═══ su + sudo (بدون كلمة مرور) ═══ */
+async function performSu(targetUsername) {
   if (!passwdDB.has(targetUsername)) return { ok: false, error: "su: user not found" };
-  if (!(await verifyPassword(targetUsername, password))) {
-    addAuditEvent("ERROR", "su FAILED: " + session.username + " -> " + targetUsername);
-    return { ok: false, error: "su: Authentication failure" };
-  }
   addAuditEvent("WARN", "su: " + session.username + " -> " + targetUsername);
   await addBlock("SU: " + session.username + " -> " + targetUsername);
   session.username = targetUsername;
   session.uid = passwdDB.get(targetUsername).uid;
   currentPath = getCurrentUser().home;
-  shellVars.USER = targetUsername; shellVars.HOME = getCurrentUser().home; shellVars.PWD = currentPath;
+  shellVars.USER = targetUsername;
+  shellVars.HOME = getCurrentUser().home;
+  shellVars.PWD = currentPath;
   renderUserList(); updateStats();
   return { ok: true };
 }
 async function performSudo(cmdLine) {
-  if (!canSudo()) { addAuditEvent("ERROR", "sudo DENIED for '" + session.username + "'"); return { ok: false, error: session.username + " is not in sudoers file." }; }
+  if (!canSudo()) { addAuditEvent("ERROR", "sudo DENIED"); return { ok: false, error: session.username + " is not in sudoers file." }; }
   const origUser = session.username, origUID = session.uid, origHome = getCurrentUser().home;
   addAuditEvent("WARN", "sudo: '" + origUser + "' -> " + cmdLine.substring(0, 30));
   await addBlock("SUDO: " + origUser + " -> " + cmdLine);
@@ -784,7 +737,7 @@ async function executeOneCommand(cmd, args, opts) {
       out(" 🐚 bash: VAR=val | if/then/fi | for/do/done", "#38bdf8");
       out(" 🔗 Pipes: cmd1 | cmd2   Redirection: > >> <", "#38bdf8");
       out(" 📝 nano | 🐚 ./script.sh | 📊 audit", "#38bdf8");
-      out(" 👤 whoami, id, su, sudo, useradd, passwd", "#38bdf8");
+      out(" 👤 whoami, id, su, sudo, useradd", "#38bdf8");
       out(" 📁 ls, cd, cat, write, rm, mkdir", "#38bdf8");
       out(" 🔎 grep, wc, head, tail, sort, uniq", "#38bdf8");
       out(" 🔒 encrypt, decrypt, ps, sysinfo", "#38bdf8");
@@ -798,13 +751,24 @@ async function executeOneCommand(cmd, args, opts) {
       out("uid=" + u.uid + "(" + u.username + ") gid=" + u.gid + " groups=" + gs.join(","), "#00ff66"); break;
     }
     case "groups": out(getUserGroups(session.username).join(" "), "#00ff66"); break;
-    case "logout": case "exit": if (!cap) await performLogout(); break;
+    case "logout": case "exit":
+      if (!cap) {
+        session.username = "root"; session.uid = 0;
+        currentPath = "/root";
+        addAuditEvent("INFO", "Logout requested - auto re-login as root");
+        printTerm("✅ Auto re-login as root", "#00ff66");
+        updateStats();
+      }
+      break;
     case "env": case "set": Object.keys(shellVars).forEach(k => out(k + "=" + shellVars[k], "#38bdf8")); break;
     case "su": {
       const t = args[0];
       if (!t) { out("su: usage: su <user>", "#ff0844"); break; }
       if (!passwdDB.has(t)) { out("su: user not found", "#ff0844"); break; }
-      if (!cap) { printTerm("Password for " + t + ":", "#ffd700"); suPending = { targetUsername: t }; $('cmdInput').type = "password"; }
+      // بدون كلمة مرور
+      const r = await performSu(t);
+      if (r.ok) out("✅ Now: " + session.username, "#00ff66");
+      else out("su: " + r.error, "#ff0844");
       break;
     }
     case "sudo": {
@@ -823,12 +787,12 @@ async function executeOneCommand(cmd, args, opts) {
       if (!username) { out("useradd: username required", "#ff0844"); break; }
       if (passwdDB.has(username)) { out("useradd: exists", "#ff0844"); break; }
       if (uid === null) { uid = 1000; let taken = true; while (taken) { taken = false; passwdDB.forEach(u => { if (u.uid === uid) taken = true; }); if (taken) uid++; } }
-      const r = await createUser(username, uid, 100, "/home/" + username, "/bin/bash", "changeme", groups);
+      const r = await createUser(username, uid, 100, "/home/" + username, "/bin/bash", "", groups);
       if (!r.ok) { out("useradd: " + r.error, "#ff0844"); break; }
       if (VFS["/home"]) VFS["/home"].children.push(username);
       addAuditEvent("WARN", "New user '" + username + "'");
       await addBlock("USERADD: " + username);
-      out("✅ User '" + username + "' created (UID " + uid + ", pass: changeme)", "#00ff66");
+      out("✅ User '" + username + "' created (UID " + uid + ", no password)", "#00ff66");
       renderUserList(); break;
     }
     case "userdel": {
@@ -840,11 +804,7 @@ async function executeOneCommand(cmd, args, opts) {
       out("✅ User deleted", "#00ff66"); renderUserList(); break;
     }
     case "passwd": {
-      const t = args[0] || session.username;
-      if (t !== session.username && !isRoot()) { out("passwd: Permission denied", "#ff0844"); break; }
-      if (!passwdDB.has(t)) { out("passwd: user not found", "#ff0844"); break; }
-      if (!cap) { printTerm("Changing password for " + t, "#38bdf8"); suPending = { targetUsername: t, mode: "passwd" }; $('cmdInput').type = "password"; }
-      break;
+      out("passwd: disabled in this edition (no password)", "#ffd700"); break;
     }
     case "ls": {
       const target = args.find(a => !a.startsWith("-")) || currentPath;
@@ -877,7 +837,7 @@ async function executeOneCommand(cmd, args, opts) {
       if (fp === "/etc/group") { groupDB.forEach(g => out(g.name + ":x:" + g.gid + ":" + g.members.join(","), "#00ff66")); break; }
       if (fp === "/etc/shadow") {
         if (!isRoot()) { out("cat: /etc/shadow: Permission denied", "#ff0844"); break; }
-        shadowDB.forEach((s, n) => out(n + ":$6$" + s.hash.substring(0, 20) + "...:...", "#ff007f")); break;
+        shadowDB.forEach((s, n) => out(n + ":*:*:*:*:*:*", "#ff007f")); break;
       }
       if (!VFS[fp] || VFS[fp].type !== "file") { out("cat: no such file", "#ff0844"); break; }
       if (!checkPermission(VFS[fp], "read")) { out("cat: Permission denied", "#ff0844"); break; }
@@ -968,6 +928,7 @@ async function executeOneCommand(cmd, args, opts) {
       out("Privilege  : " + (isRoot() ? "ROOT 👑" : canSudo() ? "SUDO-capable" : "User"), isRoot() ? "#ff007f" : "#38bdf8");
       out("Blocks     : " + blockchain.length, "#00ff66");
       out("Audit      : " + auditEvents.length + " events", "#38bdf8");
+      out("Edition    : NO PASSWORD (Auto-login)", "#ffd700");
       out("Copyright  : © لافي منير 2026", "#ffd700");
       break;
     case "audit": {
@@ -1076,12 +1037,12 @@ $('editorOverlay').addEventListener('keydown', e => {
   else if (e.ctrlKey && e.key === 'k') { e.preventDefault(); $('editorArea').value = ""; nanoState.dirty = true; }
 });
 $('cmdInput').addEventListener('keydown', async e => {
-  if (e.key === 'ArrowUp' && session.loginState === "LOGGED_IN" && !nanoState.active) {
+  if (e.key === 'ArrowUp' && !nanoState.active) {
     e.preventDefault();
     if (historyIndex > 0) { historyIndex--; $('cmdInput').value = commandHistory[historyIndex]; }
     return;
   }
-  if (e.key === 'ArrowDown' && session.loginState === "LOGGED_IN" && !nanoState.active) {
+  if (e.key === 'ArrowDown' && !nanoState.active) {
     e.preventDefault();
     if (historyIndex < commandHistory.length - 1) { historyIndex++; $('cmdInput').value = commandHistory[historyIndex]; }
     else { historyIndex = commandHistory.length; $('cmdInput').value = ""; }
@@ -1090,16 +1051,7 @@ $('cmdInput').addEventListener('keydown', async e => {
   if (e.key !== 'Enter' || nanoState.active) return;
   const val = $('cmdInput').value;
   $('cmdInput').value = "";
-  if (suPending) {
-    const p = suPending; suPending = null; $('cmdInput').type = "text";
-    if (p.mode === "passwd") { await changePassword(p.targetUsername, val); addAuditEvent("WARN", "Password changed"); await addBlock("PASSWD: " + p.targetUsername); printTerm("✅ Password changed", "#00ff66"); return; }
-    else { const r = await performSu(p.targetUsername, val); if (!r.ok) printTerm(r.error, "#ff0844"); else printTerm("✅ Now: " + session.username, "#00ff66"); return; }
-  }
-  if (session.loginState !== "LOGGED_IN") {
-    if (session.loginState === "AWAITING_USERNAME") { printTerm("login: " + val, "#38bdf8"); await handleLoginInput(val); }
-    else if (session.loginState === "AWAITING_PASSWORD") { printTerm("Password: ••••••••", "#38bdf8"); await handleLoginInput(val); }
-    return;
-  }
+  if (!val.trim()) return;
   printTerm($('promptText').textContent + " " + val, "#00f2fe");
   commandHistory.push(val); historyIndex = commandHistory.length;
   await runPipeline(val);
@@ -1127,8 +1079,13 @@ $('exportAuditBtn').addEventListener('click', () => {
 
 /* ═══ Boot ═══ */
 (async function boot() {
-  try { await initSystemState(); addAuditEvent("INFO", "System boot v27.0 — لافي منير"); showLoginScreen(); }
-  catch (err) { document.body.innerHTML = '<div style="color:#ff0844;padding:20px;font-family:monospace;">Boot failed: ' + err.message + '</div>'; }
+  try {
+    await initSystemState();
+    addAuditEvent("INFO", "System boot v27.0 — لافي منير");
+    showWelcome();  // ✅ مباشرة بدون تسجيل دخول
+  } catch (err) {
+    document.body.innerHTML = '<div style="color:#ff0844;padding:20px;font-family:monospace;">Boot failed: ' + err.message + '</div>';
+  }
 })();
 
 })();
