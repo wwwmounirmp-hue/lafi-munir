@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>لافي منير — SOVEREIGN OS v35.0 APEX 🛰️</title>
+<title>لافي منير — SOVEREIGN OS v36.0 ULTIMATE APEX 🛰️⚡</title>
 <meta name="theme-color" content="#030014">
 <meta name="author" content="لافي منير">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -30,13 +30,13 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', mono
 .neon-text-cyan { color: #00f2fe; text-shadow: 0 0 8px rgba(0,242,254,0.6); }
 .neon-text-magenta { color: #ff007f; text-shadow: 0 0 8px rgba(255,0,127,0.6); }
 .neon-text-gold { color: #ffd700; text-shadow: 0 0 8px rgba(255,215,0,0.6); }
-#matrixCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.15; pointer-events: none; }
+#matrixCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: auto; }
 .terminal-input { background: transparent; outline: none; border: none; color: #00ff66; width: 100%; font-family: inherit; }
 .terminal-output { white-space: pre-wrap; word-break: break-word; user-select: text; -webkit-user-select: text; }
 @media (max-width: 900px) {
   .main-grid { grid-template-columns: 1fr !important; }
-  .side-panel { display: none; }
-  .side-panel.mobile-active { display: flex; }
+  .side-panel { display: none !important; }
+  .side-panel.mobile-active { display: flex !important; }
 }
 .modal-overlay { position: fixed; inset: 0; background: rgba(3,0,20,0.85); z-index: 100; display: none; align-items: center; justify-content: center; padding: 15px; backdrop-filter: blur(10px); }
 .modal-overlay.active { display: flex; }
@@ -54,7 +54,7 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', mono
       <i class="fa-solid fa-shield-halved"></i>
       <span class="hidden sm:inline">SOVEREIGN OS</span>
     </span>
-    <span class="bg-cyber-cyan/10 text-cyber-cyan text-[10px] md:text-xs px-1.5 py-0.5 rounded border border-cyber-cyan/30 font-bold">v35.0</span>
+    <span class="bg-cyber-cyan/10 text-cyber-cyan text-[10px] md:text-xs px-1.5 py-0.5 rounded border border-cyber-cyan/30 font-bold">v36.0 ULTIMATE</span>
     <span class="text-[10px] text-gray-400 hidden md:inline">| لافي منير</span>
   </div>
   <div class="flex items-center gap-1.5 md:gap-3 text-[10px] md:text-xs">
@@ -184,15 +184,16 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', mono
 "use strict";
 
 /* ═══════════════════════════════════════════════════════════
-   SOVEREIGN OS v35.0 APEX — CORE ENGINE
+   SOVEREIGN OS v36.0 ULTIMATE APEX — FULL SYSTEM ENGINE
    ═══════════════════════════════════════════════════════════ */
 
-/* ─── State ─── */
 let currentUser = "root";
 let currentPath = "/root";
 let session = { uid: 0, username: "root" };
 let vfs = {};
-let userShadows = {};
+let passwdDB = new Map();
+let shadowDB = new Map();
+let groupDB = new Map();
 let auditLedger = [];
 let commandHistory = [];
 let historyIndex = -1;
@@ -201,11 +202,9 @@ let suPending = null;
 let terminalBuffer = [];
 let idb = null;
 
-/* Crypto state */
 let cryptoKeyObj = null;
 let rawPasswordSecret = "SOVEREIGN_APEX_2026";
 
-/* Peer state */
 let peer = null;
 let myPeerId = null;
 let dataConnections = {};
@@ -218,18 +217,13 @@ let isMicOn = true;
 let isCamOn = true;
 let isScreenSharing = false;
 let pendingFileChunks = {};
-let callLog = [];
-
-/* Nano state */
 let currentNanoPath = null;
 
-/* ─── Utility ─── */
 const $ = id => document.getElementById(id);
 const termOutput = $("terminalOutput");
 const termInput = $("terminalInput");
 
-function notify(msg, ms) {
-  ms = ms || 3000;
+function notify(msg, ms = 3000) {
   const el = $("notification");
   el.textContent = msg;
   el.classList.remove("hidden");
@@ -239,8 +233,7 @@ function notify(msg, ms) {
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-function printToTerm(text, color) {
-  color = color || "text-gray-300";
+function printToTerm(text, color = "text-gray-300") {
   const div = document.createElement("div");
   div.className = "font-mono " + color;
   div.innerText = text;
@@ -259,12 +252,12 @@ async function deriveCryptoKey(secret) {
     const enc = new TextEncoder();
     const km = await crypto.subtle.importKey("raw", enc.encode(secret), { name: "PBKDF2" }, false, ["deriveKey"]);
     cryptoKeyObj = await crypto.subtle.deriveKey(
-      { name: "PBKDF2", salt: enc.encode("SOVEREIGN_APEX_SALT"), iterations: 100000, hash: "SHA-256" },
+      { name: "PBKDF2", salt: enc.encode("SOVEREIGN_SALT"), iterations: 100000, hash: "SHA-256" },
       km, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]
     );
     $("cryptoStatus").textContent = "AES-GCM-256";
     $("cryptoStatus").className = "text-cyber-green font-bold";
-  } catch (e) { console.error(e); }
+  } catch (e) {}
 }
 async function encryptPayload(text) {
   try {
@@ -273,16 +266,11 @@ async function encryptPayload(text) {
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const enc_data = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, cryptoKeyObj, enc.encode(text));
     const combined = new Uint8Array(iv.length + enc_data.byteLength);
-    combined.set(iv, 0);
-    combined.set(new Uint8Array(enc_data), iv.length);
-    let bin = "";
-    for (let i = 0; i < combined.length; i++) bin += String.fromCharCode(combined[i]);
+    combined.set(iv, 0); combined.set(new Uint8Array(enc_data), iv.length);
+    let bin = ""; for (let i = 0; i < combined.length; i++) bin += String.fromCharCode(combined[i]);
     return "AES256:" + btoa(bin);
   } catch (e) {
-    let bin = "";
-    const enc = new TextEncoder();
-    const data = enc.encode(text);
-    const k = enc.encode(rawPasswordSecret);
+    let bin = ""; const enc = new TextEncoder(); const data = enc.encode(text); const k = enc.encode(rawPasswordSecret);
     for (let i = 0; i < data.length; i++) bin += String.fromCharCode(data[i] ^ k[i % k.length]);
     return "XOR:" + btoa(bin);
   }
@@ -290,48 +278,24 @@ async function encryptPayload(text) {
 async function decryptPayload(cipher) {
   try {
     if (cipher.startsWith("XOR:")) {
-      const bin = atob(cipher.slice(4));
-      const enc = new TextEncoder();
-      const k = enc.encode(rawPasswordSecret);
-      let out = "";
+      const bin = atob(cipher.slice(4)); const enc = new TextEncoder(); const k = enc.encode(rawPasswordSecret); let out = "";
       for (let i = 0; i < bin.length; i++) out += String.fromCharCode(bin.charCodeAt(i) ^ k[i % k.length]);
       return out;
     }
     if (!cipher.startsWith("AES256:")) return cipher;
     if (!cryptoKeyObj) await deriveCryptoKey(rawPasswordSecret);
-    const raw = atob(cipher.slice(7));
-    const combined = new Uint8Array(raw.length);
+    const raw = atob(cipher.slice(7)); const combined = new Uint8Array(raw.length);
     for (let i = 0; i < raw.length; i++) combined[i] = raw.charCodeAt(i);
-    const iv = combined.slice(0, 12);
-    const ct = combined.slice(12);
+    const iv = combined.slice(0, 12); const ct = combined.slice(12);
     const dec = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, cryptoKeyObj, ct);
     return new TextDecoder().decode(dec);
   } catch (e) { return "[فشل فك التشفير - مفتاح خاطئ]"; }
 }
 
-/* ─── XOR (legacy) ─── */
-function xorCipher(text, key) {
-  const t = new TextEncoder().encode(text);
-  const k = new TextEncoder().encode(key);
-  let bin = "";
-  for (let i = 0; i < t.length; i++) bin += String.fromCharCode(t[i] ^ k[i % k.length]);
-  return "XOR:" + btoa(bin);
-}
-function xorDecipher(c, key) {
-  try {
-    if (!c.startsWith("XOR:")) return c;
-    const bin = atob(c.slice(4));
-    const k = new TextEncoder().encode(key);
-    let out = "";
-    for (let i = 0; i < bin.length; i++) out += String.fromCharCode(bin.charCodeAt(i) ^ k[i % k.length]);
-    return out;
-  } catch (e) { return null; }
-}
-
 /* ─── IndexedDB ─── */
 function initIndexedDB() {
   return new Promise(resolve => {
-    const req = indexedDB.open("SovereignOS_v35", 1);
+    const req = indexedDB.open("SovereignOS_v36", 1);
     req.onupgradeneeded = e => {
       const d = e.target.result;
       if (!d.objectStoreNames.contains("vfs")) d.createObjectStore("vfs");
@@ -346,8 +310,7 @@ async function saveVFSToIDB() {
   if (!idb) return;
   try {
     const tx = idb.transaction("vfs", "readwrite");
-    const s = tx.objectStore("vfs");
-    s.clear();
+    const s = tx.objectStore("vfs"); s.clear();
     for (const [k, v] of Object.entries(vfs)) s.put(v, k);
   } catch (e) {}
 }
@@ -356,17 +319,12 @@ async function loadVFSFromIDB() {
   return new Promise(resolve => {
     try {
       const tx = idb.transaction("vfs", "readonly");
-      const s = tx.objectStore("vfs");
-      const req = s.getAllKeys();
+      const s = tx.objectStore("vfs"); const req = s.getAllKeys();
       req.onsuccess = async () => {
         if (req.result.length === 0) return resolve(null);
         const result = {};
         for (const key of req.result) {
-          result[key] = await new Promise(r => {
-            const rq = s.get(key);
-            rq.onsuccess = () => r(rq.result);
-            rq.onerror = () => r(null);
-          });
+          result[key] = await new Promise(r => { const rq = s.get(key); rq.onsuccess = () => r(rq.result); rq.onerror = () => r(null); });
         }
         resolve(result);
       };
@@ -376,19 +334,14 @@ async function loadVFSFromIDB() {
 }
 async function saveLedgerToIDB() {
   if (!idb) return;
-  try {
-    const tx = idb.transaction("ledger", "readwrite");
-    tx.objectStore("ledger").put(auditLedger, "ledger");
-  } catch (e) {}
+  try { const tx = idb.transaction("ledger", "readwrite"); tx.objectStore("ledger").put(auditLedger, "ledger"); } catch (e) {}
 }
 async function loadLedgerFromIDB() {
   if (!idb) return null;
   return new Promise(resolve => {
     try {
-      const tx = idb.transaction("ledger", "readonly");
-      const req = tx.objectStore("ledger").get("ledger");
-      req.onsuccess = () => resolve(req.result || null);
-      req.onerror = () => resolve(null);
+      const tx = idb.transaction("ledger", "readonly"); const req = tx.objectStore("ledger").get("ledger");
+      req.onsuccess = () => resolve(req.result || null); req.onerror = () => resolve(null);
     } catch (e) { resolve(null); }
   });
 }
@@ -416,21 +369,42 @@ async function verifyBlockchain() {
   return true;
 }
 function renderLedgerUI() {
-  const box = $("ledgerLog");
-  if (!box) return;
+  const box = $("ledgerLog"); if (!box) return;
   box.innerHTML = "";
   auditLedger.slice().reverse().forEach(b => {
     const div = document.createElement("div");
     div.className = "bg-cyber-bg/90 p-1.5 rounded border border-cyber-border space-y-0.5";
-    div.innerHTML = '<div class="flex justify-between text-cyber-gold font-bold text-[9px]">' +
-      '<span>#' + b.index + ' [' + escapeHtml(b.type) + ']</span>' +
-      '<span>' + escapeHtml(b.author) + '</span></div>' +
+    div.innerHTML = '<div class="flex justify-between text-cyber-gold font-bold text-[9px]"><span>#' + b.index + ' [' + escapeHtml(b.type) + ']</span><span>' + escapeHtml(b.author) + '</span></div>' +
       '<div class="text-gray-300 break-all">' + escapeHtml(b.details) + '</div>' +
-      '<div class="text-[8px] text-gray-500 flex justify-between">' +
-      '<span>HASH: ' + b.hash.substring(0, 10) + '...</span>' +
-      '<span>' + new Date(b.timestamp).toLocaleTimeString() + '</span></div>';
+      '<div class="text-[8px] text-gray-500 flex justify-between"><span>HASH: ' + b.hash.substring(0, 10) + '...</span><span>' + new Date(b.timestamp).toLocaleTimeString() + '</span></div>';
     box.appendChild(div);
   });
+}
+
+/* ─── Users & Passwd ─── */
+async function hashPassword(password, salt) {
+  const buf = new TextEncoder().encode(salt + ":" + password + ":SOVEREIGN");
+  const h = await crypto.subtle.digest("SHA-256", buf);
+  return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+function generateSalt() {
+  const arr = new Uint8Array(8); crypto.getRandomValues(arr);
+  return Array.from(arr).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+async function createUser(username, uid, gid, home, shell, password, groups) {
+  groups = groups || [];
+  if (passwdDB.has(username)) return { ok: false };
+  passwdDB.set(username, { username, uid, gid, home, shell });
+  const salt = generateSalt(); const hash = await hashPassword(password || "changeme", salt);
+  shadowDB.set(username, { hash, salt });
+  groups.forEach(g => { if (groupDB.has(g)) { const grp = groupDB.get(g); if (!grp.members.includes(username)) grp.members.push(username); } });
+  if (!vfs[home]) vfs[home] = { type: "dir", owner: username, perm: "rwxr-xr-x", children: [] };
+  await saveVFSToIDB();
+  return { ok: true };
+}
+async function createGroup(name, gid, members) {
+  if (groupDB.has(name)) return;
+  groupDB.set(name, { name, gid, members: members || [] });
 }
 
 /* ─── VFS Init ─── */
@@ -445,10 +419,9 @@ async function initSystemState() {
     vfs = {
       "/": { type: "dir", owner: "root", perm: "rwxr-xr-x", children: ["root","etc","home","bin","var","tmp"] },
       "/root": { type: "dir", owner: "root", perm: "rwx------", children: ["readme.txt","welcome.sh"] },
-      "/root/readme.txt": { type: "file", owner: "root", perm: "rw-r--r--", content: "لافي منير — SOVEREIGN OS v35.0 APEX\n\nاكتب help للأوامر\nأو call للاتصال" },
-      "/etc": { type: "dir", owner: "root", perm: "rwxr-xr-x", children: ["passwd","hosts","motd"] },
+      "/root/readme.txt": { type: "file", owner: "root", perm: "rw-r--r--", content: "لافي منير — SOVEREIGN OS v36.0 ULTIMATE\n\nاكتب help للأوامر\nأو call للاتصال الشبكي" },
+      "/etc": { type: "dir", owner: "root", perm: "rwxr-xr-x", children: ["hosts"] },
       "/etc/hosts": { type: "file", owner: "root", perm: "rw-r--r--", content: "127.0.0.1  localhost\n10.0.0.1  lafi-sovereign.local" },
-      "/etc/motd": { type: "file", owner: "root", perm: "rw-r--r--", content: "لافي منير — Sovereign OS v35.0 APEX" },
       "/home": { type: "dir", owner: "root", perm: "rwxr-xr-x", children: [] },
       "/bin": { type: "dir", owner: "root", perm: "rwxr-xr-x", children: [] },
       "/var": { type: "dir", owner: "root", perm: "rwxr-xr-x", children: [] },
@@ -456,9 +429,15 @@ async function initSystemState() {
     };
     vfs["/root/welcome.sh"] = {
       type: "file", owner: "root", perm: "rwxr-xr-x",
-      content: '#!/bin/bash\necho "مرحباً لافي في SOVEREIGN OS v35.0"\nfor i in 1 2 3; do\n  echo "المرحلة $i"\ndone\necho "اكتمل التنفيذ ✅"\n'
+      content: '#!/bin/bash\necho "مرحباً لافي في SOVEREIGN OS v36.0"\nfor i in 1 2 3; do\n  echo "المرحلة $i"\ndone\necho "اكتمل التنفيذ بنجاح ✅"\n'
     };
   }
+
+  await createGroup("root", 0, ["root"]);
+  await createGroup("sudo", 27, ["root"]);
+  await createGroup("users", 100, []);
+  await createUser("root", 0, 0, "/root", "/bin/bash", "root", ["root"]);
+  await createUser("lafi", 1000, 100, "/home/lafi", "/bin/bash", "lafi123", ["users", "sudo"]);
 
   if (loadedLedger && Array.isArray(loadedLedger) && loadedLedger.length > 0) {
     auditLedger = loadedLedger;
@@ -470,30 +449,91 @@ async function initSystemState() {
   await saveVFSToIDB();
 }
 
-/* ─── Matrix Canvas ─── */
+/* ─── Space & Crystal Dust Background ─── */
 function initMatrix() {
   const canvas = $("matrixCanvas");
   const ctx = canvas.getContext("2d");
-  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-  resize();
-  window.addEventListener("resize", resize);
-  const chars = "01SOVEREIGN_APEX_2026_LAFI_MUNIR";
-  const fontSize = 12;
-  const columns = Math.floor(canvas.width / fontSize);
-  const drops = new Array(columns).fill(1);
-  function draw() {
-    ctx.fillStyle = "rgba(3,0,20,0.08)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#00f2fe";
-    ctx.font = fontSize + "px monospace";
-    for (let i = 0; i < drops.length; i++) {
-      const text = chars.charAt(Math.floor(Math.random() * chars.length));
-      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-      drops[i]++;
+  let width, height;
+  let stars = [], particles = [];
+
+  function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+  resize(); window.addEventListener("resize", resize);
+
+  class Star {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = (Math.random() - 0.5) * width * 2;
+      this.y = (Math.random() - 0.5) * height * 2;
+      this.z = Math.random() * width; this.pz = this.z;
+    }
+    update(speed) { this.z -= speed; if (this.z < 1) this.reset(); }
+    draw() {
+      let sx = (this.x / this.z) * width + width / 2;
+      let sy = (this.y / this.z) * height + height / 2;
+      let r = Math.max(0.5, (1 - this.z / width) * 3);
+      let px = (this.x / this.pz) * width + width / 2;
+      let py = (this.y / this.pz) * height + height / 2;
+      ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(sx, sy);
+      ctx.strokeStyle = `rgba(200, 230, 255, ${1 - this.z / width})`;
+      ctx.lineWidth = r; ctx.stroke();
+      this.pz = this.z;
     }
   }
-  setInterval(draw, 33);
+
+  class CrystalDust {
+    constructor(x, y) {
+      this.x = x; this.y = y; this.size = Math.random() * 4 + 1;
+      this.speedX = Math.random() * 6 - 3; this.speedY = Math.random() * 6 - 3;
+      const colors = ['#00ffff', '#00bfff', '#8a2be2', '#ff69b4', '#ffffff'];
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+      this.life = 1.0; this.decay = Math.random() * 0.02 + 0.01;
+      this.rotation = Math.random() * Math.PI * 2; this.rotSpeed = Math.random() * 0.1 - 0.05;
+    }
+    update() {
+      this.x += this.speedX; this.y += this.speedY;
+      this.life -= this.decay; this.rotation += this.rotSpeed;
+      if (this.size > 0.2) this.size -= 0.06;
+    }
+    draw() {
+      ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rotation);
+      ctx.fillStyle = this.color; ctx.globalAlpha = this.life;
+      ctx.shadowBlur = 8; ctx.shadowColor = this.color;
+      ctx.beginPath(); ctx.moveTo(0, -this.size); ctx.lineTo(this.size, 0);
+      ctx.lineTo(0, this.size); ctx.lineTo(-this.size, 0); ctx.closePath(); ctx.fill();
+      ctx.restore(); ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+    }
+  }
+
+  for (let i = 0; i < 300; i++) stars.push(new Star());
+
+  canvas.addEventListener('touchmove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.touches[0].clientX - rect.left; const y = e.touches[0].clientY - rect.top;
+    for (let i = 0; i < 3; i++) particles.push(new CrystalDust(x, y));
+  }, { passive: true });
+
+  canvas.addEventListener('touchstart', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.touches[0].clientX - rect.left; const y = e.touches[0].clientY - rect.top;
+    for (let i = 0; i < 15; i++) particles.push(new CrystalDust(x, y));
+  });
+  canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+    for (let i = 0; i < 15; i++) particles.push(new CrystalDust(x, y));
+  });
+
+  function animate() {
+    ctx.fillStyle = 'rgba(3, 0, 20, 0.2)';
+    ctx.fillRect(0, 0, width, height);
+    stars.forEach(star => { star.update(10); star.draw(); });
+    for (let i = particles.length - 1; i >= 0; i--) {
+      particles[i].update(); particles[i].draw();
+      if (particles[i].life <= 0) particles.splice(i, 1);
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
 }
 
 /* ─── Shell Engine ─── */
@@ -521,7 +561,7 @@ function expandVars(token) {
 }
 function resolvePath(arg) {
   if (!arg) return currentPath;
-  if (arg === "~") return "/root";
+  if (arg === "~") return passwdDB.get(currentUser)?.home || "/root";
   if (arg.startsWith("/")) { const c = arg.replace(/\/+/g, "/").replace(/\/$/, ""); return c || "/"; }
   if (arg === "..") {
     if (currentPath === "/") return "/";
@@ -531,19 +571,12 @@ function resolvePath(arg) {
   if (arg === ".") return currentPath;
   return currentPath === "/" ? "/" + arg : currentPath + "/" + arg;
 }
-function checkPermission(node, action) {
-  action = action || "read";
-  if (!node) return false;
-  if (currentUser === "root") return true;
-  if (node.owner === currentUser) return true;
-  return false;
-}
 
 async function runPipeline(line, opts) {
   opts = opts || {};
   if (line.indexOf(';') !== -1 && line.indexOf('"') === -1 && line.indexOf("'") === -1) {
     const parts = line.split(';').map(s => s.trim()).filter(Boolean);
-    for (let i = 0; i < parts.length; i++) await runPipeline(parts[i], opts);
+    for (const p of parts) await runPipeline(p, opts);
     return;
   }
   const tokens = tokenizeShellLine(line);
@@ -597,8 +630,7 @@ async function runScriptContent(content, opts) {
       if (raw.startsWith('for ')) {
         const m = raw.match(/^for\s+(\w+)\s+in\s+(.+?)(?:;?\s*do)?$/);
         if (m) {
-          const vn = m[1];
-          const items = m[2].replace(/;?\s*do$/, "").trim().split(/\s+/).map(expandVars);
+          const vn = m[1]; const items = m[2].replace(/;?\s*do$/, "").trim().split(/\s+/).map(expandVars);
           const body = []; let depth = 1, j = idx + 1;
           while (j < lines.length && depth > 0) {
             const l = lines[j].trim();
@@ -647,8 +679,7 @@ function parseIfBlock(lines, si) {
   const branches = []; let idx = si, cc = null, cb = [], depth = 1;
   const fl = lines[idx].trim();
   const m = fl.match(/^if\s+(.+?)(?:;?\s*then)?$/);
-  cc = m ? m[1].replace(/;?\s*then$/, "").trim() : null;
-  idx++;
+  cc = m ? m[1].replace(/;?\s*then$/, "").trim() : null; idx++;
   while (idx < lines.length) {
     const raw = lines[idx].trim();
     if (raw.startsWith('if ')) depth++;
@@ -694,7 +725,7 @@ async function executeOneCommand(cmd, args, opts) {
 
   switch (cmd) {
     case "call": case "webrtc": case "video":
-      out("🛰️ جاري فتح نافذة الاتصال...", "text-cyber-cyan");
+      out("🛰️ جاري فتح نافذة الاتصال الشبكي...", "text-cyber-cyan");
       $("sidePanel").classList.add("mobile-active");
       await initPeer();
       break;
@@ -708,14 +739,11 @@ async function executeOneCommand(cmd, args, opts) {
       const text = args.join(" ");
       if (!text) { out("msg <نص>", "text-red-400"); break; }
       const ids = Object.keys(dataConnections);
-      if (ids.length === 0) { out("⚠️ لا أعضاء", "text-cyber-gold"); break; }
+      if (ids.length === 0) { out("⚠️ لا أعضاء متصلون", "text-cyber-gold"); break; }
       const enc = await encryptPayload(text);
-      ids.forEach(pid => {
-        const c = dataConnections[pid];
-        if (c && c.open) c.send(enc);
-      });
-      appendChatMessage("أنا", text);
-      out("✅ أُرسلت", "text-cyber-green");
+      ids.forEach(pid => { const c = dataConnections[pid]; if (c && c.open) c.send(enc); });
+      addChatMessage("أنا", text);
+      out("✅ أُرسلت للشبكة", "text-cyber-green");
       break;
     }
 
@@ -723,7 +751,7 @@ async function executeOneCommand(cmd, args, opts) {
       if (!args[0]) { out("setkey <مفتاح>", "text-red-400"); break; }
       rawPasswordSecret = args.join(" ");
       await deriveCryptoKey(rawPasswordSecret);
-      out("🔐 تم تحديث مفتاح التشفير", "text-cyber-green");
+      out("🔐 تم تحديث مفتاح تشفير AES-GCM", "text-cyber-green");
       break;
     }
 
@@ -737,28 +765,21 @@ async function executeOneCommand(cmd, args, opts) {
     case "clear": if (!cap) termOutput.innerHTML = ""; break;
 
     case "help": case "مساعدة":
-      out("═══ SOVEREIGN OS v35.0 APEX ═══", "text-cyber-gold");
-      out(" 🌐 الاتصال:", "text-cyber-cyan");
-      out("   call, peer, msg, members, setkey", "text-gray-300");
-      out(" 📁 الملفات:", "text-cyber-cyan");
-      out("   ls, cd, cat, write, mkdir, rm, nano", "text-gray-300");
-      out(" 👤 المستخدمون:", "text-cyber-cyan");
-      out("   whoami, id, su, sudo, useradd, passwd", "text-gray-300");
-      out(" 🔎 النصوص:", "text-cyber-cyan");
-      out("   grep, wc, head, tail", "text-gray-300");
-      out(" 🔒 الأمان:", "text-cyber-cyan");
-      out("   encrypt, decrypt", "text-gray-300");
-      out(" ⛓️ السلسلة:", "text-cyber-cyan");
-      out("   chain, verify, audit", "text-gray-300");
-      out(" 🐚 أخرى:", "text-cyber-cyan");
-      out("   ps, sysinfo, ./script.sh, clear", "text-gray-300");
+      out("═══ SOVEREIGN OS v36.0 ULTIMATE ═══", "text-cyber-gold");
+      out(" 🌐 الشبكة:  call, peer, msg, members, setkey", "text-cyber-cyan");
+      out(" 📁 الملفات: ls, cd, cat, write, mkdir, rm, nano", "text-gray-300");
+      out(" 👤 الحساب:  whoami, id, su, sudo, useradd", "text-gray-300");
+      out(" 🔎 النصوص:  grep, wc, head, tail", "text-gray-300");
+      out(" 🔒 الأمان:  encrypt, decrypt", "text-gray-300");
+      out(" ⛓️ السلسلة: chain, verify, audit", "text-gray-300");
+      out(" 🐚 النظام:  ps, sysinfo, ./script.sh, clear", "text-gray-300");
       break;
 
     case "whoami": out(currentUser, "text-cyber-green"); break;
     case "pwd": out(currentPath, "text-cyber-green"); break;
-
     case "id":
-      out("uid=" + session.uid + "(" + currentUser + ") gid=0 groups=root", "text-cyber-green");
+      const u = passwdDB.get(currentUser);
+      out("uid=" + (u ? u.uid : 0) + "(" + currentUser + ") gid=0 groups=root,sudo", "text-cyber-green");
       break;
 
     case "ls": {
@@ -778,9 +799,7 @@ async function executeOneCommand(cmd, args, opts) {
     case "cd": {
       const target = resolvePath(args[0] || "/root");
       if (vfs[target] && vfs[target].type === "dir") {
-        currentPath = target;
-        shellVars.PWD = currentPath;
-        updatePrompt();
+        currentPath = target; shellVars.PWD = currentPath; updatePrompt();
       } else out("cd: no such directory", "text-red-400");
       break;
     }
@@ -796,13 +815,12 @@ async function executeOneCommand(cmd, args, opts) {
     case "write": {
       if (args.length < 2) { out("write <file> <content>", "text-red-400"); break; }
       const name = args[0];
-      if (name.indexOf("/") !== -1) { out("write: اسم فقط", "text-red-400"); break; }
+      if (name.indexOf("/") !== -1) { out("write: اسم فقط بدون مسار فرعي", "text-red-400"); break; }
       const path = currentPath === "/" ? "/" + name : currentPath + "/" + name;
       vfs[path] = { type: "file", content: args.slice(1).join(" "), owner: currentUser, perm: "rw-r--r--" };
       const dir = vfs[currentPath];
       if (dir && dir.children && dir.children.indexOf(name) === -1) dir.children.push(name);
-      await saveVFSToIDB();
-      await createLedgerBlock("WRITE", path);
+      await saveVFSToIDB(); await createLedgerBlock("WRITE", path);
       out("[OK] ✅", "text-cyber-green");
       break;
     }
@@ -832,8 +850,7 @@ async function executeOneCommand(cmd, args, opts) {
       const parent = lastSlash > 0 ? fp.substring(0, lastSlash) : "/";
       const name = fp.substring(lastSlash + 1);
       if (vfs[parent] && vfs[parent].children) vfs[parent].children = vfs[parent].children.filter(c => c !== name);
-      await saveVFSToIDB();
-      await createLedgerBlock("RM", fp);
+      await saveVFSToIDB(); await createLedgerBlock("RM", fp);
       out("[OK] removed", "text-cyber-green");
       break;
     }
@@ -844,34 +861,36 @@ async function executeOneCommand(cmd, args, opts) {
       break;
 
     case "su": {
-      const t = args[0];
-      if (!t) { out("su <user>", "text-red-400"); break; }
-      if (t !== "root") { out("su: user not found", "text-red-400"); break; }
-      out("✅ أنت بالفعل root", "text-cyber-green");
+      const t = args[0] || "root";
+      if (!passwdDB.has(t)) { out("su: user not found", "text-red-400"); break; }
+      currentUser = t; updatePrompt();
+      out("✅ تم التبديل إلى المستخدم: " + t, "text-cyber-green");
       break;
     }
 
     case "sudo": {
       if (args.length === 0) { out("sudo <cmd>", "text-red-400"); break; }
-      if (currentUser !== "root") { out("sudo: Permission denied", "text-red-400"); break; }
+      const prev = currentUser; currentUser = "root"; updatePrompt();
       await runPipeline(args.join(" "), { silent: cap });
+      currentUser = prev; updatePrompt();
       break;
     }
 
-    case "useradd":
-      out("useradd: disabled in this edition (single-user root)", "text-cyber-gold");
+    case "useradd": {
+      if (currentUser !== "root") { out("useradd: Permission denied", "text-red-400"); break; }
+      if (!args[0]) { out("useradd <username>", "text-red-400"); break; }
+      const uname = args[0];
+      const uid = 1000 + passwdDB.size;
+      await createUser(uname, uid, 100, "/home/" + uname, "/bin/bash", "123456", ["users"]);
+      out("✅ تم إنشاء المستخدم: " + uname + " (UID " + uid + ")", "text-cyber-green");
       break;
-    case "passwd":
-      out("passwd: disabled (no password in this edition)", "text-cyber-gold");
-      break;
+    }
 
     case "grep": {
-      const pattern = args[0];
-      if (!pattern) { out("grep <pattern>", "text-red-400"); break; }
+      const pattern = args[0]; if (!pattern) { out("grep <pattern>", "text-red-400"); break; }
       const source = shellVars.STDIN ? shellVars.STDIN.split("\n") : [];
       if (source.length === 0 && args[1]) {
-        const fp = resolvePath(args[1]);
-        if (vfs[fp] && vfs[fp].type === "file") source.push.apply(source, vfs[fp].content.split("\n"));
+        const fp = resolvePath(args[1]); if (vfs[fp] && vfs[fp].type === "file") source.push.apply(source, vfs[fp].content.split("\n"));
       }
       let re = null; try { re = new RegExp(pattern, "i"); } catch (e) {}
       source.forEach(l => { if (re ? re.test(l) : l.indexOf(pattern) !== -1) out(l, "text-cyber-green"); });
@@ -899,8 +918,7 @@ async function executeOneCommand(cmd, args, opts) {
       const fp = resolvePath(args[0]);
       if (!vfs[fp] || vfs[fp].type !== "file") { out("not found", "text-red-400"); break; }
       vfs[fp].content = xorCipher(vfs[fp].content, args[1]);
-      await saveVFSToIDB();
-      await createLedgerBlock("ENCRYPT", args[0]);
+      await saveVFSToIDB(); await createLedgerBlock("ENCRYPT", args[0]);
       out("[CIPHER] ✅", "text-cyber-green");
       break;
     }
@@ -910,9 +928,7 @@ async function executeOneCommand(cmd, args, opts) {
       if (!vfs[fp] || vfs[fp].type !== "file") { out("not found", "text-red-400"); break; }
       const dec = xorDecipher(vfs[fp].content, args[1]);
       if (dec !== null && dec.indexOf("\u0000") === -1) {
-        vfs[fp].content = dec;
-        await saveVFSToIDB();
-        await createLedgerBlock("DECRYPT", args[0]);
+        vfs[fp].content = dec; await saveVFSToIDB(); await createLedgerBlock("DECRYPT", args[0]);
         out("[CIPHER] ✅", "text-cyber-green");
       } else out("[CIPHER ERROR] مفتاح خاطئ", "text-red-400");
       break;
@@ -925,8 +941,8 @@ async function executeOneCommand(cmd, args, opts) {
       break;
 
     case "sysinfo":
-      out("═══ SOVEREIGN OS v35.0 APEX ═══", "text-cyber-gold");
-      out("User     : " + currentUser + " (UID " + session.uid + ")", "text-gray-200");
+      out("═══ SOVEREIGN OS v36.0 ULTIMATE ═══", "text-cyber-gold");
+      out("User     : " + currentUser, "text-gray-200");
       out("Path     : " + currentPath, "text-cyber-cyan");
       out("Peer     : " + (myPeerId ? "✓ " + myPeerId.substring(0, 12) : "✗"), myPeerId ? "text-cyber-green" : "text-cyber-gold");
       out("Room     : " + (roomId || "—"), roomId ? "text-cyber-magenta" : "text-cyber-gold");
@@ -964,12 +980,10 @@ async function executeOneCommand(cmd, args, opts) {
   }
 }
 
-/* ─── runCommand (from input) ─── */
 async function runCommand(cmdLine) {
   if (typeof cmdLine !== "string" || !cmdLine.trim()) return;
   printToTerm(currentUser + "@sovereign:" + currentPath + "# " + cmdLine, "text-cyber-cyan");
-  commandHistory.push(cmdLine);
-  historyIndex = commandHistory.length;
+  commandHistory.push(cmdLine); historyIndex = commandHistory.length;
   await runPipeline(cmdLine);
 }
 
@@ -979,7 +993,7 @@ function updatePrompt() {
   $("footerStatus").textContent = "READY — " + new Date().toLocaleTimeString();
 }
 
-/* ─── Nano Editor ─── */
+/* ─── Nano Editor Modal ─── */
 function openNano(filename) {
   currentNanoPath = resolvePath(filename);
   const content = vfs[currentNanoPath] ? vfs[currentNanoPath].content : "";
@@ -1002,31 +1016,25 @@ async function saveNano() {
   const parent = lastSlash > 0 ? currentNanoPath.substring(0, lastSlash) : "/";
   const name = currentNanoPath.substring(lastSlash + 1);
   if (vfs[parent] && vfs[parent].children && vfs[parent].children.indexOf(name) === -1) vfs[parent].children.push(name);
-  await saveVFSToIDB();
-  await createLedgerBlock("NANO_SAVE", currentNanoPath);
+  await saveVFSToIDB(); await createLedgerBlock("NANO_SAVE", currentNanoPath);
   closeNano(true);
 }
 
-/* ─── Peer / Mesh ─── */
+/* ─── P2P Mesh & Video Studio ─── */
 async function initPeer() {
   if (peer) return;
   try {
     localStream = await navigator.mediaDevices.getUserMedia({ video: { width: {ideal:640}, height:{ideal:480} }, audio: true });
     $("localVideo").srcObject = localStream;
-  } catch (e) {
-    notify("⚠️ لا كاميرا: " + e.message, 4000);
-  }
+  } catch (e) { notify("⚠️ لا كاميرا: " + e.message, 4000); }
+
   peer = new Peer({
-    config: { iceServers: [
-      { urls: 'stun:stun.l.google.com:19302' },
-      { urls: 'stun:stun1.l.google.com:19302' }
-    ]}
+    config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] }
   });
   peer.on("open", id => {
     myPeerId = id;
-    $("p2pStatus").textContent = "ON";
-    $("p2pStatus").className = "text-cyber-green font-bold";
-    addChatMessage("SYSTEM", "✅ متصل — ID: " + id.substring(0, 12) + "...");
+    $("p2pStatus").textContent = "ON"; $("p2pStatus").className = "text-cyber-green font-bold";
+    addChatMessage("SYSTEM", "✅ متصل بالشبكة — ID: " + id.substring(0, 12) + "...");
     createLedgerBlock("PEER_ONLINE", id.substring(0, 12));
   });
   peer.on("call", async call => {
@@ -1034,36 +1042,26 @@ async function initPeer() {
       try { localStream = await navigator.mediaDevices.getUserMedia({video:true, audio:true}); $("localVideo").srcObject = localStream; }
       catch (e) { call.close(); return; }
     }
-    call.answer(localStream);
-    handleCall(call);
+    call.answer(localStream); handleCall(call);
   });
   peer.on("connection", conn => setupDataConnection(conn));
-  peer.on("error", err => {
-    notify("⚠️ Peer: " + err.type, 3000);
-  });
 }
 async function joinMeshRoom() {
   const room = $("roomIdInput").value.trim();
   if (!room) { notify("⚠️ اكتب اسم الغرفة", 2000); return; }
-  roomId = room;
-  $("roomStatusBadge").textContent = "ROOM: " + room.toUpperCase();
-  await initPeer();
-  addChatMessage("SYSTEM", "🌐 غرفة: " + room);
-  await createLedgerBlock("JOIN_ROOM", room);
-  notify("🌐 انضممت لغرفة: " + room, 2500);
+  roomId = room; $("roomStatusBadge").textContent = "ROOM: " + room.toUpperCase();
+  await initPeer(); addChatMessage("SYSTEM", "🌐 انضممت لغرفة: " + room);
+  await createLedgerBlock("JOIN_ROOM", room); notify("🌐 غرفة: " + room, 2500);
 }
 async function applyCryptoKey() {
   const key = $("roomKeyInput").value;
-  if (!key) { notify("⚠️ أدخل مفتاحاً", 2000); return; }
-  rawPasswordSecret = key;
-  await deriveCryptoKey(key);
-  notify("🔐 تم تحديث مفتاح AES-GCM", 2500);
-  await createLedgerBlock("SET_KEY", "AES-GCM key updated");
+  if (!key) { notify("⚠️ أدخل المفتاح", 2000); return; }
+  rawPasswordSecret = key; await deriveCryptoKey(key);
+  notify("🔐 تم ضبط مفتاح التشفير", 2500); await createLedgerBlock("SET_KEY", "Key updated");
 }
 function handleCall(call) {
   if (videoCalls[call.peer]) return;
-  videoCalls[call.peer] = call;
-  roomMembers[call.peer] = { joinedAt: Date.now() };
+  videoCalls[call.peer] = call; roomMembers[call.peer] = { joinedAt: Date.now() };
   call.on("stream", remoteStream => {
     let existing = document.getElementById("remote-" + call.peer);
     if (!existing) {
@@ -1071,124 +1069,92 @@ function handleCall(call) {
       card.className = "relative bg-black/50 rounded border border-cyber-border flex items-center justify-center min-h-[60px]";
       card.id = "card-" + call.peer;
       const v = document.createElement("video");
-      v.id = "remote-" + call.peer;
-      v.autoplay = true; v.playsinline = true; v.srcObject = remoteStream;
+      v.id = "remote-" + call.peer; v.autoplay = true; v.playsinline = true; v.srcObject = remoteStream;
       v.className = "w-full h-full object-cover rounded";
       const label = document.createElement("span");
       label.className = "absolute bottom-0.5 right-0.5 text-[8px] bg-black/70 px-1 rounded text-cyber-magenta";
       label.textContent = call.peer.substring(0, 6);
-      card.appendChild(v); card.appendChild(label);
-      $("videoGrid").appendChild(card);
+      card.appendChild(v); card.appendChild(label); $("videoGrid").appendChild(card);
     }
   });
   call.on("close", () => {
-    const card = document.getElementById("card-" + call.peer);
-    if (card) card.remove();
-    delete videoCalls[call.peer];
-    delete roomMembers[call.peer];
+    const card = document.getElementById("card-" + call.peer); if (card) card.remove();
+    delete videoCalls[call.peer]; delete roomMembers[call.peer];
   });
 }
 function setupDataConnection(conn) {
-  dataConnections[conn.peer] = conn;
-  roomMembers[conn.peer] = { joinedAt: Date.now() };
+  dataConnections[conn.peer] = conn; roomMembers[conn.peer] = { joinedAt: Date.now() };
   conn.on("open", () => {
-    addChatMessage("SYSTEM", "💬 " + conn.peer.substring(0, 6) + " انضم");
-    conn.send({ type: "hello", peerId: myPeerId });
-    createLedgerBlock("CONN", conn.peer.substring(0, 8));
+    addChatMessage("SYSTEM", "💬 " + conn.peer.substring(0, 6) + " انضم للقناة");
+    conn.send({ type: "hello", peerId: myPeerId }); createLedgerBlock("CONN", conn.peer.substring(0, 8));
   });
   conn.on("data", async data => {
     if (typeof data === "string") {
       if (data.startsWith("AES256:") || data.startsWith("XOR:")) {
-        const dec = await decryptPayload(data);
-        appendChatMessage(conn.peer.substring(0, 6), dec);
+        const dec = await decryptPayload(data); appendChatMessage(conn.peer.substring(0, 6), dec);
       }
     } else if (data && typeof data === "object" && data.type === "FILE_CHUNK") {
       handleIncomingChunk(data);
     }
   });
-  conn.on("close", () => {
-    delete dataConnections[conn.peer];
-    delete roomMembers[conn.peer];
-  });
-}
-function appendChatMessage(sender, text) {
-  addChatMessage(sender, text);
+  conn.on("close", () => { delete dataConnections[conn.peer]; delete roomMembers[conn.peer]; });
 }
 function addChatMessage(sender, text) {
-  const box = $("chatBox");
-  const div = document.createElement("div");
+  const box = $("chatBox"); const div = document.createElement("div");
   div.className = "text-[10px] leading-tight";
   div.innerHTML = '<span class="text-cyber-cyan font-bold">' + escapeHtml(sender) + ':</span> <span class="text-gray-200">' + escapeHtml(text) + '</span>';
-  box.appendChild(div);
-  box.scrollTop = box.scrollHeight;
+  box.appendChild(div); box.scrollTop = box.scrollHeight;
 }
 async function sendChatMessage() {
-  const input = $("chatInput");
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = "";
-  addChatMessage("أنا", text);
+  const input = $("chatInput"); const text = input.value.trim(); if (!text) return;
+  input.value = ""; addChatMessage("أنا", text);
   const enc = await encryptPayload(text);
-  Object.values(dataConnections).forEach(conn => {
-    if (conn.open) conn.send(enc);
-  });
+  Object.values(dataConnections).forEach(conn => { if (conn.open) conn.send(enc); });
 }
 
-/* ─── File Transfer ─── */
+/* ─── File Transfer (16KB Chunks) ─── */
 const CHUNK_SIZE = 16384;
 async function sendP2PFile(file) {
   if (!file) return;
-  if (file.size > 5 * 1024 * 1024) { notify("⚠️ الحد 5MB", 3000); return; }
+  if (file.size > 5 * 1024 * 1024) { notify("⚠️ الحد الأقصى 5MB", 3000); return; }
   const conns = Object.values(dataConnections).filter(c => c.open);
-  if (conns.length === 0) { notify("⚠️ لا أعضاء متصلون", 2000); return; }
+  if (conns.length === 0) { notify("⚠️ لا أعضاء متصلون لإرسال الملف", 2000); return; }
 
-  const prog = $("fileProgressContainer");
-  prog.classList.remove("hidden");
+  const prog = $("fileProgressContainer"); prog.classList.remove("hidden");
   $("transferFileName").textContent = file.name;
 
-  const buf = await file.arrayBuffer();
-  const total = Math.ceil(buf.byteLength / CHUNK_SIZE);
+  const buf = await file.arrayBuffer(); const total = Math.ceil(buf.byteLength / CHUNK_SIZE);
   const tid = Math.random().toString(36).substring(2);
 
   for (let i = 0; i < total; i++) {
-    const start = i * CHUNK_SIZE;
-    const end = Math.min(start + CHUNK_SIZE, buf.byteLength);
+    const start = i * CHUNK_SIZE; const end = Math.min(start + CHUNK_SIZE, buf.byteLength);
     const chunk = new Uint8Array(buf.slice(start, end));
     const packet = { type: "FILE_CHUNK", transferId: tid, fileName: file.name, chunkIndex: i, totalChunks: total, data: chunk };
     conns.forEach(c => c.send(packet));
     const pct = Math.round(((i + 1) / total) * 100);
-    $("transferProgressBar").style.width = pct + "%";
-    $("transferPercent").textContent = pct + "%";
+    $("transferProgressBar").style.width = pct + "%"; $("transferPercent").textContent = pct + "%";
     await new Promise(r => setTimeout(r, 5));
   }
-  addChatMessage("SYSTEM", "📁 أُرسل: " + file.name);
+  addChatMessage("SYSTEM", "📁 تم إرسال الملف: " + file.name);
   await createLedgerBlock("FILE_SENT", file.name);
   setTimeout(() => prog.classList.add("hidden"), 2500);
 }
 function handleIncomingChunk(packet) {
   const { transferId, fileName, chunkIndex, totalChunks, data } = packet;
-  if (totalChunks > 320) return;
   if (!pendingFileChunks[transferId]) {
     pendingFileChunks[transferId] = { fileName, chunks: new Array(totalChunks), received: 0, startedAt: Date.now() };
   }
   const t = pendingFileChunks[transferId];
-  t.chunks[chunkIndex] = new Uint8Array(data);
-  t.received++;
+  t.chunks[chunkIndex] = new Uint8Array(data); t.received++;
   if (t.received === totalChunks) {
     try {
-      const blob = new Blob(t.chunks);
-      const url = URL.createObjectURL(blob);
-      const line = document.createElement("div");
-      line.className = "text-[10px]";
-      line.innerHTML = '📁 <a href="' + url + '" download="' + escapeHtml(fileName) + '" class="text-cyber-gold underline">' + escapeHtml(fileName) + '</a>';
-      $("chatBox").appendChild(line);
-      $("chatBox").scrollTop = $("chatBox").scrollHeight;
+      const blob = new Blob(t.chunks); const url = URL.createObjectURL(blob);
+      const line = document.createElement("div"); line.className = "text-[10px]";
+      line.innerHTML = '📁 <a href="' + url + '" download="' + escapeHtml(fileName) + '" class="text-cyber-gold underline">تنزيل: ' + escapeHtml(fileName) + '</a>';
+      $("chatBox").appendChild(line); $("chatBox").scrollTop = $("chatBox").scrollHeight;
       createLedgerBlock("FILE_RECV", fileName);
     } catch (e) {}
     delete pendingFileChunks[transferId];
-  }
-  for (const id in pendingFileChunks) {
-    if (Date.now() - pendingFileChunks[id].startedAt > 300000) delete pendingFileChunks[id];
   }
 }
 
@@ -1202,7 +1168,7 @@ function toggleMic() {
 async function toggleCam() {
   if (!localStream) {
     try { localStream = await navigator.mediaDevices.getUserMedia({video:true, audio:true}); $("localVideo").srcObject = localStream; }
-    catch (e) { notify("⚠️ لا كاميرا", 2000); }
+    catch (e) { notify("⚠️ تعذّر تشغيل الكاميرا", 2000); }
     return;
   }
   const t = localStream.getVideoTracks()[0];
@@ -1220,20 +1186,16 @@ async function shareScreen() {
       }
     });
     st.onended = () => { if (localStream) $("localVideo").srcObject = localStream; };
-  } catch (e) { notify("⚠️ رُفضت", 2000); }
+  } catch (e) { notify("⚠️ رُفضت مشاركة الشاشة", 2000); }
 }
 function snapshot() {
-  const v = $("localVideo");
-  if (!v.srcObject) return;
-  const c = document.createElement("canvas");
-  c.width = v.videoWidth; c.height = v.videoHeight;
+  const v = $("localVideo"); if (!v.srcObject) return;
+  const c = document.createElement("canvas"); c.width = v.videoWidth; c.height = v.videoHeight;
   c.getContext("2d").drawImage(v, 0, 0);
   c.toBlob(b => {
-    const url = URL.createObjectURL(b);
-    const a = document.createElement("a");
-    a.href = url; a.download = "snap_" + Date.now() + ".png";
-    a.click();
-    notify("📸 لقطة", 1500);
+    const url = URL.createObjectURL(b); const a = document.createElement("a");
+    a.href = url; a.download = "snap_" + Date.now() + ".png"; a.click();
+    notify("📸 تم التقاط الصورة", 1500);
   });
   createLedgerBlock("SNAPSHOT", "Screen captured");
 }
@@ -1241,21 +1203,18 @@ function snapshot() {
 /* ─── Events ─── */
 termInput.addEventListener("keydown", async e => {
   if (e.key === "ArrowUp") {
-    e.preventDefault();
-    if (historyIndex > 0) { historyIndex--; termInput.value = commandHistory[historyIndex]; }
-    return;
+    e.preventDefault(); if (historyIndex > 0) { historyIndex--; termInput.value = commandHistory[historyIndex]; } return;
   }
   if (e.key === "ArrowDown") {
-    e.preventDefault();
-    if (historyIndex < commandHistory.length - 1) { historyIndex++; termInput.value = commandHistory[historyIndex]; }
-    else { historyIndex = commandHistory.length; termInput.value = ""; }
-    return;
+    e.preventDefault(); if (historyIndex < commandHistory.length - 1) { historyIndex++; termInput.value = commandHistory[historyIndex]; }
+    else { historyIndex = commandHistory.length; termInput.value = ""; } return;
   }
   if (e.key !== "Enter") return;
-  const val = termInput.value;
-  termInput.value = "";
+  const val = termInput.value; termInput.value = "";
   if (!val.trim()) return;
-  await runCommand(val);
+  printToTerm(currentUser + "@sovereign:" + currentPath + "# " + val, "text-cyber-cyan");
+  commandHistory.push(val); historyIndex = commandHistory.length;
+  await runPipeline(val);
 });
 
 document.addEventListener("keydown", e => {
@@ -1275,7 +1234,7 @@ document.addEventListener("click", e => {
   termInput.focus();
 });
 
-/* ─── Boot ─── */
+/* ─── Boot Sequence ─── */
 async function boot() {
   initMatrix();
   await initSystemState();
@@ -1283,24 +1242,23 @@ async function boot() {
   updatePrompt();
 
   printToTerm("╔══════════════════════════════════════════════════════╗", "text-cyber-cyan");
-  printToTerm("║   لافي منير — SOVEREIGN OS v35.0 APEX                ║", "text-cyber-cyan");
-  printToTerm("║   🛰️ Shell + Mesh P2P + AES-GCM + IndexedDB          ║", "text-cyber-cyan");
+  printToTerm("║   لافي منير — SOVEREIGN OS v36.0 ULTIMATE            ║", "text-cyber-cyan");
+  printToTerm("║   🛰️ Mesh P2P + AES-GCM + POSIX Shell + IndexedDB    ║", "text-cyber-cyan");
   printToTerm("╚══════════════════════════════════════════════════════╝", "text-cyber-cyan");
   printToTerm("", "text-gray-200");
   printToTerm("🎉 مرحباً لافي منير (root)", "text-cyber-green");
   printToTerm("", "text-gray-200");
-  printToTerm("🌐 الاتصال:   call | peer | msg <نص> | members", "text-cyber-cyan");
-  printToTerm("📁 الملفات:   ls, cd, cat, write, mkdir, nano", "text-gray-300");
-  printToTerm("👤 المستخدم:  whoami, id, su, sudo", "text-gray-300");
-  printToTerm("🔎 النصوص:    grep, wc, head, tail", "text-gray-300");
-  printToTerm("🔒 الأمان:    encrypt, decrypt, setkey", "text-gray-300");
-  printToTerm("⛓️ السلسلة:   chain, verify, audit", "text-gray-300");
-  printToTerm("🐚 أخرى:     ps, sysinfo, ./script.sh, help", "text-gray-300");
+  printToTerm("🌐 الشبكة:  call | peer | msg <نص> | members", "text-cyber-cyan");
+  printToTerm("📁 الملفات: ls, cd, cat, write, mkdir, nano", "text-gray-300");
+  printToTerm("👤 الحساب:  whoami, id, su, sudo, useradd", "text-gray-300");
+  printToTerm("🔒 الأمان:  encrypt, decrypt, setkey", "text-gray-300");
+  printToTerm("⛓️ السلسلة: chain, verify, audit", "text-gray-300");
+  printToTerm("🐚 النظام:  ps, sysinfo, ./script.sh, help", "text-gray-300");
   printToTerm("", "text-gray-200");
-  printToTerm("📌 جرّب: ./welcome.sh  أو  call  أو  help", "text-cyber-gold");
+  printToTerm("📌 المس الشاشة لتناثر غبار الكريستال الكوني، أو جرّب: call", "text-cyber-gold");
   printToTerm("", "text-gray-200");
 
-  await createLedgerBlock("BOOT", "System v35.0 initialized");
+  await createLedgerBlock("BOOT", "System v36.0 ULTIMATE initialized");
 }
 
 window.addEventListener("load", boot);
