@@ -3,11 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>لافي منير — SOVEREIGN OS v50.0 NEXUS OMEGA ∞</title>
+<title>لافي منير — SOVEREIGN OS v50.1 NEXUS OMEGA ∞</title>
 <meta name="theme-color" content="#030014">
 <meta name="author" content="لافي منير">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="manifest" href='data:application/manifest+json,{"name":"NEXUS OMEGA","short_name":"OMEGA","start_url":".","display":"standalone","background_color":"%23030014","theme_color":"%2300f2fe","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 192 192%27%3E%3Crect width=%27192%27 height=%27192%27 fill=%27%23030014%27/%3E%3Ctext x=%2796%27 y=%27120%27 font-size=%27100%27 text-anchor=%27middle%27 fill=%27%2300f2fe%27%3EΩ%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"}]}'>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="نظام تشغيل ويب ذاتي — 3D Globe, P2P, AI, Memory">
+
+<link rel="manifest" href='data:application/manifest+json,{"name":"SOVEREIGN OS — NEXUS OMEGA","short_name":"OMEGA Ω","lang":"ar","dir":"rtl","start_url":"./","scope":"./","display":"standalone","background_color":"%23030014","theme_color":"%2300f2fe","description":"نظام تشغيل ويب ذاتي","categories":["utilities","productivity"],"icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 192 192%27%3E%3Crect width=%27192%27 height=%27192%27 fill=%27%23030014%27 rx=%2732%27/%3E%3Ctext x=%2796%27 y=%27132%27 font-size=%27120%27 text-anchor=%27middle%27 fill=%27%2300f2fe%27 font-family=%27monospace%27 font-weight=%27bold%27%3E%CE%A9%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml","purpose":"any maskable"}]}'>
+
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%23030014' rx='32'/%3E%3Ctext x='96' y='130' font-size='110' text-anchor='middle' fill='%2300f2fe' font-family='monospace'%3EΩ%3C/text%3E%3C/svg%3E">
+
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config = {
@@ -38,27 +44,28 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', 'Cai
 .terminal-input { background: transparent; outline: none; border: none; color: #00ff66; width: 100%; font-family: inherit; }
 .terminal-output { white-space: pre-wrap; word-break: break-word; user-select: text; }
 .omni-card { border-right: 3px solid #00f2fe; padding-right: 8px; margin-bottom: 4px; background: rgba(0,242,254,0.05); }
-#mapContainer, #globeContainer { width: 100%; height: 200px; border-radius: 8px; border: 1px solid #1f1345; z-index: 10; background: #000; }
+#mapContainer { width: 100%; height: 200px; border-radius: 8px; border: 1px solid #1f1345; z-index: 10; background: #000; }
+#globeContainer { width: 100%; height: 200px; border-radius: 8px; border: 1px solid #1f1345; z-index: 10; background: #000; position: relative; }
 #apodImage { width: 100%; height: 130px; object-fit: cover; border-radius: 8px; border: 1px solid #1f1345; }
 #videoPreview, #remoteVideo { width: 100%; height: 130px; object-fit: cover; border-radius: 8px; border: 1px solid #1f1345; background: #000; }
 .dot-pulse { animation: pulse 1.2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 .status-live { color: #00ff66; }
-.status-loading { color: #ffd700; }
-.status-error { color: #ff4444; }
 .leaflet-container { background: #030014 !important; }
 .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #0a0520; color: #00f2fe; border: 1px solid #1f1345; }
 .tab-btn { transition: all 0.2s; }
 .tab-btn.active { background: rgba(0,242,254,0.15); border-color: #00f2fe; color: #00f2fe; }
 .launch-card { border-right: 2px solid #ffd700; padding-right: 6px; margin-bottom: 4px; font-size: 9px; }
-.p2p-peer { background: rgba(0,255,102,0.05); border-right: 2px solid #00ff66; padding: 3px 6px; margin-bottom: 3px; font-size: 9px; }
 .install-banner { position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%); z-index: 300; }
-#audioLevel { border-radius: 4px; background: #000; height: 20px; position: relative; overflow: hidden; }
-#audioBar { height: 100%; background: linear-gradient(90deg, #00ff66, #00f2fe); transition: width 0.1s; }
+#audioLevel { border-radius: 4px; background: #000; height: 14px; position: relative; overflow: hidden; border: 1px solid #1f1345; }
+#audioBar { height: 100%; width: 0%; background: linear-gradient(90deg, #00ff66, #00f2fe); transition: width 0.1s; }
 .memory-item { border-right: 2px solid #7928ca; padding: 3px 6px; margin-bottom: 3px; font-size: 9px; background: rgba(121,40,202,0.05); }
 .voice-pulse { animation: voiceGlow 0.8s infinite; }
 @keyframes voiceGlow { 0%,100% { box-shadow: 0 0 5px #ff007f; } 50% { box-shadow: 0 0 20px #ff007f, 0 0 30px #ff007f; } }
 .offline-badge { background: #ffd700; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; }
+.globe-fallback { display:flex; align-items:center; justify-content:center; height:100%; color:#ffd700; font-size:11px; text-align:center; padding:10px; }
+.call-banner { position:fixed; top:80px; left:50%; transform:translateX(-50%); background:#0a0520; border:2px solid #ff007f; border-radius:12px; padding:16px; z-index:9999; box-shadow:0 0 30px #ff007f; text-align:center; color:#fff; font-family:'Cairo',monospace; direction:rtl; min-width:260px; }
+.call-banner button { border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; flex:1; }
 </style>
 </head>
 <body class="dark h-screen w-screen flex flex-col overflow-hidden">
@@ -75,7 +82,7 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', 'Cai
       <i class="fa-solid fa-atom dot-pulse"></i>
       <span class="hidden sm:inline">NEXUS OMEGA</span>
     </span>
-    <span class="bg-cyber-magenta/20 text-cyber-magenta text-[10px] px-1.5 py-0.5 rounded border border-cyber-magenta/40 font-bold">v50.0 Ω</span>
+    <span class="bg-cyber-magenta/20 text-cyber-magenta text-[10px] px-1.5 py-0.5 rounded border border-cyber-magenta/40 font-bold">v50.1 Ω</span>
     <span id="offlineBadge" class="hidden offline-badge">OFFLINE</span>
   </div>
   <div class="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-xs overflow-x-auto">
@@ -108,11 +115,11 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', 'Cai
           <span class="mr-2 font-bold text-gray-200">omega@nexus ~ root</span>
         </div>
         <div class="flex gap-2">
-          <button onclick="runCommand('clear')" class="hover:text-cyber-cyan" title="مسح"><i class="fa-solid fa-eraser"></i></button>
-          <button onclick="runCommand('help')" class="hover:text-cyber-gold" title="مساعدة"><i class="fa-solid fa-circle-question"></i></button>
-          <button onclick="toggleVoice()" id="btnVoice" class="hover:text-cyber-magenta" title="أوامر صوتية"><i class="fa-solid fa-microphone"></i></button>
-          <button onclick="toggleLoop()" class="hover:text-cyber-green" title="حلقة ذاتية"><i class="fa-solid fa-infinity"></i></button>
-          <button onclick="runCommand('stats')" class="hover:text-cyber-magenta" title="إحصائيات"><i class="fa-solid fa-chart-line"></i></button>
+          <button data-cmd="clear" class="hover:text-cyber-cyan" title="مسح"><i class="fa-solid fa-eraser"></i></button>
+          <button data-cmd="help" class="hover:text-cyber-gold" title="مساعدة"><i class="fa-solid fa-circle-question"></i></button>
+          <button id="btnVoice" class="hover:text-cyber-magenta" title="أوامر صوتية"><i class="fa-solid fa-microphone"></i></button>
+          <button id="btnLoop" class="hover:text-cyber-green" title="حلقة ذاتية"><i class="fa-solid fa-infinity"></i></button>
+          <button data-cmd="stats" class="hover:text-cyber-magenta" title="إحصائيات"><i class="fa-solid fa-chart-line"></i></button>
         </div>
       </div>
       <div id="terminalOutput" class="flex-1 overflow-y-auto space-y-1 text-xs md:text-sm pr-1 terminal-output"></div>
@@ -125,15 +132,14 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', 'Cai
 
   <section id="sidePanel" class="md:col-span-5 lg:col-span-4 flex flex-col gap-2 h-full overflow-hidden side-panel">
     <div class="bg-cyber-panel/90 border border-cyber-border rounded-xl p-2 flex gap-1 shadow-xl overflow-x-auto">
-      <button data-tab="globe" onclick="switchTab('globe', event)" class="tab-btn active bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-globe"></i> 3D</button>
-      <button data-tab="map" onclick="switchTab('map', event)" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-map"></i> 2D</button>
-      <button data-tab="space" onclick="switchTab('space', event)" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-rocket"></i> Space</button>
-      <button data-tab="video" onclick="switchTab('video', event)" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-video"></i> Video</button>
-      <button data-tab="memory" onclick="switchTab('memory', event)" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-brain"></i> Memory</button>
-      <button data-tab="agent" onclick="switchTab('agent', event)" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-robot"></i> Agent</button>
+      <button data-tab="globe" class="tab-btn active bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-globe"></i> 3D</button>
+      <button data-tab="map" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-map"></i> 2D</button>
+      <button data-tab="space" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-rocket"></i> Space</button>
+      <button data-tab="video" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-video"></i> Video</button>
+      <button data-tab="memory" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-brain"></i> Memory</button>
+      <button data-tab="agent" class="tab-btn bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-gray-300 whitespace-nowrap"><i class="fa-solid fa-robot"></i> Agent</button>
     </div>
 
-    <!-- GLOBE 3D -->
     <div id="tabGlobe" class="tab-content bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex flex-col gap-2 shadow-xl backdrop-blur-sm">
       <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px]">
         <span class="font-bold text-cyber-cyan flex items-center gap-1"><i class="fa-solid fa-globe"></i> Globe 3D — Real-time Sats</span>
@@ -155,13 +161,12 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', 'Cai
         </div>
       </div>
       <div class="flex gap-1">
-        <button onclick="loadGlobeSats('stations')" class="flex-1 bg-cyber-cyan text-black text-[9px] py-1 rounded font-bold">Stations</button>
-        <button onclick="loadGlobeSats('starlink')" class="flex-1 bg-cyber-gold text-black text-[9px] py-1 rounded font-bold">Starlink</button>
-        <button onclick="loadGlobeSats('gps-ops')" class="flex-1 bg-cyber-green text-black text-[9px] py-1 rounded font-bold">GPS</button>
+        <button data-globe="stations" class="flex-1 bg-cyber-cyan text-black text-[9px] py-1 rounded font-bold">Stations</button>
+        <button data-globe="starlink" class="flex-1 bg-cyber-gold text-black text-[9px] py-1 rounded font-bold">Starlink</button>
+        <button data-globe="gps-ops" class="flex-1 bg-cyber-green text-black text-[9px] py-1 rounded font-bold">GPS</button>
       </div>
     </div>
 
-    <!-- MAP 2D -->
     <div id="tabMap" class="tab-content hidden bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex-col gap-2 shadow-xl backdrop-blur-sm">
       <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px]">
         <span class="font-bold text-cyber-cyan flex items-center gap-1"><i class="fa-solid fa-map"></i> Leaflet 2D Map</span>
@@ -186,14 +191,13 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', 'Cai
           <div id="issVis" class="text-cyber-cyan font-bold">—</div>
         </div>
       </div>
-      <button onclick="updateISS(true)" class="bg-cyber-cyan text-black text-[10px] py-1 rounded font-bold">تحديث ISS</button>
+      <button id="btnUpdateISS" class="bg-cyber-cyan text-black text-[10px] py-1 rounded font-bold">تحديث ISS</button>
     </div>
 
-    <!-- SPACE -->
     <div id="tabSpace" class="tab-content hidden bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex-col gap-2 shadow-xl backdrop-blur-sm max-h-[55vh] overflow-y-auto">
       <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px]">
         <span class="font-bold neon-gold flex items-center gap-1"><i class="fa-solid fa-image"></i> NASA APOD</span>
-        <button onclick="loadAPOD()" class="text-gray-500 hover:text-cyber-cyan text-[9px]">🔄</button>
+        <button data-cmd="apod" class="text-gray-500 hover:text-cyber-cyan text-[9px]">🔄</button>
       </div>
       <img id="apodImage" src="" alt="NASA APOD" onerror="this.style.display='none'">
       <div id="apodInfo" class="text-[9px] text-gray-400 max-h-16 overflow-y-auto"></div>
@@ -203,7 +207,6 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', 'Cai
       <div id="launchesBox" class="max-h-32 overflow-y-auto space-y-1 text-[9px]"></div>
     </div>
 
-    <!-- VIDEO P2P -->
     <div id="tabVideo" class="tab-content hidden bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex-col gap-2 shadow-xl backdrop-blur-sm">
       <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px]">
         <span class="font-bold text-cyber-magenta flex items-center gap-1"><i class="fa-solid fa-video"></i> Video P2P</span>
@@ -218,53 +221,52 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', 'Cai
         <div class="absolute top-1 right-1 bg-black/70 px-2 py-0.5 rounded text-[8px]">🎥 الطرف الآخر</div>
       </div>
       <div class="flex gap-1">
-        <button onclick="startVideo()" class="flex-1 bg-cyber-cyan text-black text-[10px] py-1 rounded font-bold">📹 بدء</button>
-        <button onclick="stopVideo()" class="flex-1 bg-cyber-magenta text-white text-[10px] py-1 rounded font-bold">⏹ إيقاف</button>
+        <button data-cmd="start-video" class="flex-1 bg-cyber-cyan text-black text-[10px] py-1 rounded font-bold">📹 بدء</button>
+        <button data-cmd="stop-video" class="flex-1 bg-cyber-magenta text-white text-[10px] py-1 rounded font-bold">⏹ إيقاف</button>
       </div>
       <div class="flex gap-1">
         <input type="text" id="videoPeerId" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-white outline-none" placeholder="معرّف الطرف...">
-        <button onclick="callVideoPeer()" class="bg-cyber-green text-black text-[10px] px-2 py-1 rounded font-bold">📞 اتصال</button>
+        <button id="btnCallPeer" class="bg-cyber-green text-black text-[10px] px-2 py-1 rounded font-bold">📞 اتصال</button>
       </div>
       <div class="text-[9px] text-gray-500">معرّفك: <span id="myVideoId" class="text-cyber-green">—</span></div>
+      <div class="text-[9px] text-gray-500">مستوى الصوت:</div>
+      <div id="audioLevel"><div id="audioBar"></div></div>
     </div>
 
-    <!-- MEMORY -->
     <div id="tabMemory" class="tab-content hidden bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex-col gap-2 shadow-xl backdrop-blur-sm">
       <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px]">
         <span class="font-bold text-cyber-purple flex items-center gap-1"><i class="fa-solid fa-brain"></i> Semantic Memory</span>
         <span id="memVecCount" class="text-cyber-gold text-[9px]">0 vec</span>
       </div>
       <div class="flex gap-1">
-        <input type="text" id="memInput" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-white outline-none" placeholder="أضف ذكرى..." onkeydown="if(event.key==='Enter') addMemory($('memInput').value)">
-        <button onclick="addMemory($('memInput').value)" class="bg-cyber-purple text-white text-[10px] px-2 py-1 rounded font-bold">+</button>
+        <input type="text" id="memInput" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-white outline-none" placeholder="أضف ذكرى...">
+        <button id="btnAddMem" class="bg-cyber-purple text-white text-[10px] px-2 py-1 rounded font-bold">+</button>
       </div>
       <div class="flex gap-1">
-        <input type="text" id="memQuery" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-white outline-none" placeholder="ابحث دلالياً..." onkeydown="if(event.key==='Enter') searchMemory($('memQuery').value)">
-        <button onclick="searchMemory($('memQuery').value)" class="bg-cyber-cyan text-black text-[10px] px-2 py-1 rounded font-bold">🔍</button>
+        <input type="text" id="memQuery" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-white outline-none" placeholder="ابحث دلالياً...">
+        <button id="btnSearchMem" class="bg-cyber-cyan text-black text-[10px] px-2 py-1 rounded font-bold">🔍</button>
       </div>
       <div id="memResults" class="bg-cyber-bg/90 border border-cyber-border rounded p-2 h-28 overflow-y-auto text-[9px]"></div>
       <div class="flex justify-between text-[9px]">
-        <button onclick="dumpMemory()" class="text-cyber-cyan hover:text-white">عرض الكل</button>
-        <button onclick="clearMemory()" class="text-red-400 hover:text-red-300">مسح الذاكرة</button>
+        <button id="btnDumpMem" class="text-cyber-cyan hover:text-white">عرض الكل</button>
+        <button id="btnClearMem" class="text-red-400 hover:text-red-300">مسح الذاكرة</button>
       </div>
     </div>
 
-    <!-- AGENT -->
     <div id="tabAgent" class="tab-content hidden bg-cyber-panel/90 border border-cyber-border rounded-xl p-3 flex-col gap-2 shadow-xl backdrop-blur-sm">
       <div class="flex justify-between items-center border-b border-cyber-border pb-1.5 text-[10px]">
         <span class="font-bold text-cyber-magenta flex items-center gap-1"><i class="fa-solid fa-robot"></i> Self-Healing Agent</span>
         <span id="queueCount" class="text-cyber-gold text-[9px]">0</span>
       </div>
       <div class="flex gap-1">
-        <input type="text" id="agentInput" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-white outline-none" placeholder="هدف للوكيل..." onkeydown="if(event.key==='Enter') enqueueGoal($('agentInput').value)">
-        <button onclick="enqueueGoal($('agentInput').value)" class="bg-cyber-cyan text-black text-[10px] px-3 py-1 rounded font-bold">تنفيذ</button>
+        <input type="text" id="agentInput" class="flex-1 bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[10px] text-white outline-none" placeholder="هدف للوكيل...">
+        <button id="btnAgent" class="bg-cyber-cyan text-black text-[10px] px-3 py-1 rounded font-bold">تنفيذ</button>
       </div>
       <div id="agentLogBox" class="bg-cyber-bg/90 border border-cyber-border rounded p-2 h-32 overflow-y-auto text-[9px] space-y-1">
         <div class="text-gray-500">جاهز...</div>
       </div>
     </div>
 
-    <!-- CTF -->
     <div class="bg-cyber-panel/90 border border-cyber-border rounded-xl p-2 flex flex-col shadow-xl max-h-24">
       <div class="flex justify-between items-center border-b border-cyber-border pb-1 text-[10px] mb-1">
         <span class="font-bold text-cyber-magenta"><i class="fa-solid fa-shield-halved"></i> CTF</span>
@@ -273,7 +275,6 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', 'Cai
       <div id="ctfBox" class="flex-1 overflow-y-auto space-y-1 text-[9px] terminal-output"></div>
     </div>
 
-    <!-- LEDGER -->
     <div class="flex-1 bg-cyber-panel/90 border border-cyber-border rounded-xl p-2 flex flex-col shadow-xl overflow-hidden min-h-20">
       <div class="flex justify-between items-center border-b border-cyber-border pb-1 text-[10px] mb-1">
         <span class="font-bold text-cyber-gold"><i class="fa-solid fa-link"></i> Ledger</span>
@@ -285,18 +286,20 @@ body { background-color: #030014; color: #e2e8f0; font-family: 'Fira Code', 'Cai
 </main>
 
 <footer class="relative z-10 bg-cyber-panel/95 border-t border-cyber-border px-3 py-1 flex justify-between items-center text-[10px] text-gray-400">
-  <div>© 2026 <span class="text-cyber-magenta font-bold">لافي منير</span> — v50.0 OMEGA Ω</div>
+  <div>© 2026 <span class="text-cyber-magenta font-bold">لافي منير</span> — v50.1 OMEGA Ω</div>
   <div id="footerStatus" class="text-cyber-green font-bold">OMEGA ONLINE</div>
 </footer>
 
-<script type="module">
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   SOVEREIGN OS v50.1 NEXUS OMEGA — SINGLE FILE BUILD (FIXED)
+   ═══════════════════════════════════════════════════════════════ */
 "use strict";
 
-/* ═══════════════════════════════════════════════════════════════
-   SOVEREIGN OS v50.0 NEXUS OMEGA
-   🌍 Globe 3D + 🎥 Video P2P + 🗣️ Voice + 🧠 Memory + 📲 Offline
-   ═══════════════════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+window.$ = $;
 
+/* ─── State ─── */
 let currentPath = "/root";
 let vfs = {};
 let auditLedger = [];
@@ -304,46 +307,37 @@ let commandHistory = [];
 let historyIndex = -1;
 let idb = null;
 
-// Maps
 let issMap = null, issMarker = null, issTrail = null, issTrailPoints = [];
-let globeWorld = null, globeArcsData = [], globeRingsData = [];
-let satData = [], satMarkers = [], globeSatData = [];
-let issInterval = null;
+let globeWorld = null, globeResizeObserver = null;
+let satData = [], globeSatData = [];
+let issInterval = null, globeInterval = null;
+let globeInitialized = false;
 
-// CTF + Stats
 let ctfScore = 0;
-let stats = { goalsDone: 0, goalsFail: 0, goalsRetried: 0, loops: 0, aiQueries: 0, p2pMessages: 0, photos: 0, memories: 0, voiceCmds: 0 };
+let stats = { goalsDone:0, goalsFail:0, goalsRetried:0, loops:0, aiQueries:0, p2pMessages:0, photos:0, memories:0, voiceCmds:0 };
 let goalQueue = [];
 let loopActive = false;
 let loopInterval = null;
 let agentBusy = false;
 
-// P2P
 let peer = null, connections = {}, myPeerId = "";
-let activeCall = null, currentCall = null;
-let mediaCallStream = null;
+let currentCall = null, mediaCallStream = null;
 
-// LLM
 let llmEngine = null, llmLoading = false, aiDrivesAgent = false;
 
-// Sensors
 let cameraStream = null, micStream = null, audioCtx = null, audioAnalyser = null;
-
-// Voice
 let recognition = null, voiceActive = false;
 
-// Memory (Vector DB)
-let memoryVectors = []; // [{id, text, vec:[...] , meta}]
+let memoryVectors = [];
+let embedderPipeline = null;
 
-const $ = id => document.getElementById(id);
 const termOutput = $("terminalOutput");
 const termInput = $("terminalInput");
 
 /* ─── Utils ─── */
-function esc(s) {
-  return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
-}
+const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+
 function printToTerm(text, color = "text-gray-300") {
   const div = document.createElement("div");
   div.className = "font-mono " + color;
@@ -352,24 +346,55 @@ function printToTerm(text, color = "text-gray-300") {
   termOutput.scrollTop = termOutput.scrollHeight;
   while (termOutput.children.length > 500) termOutput.removeChild(termOutput.firstChild);
 }
+
 function notify(msg, color) {
   const n = $("notification");
   n.textContent = msg;
-  n.className = "fixed top-20 left-1/2 -translate-x-1/2 " + (color || "bg-cyber-cyan text-black") + " px-6 py-3 rounded-lg font-bold z-[200] shadow-2xl text-sm text-center max-w-[90%]";
+  n.className = "fixed top-20 left-1/2 -translate-x-1/2 " + (color || "bg-cyber-cyan text-black") +
+    " px-6 py-3 rounded-lg font-bold z-[200] shadow-2xl text-sm text-center max-w-[90%]";
   n.classList.remove("hidden");
-  setTimeout(() => n.classList.add("hidden"), 2500);
+  clearTimeout(n._t);
+  n._t = setTimeout(() => n.classList.add("hidden"), 2500);
 }
-function setStatus(id, text, cls) {
+
+const setStatus = (id, text, cls) => {
   const el = $(id); if (!el) return;
   el.textContent = text;
   el.className = "font-bold " + (cls || "");
+};
+
+function safeEval(expr) {
+  if (!/^[\d\s+\-*/().%^]+$/.test(expr)) return null;
+  try {
+    const sanitized = expr.replace(/\^/g, "**");
+    return Function('"use strict";return (' + sanitized + ')')();
+  } catch { return null; }
+}
+
+/* ─── safeFetch مع مهلة حقيقية ─── */
+async function safeFetch(url, options = {}, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const r = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(timer);
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return await r.json();
+  } catch (e) {
+    clearTimeout(timer);
+    if (e.name === "AbortError") {
+      throw new Error("انتهت المهلة — " + (url.split("/")[2] || ""));
+    }
+    const msg = navigator.onLine ? "تعذّر الوصول للمصدر" : "أنت غير متصل بالإنترنت";
+    throw new Error(msg + " — " + (url.split("/")[2] || ""));
+  }
 }
 
 /* ─── IndexedDB ─── */
 function initIDB() {
   return new Promise(res => {
     try {
-      const r = indexedDB.open("Omega_v50", 1);
+      const r = indexedDB.open("Omega_v50_1", 1);
       r.onupgradeneeded = e => {
         const d = e.target.result;
         if (!d.objectStoreNames.contains("vfs")) d.createObjectStore("vfs");
@@ -378,19 +403,20 @@ function initIDB() {
       };
       r.onsuccess = e => { idb = e.target.result; res(true); };
       r.onerror = () => res(false);
-    } catch (e) { res(false); }
+    } catch { res(false); }
   });
 }
 async function saveVFS() {
   if (!idb) return;
   try {
     const tx = idb.transaction("vfs","readwrite");
-    const s = tx.objectStore("vfs"); s.clear();
+    const s = tx.objectStore("vfs");
+    s.clear();
     for (const [k,v] of Object.entries(vfs)) {
       if (v.data && typeof v.data === "string" && v.data.length > 400000) continue;
       s.put(v, k);
     }
-  } catch (e) {}
+  } catch {}
 }
 async function loadVFS() {
   if (!idb) return null;
@@ -398,18 +424,19 @@ async function loadVFS() {
     try {
       const tx = idb.transaction("vfs","readonly");
       const s = tx.objectStore("vfs");
-      const r = s.getAll(); const k = s.getAllKeys();
+      const r = s.getAll(), k = s.getAllKeys();
       tx.oncomplete = () => {
-        const o = {}; r.result.forEach((v,i) => o[k.result[i]] = v);
+        const o = {};
+        (r.result||[]).forEach((v,i) => o[(k.result||[])[i]] = v);
         res(Object.keys(o).length ? o : null);
       };
       tx.onerror = () => res(null);
-    } catch (e) { res(null); }
+    } catch { res(null); }
   });
 }
 async function saveLedger() {
   if (!idb) return;
-  try { idb.transaction("ledger","readwrite").objectStore("ledger").put(auditLedger,"chain"); } catch (e) {}
+  try { idb.transaction("ledger","readwrite").objectStore("ledger").put(auditLedger,"chain"); } catch {}
 }
 async function loadLedger() {
   if (!idb) return null;
@@ -419,7 +446,7 @@ async function loadLedger() {
       const req = tx.objectStore("ledger").get("chain");
       tx.oncomplete = () => res(req.result || null);
       tx.onerror = () => res(null);
-    } catch (e) { res(null); }
+    } catch { res(null); }
   });
 }
 async function saveMemory() {
@@ -429,7 +456,7 @@ async function saveMemory() {
     const s = tx.objectStore("memory");
     s.clear();
     memoryVectors.forEach(m => s.put(m));
-  } catch (e) {}
+  } catch {}
 }
 async function loadMemory() {
   if (!idb) return [];
@@ -439,7 +466,7 @@ async function loadMemory() {
       const req = tx.objectStore("memory").getAll();
       tx.oncomplete = () => res(req.result || []);
       tx.onerror = () => res([]);
-    } catch (e) { res([]); }
+    } catch { res([]); }
   });
 }
 
@@ -469,7 +496,7 @@ async function verifyChain(silent) {
     if (i > 0 && b.prevHash !== auditLedger[i-1].hash) { ok = false; break; }
   }
   $("chainValid").textContent = ok ? "✓" : "✗";
-  $("chainValid").className = ok ? "text-cyber-green text-[9px]" : "text-red-400 text-[9px]";
+  $("chainValid").className = "text-[9px] " + (ok ? "text-cyber-green" : "text-red-400");
   if (!silent) printToTerm(ok ? "✅ السلسلة سليمة" : "❌ مكسورة", ok ? "text-cyber-green" : "text-red-400");
   return ok;
 }
@@ -485,48 +512,46 @@ function renderLedgerUI() {
 }
 
 /* ─── VFS ─── */
-function initVFS() {
-  return {
-    "/": { type:"dir", children:["root","etc","space","photos","ctf","tmp"] },
-    "/root": { type:"dir", children:["readme.txt"] },
-    "/root/readme.txt": { type:"file", content:"SOVEREIGN OS v50.0 OMEGA ∞ — كل شيء ذاتي" },
-    "/etc": { type:"dir", children:[] },
-    "/space": { type:"dir", children:["iss.json"] },
-    "/space/iss.json": { type:"file", content:"{}" },
-    "/photos": { type:"dir", children:[] },
-    "/ctf": { type:"dir", children:[] },
-    "/tmp": { type:"dir", children:[] }
-  };
-}
+const initVFS = () => ({
+  "/": { type:"dir", children:["root","etc","space","photos","ctf","tmp"] },
+  "/root": { type:"dir", children:["readme.txt"] },
+  "/root/readme.txt": { type:"file", content:"SOVEREIGN OS v50.1 OMEGA ∞" },
+  "/etc": { type:"dir", children:[] },
+  "/space": { type:"dir", children:["iss.json"] },
+  "/space/iss.json": { type:"file", content:"{}" },
+  "/photos": { type:"dir", children:[] },
+  "/ctf": { type:"dir", children:[] },
+  "/tmp": { type:"dir", children:[] }
+});
 function resolvePath(a) {
   if (!a) return currentPath;
   if (a === "~") return "/root";
   let base = a.startsWith("/") ? a : (currentPath === "/" ? "" : currentPath) + "/" + a;
-  const parts = base.split("/").filter(Boolean);
   const stack = [];
-  for (const p of parts) {
+  for (const p of base.split("/").filter(Boolean)) {
     if (p === ".") continue;
-    if (p === "..") stack.pop(); else stack.push(p);
+    if (p === "..") stack.pop();
+    else stack.push(p);
   }
   return "/" + stack.join("/") || "/";
 }
-function parentOf(p) { if (p === "/") return "/"; const i = p.lastIndexOf("/"); return i <= 0 ? "/" : p.slice(0,i); }
-function baseName(p) { if (p === "/") return "/"; return p.slice(p.lastIndexOf("/")+1); }
+const parentOf = p => p === "/" ? "/" : (p.lastIndexOf("/") <= 0 ? "/" : p.slice(0, p.lastIndexOf("/")));
+const baseName = p => p === "/" ? "/" : p.slice(p.lastIndexOf("/")+1);
 function ensureParent(path) {
   const par = parentOf(path), name = baseName(path);
-  if (vfs[par] && vfs[par].children && !vfs[par].children.includes(name)) vfs[par].children.push(name);
+  if (vfs[par]?.children && !vfs[par].children.includes(name)) vfs[par].children.push(name);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   1️⃣ GLOBE 3D — kرة أرضية للأقمار
-   ═══════════════════════════════════════════════════════════ */
+/* ─── Globe 3D ─── */
 function initGlobe() {
   if (typeof Globe === "undefined") {
-    printToTerm("⚠️ Globe.gl لم تُحمّل بعد", "text-yellow-400");
+    printToTerm("⚠️ Globe.gl لم تُحمّل — 2D فقط", "text-yellow-400");
     return;
   }
+  const container = $("globeContainer");
+  if (!container) return;
   try {
-    globeWorld = Globe()($("globeContainer"))
+    globeWorld = Globe()(container)
       .globeImageUrl("//unpkg.com/three-globe/example/img/earth-blue-marble.jpg")
       .bumpImageUrl("//unpkg.com/three-globe/example/img/earth-topology.png")
       .backgroundImageUrl("//unpkg.com/three-globe/example/img/night-sky.png")
@@ -536,17 +561,14 @@ function initGlobe() {
       .atmosphereAltitude(0.22)
       .pointOfView({ lat: 20, lng: 0, altitude: 2.5 }, 1000);
 
-    // الأقمار كنقاط
     globeWorld
       .pointsData(globeSatData)
-      .pointLat("lat")
-      .pointLng("lng")
+      .pointLat("lat").pointLng("lng")
       .pointColor(d => d.type === "iss" ? "#00f2fe" : "#ffd700")
       .pointAltitude(d => d.type === "iss" ? 0.15 : 0.05)
       .pointRadius(d => d.type === "iss" ? 0.6 : 0.3)
-      .pointLabel(d => "<b style='color:" + (d.type === "iss" ? "#00f2fe" : "#ffd700") + "'>" + esc(d.name) + "</b><br>" + d.norad);
+      .pointLabel(d => '<b style="color:' + (d.type==="iss"?"#00f2fe":"#ffd700") + '">' + esc(d.name) + '</b><br>' + d.norad);
 
-    // حلقات
     globeWorld
       .ringsData([])
       .ringColor(() => "#ff007f")
@@ -554,174 +576,199 @@ function initGlobe() {
       .ringPropagationSpeed(3)
       .ringRepeatPeriod(800);
 
+    globeResizeObserver = new ResizeObserver(() => {
+      if (!globeWorld || !container) return;
+      const w = container.clientWidth;
+      if (w > 0) globeWorld.width(w).height(container.clientHeight || 200);
+    });
+    globeResizeObserver.observe(container);
+
+    globeInitialized = true;
     printToTerm("🌍 Globe 3D جاهز", "text-cyber-green");
-    if (Notification.permission === "granted") new Notification("🌍 Globe 3D", { body: "كرة أرضية جاهزة" });
   } catch (e) {
+    container.innerHTML = '<div class="globe-fallback">⚠️ Globe 3D غير متاح<br>استخدم تبويب 2D</div>';
     printToTerm("❌ Globe: " + e.message, "text-red-400");
   }
 }
+
+const CORS_PROXY = "https://corsproxy.io/?";
+const proxyUrl = u => CORS_PROXY + encodeURIComponent(u);
+
+async function fetchTLE(group) {
+  const urls = [
+    proxyUrl("https://celestrak.org/NORAD/elements/gp.php?GROUP=" + group + "&FORMAT=json"),
+    "https://tle.ivanstanojevic.me/api/tle?search=" + group,
+    "https://celestrak.org/NORAD/elements/gp.php?GROUP=" + group + "&FORMAT=json"
+  ];
+  for (const u of urls) {
+    try {
+      const data = await safeFetch(u, {}, 10000);
+      if (data.member) {
+        return data.member.map(m => ({
+          OBJECT_NAME: m.name, NORAD_CAT_ID: m.satelliteId,
+          TLE_LINE1: m.line1, TLE_LINE2: m.line2
+        }));
+      }
+      if (Array.isArray(data)) return data;
+    } catch (e) { console.warn("TLE fail:", u, e.message); }
+  }
+  throw new Error("فشل جلب TLE — تحقق من الاتصال");
+}
+
 async function loadGlobeSats(group) {
   group = group || "stations";
-  printToTerm("🌍 تحميل " + group + " على Globe 3D...", "text-cyber-cyan");
+  printToTerm("🌍 تحميل " + group + "...", "text-cyber-cyan");
   try {
-    const r = await fetch("https://celestrak.org/NORAD/elements/gp.php?GROUP=" + encodeURIComponent(group) + "&FORMAT=json");
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    const sats = await r.json();
-    globeSatData = [];
-    satData = []; // shared
-
+    const sats = await fetchTLE(group);
+    globeSatData = []; satData = [];
     sats.forEach(s => {
       try {
         const satrec = satellite.twoline2satrec(s.TLE_LINE1, s.TLE_LINE2);
-        const record = { name: s.OBJECT_NAME, norad: s.NORAD_CAT_ID, satrec };
-        satData.push(record);
-        globeSatData.push(record);
-      } catch (e) {}
+        const rec = { name: s.OBJECT_NAME, norad: s.NORAD_CAT_ID, satrec };
+        satData.push(rec); globeSatData.push(rec);
+      } catch {}
     });
-
     $("globeSatCount").textContent = globeSatData.length;
     $("satCount").textContent = satData.length;
-    printToTerm("  ✅ " + globeSatData.length + " قمر على Globe", "text-cyber-green");
-
+    printToTerm("  ✅ " + globeSatData.length + " قمر", "text-cyber-green");
     updateGlobePositions();
+    if (globeInterval) clearInterval(globeInterval);
+    globeInterval = setInterval(() => { if (!document.hidden) updateGlobePositions(); }, 5000);
     await addBlock("GLOBE_LOAD", globeSatData.length + " sats " + group);
-
-    // شغّل التحديث الدوري
-    if (!window._globeInterval) {
-      window._globeInterval = setInterval(updateGlobePositions, 2000);
-    }
-  } catch (e) { printToTerm("❌ " + e.message, "text-red-400"); }
+  } catch (e) {
+    printToTerm("❌ " + e.message, "text-red-400");
+  }
 }
 function updateGlobePositions() {
+  if (!globeInitialized) return;
   const now = new Date();
   globeSatData.forEach(sd => {
     if (!sd.satrec) return;
     try {
       const pv = satellite.propagate(sd.satrec, now);
-      if (!pv || !pv.position) return;
+      if (!pv?.position) return;
       const gmst = satellite.gstime(now);
       const geo = satellite.eciToGeodetic(pv.position, gmst);
       const lat = satellite.degreesLat(geo.latitude);
       const lon = satellite.degreesLong(geo.longitude);
-      const alt = geo.height;
       if (isNaN(lat) || isNaN(lon)) return;
-      sd.lat = lat; sd.lng = lon; sd.alt = alt;
-    } catch (e) {}
+      sd.lat = lat; sd.lng = lon; sd.alt = geo.height;
+    } catch {}
   });
   if (globeWorld) globeWorld.pointsData([...globeSatData]);
 }
-// ISS marker على Globe
-async function updateISSOnGlobe(d) {
+
+/* ✅ إصلاح: تستقبل {lat, lon, alt} وتُحوّل داخليًا إلى lng لـ Globe */
+function updateISSOnGlobe(d) {
   if (!globeWorld || !d) return;
-  // ضع ISS كنقطة خاصة
-  const issIndex = globeSatData.findIndex(s => s.type === "iss");
+  const idx = globeSatData.findIndex(s => s.type === "iss");
   const rec = { name: "ISS", norad: "25544", lat: d.lat, lng: d.lon, alt: d.alt, type: "iss" };
-  if (issIndex >= 0) globeSatData[issIndex] = rec;
+  if (idx >= 0) globeSatData[idx] = rec;
   else globeSatData.push(rec);
   globeWorld.pointsData([...globeSatData]);
-
-  // رنّ حول ISS
   globeWorld.ringsData([{ lat: d.lat, lng: d.lon }]);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   2️⃣ ISS + Leaflet 2D
-   ═══════════════════════════════════════════════════════════ */
+/* ─── Leaflet 2D ─── */
 function initMap() {
+  if (typeof L === "undefined") {
+    printToTerm("⚠️ Leaflet غير محمّل", "text-yellow-400");
+    const c = $("mapContainer");
+    if (c) c.innerHTML = '<div class="globe-fallback">⚠️ Leaflet غير متاح</div>';
+    return false;
+  }
   try {
     issMap = L.map('mapContainer', { zoomControl: false, attributionControl: false, worldCopyJump: true }).setView([0,0], 2);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 6 }).addTo(issMap);
     issMarker = L.circleMarker([0,0], { radius: 7, color: '#00f2fe', fillColor: '#00f2fe', fillOpacity: 0.9, weight: 2 }).addTo(issMap);
     issMarker.bindPopup("<b style='color:#00f2fe'>🛰️ ISS</b>");
     issTrail = L.polyline([], { color: '#ff007f', weight: 2, opacity: 0.7 }).addTo(issMap);
-  } catch (e) { console.error(e); }
+    return true;
+  } catch (e) {
+    printToTerm("❌ Leaflet: " + e.message, "text-red-400");
+    return false;
+  }
 }
 async function fetchISS() {
   try {
-    const r = await fetch("https://api.wheretheiss.at/v1/satellites/25544");
-    if (r.ok) {
-      const d = await r.json();
-      return { lat: d.latitude, lon: d.longitude, alt: d.altitude, vel: d.velocity, vis: d.visibility };
-    }
-  } catch (e) {}
-  return null;
+    return await safeFetch("https://api.wheretheiss.at/v1/satellites/25544", {}, 5000);
+  } catch { return null; }
 }
 async function updateISS(center) {
   const d = await fetchISS();
-  if (!d) { setStatus("issCoords", "NO DATA", "status-error"); return; }
-  $("issLat").textContent = d.lat.toFixed(2) + "°";
-  $("issLon").textContent = d.lon.toFixed(2) + "°";
-  $("issAlt").textContent = d.alt.toFixed(0) + "km";
-  $("issVis").textContent = d.vis === "daylight" ? "☀️" : "🌙";
-  $("issCoords").textContent = d.lat.toFixed(1) + "°, " + d.lon.toFixed(1) + "°";
-  $("globeLat").textContent = d.lat.toFixed(2) + "°";
-  $("globeLon").textContent = d.lon.toFixed(2) + "°";
-  $("globeAlt").textContent = d.alt.toFixed(0) + "km";
+  if (!d) { $("issCoords").textContent = "NO DATA"; return; }
+  const lat = d.latitude, lon = d.longitude, alt = d.altitude;
+  $("issLat").textContent = lat.toFixed(2) + "°";
+  $("issLon").textContent = lon.toFixed(2) + "°";
+  $("issAlt").textContent = alt.toFixed(0) + "km";
+  $("issVis").textContent = d.visibility === "daylight" ? "☀️" : "🌙";
+  $("issCoords").textContent = lat.toFixed(1) + "°, " + lon.toFixed(1) + "°";
+  $("globeLat").textContent = lat.toFixed(2) + "°";
+  $("globeLon").textContent = lon.toFixed(2) + "°";
+  $("globeAlt").textContent = alt.toFixed(0) + "km";
 
   if (issMarker) {
-    issMarker.setLatLng([d.lat, d.lon]);
-    const p = issMarker.getPopup();
-    if (p) p.setContent("<b style='color:#00f2fe'>🛰️ ISS</b><br>" + d.lat.toFixed(2) + "°, " + d.lon.toFixed(2) + "<br>" + d.alt.toFixed(0) + " km");
+    issMarker.setLatLng([lat, lon]);
+    issMarker.getPopup()?.setContent(
+      '<b style="color:#00f2fe">🛰️ ISS</b><br>' + lat.toFixed(2) + '°, ' + lon.toFixed(2) + '<br>' + alt.toFixed(0) + ' km'
+    );
   }
-  issTrailPoints.push([d.lat, d.lon]);
+  issTrailPoints.push([lat, lon]);
   if (issTrailPoints.length > 100) issTrailPoints.shift();
   if (issTrail) issTrail.setLatLngs(issTrailPoints);
-  if (center && issMap) issMap.panTo([d.lat, d.lon], { animate: true });
-  vfs["/space/iss.json"].content = JSON.stringify(d, null, 2);
+  if (center && issMap) issMap.panTo([lat, lon], { animate: true });
+  if (vfs["/space/iss.json"]) vfs["/space/iss.json"].content = JSON.stringify(d, null, 2);
 
-  // Globe
-  updateISSOnGlobe(d);
+  /* ✅ إصلاح: نرسل lon (وليس lng) */
+  updateISSOnGlobe({ lat, lon, alt });
 }
 
-/* ═══════════════════════════════════════════════════════════
-   3️⃣ NASA + SpaceX
-   ═══════════════════════════════════════════════════════════ */
+/* ─── NASA + SpaceX ─── */
 async function loadAPOD() {
   try {
-    const r = await fetch("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY");
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    const d = await r.json();
+    const d = await safeFetch("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY", {}, 10000);
     $("apodImage").src = d.url;
     $("apodImage").style.display = "block";
-    $("apodInfo").innerHTML = '<div class="text-cyber-gold font-bold">' + esc(d.title) + '</div>' +
+    $("apodInfo").innerHTML =
+      '<div class="text-cyber-gold font-bold">' + esc(d.title) + '</div>' +
       '<div class="text-gray-400">' + esc(d.date) + '</div>' +
       '<div class="text-gray-300 mt-1">' + esc((d.explanation||"").slice(0, 200)) + '...</div>';
     printToTerm("🌌 APOD: " + d.title, "text-cyber-cyan");
     await addBlock("APOD", d.title.slice(0,50));
-    addMemory("NASA APOD: " + d.title + " — " + (d.explanation||"").slice(0,100));
+    await addMemory("NASA APOD: " + d.title + " — " + (d.explanation||"").slice(0,100));
   } catch (e) { printToTerm("❌ APOD: " + e.message, "text-red-400"); }
 }
 async function loadLaunches() {
   try {
-    const r = await fetch("https://api.spacexdata.com/v5/launches/upcoming?limit=6");
-    if (!r.ok) throw new Error();
-    const ls = await r.json();
+    const ls = await safeFetch("https://api.spacexdata.com/v5/launches/upcoming?limit=6", {}, 10000);
     const box = $("launchesBox");
     box.innerHTML = "";
     ls.forEach(l => {
-      const d = document.createElement("div");
-      d.className = "launch-card";
       const date = new Date(l.date_utc);
       const days = Math.ceil((date - Date.now()) / 86400000);
-      d.innerHTML = '<div class="text-cyber-gold font-bold">🚀 ' + esc(l.name) + '</div>' +
+      const div = document.createElement("div");
+      div.className = "launch-card";
+      div.innerHTML = '<div class="text-cyber-gold font-bold">🚀 ' + esc(l.name) + '</div>' +
         '<div class="text-gray-400">📅 ' + date.toLocaleDateString('ar-EG') + ' • ' + days + ' يوم</div>';
-      box.appendChild(d);
+      box.appendChild(div);
     });
     printToTerm("🚀 " + ls.length + " إطلاق SpaceX", "text-cyber-green");
   } catch (e) { printToTerm("❌ SpaceX: " + e.message, "text-red-400"); }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   4️⃣ WebLLM Phi-3
-   ═══════════════════════════════════════════════════════════ */
+/* ─── WebLLM ─── */
 async function loadWebLLM() {
   if (llmEngine || llmLoading) return;
+  if (!navigator.gpu) {
+    printToTerm("⚠️ WebGPU غير مدعوم — استخدم 'ai'", "text-yellow-400");
+    return;
+  }
   llmLoading = true;
   printToTerm("🧠 تحميل Phi-3...", "text-cyber-green");
   try {
     const webllm = await import("https://esm.run/@mlc-ai/web-llm@0.2.72");
     llmEngine = await webllm.CreateMLCEngine("Phi-3-mini-4k-instruct-q4f16_1-MLC", {
-      initProgressCallback: r => printToTerm("   " + (r.text||"") + " " + (r.progress*100).toFixed(0) + "%", "text-gray-500")
+      initProgressCallback: r => printToTerm("   " + (r.text||"") + " " + ((r.progress||0)*100).toFixed(0) + "%", "text-gray-500")
     });
     printToTerm("✅ Phi-3 جاهز", "text-cyber-green");
     await addBlock("LLM_LOAD", "Phi-3-mini");
@@ -729,7 +776,7 @@ async function loadWebLLM() {
   finally { llmLoading = false; }
 }
 async function llmAsk(q, system) {
-  if (!llmEngine) throw new Error("LLM not loaded");
+  if (!llmEngine) throw new Error("LLM not loaded — شغّل llm-load أولاً");
   const reply = await llmEngine.chat.completions.create({
     messages: [
       { role: "system", content: system || "أنت مساعد في SOVEREIGN OMEGA. أجب بالعربية بإيجاز." },
@@ -745,14 +792,16 @@ async function llmPlanGoal(goal) {
     const txt = await llmAsk(goal, "أنت وكيل أوامر. الأوامر: iss, sats, apod, launches, ctf, sysinfo, ls, cat, chain, globe, stats, help. أرجع JSON فقط: {\"steps\":[\"cmd1\",\"cmd2\"]}.");
     const m = txt.match(/\{[\s\S]*\}/);
     if (m) { const p = JSON.parse(m[0]); if (Array.isArray(p.steps)) return p.steps; }
-  } catch (e) {}
+  } catch {}
   return null;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   5️⃣ VIDEO P2P
-   ═══════════════════════════════════════════════════════════ */
+/* ─── Video P2P ─── */
 function initPeer() {
+  if (typeof Peer === "undefined") {
+    printToTerm("⚠️ PeerJS غير محمّل — P2P معطّل", "text-yellow-400");
+    return false;
+  }
   try {
     peer = new Peer({
       config: { iceServers: [
@@ -760,28 +809,50 @@ function initPeer() {
         { urls: "stun:global.stun.twilio.com:3478" }
       ]}
     });
+    const connectTimeout = setTimeout(() => {
+      if (!myPeerId) printToTerm("⚠️ PeerJS لم يستجب — قد تكون الشبكة محجوبة", "text-yellow-400");
+    }, 10000);
+
     peer.on("open", id => {
+      clearTimeout(connectTimeout);
       myPeerId = id;
-      $("myPeerId").value = id;
       $("myVideoId").textContent = id;
-      setStatus("p2pStatus", "ONLINE", "status-live");
-      setStatus("p2pNetState", "✅ متصل", "status-live");
-      p2pLog("✅ معرّفك: " + id);
-      printToTerm("🌐 P2P: " + id, "text-cyber-green");
+      printToTerm("🌐 P2P متصل: " + id, "text-cyber-green");
     });
     peer.on("connection", conn => setupConnection(conn));
-    peer.on("call", call => {
-      printToTerm("📞 مكالمة فيديو واردة من: " + call.peer.slice(0,8), "text-cyber-cyan");
-      if (confirm("📞 مكالمة واردة من " + call.peer.slice(0,8) + " — هل تقبل؟")) {
-        call.answer(mediaCallStream);
-        currentCall = call;
-        handleCallStream(call);
-      } else {
-        call.close();
-      }
+    peer.on("call", call => handleIncomingCall(call));
+    peer.on("error", err => {
+      clearTimeout(connectTimeout);
+      printToTerm("🌐 P2P: " + err.message, "text-red-400");
     });
-    peer.on("error", err => p2pLog("❌ " + err.message));
-  } catch (e) { p2pLog("❌ " + e.message); }
+    return true;
+  } catch (e) {
+    printToTerm("❌ PeerJS: " + e.message, "text-red-400");
+    return false;
+  }
+}
+function handleIncomingCall(call) {
+  printToTerm("📞 مكالمة واردة من: " + call.peer.slice(0,8), "text-cyber-cyan");
+  const banner = document.createElement("div");
+  banner.className = "call-banner";
+  banner.innerHTML =
+    '<div style="color:#ff007f;font-weight:bold;margin-bottom:8px;">📞 مكالمة فيديو واردة</div>' +
+    '<div style="font-size:11px;color:#00f2fe;margin-bottom:12px;">من: ' + call.peer.slice(0,12) + '...</div>' +
+    '<div style="display:flex;gap:8px;">' +
+    '<button id="callAccept" style="background:#00ff66;color:#000;">✅ قبول</button>' +
+    '<button id="callReject" style="background:#ff4444;color:#fff;">❌ رفض</button>' +
+    '</div>';
+  document.body.appendChild(banner);
+  const cleanup = () => banner.remove();
+  banner.querySelector("#callAccept").onclick = () => {
+    cleanup();
+    if (!mediaCallStream) { notify("⚠️ شغّل الكاميرا أولاً"); call.close(); return; }
+    call.answer(mediaCallStream);
+    currentCall = call;
+    handleCallStream(call);
+  };
+  banner.querySelector("#callReject").onclick = () => { cleanup(); call.close(); };
+  setTimeout(() => { if (document.body.contains(banner)) { cleanup(); call.close(); } }, 30000);
 }
 async function startVideo() {
   try {
@@ -789,24 +860,23 @@ async function startVideo() {
     $("videoPreview").srcObject = mediaCallStream;
     $("videoState").textContent = "📹 يعمل";
     $("videoState").className = "text-cyber-green text-[9px]";
-    printToTerm("📹 الكاميرا جاهزة للمكالمة", "text-cyber-green");
     await addBlock("VIDEO_START", "Local stream ready");
   } catch (e) { printToTerm("❌ " + e.message, "text-red-400"); }
 }
 function stopVideo() {
   if (mediaCallStream) { mediaCallStream.getTracks().forEach(t => t.stop()); mediaCallStream = null; }
   $("videoPreview").srcObject = null;
-  if (currentCall) { currentCall.close(); currentCall = null; }
+  if (currentCall) { try { currentCall.close(); } catch {} currentCall = null; }
   $("remoteVideo").srcObject = null;
   $("videoState").textContent = "متوقف";
   $("videoState").className = "text-gray-500 text-[9px]";
-  printToTerm("📹 أُوقف", "text-yellow-400");
 }
 function callVideoPeer() {
   const id = $("videoPeerId").value.trim();
   if (!id) { notify("⚠️ معرّف مطلوب"); return; }
   if (!mediaCallStream) { notify("⚠️ شغّل الكاميرا أولاً"); return; }
-  printToTerm("📞 اتصال فيديو بـ: " + id.slice(0,8), "text-cyber-cyan");
+  if (!peer) { notify("⚠️ P2P غير جاهز"); return; }
+  printToTerm("📞 اتصال بـ: " + id.slice(0,8), "text-cyber-cyan");
   const call = peer.call(id, mediaCallStream);
   currentCall = call;
   handleCallStream(call);
@@ -816,51 +886,55 @@ function handleCallStream(call) {
     $("remoteVideo").srcObject = remoteStream;
     $("videoState").textContent = "🎥 متصل";
     $("videoState").className = "text-cyber-green text-[9px]";
-    notify("✅ فيديو الطرف وصل!", "bg-cyber-green text-black");
+    notify("✅ فيديو الطرف وصل!");
   });
   call.on("close", () => {
     $("remoteVideo").srcObject = null;
     $("videoState").textContent = "انتهت";
-    printToTerm("📴 انتهت المكالمة", "text-yellow-400");
   });
   call.on("error", e => printToTerm("❌ مكالمة: " + e.message, "text-red-400"));
 }
 function setupConnection(conn) {
   conn.on("open", () => {
     connections[conn.peer] = conn;
-    p2pLog("✅ متصل: " + conn.peer.slice(0,8));
-    renderPeers();
     notify("🌐 متصل", "bg-cyber-green text-black");
+    printToTerm("🌐 peer متصل: " + conn.peer.slice(0,8), "text-cyber-green");
   });
   conn.on("data", d => { stats.p2pMessages++; handleP2PData(d, conn); });
-  conn.on("close", () => { delete connections[conn.peer]; renderPeers(); });
+  conn.on("close", () => delete connections[conn.peer]);
 }
 function handleP2PData(data, conn) {
-  if (!data || !data.type) return;
-  if (data.type === "chain-broadcast" && Array.isArray(data.chain)) {
-    if (data.chain.length > auditLedger.length) {
-      auditLedger = data.chain;
-      saveLedger();
-      $("chainCount").textContent = auditLedger.length;
-      renderLedgerUI();
-      printToTerm("📥 سلسلة من " + conn.peer.slice(0,8), "text-cyber-green");
-    }
-  } else if (data.type === "chain-request") {
-    conn.send({ type: "chain-broadcast", chain: auditLedger });
-  } else if (data.type === "chat") {
-    printToTerm("💬 [" + conn.peer.slice(0,8) + "]: " + (data.text || ""), "text-cyber-gold");
-  } else if (data.type === "memory-sync" && Array.isArray(data.memories)) {
-    data.memories.forEach(m => { if (!memoryVectors.find(x => x.id === m.id)) memoryVectors.push(m); });
-    saveMemory();
-    updateMemoryUI();
-    printToTerm("🧠 ذكريات مستلمة من " + conn.peer.slice(0,8), "text-cyber-purple");
+  if (!data?.type) return;
+  switch (data.type) {
+    case "chain-broadcast":
+      if (Array.isArray(data.chain) && data.chain.length > auditLedger.length) {
+        auditLedger = data.chain;
+        saveLedger();
+        $("chainCount").textContent = auditLedger.length;
+        renderLedgerUI();
+        printToTerm("📥 سلسلة من " + conn.peer.slice(0,8), "text-cyber-green");
+      }
+      break;
+    case "chain-request":
+      conn.send({ type: "chain-broadcast", chain: auditLedger });
+      break;
+    case "chat":
+      printToTerm("💬 [" + conn.peer.slice(0,8) + "]: " + (data.text || ""), "text-cyber-gold");
+      break;
+    case "memory-sync":
+      if (Array.isArray(data.memories)) {
+        data.memories.forEach(m => { if (!memoryVectors.find(x => x.id === m.id)) memoryVectors.push(m); });
+        saveMemory(); updateMemoryUI();
+        printToTerm("🧠 ذكريات من " + conn.peer.slice(0,8), "text-cyber-purple");
+      }
+      break;
   }
 }
 function broadcastChain() {
   const ps = Object.values(connections);
   if (!ps.length) { notify("⚠️ لا أقران"); return; }
   ps.forEach(c => c.send({ type: "chain-broadcast", chain: auditLedger }));
-  p2pLog("📤 بُثّت (" + auditLedger.length + ")");
+  printToTerm("📤 بُثّت السلسلة", "text-cyber-green");
 }
 function requestChain() {
   const ps = Object.values(connections);
@@ -871,7 +945,7 @@ function broadcastMemory() {
   const ps = Object.values(connections);
   if (!ps.length) { notify("⚠️ لا أقران"); return; }
   ps.forEach(c => c.send({ type: "memory-sync", memories: memoryVectors }));
-  p2pLog("🧠 بث الذاكرة (" + memoryVectors.length + ")");
+  printToTerm("🧠 بُثّت الذاكرة", "text-cyber-purple");
 }
 function broadcastChat() {
   const t = prompt("رسالة:");
@@ -881,106 +955,92 @@ function broadcastChat() {
   ps.forEach(c => c.send({ type: "chat", text: t }));
   printToTerm("💬 [أنت]: " + t, "text-cyber-cyan");
 }
-function renderPeers() {
-  const box = $("peersList"); if (!box) return;
-  box.innerHTML = "";
-  const ids = Object.keys(connections);
-  if (!ids.length) { box.innerHTML = '<div class="text-gray-600">لا يوجد</div>'; return; }
-  ids.forEach(id => {
-    const d = document.createElement("div");
-    d.className = "p2p-peer text-cyber-green";
-    d.textContent = "🟢 " + id.slice(0,16) + "...";
-    box.appendChild(d);
-  });
-}
-function p2pLog(msg) {
-  const box = $("p2pLog"); if (!box) return;
-  const t = new Date().toLocaleTimeString("ar-EG", { hour12: false });
-  const d = document.createElement("div");
-  d.textContent = "[" + t + "] " + msg;
-  box.appendChild(d);
-  box.scrollTop = box.scrollHeight;
-  while (box.children.length > 30) box.removeChild(box.firstChild);
-}
-function copyMyId() {
-  if (myPeerId) { navigator.clipboard.writeText(myPeerId); notify("📋 نُسخ"); }
-}
-function connectToPeer() {
-  const id = $("peerConnectId").value.trim();
-  if (!id || !peer) return;
-  const conn = peer.connect(id);
-  setupConnection(conn);
-}
 
-/* ═══════════════════════════════════════════════════════════
-   6️⃣ VOICE — Web Speech API
-   ═══════════════════════════════════════════════════════════ */
+/* ─── Voice ─── */
 function initVoice() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) {
-    printToTerm("⚠️ متصفحك لا يدعم Web Speech API", "text-yellow-400");
-    return false;
-  }
+  if (!SR) { printToTerm("⚠️ Web Speech API غير مدعوم", "text-yellow-400"); return false; }
   recognition = new SR();
   recognition.lang = "ar-SA";
   recognition.continuous = true;
   recognition.interimResults = true;
-
   recognition.onstart = () => {
     voiceActive = true;
     setStatus("voiceStatus", "LISTENING", "status-live");
     $("btnVoice")?.classList.add("voice-pulse");
-    printToTerm("🎤 الاستماع نشط — تحدث الآن...", "text-cyber-magenta");
+    printToTerm("🎤 استمع...", "text-cyber-magenta");
   };
   recognition.onend = () => {
-    if (voiceActive) { try { recognition.start(); } catch (e) {} }
+    if (voiceActive) { try { recognition.start(); } catch {} }
     else {
       $("btnVoice")?.classList.remove("voice-pulse");
       setStatus("voiceStatus", "OFF", "text-gray-500");
     }
   };
-  recognition.onerror = (e) => {
-    printToTerm("🎤 خطأ: " + e.error, "text-red-400");
-  };
-  recognition.onresult = (event) => {
+  recognition.onerror = e => printToTerm("🎤 خطأ: " + e.error, "text-red-400");
+  recognition.onresult = event => {
     const last = event.results[event.results.length-1];
     if (last.isFinal) {
       const text = last[0].transcript.trim();
       printToTerm("🎤 [قال]: " + text, "text-cyber-magenta");
       stats.voiceCmds++;
-      runCommand(text);
+      runCommand(mapVoiceToCommand(text));
     }
   };
   return true;
 }
-function toggleVoice() {
-  if (!recognition) {
-    if (!initVoice()) { notify("❌ لا يدعم"); return; }
+function mapVoiceToCommand(text) {
+  const t = text.toLowerCase();
+  if (/كرة|أرضي|globe|عالم/i.test(t)) return "globe";
+  if (/قمر|محطة|iss/i.test(t)) return "iss";
+  if (/صورة|فضاء|nasa|apod/i.test(t)) return "apod";
+  if (/إطلاق|صاروخ|spacex/i.test(t)) return "launches";
+  if (/ذاكرة|احفظ|تذكر/i.test(t)) {
+    const m = text.match(/(?:احفظ|تذكر|ذاكرة)\s+(.+)/i);
+    return m ? "mem " + m[1] : "mems";
   }
+  if (/ابحث|recall/i.test(t)) {
+    const m = text.match(/(?:ابحث عن|تذكر لي|recall)\s+(.+)/i);
+    return m ? "recall " + m[1] : "recall";
+  }
+  if (/فيديو|كاميرا|video/i.test(t)) return "video";
+  if (/إحصاء|stats/i.test(t)) return "stats";
+  if (/مساعدة|help/i.test(t)) return "help";
+  if (/مسح|clear/i.test(t)) return "clear";
+  return text;
+}
+function toggleVoice() {
+  if (!recognition && !initVoice()) { notify("❌ غير مدعوم"); return; }
   if (voiceActive) {
     voiceActive = false;
     recognition.stop();
     setStatus("voiceStatus", "OFF", "text-gray-500");
     $("btnVoice")?.classList.remove("voice-pulse");
-    printToTerm("🎤 أُوقف", "text-yellow-400");
   } else {
     voiceActive = true;
-    try { recognition.start(); } catch (e) {}
+    try { recognition.start(); } catch {}
   }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   7️⃣ SEMANTIC MEMORY — Vector DB
-   ═══════════════════════════════════════════════════════════ */
-function tokenize(text) {
-  return (text || "").toLowerCase()
-    .replace(/[^\w\u0600-\u06FF\s]/g, " ")
-    .split(/\s+/)
-    .filter(t => t.length > 1);
+/* ─── Memory ─── */
+async function initEmbedder() {
+  if (embedderPipeline) return embedderPipeline;
+  try {
+    const { pipeline } = await import("https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1");
+    embedderPipeline = await pipeline(
+      "feature-extraction",
+      "Xenova/paraphrase-multilingual-MiniLM-L12-v2",
+      { quantized: true }
+    );
+    printToTerm("🧠 Embedder محمّل", "text-cyber-purple");
+  } catch (e) {
+    printToTerm("⚠️ Embedder فشل — BOW", "text-yellow-400");
+    embedderPipeline = null;
+  }
+  return embedderPipeline;
 }
-function embed(text) {
-  // Bag-of-words hash-based embedding (lightweight)
-  const tokens = tokenize(text);
+function bowEmbed(text) {
+  const tokens = (text || "").toLowerCase().replace(/[^\w\u0600-\u06FF\s]/g," ").split(/\s+/).filter(t => t.length > 1);
   const dim = 128;
   const v = new Array(dim).fill(0);
   tokens.forEach(t => {
@@ -988,31 +1048,39 @@ function embed(text) {
     for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0;
     v[h % dim] += 1;
   });
-  // Normalize
   const mag = Math.sqrt(v.reduce((a,b) => a + b*b, 0)) || 1;
   return v.map(x => x / mag);
 }
+async function embed(text) {
+  if (embedderPipeline) {
+    try {
+      const out = await embedderPipeline(text, { pooling: "mean", normalize: true });
+      return Array.from(out.data);
+    } catch {}
+  }
+  return bowEmbed(text);
+}
 function cosine(a, b) {
+  const len = Math.min(a.length, b.length);
   let d = 0;
-  for (let i = 0; i < a.length; i++) d += a[i] * b[i];
+  for (let i = 0; i < len; i++) d += a[i] * b[i];
   return d;
 }
 async function addMemory(text, meta) {
-  if (!text || !text.trim()) return;
+  if (!text?.trim()) return;
+  const vec = await embed(text);
   const id = "m_" + Date.now() + "_" + Math.random().toString(36).slice(2,6);
-  const vec = embed(text);
   memoryVectors.push({ id, text, vec, meta: meta || {}, ts: new Date().toISOString() });
   await saveMemory();
   updateMemoryUI();
   stats.memories++;
   if ($("memInput")) $("memInput").value = "";
-  printToTerm("🧠 حُفظت ذكرى: " + text.slice(0,40), "text-cyber-purple");
 }
-async function searchMemory(query, topK) {
-  topK = topK || 5;
+async function searchMemory(query, topK = 5) {
   if (!query) return [];
-  const qVec = embed(query);
-  const scored = memoryVectors.map(m => ({ ...m, score: cosine(qVec, m.vec) }))
+  const qVec = await embed(query);
+  const scored = memoryVectors
+    .map(m => ({ ...m, score: cosine(qVec, m.vec) }))
     .filter(m => m.score > 0.01)
     .sort((a,b) => b.score - a.score)
     .slice(0, topK);
@@ -1022,17 +1090,13 @@ async function searchMemory(query, topK) {
 function renderMemResults(results, query) {
   const box = $("memResults"); if (!box) return;
   box.innerHTML = '<div class="text-cyber-gold mb-1">نتائج: "' + esc(query) + '"</div>';
-  if (!results.length) {
-    box.innerHTML += '<div class="text-gray-500">لا نتائج</div>';
-    return;
-  }
+  if (!results.length) { box.innerHTML += '<div class="text-gray-500">لا نتائج</div>'; return; }
   results.forEach(r => {
     const d = document.createElement("div");
     d.className = "memory-item";
     d.innerHTML = '<div class="text-cyber-cyan">[' + (r.score*100).toFixed(1) + '%] ' + esc(r.text.slice(0,100)) + '</div>';
     box.appendChild(d);
   });
-  printToTerm("🧠 نتائج البحث: " + results.length, "text-cyber-purple");
 }
 function dumpMemory() {
   const box = $("memResults");
@@ -1050,30 +1114,28 @@ async function clearMemory() {
   await saveMemory();
   updateMemoryUI();
   $("memResults").innerHTML = '<div class="text-gray-500">مُسحت</div>';
-  printToTerm("🧠 الذاكرة مُسحت", "text-yellow-400");
 }
 function updateMemoryUI() {
   $("memCount").textContent = memoryVectors.length;
   $("memVecCount").textContent = memoryVectors.length + " vec";
 }
 async function ragAnswer(query) {
-  // RAG: ابحث في الذاكرة ثم اطلب من LLM
   const ctx = await searchMemory(query, 3);
   const context = ctx.map(c => "- " + c.text).join("\n");
   if (!llmEngine) {
-    printToTerm("🧠 (بدون LLM) معلومات ذات صلة:\n" + (context || "لا شيء"), "text-cyber-purple");
+    printToTerm("🧠 (بدون LLM) الذكريات المتعلقة:\n" + (context || "لا شيء"), "text-cyber-purple");
     return;
   }
   try {
-    const prompt = "استخدم الذكريات التالية للإجابة:\n" + context + "\n\nالسؤال: " + query;
-    const ans = await llmAsk(prompt, "أجب بالعربية بناءً على الذكريات المتاحة. إذا لم تكن كافية، قل ذلك.");
+    const ans = await llmAsk(
+      "استخدم الذكريات التالية للإجابة:\n" + context + "\n\nالسؤال: " + query,
+      "أجب بالعربية من الذكريات فقط."
+    );
     printToTerm("🧠 RAG: " + ans, "text-cyber-green");
   } catch (e) { printToTerm("❌ " + e.message, "text-red-400"); }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   8️⃣ CAMERA + MIC
-   ═══════════════════════════════════════════════════════════ */
+/* ─── Camera + Mic ─── */
 async function startCamera() {
   try {
     cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
@@ -1084,7 +1146,6 @@ async function startCamera() {
 function stopCamera() {
   if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
   $("videoPreview").srcObject = null;
-  printToTerm("📷 أُوقفت", "text-yellow-400");
 }
 async function capturePhoto() {
   const v = $("videoPreview");
@@ -1093,15 +1154,13 @@ async function capturePhoto() {
   c.width = v.videoWidth || 640; c.height = v.videoHeight || 480;
   c.getContext("2d").drawImage(v, 0, 0);
   const dataUrl = c.toDataURL("image/jpeg", 0.7);
-  const name = "photo_" + Date.now() + ".jpg";
-  const path = "/photos/" + name;
-  vfs[path] = { type:"file", content:"[image]", data:dataUrl, size:dataUrl.length };
+  const path = "/photos/photo_" + Date.now() + ".jpg";
+  vfs[path] = { type:"file", content:"[image]", data:dataUrl };
   ensureParent(path);
   await saveVFS();
   stats.photos++;
   printToTerm("📸 " + path, "text-cyber-green");
-  notify("📸 " + name);
-  await addBlock("PHOTO", name);
+  await addBlock("PHOTO", path);
 }
 async function startMic() {
   try {
@@ -1112,14 +1171,14 @@ async function startMic() {
     audioAnalyser.fftSize = 256;
     src.connect(audioAnalyser);
     const buf = new Uint8Array(audioAnalyser.frequencyBinCount);
-    function loop() {
+    (function loop() {
       if (!audioAnalyser) return;
       audioAnalyser.getByteFrequencyData(buf);
       let s = 0; for (let i = 0; i < buf.length; i++) s += buf[i];
-      $("audioBar").style.width = Math.min(100, (s/buf.length)*1.5) + "%";
+      const bar = $("audioBar");
+      if (bar) bar.style.width = Math.min(100, (s/buf.length)*1.5) + "%";
       requestAnimationFrame(loop);
-    }
-    loop();
+    })();
     printToTerm("🎤 ميك يعمل", "text-cyber-green");
   } catch (e) { printToTerm("❌ " + e.message, "text-red-400"); }
 }
@@ -1127,18 +1186,11 @@ function stopMic() {
   if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
   if (audioCtx) { audioCtx.close(); audioCtx = null; }
   audioAnalyser = null;
-  $("audioBar").style.width = "0%";
-  printToTerm("🎤 أُوقف", "text-yellow-400");
-}
-async function requestNotifPermission() {
-  if (!("Notification" in window)) { notify("❌ لا تدعم"); return; }
-  const p = await Notification.requestPermission();
-  if (p === "granted") new Notification("OMEGA", { body: "الإشعارات تعمل 🎉" });
+  const bar = $("audioBar");
+  if (bar) bar.style.width = "0%";
 }
 
-/* ═══════════════════════════════════════════════════════════
-   Agent + Loop
-   ═══════════════════════════════════════════════════════════ */
+/* ─── Agent + Loop ─── */
 function logAgent(msg, color) {
   const box = $("agentLogBox"); if (!box) return;
   const d = document.createElement("div");
@@ -1149,10 +1201,10 @@ function logAgent(msg, color) {
   while (box.children.length > 60) box.removeChild(box.firstChild);
 }
 function enqueueGoal(goal) {
-  if (!goal || !goal.trim()) return;
+  if (!goal?.trim()) return;
   goalQueue.push({ id:"g_"+Date.now(), goal:goal.trim(), status:"pending", retries:0 });
-  $("agentInput").value = "";
-  $("queueCount").textContent = goalQueue.filter(g=>g.status==="pending").length;
+  const inp = $("agentInput"); if (inp) inp.value = "";
+  $("queueCount").textContent = goalQueue.filter(g => g.status === "pending").length;
   processQueue();
 }
 async function processQueue() {
@@ -1162,15 +1214,13 @@ async function processQueue() {
   agentBusy = true; next.status = "running";
   try {
     logAgent("🚀 " + next.goal);
-    addMemory("هدف منفّذ: " + next.goal, { type: "goal" });
-
+    await addMemory("هدف منفّذ: " + next.goal, { type: "goal" });
     let steps = null;
     if (aiDrivesAgent && llmEngine) {
       steps = await llmPlanGoal(next.goal);
       if (steps) logAgent("🧠 Phi-3: " + steps.length + " خطوة", "text-cyber-purple");
     }
-
-    if (steps && steps.length) {
+    if (steps?.length) {
       for (const s of steps) {
         logAgent("   ⚙️ " + s, "text-gray-400");
         await executeCommand(s);
@@ -1186,45 +1236,43 @@ async function processQueue() {
     next.retries++;
     stats.goalsRetried++;
     if (next.retries <= 2) {
-      const fixMap = { "ls":"ls /", "cat":"ls /root", "cd":"pwd", "mkdir":"ls /", "write":"sysinfo", "chain":"stats" };
+      const fixMap = { ls:"ls /", cat:"ls /root", cd:"pwd", mkdir:"ls /", write:"sysinfo", chain:"stats" };
       const base = next.goal.split(/\s+/)[0].toLowerCase();
       const fixed = fixMap[base] || "sysinfo";
-      logAgent("⚠️ فشل — إصلاح: " + fixed, "text-yellow-400");
+      logAgent("⚠️ إصلاح: " + fixed, "text-yellow-400");
       next.goal = fixed;
       next.status = "pending";
       await addBlock("AGENT_FIX", base + " → " + fixed);
     } else {
       next.status = "failed";
       stats.goalsFail++;
-      logAgent("❌ فشل: " + e.message, "text-red-400");
+      logAgent("❌ فشل", "text-red-400");
     }
   } finally {
     agentBusy = false;
-    $("queueCount").textContent = goalQueue.filter(g=>g.status==="pending").length;
-    if (goalQueue.some(g=>g.status==="pending")) setTimeout(processQueue, 500);
+    $("queueCount").textContent = goalQueue.filter(g => g.status === "pending").length;
+    if (goalQueue.some(g => g.status === "pending")) setTimeout(processQueue, 500);
   }
 }
 function toggleLoop() {
   loopActive = !loopActive;
-  setStatus("footerStatus", loopActive ? "LOOP ∞ ACTIVE" : "OMEGA ONLINE", loopActive ? "status-live" : "");
+  $("footerStatus").textContent = loopActive ? "LOOP ∞ ACTIVE" : "OMEGA ONLINE";
+  $("footerStatus").className = "font-bold " + (loopActive ? "status-live" : "text-cyber-green");
   if (loopActive) {
-    printToTerm("♾️ حلقة ذاتية مُشغّلة", "text-cyber-green");
+    printToTerm("♾️ حلقة ذاتية", "text-cyber-green");
     if (loopInterval) clearInterval(loopInterval);
     loopInterval = setInterval(() => {
       stats.loops++;
-      if (goalQueue.filter(g=>g.status==="pending").length < 2) {
-        const pool = ["iss", "apod", "launches", "ctf", "sysinfo", "chain", "stats", "memory-dump"];
+      if (goalQueue.filter(g => g.status === "pending").length < 2) {
+        const pool = ["iss", "apod", "launches", "sysinfo", "stats", "mems"];
         enqueueGoal(pool[Math.floor(Math.random()*pool.length)]);
       }
       processQueue();
-      if (auditLedger.length % 10 === 0) verifyChain(true);
-    }, 12000);
+    }, 15000);
   } else if (loopInterval) { clearInterval(loopInterval); loopInterval = null; }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   CTF
-   ═══════════════════════════════════════════════════════════ */
+/* ─── CTF ─── */
 const CTF = [
   { id:"b64_1", cat:"base64", desc:"SGV sbG8=", ans:"Hello", pts:5, solved:false },
   { id:"b64_2", cat:"base64", desc:"TGFmaQ==", ans:"Lafi", pts:5, solved:false },
@@ -1233,9 +1281,14 @@ const CTF = [
   { id:"math_1", cat:"math", desc:"15×7=?", ans:"105", pts:5, solved:false },
   { id:"logic_1", cat:"logic", desc:"2,4,8,16,__", ans:"32", pts:10, solved:false }
 ];
+function normalize(s) {
+  return String(s || "").toLowerCase().trim()
+    .replace(/[أإآ]/g, "ا").replace(/ة/g, "ه").replace(/ى/g, "ي")
+    .replace(/\s+/g, " ");
+}
 function renderCTF() {
   const box = $("ctfBox"); if (!box) return;
-  box.innerHTML = '<div class="text-cyber-gold mb-1">' + CTF.filter(c=>c.solved).length + "/" + CTF.length + '</div>';
+  box.innerHTML = '<div class="text-cyber-gold mb-1">' + CTF.filter(c => c.solved).length + '/' + CTF.length + '</div>';
   CTF.forEach(c => {
     const d = document.createElement("div");
     d.className = "omni-card " + (c.solved ? "opacity-40" : "");
@@ -1247,35 +1300,29 @@ function renderCTF() {
 function solveCTF(id, ans) {
   const c = CTF.find(x => x.id === id);
   if (!c || c.solved) return { ok:false, msg:"غير صالح" };
-  if (c.ans.toLowerCase() === (ans||"").toLowerCase().trim()) {
+  if (normalize(c.ans) === normalize(ans)) {
     c.solved = true; ctfScore += c.pts; renderCTF();
     return { ok:true, msg:"✅ +" + c.pts };
   }
-  return { ok:false, msg:"❌" };
+  return { ok:false, msg:"❌ إجابة خاطئة" };
 }
 
-/* ═══════════════════════════════════════════════════════════
-   Local AI Fallback
-   ═══════════════════════════════════════════════════════════ */
+/* ─── Local AI ─── */
 function localAI(query) {
   const q = query.trim(); const ql = q.toLowerCase();
   stats.aiQueries++;
-  const mm = q.match(/^[\d\s+\-*/().%^]+$/);
-  if (mm) {
-    try {
-      const r = Function('"use strict";return (' + q.replace(/\^/g,"**") + ')')();
-      if (typeof r === "number" && isFinite(r)) return "🧮 = " + r;
-    } catch (e) {}
+  const r = safeEval(q);
+  if (typeof r === "number" && isFinite(r)) return "🧮 = " + r;
+  if (/(جذر|sqrt)/i.test(ql)) {
+    const m = q.match(/(\d+)/);
+    if (m) return "🧮 √" + m[1] + " = " + Math.sqrt(+m[1]).toFixed(4);
   }
-  if (/(جذر|sqrt)/i.test(ql)) { const m = q.match(/(\d+)/); if (m) return "🧮 √" + m[1] + " = " + Math.sqrt(+m[1]).toFixed(4); }
   if (/(سلام|مرحبا|hi|hello)/i.test(ql)) return "👋 أهلاً لافي!";
   if (/(لافي|منير)/i.test(ql)) return "👑 لافي منير — مالك OMEGA";
-  return "💡 للنقاش الذكي: llm <سؤال> (بعد تحميل Phi-3)";
+  return "💡 للنقاش الذكي: llm-load ثم llm <سؤال>";
 }
 
-/* ═══════════════════════════════════════════════════════════
-   Commands
-   ═══════════════════════════════════════════════════════════ */
+/* ─── Commands ─── */
 async function executeCommand(line) {
   const parts = line.trim().split(/\s+/);
   const cmd = (parts[0] || "").toLowerCase();
@@ -1284,27 +1331,23 @@ async function executeCommand(line) {
 
   switch (cmd) {
     case "help":
-      out("═══ OMEGA v50.0 Ω ═══", "text-cyber-gold");
-      out(" 🌍 globe / globe starlink   : كرة أرضية 3D", "text-cyber-cyan");
-      out(" 🛰️ iss / sats [grp]         : ISS + أقمار", "text-cyber-cyan");
-      out(" 🌌 apod / launches          : NASA + SpaceX", "text-cyber-cyan");
-      out(" 🧠 llm <سؤال> / rag <سؤال>  : Phi-3 + ذاكرة", "text-cyber-green");
-      out(" 📹 video / start-video / call <id>", "text-cyber-magenta");
-      out(" 🗣️ voice / voice-on / voice-off", "text-cyber-magenta");
-      out(" 💭 mem <نص> / recall <سؤال> / mems / forget", "text-cyber-purple");
+      out("═══ OMEGA v50.1 Ω ═══", "text-cyber-gold");
+      out(" 🌍 globe [grp] / iss / sats", "text-cyber-cyan");
+      out(" 🌌 apod / launches", "text-cyber-cyan");
+      out(" 🧠 llm-load, llm <q>, rag <q>", "text-cyber-green");
+      out(" 📹 video / stop-video / call <id>", "text-cyber-magenta");
+      out(" 🗣️ voice (toggle)", "text-cyber-magenta");
+      out(" 💭 mem <text> / recall <q> / mems / forget", "text-cyber-purple");
       out(" 📸 cam-on/off, mic-on/off, snap", "text-cyber-magenta");
       out(" 🌐 p2p, p2p-id, p2p-broadcast, p2p-request, p2p-chat, p2p-mem", "text-cyber-green");
-      out(" 🤖 agent <هدف>, loop, think", "text-cyber-purple");
-      out(" 🏴 ctf [solve <id> <ans>]", "text-cyber-magenta");
+      out(" 🤖 agent <goal>, loop, think", "text-cyber-purple");
+      out(" 🏴 ctf / ctf solve <id> <ans>", "text-cyber-magenta");
       out(" 📁 ls, cd, pwd, tree, mkdir, write, cat, rm, echo", "text-gray-300");
       out(" ⛓️ chain, chain-verify, stats, sysinfo", "text-gray-300");
       out(" 💾 save, export, clear, history, whoami, date", "text-gray-300");
       break;
 
-    case "globe":
-      await loadGlobeSats(args[0] || "stations");
-      break;
-
+    case "globe": await loadGlobeSats(args[0] || "stations"); break;
     case "iss": await updateISS(true); out("🛰️ محدّث", "text-cyber-green"); break;
     case "sats": await loadGlobeSats(args[0]); break;
     case "apod": await loadAPOD(); break;
@@ -1312,22 +1355,19 @@ async function executeCommand(line) {
 
     case "llm":
       if (!llmEngine) { out("⚠️ llm-load أولاً", "text-yellow-400"); break; }
-      try { const ans = await llmAsk(args.join(" ")); out("🧠 " + ans, "text-cyber-green"); }
+      try { out("🧠 " + (await llmAsk(args.join(" "))), "text-cyber-green"); }
       catch (e) { out("❌ " + e.message, "text-red-400"); }
       break;
     case "llm-load": await loadWebLLM(); break;
     case "rag": await ragAnswer(args.join(" ")); break;
 
-    case "video": await startVideo(); break;
-    case "start-video": await startVideo(); break;
+    case "video": case "start-video": await startVideo(); break;
     case "stop-video": stopVideo(); break;
     case "call": $("videoPeerId").value = args[0] || ""; callVideoPeer(); break;
 
     case "voice": toggleVoice(); break;
-    case "voice-on": if (!voiceActive) toggleVoice(); break;
-    case "voice-off": if (voiceActive) toggleVoice(); break;
 
-    case "mem": case "remember": await addMemory(args.join(" ")); break;
+    case "mem": case "remember": await addMemory(args.join(" ")); out("🧠 حُفظت", "text-cyber-purple"); break;
     case "recall": await ragAnswer(args.join(" ")); break;
     case "mems": case "memory-dump": dumpMemory(); break;
     case "forget": await clearMemory(); break;
@@ -1336,22 +1376,23 @@ async function executeCommand(line) {
     case "cam-off": stopCamera(); break;
     case "mic-on": await startMic(); break;
     case "mic-off": stopMic(); break;
-    case "snap": await capturePhoto(); out("📸 /photos", "text-cyber-green"); break;
-    case "notif-on": await requestNotifPermission(); break;
+    case "snap": await capturePhoto(); break;
 
     case "p2p": out("🌐 " + (myPeerId||"—") + " | " + Object.keys(connections).length + " أقران", "text-cyber-cyan"); break;
     case "p2p-id": out(myPeerId||"—", "text-cyber-cyan"); break;
-    case "p2p-broadcast": broadcastChain(); out("📤", "text-cyber-green"); break;
-    case "p2p-request": requestChain(); out("📥", "text-cyber-green"); break;
+    case "p2p-broadcast": broadcastChain(); break;
+    case "p2p-request": requestChain(); break;
     case "p2p-chat": broadcastChat(); break;
-    case "p2p-mem": broadcastMemory(); out("🧠 بُثّت", "text-cyber-purple"); break;
+    case "p2p-mem": broadcastMemory(); break;
 
     case "think": aiDrivesAgent = !aiDrivesAgent; out(aiDrivesAgent ? "🧠 Phi-3 يقود" : "🤖 محلي", "text-cyber-purple"); break;
     case "ai": out("🤖 " + localAI(args.join(" ")), "text-cyber-green"); break;
 
     case "ctf":
-      if (args[0] === "solve") { const r = solveCTF(args[1], args.slice(2).join(" ")); out(r.msg, r.ok?"text-cyber-green":"text-red-400"); }
-      else { renderCTF(); out("ctf solve <id> <ans>", "text-cyber-gold"); }
+      if (args[0] === "solve") {
+        const r = solveCTF(args[1], args.slice(2).join(" "));
+        out(r.msg, r.ok ? "text-cyber-green" : "text-red-400");
+      } else { renderCTF(); out("ctf solve <id> <ans>", "text-cyber-gold"); }
       break;
 
     case "agent": enqueueGoal(args.join(" ")); break;
@@ -1359,22 +1400,26 @@ async function executeCommand(line) {
 
     case "ls": {
       const t = resolvePath(args[0] || currentPath); const n = vfs[t];
-      if (n && n.type === "dir") out((n.children||[]).join("   ") || "(فارغ)", "text-cyber-cyan");
+      if (n?.type === "dir") out((n.children||[]).join("   ") || "(فارغ)", "text-cyber-cyan");
       else throw new Error("غير موجود");
       break;
     }
     case "cd": {
       const t = resolvePath(args[0] || "/root");
-      if (vfs[t] && vfs[t].type === "dir") { currentPath = t; $("promptLabel").textContent = "Ω:" + (t==="/root"?"~":t) + "#"; out("→ " + t, "text-cyber-green"); }
-      else throw new Error("غير موجود");
+      if (vfs[t]?.type === "dir") {
+        currentPath = t;
+        $("promptLabel").textContent = "Ω:" + (t === "/root" ? "~" : t) + "#";
+        out("→ " + t, "text-cyber-green");
+      } else throw new Error("غير موجود");
       break;
     }
     case "pwd": out(currentPath, "text-cyber-cyan"); break;
     case "mkdir": {
       if (!args[0]) throw new Error("اسم مفقود");
-      const p = resolvePath(args[0]); if (vfs[p]) break;
+      const p = resolvePath(args[0]);
+      if (vfs[p]) break;
       const par = parentOf(p);
-      if (!vfs[par] || vfs[par].type !== "dir") throw new Error("أب غير موجود");
+      if (vfs[par]?.type !== "dir") throw new Error("أب غير موجود");
       vfs[p] = { type:"dir", children:[] }; ensureParent(p); await saveVFS();
       out("[OK]", "text-cyber-green"); break;
     }
@@ -1387,10 +1432,8 @@ async function executeCommand(line) {
     case "cat": {
       if (!args[0]) throw new Error("اسم");
       const p = resolvePath(args[0]);
-      if (vfs[p] && vfs[p].type === "file") {
-        if (vfs[p].data) out("(binary)", "text-gray-400");
-        else out(vfs[p].content || "(فارغ)", "text-gray-200");
-      } else throw new Error("غير موجود");
+      if (vfs[p]?.type === "file") out(vfs[p].data ? "(binary)" : (vfs[p].content || "(فارغ)"), "text-gray-200");
+      else throw new Error("غير موجود");
       break;
     }
     case "write": {
@@ -1404,21 +1447,21 @@ async function executeCommand(line) {
       const p = resolvePath(args[0]);
       if (p === "/" || p === "/root") throw new Error("محظور");
       if (!vfs[p]) throw new Error("غير موجود");
-      function rec(x) {
-        if (vfs[x] && vfs[x].type === "dir") (vfs[x].children||[]).forEach(c => rec(x === "/" ? "/"+c : x+"/"+c));
+      const rec = x => {
+        if (vfs[x]?.type === "dir") (vfs[x].children||[]).forEach(c => rec(x === "/" ? "/"+c : x+"/"+c));
         delete vfs[x];
-      }
+      };
       rec(p);
       const par = parentOf(p), nm = baseName(p);
-      if (vfs[par] && vfs[par].children) vfs[par].children = vfs[par].children.filter(c => c !== nm);
+      if (vfs[par]?.children) vfs[par].children = vfs[par].children.filter(c => c !== nm);
       await saveVFS(); out("[OK]", "text-cyber-green"); break;
     }
     case "tree": {
-      function walk(p, pre) {
+      const walk = (p, pre) => {
         const n = vfs[p]; if (!n) return;
         out(pre + (p === "/" ? "/" : baseName(p)) + (n.type === "dir" ? "/" : ""), "text-cyber-cyan");
         if (n.type === "dir") (n.children||[]).forEach(c => walk(p === "/" ? "/"+c : p+"/"+c, pre + "  "));
-      }
+      };
       walk("/",""); break;
     }
     case "echo": {
@@ -1426,7 +1469,8 @@ async function executeCommand(line) {
       if (raw.includes(">")) {
         const [t,f] = raw.split(">").map(s => s.trim());
         const p = resolvePath(f);
-        vfs[p] = { type:"file", content:t.replace(/^["']|["']$/g, "") }; ensureParent(p); await saveVFS();
+        vfs[p] = { type:"file", content:t.replace(/^["']|["']$/g, "") };
+        ensureParent(p); await saveVFS();
         out("[OK]", "text-cyber-green");
       } else out(raw.replace(/^["']|["']$/g, ""), "text-gray-200");
       break;
@@ -1449,22 +1493,22 @@ async function executeCommand(line) {
       out("  VFS: " + Object.keys(vfs).length + " | Peers: " + Object.keys(connections).length, "text-gray-300");
       break;
     case "sysinfo":
-      out("SOVEREIGN OS v50.0 OMEGA ∞", "text-cyber-gold");
-      out("3D Globe • Video P2P • Voice • Memory DB • PWA Offline", "text-cyber-cyan");
-      out("SGP4 • Phi-3 • NASA • SpaceX • IndexedDB • Notifications", "text-cyber-green");
+      out("SOVEREIGN OS v50.1 OMEGA ∞", "text-cyber-gold");
+      out("3D Globe • Video P2P • Voice • Memory DB • PWA", "text-cyber-cyan");
+      out("SGP4 • Phi-3 • NASA • SpaceX • IndexedDB", "text-cyber-green");
       break;
 
     case "save": await saveVFS(); await saveLedger(); await saveMemory(); out("💾", "text-cyber-green"); break;
     case "export": {
       const data = JSON.stringify({
         vfs: Object.fromEntries(Object.entries(vfs).map(([k,v]) => [k, v.data ? {...v, data:"[omitted]"} : v])),
-        auditLedger, memory: memoryVectors,
-        ctf: CTF.map(c=>({id:c.id,solved:c.solved})),
+        auditLedger, memory: memoryVectors.map(m => ({ id:m.id, text:m.text, ts:m.ts })),
+        ctf: CTF.map(c => ({ id:c.id, solved:c.solved })),
         score: ctfScore, stats
       }, null, 2);
       const a = document.createElement("a");
       a.href = URL.createObjectURL(new Blob([data], { type:"application/json" }));
-      a.download = "omega_v50_backup.json"; a.click();
+      a.download = "omega_v50_1_backup.json"; a.click();
       out("📤", "text-cyber-green"); break;
     }
 
@@ -1479,16 +1523,15 @@ async function executeCommand(line) {
   }
 }
 async function runCommand(line) {
-  if (!line || !line.trim()) return;
+  if (!line?.trim()) return;
   printToTerm("Ω:~# " + line, "text-cyber-cyan");
   commandHistory.push(line); historyIndex = commandHistory.length;
-  try { await executeCommand(line); } catch (e) { printToTerm("❌ " + e.message, "text-red-400"); }
+  try { await executeCommand(line); }
+  catch (e) { printToTerm("❌ " + e.message, "text-red-400"); }
   await addBlock("CMD", line.slice(0, 60));
 }
 
-/* ═══════════════════════════════════════════════════════════
-   Tabs
-   ═══════════════════════════════════════════════════════════ */
+/* ─── Tabs ─── */
 function switchTab(name, ev) {
   document.querySelectorAll(".tab-content").forEach(el => { el.classList.add("hidden"); el.classList.remove("flex"); });
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -1497,21 +1540,28 @@ function switchTab(name, ev) {
   const btn = ev?.target?.closest(".tab-btn") || document.querySelector('[data-tab="' + name + '"]');
   if (btn) btn.classList.add("active");
   if (name === "space" && !$("apodImage").src) { loadAPOD(); loadLaunches(); }
-  if (name === "globe" && globeWorld) setTimeout(() => globeWorld.width($("globeContainer").clientWidth).height(200), 100);
+  if (name === "globe" && globeWorld) {
+    setTimeout(() => {
+      const c = $("globeContainer");
+      if (c && c.clientWidth > 0) globeWorld.width(c.clientWidth).height(c.clientHeight || 200);
+    }, 100);
+  }
+  if (name === "map" && issMap) setTimeout(() => issMap.invalidateSize(), 100);
   if (name === "memory") updateMemoryUI();
 }
-window.switchTab = switchTab;
 
 /* ─── Matrix ─── */
 function startMatrix() {
   const c = $("matrixCanvas"), ctx = c.getContext("2d");
-  function resize() { c.width = innerWidth; c.height = innerHeight; }
+  const resize = () => { c.width = innerWidth; c.height = innerHeight; };
   resize(); window.addEventListener("resize", resize);
   const chars = "01ΩOMEGA-GLOBE-VOICE-MEM-NEXUS";
   let drops = Array(Math.floor(c.width/16)).fill(1);
   setInterval(() => {
-    ctx.fillStyle = "rgba(3,0,20,0.08)"; ctx.fillRect(0, 0, c.width, c.height);
-    ctx.fillStyle = "#ff007f"; ctx.font = "12px 'Fira Code'";
+    ctx.fillStyle = "rgba(3,0,20,0.08)";
+    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.fillStyle = "#ff007f";
+    ctx.font = "12px 'Fira Code'";
     for (let i = 0; i < drops.length; i++) {
       ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*16, drops[i]*16);
       if (drops[i]*16 > c.height && Math.random() > 0.975) drops[i] = 0;
@@ -1520,70 +1570,88 @@ function startMatrix() {
   }, 55);
 }
 
-/* ─── Input ─── */
-termInput.addEventListener("keydown", async e => {
-  if (e.key === "Enter") { const v = termInput.value; termInput.value = ""; await runCommand(v); }
-  else if (e.key === "ArrowUp") { e.preventDefault(); if (historyIndex > 0) { historyIndex--; termInput.value = commandHistory[historyIndex] || ""; } }
-  else if (e.key === "ArrowDown") { e.preventDefault(); if (historyIndex < commandHistory.length-1) { historyIndex++; termInput.value = commandHistory[historyIndex] || ""; } }
-});
-$("btnToggleSide")?.addEventListener("click", () => $("sidePanel").classList.toggle("mobile-active"));
-
-/* ─── PWA + Offline ─── */
-async function initPWA() {
-  const swCode = `
-    const CACHE = 'omega-v50';
-    const URLS = [
-      'https://cdn.tailwindcss.com',
-      'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-      'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
-      'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
-      'https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js',
-      'https://cdn.jsdelivr.net/npm/satellite.js@5.0.0/dist/satellite.min.js',
-      'https://unpkg.com/globe.gl@2.32.0/dist/globe.gl.min.js'
-    ];
-    self.addEventListener('install', e => {
-      e.waitUntil(caches.open(CACHE).then(c => c.addAll(URLS).catch(() => {})));
-      self.skipWaiting();
-    });
-    self.addEventListener('activate', e => {
-      e.waitUntil(caches.keys().then(keys =>
-        Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-      ));
-      self.clients.claim();
-    });
-    self.addEventListener('fetch', e => {
-      e.respondWith(
-        fetch(e.request).then(r => {
-          if (e.request.method === 'GET' && r.status === 200) {
-            const cl = r.clone();
-            caches.open(CACHE).then(c => c.put(e.request, cl)).catch(()=>{});
-          }
-          return r;
-        }).catch(() => caches.match(e.request).then(r => r || new Response('Offline', { status: 503 })))
-      );
-    });
-  `;
-  try {
-    const blob = new Blob([swCode], { type: "application/javascript" });
-    const url = URL.createObjectURL(blob);
-    await navigator.serviceWorker.register(url);
-    // offline badge
-    window.addEventListener("online", () => $("offlineBadge").classList.add("hidden"));
-    window.addEventListener("offline", () => $("offlineBadge").classList.remove("hidden"));
-    if (!navigator.onLine) $("offlineBadge").classList.remove("hidden");
-  } catch (e) { console.log("SW err", e); }
+/* ─── Listeners ─── */
+function attachListeners() {
+  termInput.addEventListener("keydown", async e => {
+    if (e.key === "Enter") {
+      const v = termInput.value; termInput.value = "";
+      await runCommand(v);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (historyIndex > 0) { historyIndex--; termInput.value = commandHistory[historyIndex] || ""; }
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (historyIndex < commandHistory.length-1) { historyIndex++; termInput.value = commandHistory[historyIndex] || ""; }
+    }
+  });
+  document.querySelectorAll("[data-cmd]").forEach(b => b.addEventListener("click", () => runCommand(b.dataset.cmd)));
+  document.querySelectorAll("[data-globe]").forEach(b => b.addEventListener("click", () => loadGlobeSats(b.dataset.globe)));
+  document.querySelectorAll("[data-tab]").forEach(b => b.addEventListener("click", e => switchTab(b.dataset.tab, e)));
+  $("btnVoice")?.addEventListener("click", toggleVoice);
+  $("btnLoop")?.addEventListener("click", toggleLoop);
+  $("btnToggleSide")?.addEventListener("click", () => $("sidePanel").classList.toggle("mobile-active"));
+  $("btnUpdateISS")?.addEventListener("click", () => updateISS(true));
+  $("btnCallPeer")?.addEventListener("click", callVideoPeer);
+  $("btnAddMem")?.addEventListener("click", () => addMemory($("memInput").value));
+  $("btnSearchMem")?.addEventListener("click", () => searchMemory($("memQuery").value));
+  $("btnDumpMem")?.addEventListener("click", dumpMemory);
+  $("btnClearMem")?.addEventListener("click", clearMemory);
+  $("memInput")?.addEventListener("keydown", e => { if (e.key === "Enter") addMemory($("memInput").value); });
+  $("memQuery")?.addEventListener("keydown", e => { if (e.key === "Enter") searchMemory($("memQuery").value); });
+  $("btnAgent")?.addEventListener("click", () => enqueueGoal($("agentInput").value));
+  $("agentInput")?.addEventListener("keydown", e => { if (e.key === "Enter") enqueueGoal($("agentInput").value); });
 }
+
+/* ─── PWA ─── */
 let deferredInstallPrompt = null;
 window.addEventListener("beforeinstallprompt", e => {
-  e.preventDefault(); deferredInstallPrompt = e; $("installBtn").classList.remove("hidden");
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  $("installBtn")?.classList.remove("hidden");
 });
 $("installBtn")?.addEventListener("click", async () => {
   if (!deferredInstallPrompt) return;
   deferredInstallPrompt.prompt();
   const { outcome } = await deferredInstallPrompt.userChoice;
-  if (outcome === "accepted") { notify("✅ تم التثبيت"); $("installBtn").classList.add("hidden"); }
+  if (outcome === "accepted") {
+    notify("✅ تم التثبيت");
+    $("installBtn")?.classList.add("hidden");
+  }
   deferredInstallPrompt = null;
 });
+
+/* ✅ SW من ملف ./sw.js إن وُجد، وإلا يعمل التطبيق بدون offline */
+async function registerSW() {
+  // حالة الاتصال دائمًا
+  const updateOnline = () => {
+    const b = $("offlineBadge");
+    if (b) b.classList.toggle("hidden", navigator.onLine);
+  };
+  window.addEventListener("online", updateOnline);
+  window.addEventListener("offline", updateOnline);
+  updateOnline();
+
+  if (!("serviceWorker" in navigator)) {
+    printToTerm("ℹ️ SW غير مدعوم — بدون offline", "text-yellow-400");
+    return;
+  }
+  if (location.protocol !== "https:" && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
+    printToTerm("ℹ️ يحتاج HTTPS — بدون offline", "text-yellow-400");
+    return;
+  }
+  try {
+    // فحص وجود sw.js قبل التسجيل
+    const head = await fetch("./sw.js", { method: "HEAD" }).catch(() => null);
+    if (!head || !head.ok) {
+      printToTerm("ℹ️ sw.js غير موجود — التطبيق يعمل بدون offline cache", "text-yellow-400");
+      return;
+    }
+    await navigator.serviceWorker.register("./sw.js", { scope: "./" });
+    printToTerm("📲 PWA مسجّل (offline مُفعّل)", "text-cyber-green");
+  } catch (e) {
+    printToTerm("⚠️ SW فشل: " + e.message, "text-yellow-400");
+  }
+}
 
 /* ─── Boot ─── */
 async function boot() {
@@ -1593,55 +1661,59 @@ async function boot() {
   memoryVectors = await loadMemory();
 
   startMatrix();
-  initMap();
+  const mapOK = initMap();
+  if (!mapOK) printToTerm("ℹ️ 2D Map معطّل", "text-gray-500");
   initGlobe();
   renderCTF();
   renderLedgerUI();
   updateMemoryUI();
-  initPeer();
-  initPWA();
 
-  if (!auditLedger.length) await addBlock("GENESIS", "OMEGA v50.0");
+  const peerOK = initPeer();
+  if (!peerOK) printToTerm("ℹ️ P2P معطّل", "text-gray-500");
+
+  registerSW();
+  attachListeners();
+
+  Object.assign(window, {
+    $, runCommand, executeCommand, switchTab, toggleVoice, toggleLoop,
+    loadGlobeSats, updateISS, loadAPOD, loadLaunches, loadWebLLM,
+    startVideo, stopVideo, callVideoPeer, addMemory, searchMemory,
+    dumpMemory, clearMemory, enqueueGoal, startCamera, stopCamera,
+    capturePhoto, startMic, stopMic, broadcastChain,
+    requestChain, broadcastChat, broadcastMemory
+  });
+
+  if (!auditLedger.length) await addBlock("GENESIS", "OMEGA v50.1");
   else await addBlock("BOOT", auditLedger.length + " blocks");
 
-  printToTerm("╔══════════════════════════════════════════════════════╗", "text-cyber-magenta");
-  printToTerm("║   لافي منير — SOVEREIGN OS v50.0 NEXUS OMEGA Ω      ║", "text-cyber-magenta");
-  printToTerm("║   🌍 3D Globe • 🎥 Video P2P • 🗣️ Voice • 🧠 Memory ║", "text-cyber-magenta");
-  printToTerm("║   📲 PWA Offline • 🛰️ SGP4 • 🧠 Phi-3 • ⛓️ Chain   ║", "text-cyber-magenta");
-  printToTerm("╚══════════════════════════════════════════════════════╝", "text-cyber-magenta");
+  printToTerm("╔════════════════════════════════════════════════╗", "text-cyber-magenta");
+  printToTerm("║  لافي منير — SOVEREIGN OS v50.1 OMEGA Ω      ║", "text-cyber-magenta");
+  printToTerm("║  🌍 3D • 🎥 P2P • 🗣️ Voice • 🧠 Memory • 📲  ║", "text-cyber-magenta");
+  printToTerm("╚════════════════════════════════════════════════╝", "text-cyber-magenta");
   printToTerm("", "");
-  printToTerm("🌍 globe              → كرة أرضية 3D بالأقمار", "text-cyber-cyan");
-  printToTerm("🎥 video              → كاميرا + مكالمة P2P", "text-cyber-magenta");
-  printToTerm("🗣️ voice-on           → أوامر صوتية (تحدث!)", "text-cyber-magenta");
-  printToTerm("🧠 mem <نص>           → احفظ في الذاكرة", "text-cyber-purple");
-  printToTerm("🧠 recall <سؤال>      → ابحث دلالياً + RAG", "text-cyber-purple");
-  printToTerm("📲 التطبيق يعمل offline بعد التثبيت", "text-cyber-gold");
+  printToTerm("اكتب: help", "text-cyber-cyan");
   printToTerm("", "");
 
   await updateISS(false);
-  issInterval = setInterval(() => updateISS(false), 8000);
+  if (issInterval) clearInterval(issInterval);
+  issInterval = setInterval(() => { if (!document.hidden) updateISS(false); }, 15000);
 
+  // ✅ الحلقة الذاتية لا تعمل تلقائيًا
   setTimeout(async () => {
-    if (!loopActive) toggleLoop();
     await loadGlobeSats("stations");
     await loadAPOD();
     await loadLaunches();
+    initEmbedder().catch(() => {});
     await addMemory("بدأت جلسة OMEGA في " + new Date().toLocaleString("ar-EG"), { type: "session" });
   }, 3000);
 }
 
 window.addEventListener("load", boot);
-window.addEventListener("beforeunload", () => { saveVFS(); saveLedger(); saveMemory(); });
-
-// Globals
-Object.assign(window, {
-  runCommand, executeCommand, enqueueGoal, toggleLoop, toggleVoice,
-  loadGlobeSats, loadAPOD, loadLaunches, loadWebLLM,
-  startVideo, stopVideo, callVideoPeer,
-  startCamera, stopCamera, capturePhoto, startMic, stopMic,
-  connectToPeer, broadcastChain, requestChain, broadcastChat, broadcastMemory,
-  copyMyId, updateISS, addMemory, searchMemory, dumpMemory, clearMemory,
-  switchTab
+window.addEventListener("beforeunload", () => {
+  saveVFS(); saveLedger(); saveMemory();
+  if (issInterval) clearInterval(issInterval);
+  if (globeInterval) clearInterval(globeInterval);
+  if (loopInterval) clearInterval(loopInterval);
 });
 </script>
 </body>
