@@ -13,9 +13,38 @@
 @media(max-width:850px){.layout{grid-template-columns:1fr}.sidebar{order:2;position:sticky;bottom:0;z-index:20;padding:7px;display:flex;flex-direction:row;justify-content:space-around;gap:4px;background:#0b1120f2;backdrop-filter:blur(16px);box-shadow:0 -8px 24px #0005}.side-label,.side-foot{display:none}.navbtn{width:auto;flex:1;justify-content:center;flex-direction:column;gap:3px;padding:7px 3px;font-size:10px;min-width:0}.navbtn .ico{font-size:18px;width:auto}.navbtn.active{box-shadow:inset 0 -2px var(--cyan)}.main{order:1}.app{padding:10px;gap:10px}.grid2{grid-template-columns:1fr}.chatbox{height:58vh;min-height:330px}.cards{gap:8px}.metric{padding:12px}}
 @media(max-width:520px){.topbar{align-items:flex-start;padding:11px;gap:8px}.brand{gap:8px}.logo{width:38px;height:38px;border-radius:11px;font-size:20px}.brand p{font-size:10px}.top-actions{justify-content:flex-end}.top-actions .status{display:none}.top-actions .btn{padding:8px;font-size:11px}.cards{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/-1}.metric .value{font-size:22px}.page-head h2{font-size:19px}.panel{padding:12px}.panel-head{align-items:flex-start}.msg{max-width:94%}.chatbox{min-height:300px;height:55vh}.navbtn{font-size:9px}.notice{font-size:11px}.actions .btn{flex:1}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
+
+/* LAFI HOLOSPACE enhancement: animated cosmic dust + touch holograms */
+:root{--cyan:#42f3ff;--violet:#b45cff;--green:#38ffc2;--holo-glow:0 0 18px #42f3ff55, inset 0 0 22px #42f3ff0d}
+html{scroll-behavior:smooth}
+body{overflow-x:hidden;background:radial-gradient(ellipse at 50% -8%,#153f78 0,transparent 35%),radial-gradient(ellipse at 88% 35%,#34115b80 0,transparent 35%),radial-gradient(ellipse at 5% 72%,#064b5c55 0,transparent 32%),#030610;background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.24;background:repeating-linear-gradient(0deg,transparent 0 3px,#73f8ff08 4px 5px);mix-blend-mode:screen}
+#cosmicDust{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.95}
+.app{position:relative;z-index:1;isolation:isolate}
+.topbar,.sidebar,.panel,.metric{backdrop-filter:blur(18px) saturate(145%);-webkit-backdrop-filter:blur(18px) saturate(145%);box-shadow:var(--shadow),var(--holo-glow);border-color:#42dfff45}
+.logo{position:relative;overflow:hidden;box-shadow:0 0 25px #42f3ff65,0 0 50px #b45cff25}
+.logo::after{content:"";position:absolute;inset:-60% -100%;background:linear-gradient(90deg,transparent,#fff9,transparent);transform:rotate(28deg);animation:holoSweep 4.8s linear infinite}
+.btn,.navbtn,.feature,.metric,.file-row,.chain-row,.media-stage,.composer input,.field{transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,background .22s ease}
+.btn:hover,.navbtn:hover,.feature:hover,.metric:hover,.file-row:hover,.chain-row:hover{border-color:#42f3ff9c;box-shadow:0 0 22px #42f3ff20,inset 0 0 18px #42f3ff0b}
+.panel{position:relative;overflow:hidden}
+.panel::before{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(115deg,transparent 15%,#42f3ff08 35%,transparent 55%,#b45cff0a 75%,transparent);background-size:220% 100%;animation:panelAurora 12s linear infinite}
+.panel>*{position:relative}
+.status .dot{box-shadow:0 0 10px currentColor;animation:statusPulse 1.8s ease-in-out infinite}
+.holo-ripple{position:fixed;z-index:99;pointer-events:none;width:18px;height:18px;border:1px solid #72f7ff;border-radius:50%;transform:translate(-50%,-50%) scale(.2);box-shadow:0 0 14px #42f3ff,0 0 35px #9d78ff,inset 0 0 12px #42f3ff88;animation:rippleOut .8s ease-out forwards}
+.holo-ripple::before,.holo-ripple::after{content:"";position:absolute;inset:-9px;border:1px solid #b45cffaa;border-radius:50%}.holo-ripple::after{inset:-18px;border-color:#42f3ff55}
+.holo-flash{position:fixed;z-index:98;pointer-events:none;width:4px;height:4px;border-radius:50%;background:#d9ffff;box-shadow:0 0 8px 3px #42f3ff,0 0 18px 6px #b45cff;animation:dustFlash 1.1s ease-out forwards}
+@keyframes holoSweep{0%{transform:translateX(-60%) rotate(28deg)}100%{transform:translateX(120%) rotate(28deg)}}
+@keyframes panelAurora{0%{background-position:180% 0}100%{background-position:-40% 0}}
+@keyframes statusPulse{0%,100%{opacity:.65;box-shadow:0 0 5px currentColor}50%{opacity:1;box-shadow:0 0 14px currentColor,0 0 25px currentColor}}
+@keyframes rippleOut{to{transform:translate(-50%,-50%) scale(5);opacity:0}}
+@keyframes dustFlash{0%{transform:translate(0,0) scale(.3);opacity:0}12%{opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
+@media(hover:hover) and (pointer:fine){.panel:hover,.metric:hover{transform:translateY(-2px)}}
+@media(prefers-reduced-motion:reduce){#cosmicDust,.logo::after,.panel::before{animation:none!important}.holo-ripple,.holo-flash{display:none!important}*{scroll-behavior:auto!important}}
+
 </style>
 </head>
 <body>
+<canvas id="cosmicDust" aria-hidden="true"></canvas>
 <div class="app">
   <header class="topbar">
     <div class="brand"><div class="logo" aria-hidden="true">L</div><div><h1>LAFI OMNI-SCREEN</h1><p>كل شيء في شاشة · مساحة عمل موحّدة</p></div></div>
@@ -89,14 +118,7 @@
 const $ = (s,root=document) => root.querySelector(s);
 const $$ = (s,root=document) => [...root.querySelectorAll(s)];
 const STORAGE_KEY = 'lafi-omni-screen-v2';
-const MAX_MESSAGES = 200;
-const MAX_IMPORT_SIZE = 5 * 1024 * 1024;
-const initialState = Object.freeze({
-  notes: [],
-  messages: [{role:'bot',text:'مرحبًا بك في LAFI OMNI-SCREEN! أنا مساعد محلي تجريبي. اكتب «مساعدة» لمعرفة ما أستطيع فعله.'}],
-  chain: [],
-  nextNoteId: 1
-});
+const initialState = {notes:[],messages:[{role:'bot',text:'مرحبًا بك في LAFI OMNI-SCREEN! أنا مساعد محلي تجريبي. اكتب «مساعدة» لمعرفة ما أستطيع فعله.'}],chain:[],nextNoteId:1};
 let state = loadState();
 let activeStream = null;
 let toastTimer = null;
@@ -107,10 +129,10 @@ function loadState(){
     if(!raw) return structuredClone(initialState);
     const parsed = JSON.parse(raw);
     return {
-      notes: Array.isArray(parsed.notes) ? parsed.notes : [],
-      messages: Array.isArray(parsed.messages) && parsed.messages.length ? parsed.messages : structuredClone(initialState.messages),
-      chain: Array.isArray(parsed.chain) ? parsed.chain : [],
-      nextNoteId: Number.isFinite(parsed.nextNoteId) ? parsed.nextNoteId : 1
+      notes:Array.isArray(parsed.notes)?parsed.notes:[],
+      messages:Array.isArray(parsed.messages)&&parsed.messages.length?parsed.messages:structuredClone(initialState.messages),
+      chain:Array.isArray(parsed.chain)?parsed.chain:[],
+      nextNoteId:Number.isFinite(parsed.nextNoteId)?parsed.nextNoteId:1
     };
   } catch { return structuredClone(initialState); }
 }
@@ -128,7 +150,7 @@ function escapeHTML(value){
 function showView(name){
   $$('.view').forEach(el=>el.classList.toggle('active',el.id==='view-'+name));
   $$('.navbtn[data-view]').forEach(el=>el.classList.toggle('active',el.dataset.view===name));
-  if(name==='chat'){ const inp=$('#chatInput'); if(inp) inp.focus({preventScroll:true}); }
+  if(name==='chat') $('#chatInput').focus({preventScroll:true});
 }
 $$('.navbtn[data-view]').forEach(btn=>btn.addEventListener('click',()=>showView(btn.dataset.view)));
 $('#today').textContent=new Intl.DateTimeFormat('ar-DZ',{dateStyle:'medium'}).format(new Date());
@@ -151,7 +173,7 @@ function renderMessages(){
 }
 function addMessage(role,text){
   state.messages.push({role,text,time:new Intl.DateTimeFormat('ar-DZ',{hour:'2-digit',minute:'2-digit'}).format(new Date())});
-  if(state.messages.length>MAX_MESSAGES) state.messages=state.messages.slice(-MAX_MESSAGES);
+  if(state.messages.length>200) state.messages=state.messages.slice(-200);
   saveState(); renderMessages();
 }
 function localReply(input){
@@ -306,16 +328,11 @@ $('#importBtn').addEventListener('click',()=>$('#importFile').click());
 $('#importFile').addEventListener('change',async e=>{
   const file=e.target.files?.[0];if(!file)return;
   try{
-    if(file.size>MAX_IMPORT_SIZE)throw new Error('حجم الملف أكبر من 5 ميغابايت.');
+    if(file.size>5*1024*1024)throw new Error('حجم الملف أكبر من 5 ميغابايت.');
     const parsed=JSON.parse(await file.text()),s=parsed.state||parsed;
     if(!s||!Array.isArray(s.notes)||!Array.isArray(s.messages)||!Array.isArray(s.chain))throw new Error('صيغة الملف غير معروفة.');
     if(!confirm('سيتم استبدال البيانات المحلية بالنسخة المستوردة. هل تريد المتابعة؟'))return;
-    state={
-      notes:s.notes,
-      nextNoteId:Number.isFinite(s.nextNoteId)?s.nextNoteId:Math.max(1,...s.notes.map(n=>(n.id||0)+1)),
-      messages:s.messages,
-      chain:s.chain
-    };
+    state={notes:s.notes,nextNoteId:Number.isFinite(s.nextNoteId)?s.nextNoteId:Math.max(1,...s.notes.map(n=>(n.id||0)+1)),messages:s.messages,chain:s.chain};
     saveState();renderMessages();renderNotes();renderChain();await verifyChain();toast('اكتمل الاستيراد.');
   }catch(err){toast('تعذر الاستيراد: '+err.message);}
   finally{e.target.value='';}
@@ -327,7 +344,27 @@ async function init(){
   catch(err){$('#chainStatus').textContent='سجل التحقق غير متاح: '+err.message;}
   $('#storageState').textContent=(()=>{try{localStorage.setItem('__lafi_test','1');localStorage.removeItem('__lafi_test');return 'التخزين المحلي متاح.';}catch{return 'التخزين المحلي غير متاح.';}})();
 }
+
+// Cosmic particle field and holographic touch response (no external libraries).
+function initHoloEffects(){
+  const canvas=$('#cosmicDust'); if(!canvas) return;
+  const ctx=canvas.getContext('2d'); if(!ctx) return;
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let w=0,h=0,dpr=1,particles=[],raf=0,last=0;
+  const makeParticle=()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.35+.25,a:Math.random()*.6+.15,phase:Math.random()*Math.PI*2,speed:Math.random()*.22+.035,drift:(Math.random()-.5)*.18,hue:Math.random()<.72?188:Math.random()<.5?265:315});
+  function resize(){dpr=Math.min(window.devicePixelRatio||1,1.7);w=innerWidth;h=innerHeight;canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);canvas.style.width=w+'px';canvas.style.height=h+'px';ctx.setTransform(dpr,0,0,dpr,0,0);particles=Array.from({length:Math.min(145,Math.max(45,Math.round(w*h/8500)))},makeParticle);}
+  function draw(t){if(document.hidden){raf=requestAnimationFrame(draw);return;}ctx.clearRect(0,0,w,h);for(const p of particles){const twinkle=.45+.55*Math.sin(t*.001*p.speed*7+p.phase);p.y-=p.speed*.22;p.x+=p.drift*.18;if(p.y< -4)p.y=h+4;if(p.x< -4)p.x=w+4;if(p.x>w+4)p.x=-4;ctx.beginPath();ctx.fillStyle=`hsla(${p.hue},100%,${75+twinkle*20}%,${p.a*twinkle})`;ctx.shadowBlur=p.r>1.15?10:4;ctx.shadowColor=`hsla(${p.hue},100%,70%,.65)`;ctx.arc(p.x,p.y,p.r*(.7+twinkle*.5),0,Math.PI*2);ctx.fill();}ctx.shadowBlur=0;raf=requestAnimationFrame(draw);}
+  resize();if(!reduced)raf=requestAnimationFrame(draw);else{draw(0);cancelAnimationFrame(raf);}
+  window.addEventListener('resize',resize,{passive:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!reduced&&!raf)raf=requestAnimationFrame(draw);else if(document.hidden&&raf){cancelAnimationFrame(raf);raf=0;}});
+  let lastTouch=0;
+  function sparkle(x,y){if(reduced)return;const ring=document.createElement('span');ring.className='holo-ripple';ring.style.left=x+'px';ring.style.top=y+'px';document.body.append(ring);setTimeout(()=>ring.remove(),900);for(let i=0;i<7;i++){const s=document.createElement('i');s.className='holo-flash';s.style.left=x+'px';s.style.top=y+'px';const a=Math.random()*Math.PI*2,d=18+Math.random()*62;s.style.setProperty('--dx',Math.cos(a)*d+'px');s.style.setProperty('--dy',Math.sin(a)*d+'px');document.body.append(s);setTimeout(()=>s.remove(),1200);}}
+  document.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'||e.pointerType==='pen'){lastTouch=Date.now();sparkle(e.clientX,e.clientY);}else sparkle(e.clientX,e.clientY);},{passive:true});
+  // Gentle holographic tilt on cards follows finger/mouse, without blocking scrolling.
+  $$('.panel,.metric').forEach(card=>{card.addEventListener('pointermove',e=>{if(e.pointerType==='touch'&&Date.now()-lastTouch<350)return;const r=card.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;card.style.setProperty('--holo-x',(x*100+50)+'%');card.style.setProperty('--holo-y',(y*100+50)+'%');},{passive:true});card.addEventListener('pointerleave',()=>{card.style.removeProperty('--holo-x');card.style.removeProperty('--holo-y');},{passive:true});});
+}
+
 window.addEventListener('beforeunload',()=>{if(activeStream)activeStream.getTracks().forEach(t=>t.stop());});
+initHoloEffects();
 init();
 })();
 </script>
