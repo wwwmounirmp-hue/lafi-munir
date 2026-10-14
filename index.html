@@ -3,135 +3,229 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#080b14">
-<title>LAFI OMNI-SCREEN | كل شيء في شاشة</title>
+<meta name="theme-color" content="#05081a">
+<title>LAFI OMNI-SCREEN | الفضاء الهولوغرامي</title>
 <style>
-:root{color-scheme:dark;--bg:#080b14;--line:#25324a;--text:#eef4ff;--muted:#94a3bd;--cyan:#42f3ff;--violet:#b45cff;--green:#38ffc2;--orange:#ffbd69;--red:#ff6e88;--radius:18px;--shadow:0 14px 40px #0005}
-*{box-sizing:border-box}html{min-height:100%;background:var(--bg)}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;color:var(--text);background:radial-gradient(ellipse at 50% -8%,#153f78 0,transparent 35%),radial-gradient(ellipse at 88% 35%,#34115b80 0,transparent 35%),#030610;background-attachment:fixed;min-height:100vh;overflow-x:hidden}button,input,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}button:disabled{opacity:.45;cursor:not-allowed}
-body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.24;background:repeating-linear-gradient(0deg,transparent 0 3px,#73f8ff08 4px 5px);mix-blend-mode:screen}
-#cosmicDust{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.95}
-.app{position:relative;z-index:1;isolation:isolate;max-width:1600px;margin:auto;padding:14px;min-height:100vh;display:flex;flex-direction:column;gap:14px}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:1px solid #42dfff45;background:#0d1321dd;backdrop-filter:blur(18px);border-radius:var(--radius);box-shadow:var(--shadow),0 0 18px #42f3ff55}
+:root{color-scheme:dark;--bg:#05081a;--line:#25324a;--text:#eef4ff;--muted:#94a3bd;--cyan:#42f3ff;--violet:#b45cff;--green:#38ffc2;--orange:#ffbd69;--red:#ff6e88;--radius:18px;--shadow:0 14px 40px #0008}
+*{box-sizing:border-box}html{min-height:100%;background:var(--bg)}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden;background:radial-gradient(ellipse at 50% -10%,#1a3a7a 0,transparent 40%),radial-gradient(ellipse at 90% 40%,#4a1170 0,transparent 45%),radial-gradient(ellipse at 5% 80%,#0a4a5c 0,transparent 40%),#02030a;background-attachment:fixed}
+button,input,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}button:disabled{opacity:.45}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.22;background:repeating-linear-gradient(0deg,transparent 0 3px,#73f8ff08 4px 5px);mix-blend-mode:screen}
+#stars,#dust{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#dust{z-index:1;opacity:.75}
+#planet{position:fixed;top:-15%;left:50%;transform:translateX(-50%);width:min(90vw,700px);height:auto;z-index:0;pointer-events:none;opacity:.55;filter:blur(.3px) drop-shadow(0 0 80px #4a7aff88)}
+.app{position:relative;z-index:2;isolation:isolate;max-width:1600px;margin:auto;padding:14px;min-height:100vh;display:flex;flex-direction:column;gap:14px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:1px solid #42dfff55;background:#0a1228cc;backdrop-filter:blur(18px);border-radius:var(--radius);box-shadow:var(--shadow),0 0 24px #42f3ff44}
 .brand{display:flex;align-items:center;gap:12px;min-width:0}
-.logo{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:24px;font-weight:900;color:#07111a;background:linear-gradient(135deg,var(--cyan),var(--violet));box-shadow:0 0 25px #42f3ff65;position:relative;overflow:hidden}
-.logo::after{content:"";position:absolute;inset:-60% -100%;background:linear-gradient(90deg,transparent,#fff9,transparent);transform:rotate(28deg);animation:holoSweep 4.8s linear infinite}
-.brand h1{font-size:clamp(16px,2.4vw,22px);margin:0}.brand p{margin:3px 0 0;color:var(--muted);font-size:12px}
-.top-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.logo{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:24px;font-weight:900;color:#07111a;background:linear-gradient(135deg,var(--cyan),var(--violet));box-shadow:0 0 30px #42f3ff88;position:relative;overflow:hidden}
+.logo::after{content:"";position:absolute;inset:-60% -100%;background:linear-gradient(90deg,transparent,#fff9,transparent);transform:rotate(28deg);animation:sweep 4s linear infinite}
+.brand h1{font-size:clamp(15px,2.3vw,20px);margin:0}.brand p{margin:3px 0 0;color:var(--muted);font-size:11px}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}
 .status{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--green);padding:8px 10px;background:#53e6a710;border:1px solid #53e6a733;border-radius:99px}
-.dot{width:7px;height:7px;background:currentColor;border-radius:50%;box-shadow:0 0 10px currentColor;animation:statusPulse 1.8s ease-in-out infinite}
-.btn{border:1px solid var(--line);background:#182236;color:var(--text);border-radius:11px;padding:9px 12px;transition:.18s}
-.btn:hover{border-color:#42f3ff88;transform:translateY(-1px)}
+.dot{width:7px;height:7px;background:currentColor;border-radius:50%;box-shadow:0 0 10px currentColor;animation:pulse 1.8s infinite}
+.btn{border:1px solid var(--line);background:#141e3a;color:var(--text);border-radius:11px;padding:9px 12px;transition:.18s}
+.btn:hover{border-color:#42f3ff99;transform:translateY(-1px);box-shadow:0 0 16px #42f3ff33}
 .btn.primary{color:#07111a;font-weight:750;border:0;background:linear-gradient(120deg,var(--cyan),#a1f5ff)}
 .btn.danger{border-color:#ff6e8855;color:#ff9bae}
 .btn.small{padding:6px 9px;font-size:12px}
 .layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:14px;flex:1;min-height:0}
-.sidebar,.panel{border:1px solid #42dfff45;background:linear-gradient(160deg,#111827f2,#0c1220f5);border-radius:var(--radius);box-shadow:var(--shadow),0 0 18px #42f3ff55;backdrop-filter:blur(18px);min-width:0}
+.sidebar,.panel{border:1px solid #42dfff55;background:linear-gradient(160deg,#0e1830ee,#080e20f2);border-radius:var(--radius);box-shadow:var(--shadow),0 0 20px #42f3ff33;backdrop-filter:blur(18px);min-width:0}
 .sidebar{padding:12px;display:flex;flex-direction:column;gap:7px}
 .side-label{font-size:10px;color:#70809e;letter-spacing:1.4px;padding:10px 10px 4px}
 .navbtn{display:flex;align-items:center;gap:10px;text-align:right;width:100%;padding:11px;border:1px solid transparent;border-radius:12px;background:transparent;color:#c2cde0;transition:.18s}
 .navbtn .ico{width:25px;text-align:center;font-size:17px}
-.navbtn:hover,.navbtn.active{background:#4de7ff12;border-color:#4de7ff2d;color:#fff}
-.navbtn.active{box-shadow:inset -3px 0 var(--cyan)}
+.navbtn:hover,.navbtn.active{background:#42f3ff14;border-color:#42f3ff44;color:#fff}
+.navbtn.active{box-shadow:inset -3px 0 var(--cyan),0 0 18px #42f3ff44}
 .side-foot{margin-top:auto;padding:12px;color:var(--muted);font-size:11px;line-height:1.8;border-top:1px solid var(--line)}
 .main{min-width:0;display:flex;flex-direction:column;gap:14px}
 .page-head{display:flex;align-items:end;justify-content:space-between;gap:10px;padding:2px 3px;flex-wrap:wrap}
-.page-head h2{margin:0;font-size:22px}
+.page-head h2{margin:0;font-size:22px;background:linear-gradient(90deg,#fff,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
 .page-head p{margin:5px 0 0;color:var(--muted);font-size:13px}
 .view{display:none;min-width:0}.view.active{display:block}
 .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:14px}
-.metric{padding:16px;border:1px solid #42dfff45;background:linear-gradient(145deg,#131d30,#0e1523);border-radius:16px;min-width:0;backdrop-filter:blur(18px)}
+.metric{padding:16px;border:1px solid #42dfff55;background:linear-gradient(145deg,#0e1a36,#080f22);border-radius:16px;min-width:0;box-shadow:0 0 20px #42f3ff33}
 .metric .label{font-size:12px;color:var(--muted)}
-.metric .value{font-size:clamp(21px,3vw,29px);font-weight:800;margin:8px 0 5px}
+.metric .value{font-size:clamp(21px,3vw,29px);font-weight:800;margin:8px 0 5px;color:#fff;text-shadow:0 0 18px #42f3ff88}
 .metric .hint{font-size:11px;color:var(--green)}
 .grid2{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:14px}
 .panel{padding:16px;position:relative;overflow:hidden}
-.panel::before{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(115deg,transparent 15%,#42f3ff08 35%,transparent 55%,#b45cff0a 75%,transparent);background-size:220% 100%;animation:panelAurora 12s linear infinite}
+.panel::before{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(115deg,transparent 15%,#42f3ff10 35%,transparent 55%,#b45cff14 75%,transparent);background-size:220% 100%;animation:aurora 12s linear infinite}
 .panel>*{position:relative}
 .panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px;flex-wrap:wrap}
 .panel-head h3{margin:0;font-size:15px}
 .subtle{color:var(--muted);font-size:12px}
 .feature-list{display:grid;gap:10px}
-.feature{display:flex;align-items:center;gap:11px;padding:12px;border:1px solid #25324a;border-radius:13px;background:#ffffff03}
-.feature-icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#4de7ff12;font-size:19px;flex-shrink:0}
+.feature{display:flex;align-items:center;gap:11px;padding:12px;border:1px solid #25324a;border-radius:13px;background:#ffffff04;transition:.18s}
+.feature:hover{border-color:#42f3ff88;box-shadow:0 0 18px #42f3ff33}
+.feature-icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#42f3ff14;font-size:19px;flex-shrink:0}
 .feature strong{display:block;font-size:13px}
 .feature small{display:block;color:var(--muted);margin-top:4px;font-size:11px}
 .chatbox{display:flex;flex-direction:column;height:min(62vh,600px);min-height:360px}
 .messages{flex:1;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:5px 2px 14px}
 .msg{max-width:88%;padding:11px 13px;border-radius:15px;line-height:1.65;font-size:13px;white-space:pre-wrap;word-break:break-word}
-.msg.bot{align-self:flex-start;background:#18243a;border:1px solid #2b3c5a;border-top-left-radius:4px}
-.msg.user{align-self:flex-end;background:#113b48;border:1px solid #1c7787;border-top-right-radius:4px}
+.msg.bot{align-self:flex-start;background:#152040;border:1px solid #2b3c5a;border-top-left-radius:4px}
+.msg.user{align-self:flex-end;background:#0b3a4a;border:1px solid #1c7787;border-top-right-radius:4px}
 .msg time{display:block;font-size:10px;color:#90a5c2;margin-top:5px}
 .composer{display:flex;gap:8px;border-top:1px solid var(--line);padding-top:12px}
-.composer input,.field,.terminal-input{width:100%;min-width:0;color:var(--text);background:#090f1b;border:1px solid #293852;border-radius:12px;padding:11px 12px;font:inherit}
+.composer input,.field,.terminal-input{width:100%;min-width:0;color:var(--text);background:#050a1c;border:1px solid #293852;border-radius:12px;padding:11px 12px;font:inherit}
 .composer input{flex:1}
 .notice{padding:11px 12px;border:1px solid #ffbd6944;background:#ffbd690d;color:#f6d4a2;border-radius:12px;font-size:12px;line-height:1.65}
-.terminal{background:#070b12;border:1px solid #27374c;border-radius:13px;padding:14px;min-height:260px;max-height:52vh;overflow:auto;font:12px/1.7 ui-monospace,monospace;color:#b7f9d5;white-space:pre-wrap;word-break:break-word}
+.terminal{background:#03060e;border:1px solid #27374c;border-radius:13px;padding:14px;min-height:260px;max-height:52vh;overflow:auto;font:12px/1.7 ui-monospace,monospace;color:#b7f9d5;white-space:pre-wrap;word-break:break-word}
 .terminal-line{color:#94a3bd}
 .terminal-row{display:flex;gap:8px;margin-top:10px}
-.media-stage{background:#05080f;border:1px solid #26334a;border-radius:14px;min-height:220px;display:grid;place-items:center;overflow:hidden;position:relative}
-.media-stage video{width:100%;max-height:52vh;object-fit:contain;background:#000}
+.media-stage{background:#02040a;border:1px solid #26334a;border-radius:14px;min-height:220px;display:grid;place-items:center;overflow:hidden;position:relative}
+.media-stage video,.media-stage iframe{width:100%;max-height:52vh;aspect-ratio:16/9;border:0;background:#000}
 .media-placeholder{text-align:center;color:var(--muted);padding:30px}
 .media-placeholder .big{font-size:42px;margin-bottom:10px}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .file-list,.chain-list{display:grid;gap:8px}
-.file-row,.chain-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px;border:1px solid var(--line);border-radius:12px;background:#ffffff03;flex-wrap:wrap}
+.file-row,.chain-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px;border:1px solid var(--line);border-radius:12px;background:#ffffff04;flex-wrap:wrap}
 .file-row .name,.chain-row .name{min-width:0;word-break:break-word;flex:1}
 .file-row small,.chain-row small{display:block;color:var(--muted);font-size:11px;margin-top:4px}
 .empty{padding:25px;text-align:center;color:var(--muted);border:1px dashed #33425b;border-radius:12px;font-size:13px}
 .footer{color:#687893;text-align:center;font-size:10px;padding:2px}
-.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translate(-50%,15px);opacity:0;pointer-events:none;background:#17243a;border:1px solid #405576;color:white;border-radius:12px;padding:11px 15px;box-shadow:var(--shadow);z-index:50;transition:.2s;max-width:calc(100vw - 28px);font-size:13px}
+.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translate(-50%,15px);opacity:0;pointer-events:none;background:#0e1832;border:1px solid #42f3ff88;color:white;border-radius:12px;padding:11px 15px;box-shadow:0 0 24px #42f3ff66;z-index:50;transition:.2s;max-width:calc(100vw - 28px);font-size:13px}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-/* CHAT ROOMS */
+/* broadcast */
+.broadcast-box{display:flex;gap:8px;flex-wrap:wrap}
+.broadcast-box input{flex:1;min-width:200px;color:var(--text);background:#050a1c;border:1px solid #293852;border-radius:12px;padding:11px 12px}
+/* rooms */
 .rooms-shell{display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px;min-height:0}
 .rooms-side{padding:14px;display:flex;flex-direction:column;gap:10px;max-height:70vh;overflow:auto}
-.rooms-side h4{margin:0;font-size:12px;color:#8ea0bf;letter-spacing:1.2px;text-transform:uppercase}
+.rooms-side h4{margin:0;font-size:12px;color:#8ea0bf;letter-spacing:1.2px}
 .room-item{display:flex;align-items:center;gap:10px;width:100%;text-align:right;padding:10px 11px;border:1px solid transparent;border-radius:12px;background:#ffffff04;color:#cfd9ea;cursor:pointer;transition:.18s}
-.room-item:hover{background:#42f3ff0f;border-color:#42f3ff30}
-.room-item.active{background:#42f3ff18;border-color:#42f3ff70;color:#fff;box-shadow:0 0 16px #42f3ff22}
-.room-item .rico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#42f3ff12;font-size:16px;flex-shrink:0}
+.room-item:hover{background:#42f3ff0f;border-color:#42f3ff44}
+.room-item.active{background:#42f3ff1c;border-color:#42f3ff88;color:#fff;box-shadow:0 0 16px #42f3ff44}
+.room-item .rico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#42f3ff14;font-size:16px;flex-shrink:0}
 .room-item .rmeta{min-width:0;flex:1;text-align:right}
-.room-item .rname{font-size:13px;font-weight:600;word-break:break-word;display:block}
-.room-item .rdesc{font-size:10.5px;color:#7e8ea8;margin-top:2px;display:block;word-break:break-word}
+.room-item .rname{font-size:13px;font-weight:600;display:block}
+.room-item .rdesc{font-size:10.5px;color:#7e8ea8;display:block}
 .rooms-main{display:flex;flex-direction:column;min-height:0;padding:0;overflow:hidden}
 .rooms-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .rooms-head .rttl{display:flex;align-items:center;gap:10px;min-width:0}
 .rooms-head .rttl h3{margin:0;font-size:15px}
-.rooms-head .rttl small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.rooms-head .rttl small{display:block;color:var(--muted);font-size:11px}
 .rooms-body{flex:1;display:flex;flex-direction:column;min-height:0}
 .rooms-msgs{flex:1;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:14px;min-height:280px;max-height:56vh}
-.rmsg{max-width:85%;padding:9px 12px;border-radius:14px;line-height:1.6;font-size:13px;word-break:break-word;background:#18243a;border:1px solid #2b3c5a;align-self:flex-start;border-top-left-radius:4px}
-.rmsg.mine{align-self:flex-end;background:#0e3d4a;border-color:#1c7787;border-top-right-radius:4px;border-top-left-radius:14px}
+.rmsg{max-width:85%;padding:9px 12px;border-radius:14px;line-height:1.6;font-size:13px;word-break:break-word;background:#152040;border:1px solid #2b3c5a;align-self:flex-start;border-top-left-radius:4px}
+.rmsg.mine{align-self:flex-end;background:#0b3a4a;border-color:#1c7787;border-top-right-radius:4px;border-top-left-radius:14px}
 .rmsg .rwho{font-size:10.5px;font-weight:700;color:#7be2ff;margin-bottom:3px}
 .rmsg .rtxt{white-space:pre-wrap}
 .rmsg .rtime{display:block;font-size:9.5px;color:#8ba0bd;margin-top:4px}
 .rooms-empty{margin:auto;text-align:center;color:var(--muted);font-size:13px;padding:20px}
-.rooms-form{display:flex;gap:8px;border-top:1px solid var(--line);padding:12px 14px;background:#0c1322aa}
+.rooms-form{display:flex;gap:8px;border-top:1px solid var(--line);padding:12px 14px;background:#04081aaa}
 .rooms-form input{flex:1;min-width:0}
 .rooms-setup{padding:30px 18px;text-align:center}
-.rooms-setup .big{font-size:48px;margin-bottom:10px;filter:drop-shadow(0 0 12px #42f3ff88)}
+.rooms-setup .big{font-size:48px;margin-bottom:10px;filter:drop-shadow(0 0 16px #42f3ff)}
 .rooms-setup h3{margin:0 0 6px;font-size:18px}
 .rooms-setup p{margin:0 auto 16px;max-width:420px;color:var(--muted);font-size:13px;line-height:1.7}
 .rooms-setup form{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;max-width:460px;margin:0 auto}
 .rooms-setup input{flex:1;min-width:200px;max-width:320px}
 .room-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--green);padding:5px 9px;background:#53e6a710;border:1px solid #53e6a733;border-radius:99px}
 .rooms-count{font-size:11px;color:var(--muted);padding:8px 11px;background:#ffffff05;border-radius:10px;border:1px solid var(--line);text-align:center}
-@keyframes holoSweep{0%{transform:translateX(-60%) rotate(28deg)}100%{transform:translateX(120%) rotate(28deg)}}
-@keyframes panelAurora{0%{background-position:180% 0}100%{background-position:-40% 0}}
-@keyframes statusPulse{0%,100%{opacity:.65}50%{opacity:1}}
-.holo-ripple{position:fixed;z-index:99;pointer-events:none;width:18px;height:18px;border:1px solid #72f7ff;border-radius:50%;transform:translate(-50%,-50%) scale(.2);box-shadow:0 0 14px #42f3ff,0 0 35px #9d78ff;animation:rippleOut .8s ease-out forwards}
-@keyframes rippleOut{to{transform:translate(-50%,-50%) scale(5);opacity:0}}
+
+/* ===== CRYSTAL DUST ===== */
+.crystal{
+  position:fixed;z-index:100;pointer-events:none;
+  width:8px;height:8px;
+  background:linear-gradient(135deg,#d9ffff,#42f3ff);
+  clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);
+  filter:drop-shadow(0 0 6px #42f3ff) drop-shadow(0 0 12px #b45cff);
+  animation:crystalFly .9s ease-out forwards;
+}
+.crystal.violet{background:linear-gradient(135deg,#f0d9ff,#b45cff)}
+.crystal.white{background:linear-gradient(135deg,#fff,#d9ffff)}
+.crystal-ring{
+  position:fixed;z-index:99;pointer-events:none;
+  width:20px;height:20px;border-radius:50%;
+  border:2px solid #42f3ff;
+  box-shadow:0 0 20px #42f3ff,inset 0 0 20px #b45cff,0 0 40px #b45cff88;
+  transform:translate(-50%,-50%) scale(.2);
+  animation:crystalRing .8s ease-out forwards;
+}
+.crystal-ring::before,.crystal-ring::after{
+  content:"";position:absolute;inset:-8px;border:1px solid #b45cff88;border-radius:50%;
+}
+.crystal-ring::after{inset:-16px;border-color:#42f3ff55;border-style:dashed}
+@keyframes crystalFly{
+  0%{transform:translate(-50%,-50%) rotate(0) scale(.3);opacity:1}
+  100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) rotate(var(--rot)) scale(0);opacity:0}
+}
+@keyframes crystalRing{to{transform:translate(-50%,-50%) scale(4);opacity:0}}
+@keyframes sweep{0%{transform:translateX(-60%) rotate(28deg)}100%{transform:translateX(120%) rotate(28deg)}}
+@keyframes aurora{0%{background-position:180% 0}100%{background-position:-40% 0}}
+@keyframes pulse{0%,100%{opacity:.65}50%{opacity:1}}
+@keyframes twinkle{0%,100%{opacity:.35}50%{opacity:1}}
+
 @media(min-width:1250px){.app{padding:20px}.layout{grid-template-columns:235px minmax(0,1fr)}}
-@media(max-width:850px){.layout{grid-template-columns:1fr}.sidebar{order:2;position:sticky;bottom:0;z-index:20;padding:7px;display:flex;flex-direction:row;justify-content:space-around;gap:4px;background:#0b1120f2;backdrop-filter:blur(16px);box-shadow:0 -8px 24px #0005;flex-wrap:nowrap;overflow-x:auto}.side-label,.side-foot{display:none}.navbtn{width:auto;flex:1;justify-content:center;flex-direction:column;gap:3px;padding:7px 3px;font-size:10px;min-width:60px}.navbtn .ico{font-size:18px;width:auto}.navbtn.active{box-shadow:inset 0 -2px var(--cyan)}.main{order:1}.app{padding:10px;gap:10px}.grid2{grid-template-columns:1fr}.chatbox{height:58vh;min-height:330px}.cards{gap:8px}.metric{padding:12px}.rooms-shell{grid-template-columns:1fr}.rooms-side{max-height:none;flex-direction:row;overflow-x:auto;gap:8px;padding:10px}.rooms-side h4{display:none}.room-item{min-width:170px;flex-shrink:0}.rooms-msgs{max-height:50vh}}
-@media(max-width:520px){.topbar{align-items:flex-start;padding:11px;gap:8px;flex-wrap:wrap}.brand{gap:8px}.logo{width:38px;height:38px;border-radius:11px;font-size:20px}.brand p{font-size:10px}.brand h1{font-size:15px}.top-actions{justify-content:flex-end}.top-actions .status{display:none}.top-actions .btn{padding:8px;font-size:11px}.cards{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/-1}.metric .value{font-size:22px}.page-head h2{font-size:19px}.panel{padding:12px}.msg{max-width:94%}.chatbox{min-height:300px;height:55vh}.navbtn{font-size:9px;min-width:50px}.notice{font-size:11px}.actions .btn{flex:1}.rooms-setup form{flex-direction:column}.rooms-setup input{max-width:none;width:100%}.rooms-form{padding:10px}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+@media(max-width:850px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{order:2;position:sticky;bottom:0;z-index:20;padding:7px;display:flex;flex-direction:row;justify-content:space-around;gap:4px;background:#050c1ef2;backdrop-filter:blur(16px);flex-wrap:nowrap;overflow-x:auto}
+  .side-label,.side-foot{display:none}
+  .navbtn{width:auto;flex:1;justify-content:center;flex-direction:column;gap:3px;padding:7px 3px;font-size:10px;min-width:60px}
+  .navbtn .ico{font-size:18px;width:auto}
+  .navbtn.active{box-shadow:inset 0 -2px var(--cyan)}
+  .main{order:1}
+  .app{padding:10px;gap:10px}
+  .grid2{grid-template-columns:1fr}
+  .chatbox{height:58vh;min-height:330px}
+  .cards{gap:8px}
+  .metric{padding:12px}
+  .rooms-shell{grid-template-columns:1fr}
+  .rooms-side{max-height:none;flex-direction:row;overflow-x:auto;gap:8px;padding:10px}
+  .rooms-side h4{display:none}
+  .room-item{min-width:170px;flex-shrink:0}
+  .rooms-msgs{max-height:50vh}
+  #planet{opacity:.35}
+}
+@media(max-width:520px){
+  .topbar{flex-wrap:wrap;padding:11px;gap:8px}
+  .brand{gap:8px}.logo{width:38px;height:38px;font-size:20px}
+  .brand h1{font-size:15px}.brand p{font-size:10px}
+  .top-actions .status{display:none}
+  .cards{grid-template-columns:1fr 1fr}
+  .metric:last-child{grid-column:1/-1}
+  .metric .value{font-size:22px}
+  .page-head h2{font-size:19px}
+  .panel{padding:12px}
+  .msg{max-width:94%}
+  .chatbox{min-height:300px;height:55vh}
+  .navbtn{font-size:9px;min-width:52px}
+  .notice{font-size:11px}
+  .actions .btn{flex:1}
+  .rooms-setup form{flex-direction:column}
+  .rooms-setup input{max-width:none;width:100%}
+  .rooms-form{padding:10px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}.crystal,.crystal-ring{display:none!important}}
 </style>
 </head>
 <body>
-<canvas id="cosmicDust" aria-hidden="true"></canvas>
+<canvas id="stars" aria-hidden="true"></canvas>
+<canvas id="dust" aria-hidden="true"></canvas>
+<svg id="planet" viewBox="0 0 400 400" aria-hidden="true">
+  <defs>
+    <radialGradient id="pg" cx="35%" cy="30%">
+      <stop offset="0%" stop-color="#a8d4ff"/>
+      <stop offset="40%" stop-color="#4a7aff"/>
+      <stop offset="75%" stop-color="#1a2f8a"/>
+      <stop offset="100%" stop-color="#050a25"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#42f3ff" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#b45cff" stop-opacity=".9"/>
+      <stop offset="100%" stop-color="#42f3ff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="200" cy="200" rx="195" ry="40" fill="none" stroke="url(#ring)" stroke-width="6" transform="rotate(-18 200 200)"/>
+  <circle cx="200" cy="200" r="140" fill="url(#pg)"/>
+  <ellipse cx="150" cy="180" rx="40" ry="20" fill="#000" opacity=".25"/>
+  <ellipse cx="240" cy="240" rx="55" ry="25" fill="#000" opacity=".18"/>
+  <ellipse cx="210" cy="150" rx="30" ry="15" fill="#fff" opacity=".1"/>
+</svg>
 <div class="app">
   <header class="topbar">
-    <div class="brand"><div class="logo" aria-hidden="true">L</div><div><h1>LAFI OMNI-SCREEN</h1><p>كل شيء في شاشة · مساحة عمل موحّدة</p></div></div>
+    <div class="brand"><div class="logo" aria-hidden="true">L</div><div><h1>LAFI OMNI-SCREEN</h1><p>مساحة عمل هولوغرامية فضائية</p></div></div>
     <div class="top-actions"><span class="status"><span class="dot"></span> يعمل محليًا</span><button class="btn small" id="exportBtn">تصدير</button><button class="btn small" id="importBtn">استيراد</button><input type="file" id="importFile" accept="application/json,.json" hidden></div>
   </header>
   <div class="layout">
@@ -140,35 +234,37 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opa
       <button class="navbtn active" data-view="home"><span class="ico">◈</span><span>الرئيسية</span></button>
       <button class="navbtn" data-view="chat"><span class="ico">✧</span><span>المحادثة</span></button>
       <button class="navbtn" data-view="rooms"><span class="ico">💬</span><span>غرف الدردشة</span></button>
+      <button class="navbtn" data-view="broadcast"><span class="ico">📡</span><span>البث</span></button>
       <button class="navbtn" data-view="media"><span class="ico">▣</span><span>الوسائط</span></button>
       <button class="navbtn" data-view="terminal"><span class="ico">⌘</span><span>الطرفية</span></button>
       <button class="navbtn" data-view="files"><span class="ico">▤</span><span>ملفاتي</span></button>
       <button class="navbtn" data-view="chain"><span class="ico">⛓</span><span>سجل التحقق</span></button>
-      <div class="side-foot">نسخة محلية تجريبية<br>بياناتك تبقى في هذا المتصفح.</div>
+      <div class="side-foot">نسخة محلية<br>بياناتك تبقى في متصفحك.</div>
     </aside>
     <main class="main">
       <section class="view active" id="view-home">
-        <div class="page-head"><div><h2>مساحة العمل</h2><p>واجهة موحّدة تتكيّف مع الهاتف والكمبيوتر.</p></div><span class="subtle" id="today"></span></div>
+        <div class="page-head"><div><h2>مساحة العمل الفضائية</h2><p>واجهة هولوغرامية تتكيّف مع كل الشاشات.</p></div><span class="subtle" id="today"></span></div>
         <div class="cards">
           <div class="metric"><div class="label">الملاحظات</div><div class="value" id="metricFiles">0</div><div class="hint">محفوظة محليًا</div></div>
-          <div class="metric"><div class="label">رسائل المحادثة</div><div class="value" id="metricMsgs">1</div><div class="hint">مساعد محلي</div></div>
+          <div class="metric"><div class="label">الرسائل</div><div class="value" id="metricMsgs">1</div><div class="hint">مساعد محلي</div></div>
           <div class="metric"><div class="label">غرف الدردشة</div><div class="value" id="metricRooms">5</div><div class="hint">محفوظة محليًا</div></div>
         </div>
         <div class="grid2">
           <div class="panel"><div class="panel-head"><h3>ابدأ بسرعة</h3></div><div class="feature-list">
-            <button class="feature navbtn" data-view="chat"><span class="feature-icon">✧</span><span><strong>افتح المحادثة</strong><small>مساعد قواعد محلي.</small></span></button>
+            <button class="feature navbtn" data-view="chat"><span class="feature-icon">✧</span><span><strong>المحادثة الذكية</strong><small>مساعد قواعد محلي.</small></span></button>
             <button class="feature navbtn" data-view="rooms"><span class="feature-icon">💬</span><span><strong>غرف الدردشة</strong><small>غرف متعددة مع اسم مستخدم.</small></span></button>
+            <button class="feature navbtn" data-view="broadcast"><span class="feature-icon">📡</span><span><strong>البث</strong><small>شغّل YouTube أو Vimeo أو MP4.</small></span></button>
             <button class="feature navbtn" data-view="media"><span class="feature-icon">▣</span><span><strong>الوسائط</strong><small>كاميرا أو شاشة.</small></span></button>
           </div></div>
           <div class="panel"><div class="panel-head"><h3>حالة النظام</h3></div><div class="feature-list">
-            <div class="feature"><span class="feature-icon">✓</span><span><strong>التصميم المتجاوب</strong><small>يعمل على كل الشاشات.</small></span></div>
+            <div class="feature"><span class="feature-icon">✓</span><span><strong>التصميم الهولوغرامي</strong><small>خلفية فضائية + توهّج.</small></span></div>
+            <div class="feature"><span class="feature-icon">💎</span><span><strong>الغبار البلوري</strong><small>المس الشاشة لترى الشظايا.</small></span></div>
             <div class="feature"><span class="feature-icon">⌁</span><span><strong>تخزين محلي</strong><small id="storageState">جارٍ الفحص…</small></span></div>
-            <div class="feature"><span class="feature-icon">!</span><span><strong>حدود النسخة</strong><small>لا خادم، لا اتصال بين المستخدمين.</small></span></div>
-          </div><div class="notice" style="margin-top:12px">تنبيه: أدوات محلية تجريبية، ليست ذكاءً اصطناعيًا.</div></div>
+          </div><div class="notice" style="margin-top:12px">كل شيء يعمل محليًا داخل متصفحك. لا خادم ولا اتصال بين المستخدمين.</div></div>
         </div>
       </section>
       <section class="view" id="view-chat">
-        <div class="page-head"><div><h2>المحادثة الذكية</h2><p>مساعد محلي بسيط.</p></div><button class="btn small" id="clearChat">مسح</button></div>
+        <div class="page-head"><div><h2>المحادثة الذكية</h2><p>مساعد محلي بقواعد بسيطة.</p></div><button class="btn small" id="clearChat">مسح</button></div>
         <div class="panel chatbox"><div class="messages" id="messages" aria-live="polite"></div><form class="composer" id="chatForm"><input id="chatInput" autocomplete="off" maxlength="2000" placeholder="اكتب رسالة…" required><button class="btn primary" type="submit">إرسال</button></form></div>
       </section>
       <section class="view" id="view-rooms">
@@ -178,7 +274,7 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opa
           <h3>مرحبًا بك في غرف الدردشة</h3>
           <p>أدخل اسمك للانضمام. سيُحفظ محليًا على هذا الجهاز فقط.</p>
           <form id="roomsNameForm"><input class="field" id="roomsNameInput" maxlength="24" placeholder="اكتب اسمك…" required><button class="btn primary" type="submit">دخول</button></form>
-          <div class="notice" style="margin-top:16px;max-width:520px;margin-inline:auto">الغرف محلية على هذا الجهاز. لمشاركتها بين الأجهزة نحتاج خادمًا لاحقًا.</div>
+          <div class="notice" style="margin-top:16px;max-width:520px;margin-inline:auto">الغرف محلية على هذا الجهاز.</div>
         </div>
         <div id="roomsApp" class="rooms-shell" hidden>
           <aside class="rooms-side panel">
@@ -190,7 +286,7 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opa
           </aside>
           <div class="panel rooms-main">
             <div class="rooms-head">
-              <div class="rttl"><span class="feature-icon" id="roomIcon">💬</span><div><h3 id="roomTitle">اختر غرفة</h3><small id="roomDesc">لم يتم اختيار غرفة بعد</small></div></div>
+              <div class="rttl"><span class="feature-icon" id="roomIcon">💬</span><div><h3 id="roomTitle">اختر غرفة</h3><small id="roomDesc">لم يتم اختيار غرفة</small></div></div>
               <span class="subtle" id="roomCount">0 رسالة</span>
             </div>
             <div class="rooms-body">
@@ -203,12 +299,26 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opa
           </div>
         </div>
       </section>
+      <section class="view" id="view-broadcast">
+        <div class="page-head"><div><h2>البث 📡</h2><p>شغّل فيديو من YouTube أو Vimeo أو رابط MP4 مباشر.</p></div></div>
+        <div class="panel">
+          <form class="broadcast-box" id="broadcastForm">
+            <input id="broadcastUrl" placeholder="الصق رابط YouTube / Vimeo / MP4 هنا…">
+            <button class="btn primary" type="submit">🚀 بث</button>
+            <button class="btn danger" type="button" id="stopBroadcast">إيقاف</button>
+          </form>
+          <div class="media-stage" id="broadcastStage" style="margin-top:14px">
+            <div class="media-placeholder"><div class="big">📡</div><strong>لا بث نشط</strong><p>الصق رابطًا في الأعلى واضغط «بث».</p></div>
+          </div>
+          <p class="subtle" style="margin-top:10px">يدعم: youtube.com / youtu.be / vimeo.com / روابط فيديو مباشرة (mp4, webm, ogg).</p>
+        </div>
+      </section>
       <section class="view" id="view-media">
         <div class="page-head"><div><h2>الوسائط</h2><p>معاينة محلية للكاميرا أو الشاشة.</p></div></div>
-        <div class="panel"><div class="media-stage" id="mediaStage"><div class="media-placeholder"><div class="big">▣</div><strong>لا معاينة نشطة</strong><p>اختر مصدرًا.</p></div></div><div class="actions"><button class="btn primary" id="cameraBtn">الكاميرا</button><button class="btn" id="screenBtn">الشاشة</button><button class="btn danger" id="stopMediaBtn" disabled>إيقاف</button></div><p class="subtle" id="mediaStatus">يتطلب إذن المتصفح و HTTPS.</p></div>
+        <div class="panel"><div class="media-stage" id="mediaStage"><div class="media-placeholder"><div class="big">▣</div><strong>لا معاينة</strong><p>اختر مصدرًا.</p></div></div><div class="actions"><button class="btn primary" id="cameraBtn">الكاميرا</button><button class="btn" id="screenBtn">الشاشة</button><button class="btn danger" id="stopMediaBtn" disabled>إيقاف</button></div><p class="subtle" id="mediaStatus">يتطلب إذن المتصفح و HTTPS.</p></div>
       </section>
       <section class="view" id="view-terminal">
-        <div class="page-head"><div><h2>طرفية تجريبية</h2><p>محاكاة آمنة.</p></div><button class="btn small" id="clearTerminal">مسح</button></div>
+        <div class="page-head"><div><h2>طرفية</h2><p>محاكاة آمنة.</p></div><button class="btn small" id="clearTerminal">مسح</button></div>
         <div class="panel"><div class="terminal" id="terminal" aria-live="polite">LAFI Terminal v2.0
 اكتب help لعرض الأوامر.
 </div><form class="terminal-row" id="terminalForm"><input class="terminal-input" id="terminalInput" placeholder="help" autocomplete="off" maxlength="300"><button class="btn primary" type="submit">تنفيذ</button></form><p class="subtle">الأوامر: help, date, about, ls, clear, echo</p></div>
@@ -224,7 +334,7 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opa
         <div class="page-head"><div><h2>سجل التحقق</h2><p>سلسلة SHA-256 تجريبية.</p></div><button class="btn primary small" id="addBlock">إضافة</button></div>
         <div class="panel"><div class="panel-head"><h3>السلامة</h3><button class="btn small" id="verifyChain">تحقق</button></div><div id="chainStatus" class="notice">جارٍ…</div><div class="chain-list" id="chainList" style="margin-top:12px"></div></div>
       </section>
-      <footer class="footer">LAFI OMNI-SCREEN · بيانات محلية على جهازك</footer>
+      <footer class="footer">LAFI OMNI-SCREEN · الفضاء الهولوغرامي · بيانات محلية</footer>
     </main>
   </div>
 </div>
@@ -232,8 +342,8 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opa
 <script>
 (function(){
 'use strict';
-var $ = function(s,r){return (r||document).querySelector(s)};
-var $$ = function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
 var STORAGE_KEY='lafi-omni-screen-v2';
 var CHAT_KEY='lafi-chat-rooms-v1';
 var DEFAULT_ROOMS=[
@@ -250,7 +360,7 @@ var activeStream=null,toastTimer=null;
 function loadState(){
   try{
     var raw=localStorage.getItem(STORAGE_KEY);
-    if(!raw) return {notes:[],messages:[{role:'bot',text:'مرحبًا بك! اكتب «مساعدة».'}],chain:[],nextNoteId:1};
+    if(!raw)return {notes:[],messages:[{role:'bot',text:'مرحبًا بك! اكتب «مساعدة».'}],chain:[],nextNoteId:1};
     var p=JSON.parse(raw);
     return {notes:p.notes||[],messages:(p.messages&&p.messages.length)?p.messages:[{role:'bot',text:'مرحبًا!'}],chain:p.chain||[],nextNoteId:p.nextNoteId||1};
   }catch(e){return {notes:[],messages:[{role:'bot',text:'مرحبًا!'}],chain:[],nextNoteId:1};}
@@ -259,14 +369,14 @@ function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))
 function loadChat(){
   try{
     var raw=localStorage.getItem(CHAT_KEY);
-    if(!raw){return {username:'',activeRoom:null,rooms:DEFAULT_ROOMS.map(function(r){var o={};for(var k in r)o[k]=r[k];o.messages=[];return o;})};}
+    if(!raw)return {username:'',activeRoom:null,rooms:clone(DEFAULT_ROOMS)};
     var p=JSON.parse(raw);
-    var rooms=(p.rooms&&p.rooms.length)?p.rooms:DEFAULT_ROOMS.map(function(r){var o={};for(var k in r)o[k]=r[k];o.messages=[];return o;});
-    rooms=rooms.map(function(r){return {id:r.id||('r'+Math.random().toString(36).slice(2,8)),name:r.name||'غرفة',icon:r.icon||'💬',desc:r.desc||'',messages:r.messages||[]};});
+    var rooms=(p.rooms&&p.rooms.length)?p.rooms:clone(DEFAULT_ROOMS);
     return {username:p.username||'',activeRoom:p.activeRoom||null,rooms:rooms};
-  }catch(e){return {username:'',activeRoom:null,rooms:DEFAULT_ROOMS.map(function(r){var o={};for(var k in r)o[k]=r[k];o.messages=[];return o;})};}
+  }catch(e){return {username:'',activeRoom:null,rooms:clone(DEFAULT_ROOMS)};}
 }
-function saveChat(){try{localStorage.setItem(CHAT_KEY,JSON.stringify(chat));}catch(e){toast('تعذر حفظ الغرف.');}}
+function clone(arr){return arr.map(function(r){var o={};for(var k in r)o[k]=r[k];o.messages=o.messages||[];return o;});}
+function saveChat(){try{localStorage.setItem(CHAT_KEY,JSON.stringify(chat));}catch(e){}}
 function toast(m){var el=$('#toast');if(!el)return;el.textContent=m;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove('show');},2600);}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
@@ -275,8 +385,6 @@ function nowTime(){return new Intl.DateTimeFormat('ar-DZ',{hour:'2-digit',minute
 function showView(name){
   $$('.view').forEach(function(el){el.classList.toggle('active',el.id==='view-'+name);});
   $$('.navbtn[data-view]').forEach(function(el){el.classList.toggle('active',el.dataset.view===name);});
-  if(name==='chat'){var i=$('#chatInput');if(i)i.focus({preventScroll:true});}
-  if(name==='rooms'){var i2=$('#roomsInput');if(i2&&!i2.disabled)i2.focus({preventScroll:true});}
 }
 $$('.navbtn[data-view]').forEach(function(b){b.addEventListener('click',function(){showView(b.dataset.view);});});
 var todayEl=$('#today');if(todayEl)todayEl.textContent=new Intl.DateTimeFormat('ar-DZ',{dateStyle:'medium'}).format(new Date());
@@ -306,10 +414,11 @@ function addMessage(role,text){
 function localReply(input){
   var s=input.toLowerCase().trim();
   if(/^(سلام|مرحبا|مرحبًا|السلام عليكم|hi|hello)/i.test(s))return 'أهلًا بك! كيف أساعدك؟';
-  if(s.indexOf('مساعدة')>-1||s==='help')return 'اكتب: الوقت، ملاحظات، غرف، وسائط، حالة.';
+  if(s.indexOf('مساعدة')>-1||s==='help')return 'اكتب: الوقت، ملاحظات، غرف، بث، وسائط، حالة.';
   if(s.indexOf('الوقت')>-1||s.indexOf('التاريخ')>-1)return 'الوقت: '+new Date().toLocaleString('ar-DZ');
   if(s.indexOf('ملاحظات')>-1||s.indexOf('ملفات')>-1){showView('files');return 'فتحت ملفاتي.';}
   if(s.indexOf('غرف')>-1||s.indexOf('دردشة')>-1){showView('rooms');return 'فتحت غرف الدردشة.';}
+  if(s.indexOf('بث')>-1||s.indexOf('فيديو')>-1){showView('broadcast');return 'فتحت قسم البث.';}
   if(s.indexOf('وسائط')>-1||s.indexOf('كاميرا')>-1){showView('media');return 'فتحت الوسائط.';}
   if(s.indexOf('حالة')>-1)return 'الواجهة تعمل محليًا.';
   if(s.indexOf('شكرا')>-1||s.indexOf('شكرًا')>-1)return 'العفو!';
@@ -370,6 +479,43 @@ if(termForm)termForm.addEventListener('submit',function(e){
 var clearTerm=$('#clearTerminal');
 if(clearTerm)clearTerm.addEventListener('click',function(){if(terminal)terminal.innerHTML='';});
 
+/* BROADCAST */
+function toEmbed(url){
+  try{
+    var u=url.trim();
+    var yt=u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+    if(yt)return {type:'iframe',src:'https://www.youtube.com/embed/'+yt[1]+'?autoplay=1'};
+    var vm=u.match(/vimeo\.com\/(\d+)/);
+    if(vm)return {type:'iframe',src:'https://player.vimeo.com/video/'+vm[1]+'?autoplay=1'};
+    if(/\.(mp4|webm|ogg)(\?|$)/i.test(u))return {type:'video',src:u};
+    return null;
+  }catch(e){return null;}
+}
+var bcForm=$('#broadcastForm');
+if(bcForm)bcForm.addEventListener('submit',function(e){
+  e.preventDefault();
+  var url=$('#broadcastUrl').value.trim();if(!url)return;
+  var info=toEmbed(url);
+  var stage=$('#broadcastStage');
+  if(!info){toast('رابط غير مدعوم.');return;}
+  stage.innerHTML='';
+  if(info.type==='iframe'){
+    var f=document.createElement('iframe');
+    f.src=info.src;f.allow='autoplay; encrypted-media; picture-in-picture';
+    f.allowFullscreen=true;stage.appendChild(f);
+  }else{
+    var v=document.createElement('video');
+    v.src=info.src;v.controls=true;v.autoplay=true;v.playsInline=true;stage.appendChild(v);
+  }
+  toast('بدأ البث.');
+});
+var stopBc=$('#stopBroadcast');
+if(stopBc)stopBc.addEventListener('click',function(){
+  var stage=$('#broadcastStage');
+  stage.innerHTML='<div class="media-placeholder"><div class="big">📡</div><strong>لا بث نشط</strong><p>الصق رابطًا واضغط «بث».</p></div>';
+});
+
+/* MEDIA */
 function startMedia(kind){
   stopMedia(false);
   if(!navigator.mediaDevices){toast('غير متاح.');return;}
@@ -399,6 +545,7 @@ var camB=$('#cameraBtn');if(camB)camB.addEventListener('click',function(){startM
 var scrB=$('#screenBtn');if(scrB)scrB.addEventListener('click',function(){startMedia('screen');});
 var stpB=$('#stopMediaBtn');if(stpB)stpB.addEventListener('click',function(){stopMedia(true);});
 
+/* CHAIN */
 function sha256(t){
   if(!crypto||!crypto.subtle)return Promise.reject(new Error('غير متاح.'));
   var d=new TextEncoder().encode(t);
@@ -415,7 +562,7 @@ function createBlock(data){
     state.chain.push({index:i,previousHash:prev,timestamp:ts,data:data,hash:h});
   });
 }
-function ensureGenesis(){if(!state.chain.length)return createBlock('بدء سجل LAFI').then(function(){saveState();});return Promise.resolve();}
+function ensureGenesis(){if(!state.chain.length)return createBlock('بدء السجل').then(function(){saveState();});return Promise.resolve();}
 function verifyChain(){
   var st=$('#chainStatus');if(st)st.textContent='جارٍ التحقق…';
   var chain=Promise.resolve();
@@ -423,10 +570,10 @@ function verifyChain(){
     (function(idx){
       chain=chain.then(function(){
         var b=state.chain[idx];
-        var expectedPrev=idx===0?'GENESIS':state.chain[idx-1].hash;
-        if(b.index!==idx||b.previousHash!==expectedPrev){throw new Error('رابط خاطئ عند '+idx);}
+        var expPrev=idx===0?'GENESIS':state.chain[idx-1].hash;
+        if(b.index!==idx||b.previousHash!==expPrev)throw new Error('رابط خاطئ عند '+idx);
         return sha256(canon(b.index,b.previousHash,b.timestamp,b.data)).then(function(exp){
-          if(exp!==b.hash)throw new Error('تغيّر محتوى السجل '+idx);
+          if(exp!==b.hash)throw new Error('تغيّر السجل '+idx);
         });
       });
     })(i);
@@ -459,6 +606,7 @@ if(addB)addB.addEventListener('click',function(){
 });
 var verB=$('#verifyChain');if(verB)verB.addEventListener('click',function(){verifyChain();});
 
+/* EXPORT/IMPORT */
 function downloadJSON(){
   var payload={app:'LAFI',version:2,state:state,chat:chat};
   var blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
@@ -479,7 +627,7 @@ if(impF)impF.addEventListener('change',function(e){
       if(!s||!s.notes||!s.messages||!s.chain)throw new Error('صيغة غير معروفة.');
       if(!confirm('سيتم استبدال البيانات. متابعة؟'))return;
       state={notes:s.notes,messages:s.messages,chain:s.chain,nextNoteId:s.nextNoteId||1};
-      if(p.chat&&p.chat.rooms){chat=p.chat;}
+      if(p.chat&&p.chat.rooms)chat=p.chat;
       saveState();saveChat();renderMessages();renderNotes();renderChain();renderRoomsAll();toast('تم الاستيراد.');
     }catch(err){toast('تعذر: '+err.message);}
     e.target.value='';
@@ -487,7 +635,7 @@ if(impF)impF.addEventListener('change',function(e){
   reader.readAsText(f);
 });
 
-/* ===== CHAT ROOMS ===== */
+/* ROOMS */
 var setupEl=$('#roomsSetup'),appEl=$('#roomsApp'),listEl=$('#roomsList'),msgsEl=$('#roomsMsgs');
 var titleEl=$('#roomTitle'),descEl=$('#roomDesc'),iconEl=$('#roomIcon'),countEl=$('#roomCount');
 var inputEl=$('#roomsInput'),sendBtn=$('#roomsSend'),userEl=$('#roomsUserInfo');
@@ -568,7 +716,7 @@ if(roomsForm)roomsForm.addEventListener('submit',function(e){
 });
 var newRB=$('#newRoomBtn');
 if(newRB)newRB.addEventListener('click',function(){
-  var n=prompt('اسم الغرفة الجديدة:');if(!n||!n.trim())return;
+  var n=prompt('اسم الغرفة:');if(!n||!n.trim())return;
   var ic=prompt('رمز (اختياري):','💬')||'💬';
   var ds=prompt('وصف (اختياري):','')||'';
   var id='r'+uid();
@@ -581,58 +729,103 @@ if(leaveB)leaveB.addEventListener('click',function(){
   chat.username='';chat.activeRoom=null;saveChat();renderRoomsAll();toast('خروج.');
 });
 
-/* ===== HOLO EFFECTS ===== */
-function initHoloEffects(){
-  var canvas=$('#cosmicDust');if(!canvas)return;
-  var ctx=canvas.getContext('2d');if(!ctx)return;
-  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var w=0,h=0,dpr=1,particles=[],raf=0;
-  function makeP(){
-    return {x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.35+.25,a:Math.random()*.6+.15,phase:Math.random()*Math.PI*2,speed:Math.random()*.22+.035,drift:(Math.random()-.5)*.18,hue:Math.random()<.72?188:Math.random()<.5?265:315};
-  }
+/* ===== STARS + DUST CANVAS ===== */
+function initStars(){
+  var c=$('#stars');if(!c)return;
+  var ctx=c.getContext('2d');if(!ctx)return;
+  var w,h,stars=[],raf=0;
   function resize(){
-    dpr=Math.min(window.devicePixelRatio||1,1.7);
-    w=window.innerWidth;h=window.innerHeight;
-    canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);
-    canvas.style.width=w+'px';canvas.style.height=h+'px';
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-    var count=Math.min(100,Math.max(40,Math.round(w*h/10000)));
-    particles=[];
-    for(var i=0;i<count;i++)particles.push(makeP());
+    w=c.width=window.innerWidth;h=c.height=window.innerHeight;
+    var count=Math.min(180,Math.max(60,Math.round(w*h/9000)));
+    stars=[];
+    for(var i=0;i<count;i++){
+      stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.4+.2,a:Math.random()*.7+.3,ph:Math.random()*Math.PI*2,sp:Math.random()*.4+.1,hue:Math.random()<.7?190:280});
+    }
   }
   function draw(t){
-    if(document.hidden){raf=requestAnimationFrame(draw);return;}
     ctx.clearRect(0,0,w,h);
-    for(var i=0;i<particles.length;i++){
-      var p=particles[i];
-      var tw=.45+.55*Math.sin(t*.001*p.speed*7+p.phase);
-      p.y-=p.speed*.22;p.x+=p.drift*.18;
-      if(p.y<-4)p.y=h+4;if(p.x<-4)p.x=w+4;if(p.x>w+4)p.x=-4;
+    for(var i=0;i<stars.length;i++){
+      var s=stars[i];
+      var tw=.5+.5*Math.sin(t*.001*s.sp+s.ph);
       ctx.beginPath();
-      ctx.fillStyle='hsla('+p.hue+',100%,'+(75+tw*20)+'%,'+(p.a*tw)+')';
-      ctx.shadowBlur=p.r>1.15?10:4;
-      ctx.shadowColor='hsla('+p.hue+',100%,70%,.65)';
-      ctx.arc(p.x,p.y,p.r*(.7+tw*.5),0,Math.PI*2);
-      ctx.fill();
+      ctx.fillStyle='hsla('+s.hue+',100%,'+(80+tw*15)+'%,'+(s.a*tw)+')';
+      ctx.shadowBlur=6;ctx.shadowColor='hsla('+s.hue+',100%,70%,.7)';
+      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
     }
     ctx.shadowBlur=0;
     raf=requestAnimationFrame(draw);
   }
-  resize();
-  if(!reduced)raf=requestAnimationFrame(draw);
-  window.addEventListener('resize',resize,{passive:true});
-  function sparkle(x,y){
-    if(reduced)return;
-    var ring=document.createElement('span');ring.className='holo-ripple';
+  resize();window.addEventListener('resize',resize,{passive:true});
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches)raf=requestAnimationFrame(draw);
+}
+function initDustBg(){
+  var c=$('#dust');if(!c)return;
+  var ctx=c.getContext('2d');if(!ctx)return;
+  var w,h,dust=[],raf=0;
+  function resize(){
+    w=c.width=window.innerWidth;h=c.height=window.innerHeight;
+    var count=Math.min(80,Math.max(30,Math.round(w*h/16000)));
+    dust=[];
+    for(var i=0;i<count;i++){
+      dust.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.2+.3,a:Math.random()*.5+.15,vx:(Math.random()-.5)*.15,vy:(Math.random()-.5)*.15,ph:Math.random()*Math.PI*2,hue:Math.random()<.5?190:280});
+    }
+  }
+  function draw(t){
+    ctx.clearRect(0,0,w,h);
+    for(var i=0;i<dust.length;i++){
+      var d=dust[i];
+      d.x+=d.vx;d.y+=d.vy;
+      if(d.x<0)d.x=w;if(d.x>w)d.x=0;if(d.y<0)d.y=h;if(d.y>h)d.y=0;
+      var tw=.5+.5*Math.sin(t*.002+d.ph);
+      ctx.beginPath();
+      ctx.fillStyle='hsla('+d.hue+',100%,80%,'+(d.a*tw)+')';
+      ctx.shadowBlur=8;ctx.shadowColor='hsla('+d.hue+',100%,70%,.8)';
+      ctx.arc(d.x,d.y,d.r,0,Math.PI*2);ctx.fill();
+    }
+    ctx.shadowBlur=0;
+    raf=requestAnimationFrame(draw);
+  }
+  resize();window.addEventListener('resize',resize,{passive:true});
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches)raf=requestAnimationFrame(draw);
+}
+
+/* ===== CRYSTAL DUST ON TOUCH ===== */
+function initCrystalTouch(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  function burst(x,y){
+    // ring
+    var ring=document.createElement('span');
+    ring.className='crystal-ring';
     ring.style.left=x+'px';ring.style.top=y+'px';
     document.body.appendChild(ring);
-    setTimeout(function(){ring.remove();},900);
+    setTimeout(function(){ring.remove();},850);
+    // crystals
+    var n=10+Math.floor(Math.random()*5);
+    for(var i=0;i<n;i++){
+      var s=document.createElement('i');
+      s.className='crystal';
+      if(i%3===0)s.classList.add('violet');
+      else if(i%3===1)s.classList.add('white');
+      s.style.left=x+'px';s.style.top=y+'px';
+      var ang=Math.random()*Math.PI*2;
+      var dist=20+Math.random()*80;
+      s.style.setProperty('--dx',(Math.cos(ang)*dist)+'px');
+      s.style.setProperty('--dy',(Math.sin(ang)*dist)+'px');
+      s.style.setProperty('--rot',(Math.random()*720-360)+'deg');
+      var sc=.6+Math.random()*1.2;
+      s.style.width=s.style.height=(6+sc*6)+'px';
+      s.style.animationDuration=(.7+Math.random()*.5)+'s';
+      s.style.animationDelay=(Math.random()*.08)+'s';
+      document.body.appendChild(s);
+      (function(el){setTimeout(function(){el.remove();},1400);})(s);
+    }
   }
-  document.addEventListener('pointerdown',function(e){sparkle(e.clientX,e.clientY);},{passive:true});
+  document.addEventListener('pointerdown',function(e){
+    burst(e.clientX,e.clientY);
+  },{passive:true});
 }
-window.addEventListener('beforeunload',function(){if(activeStream)activeStream.getTracks().forEach(function(t){t.stop();});});
 
-/* ===== INIT ===== */
+/* INIT */
 renderMessages();
 renderNotes();
 renderChain();
@@ -645,7 +838,10 @@ if(ss){
   try{localStorage.setItem('__t','1');localStorage.removeItem('__t');ss.textContent='التخزين يعمل.';}
   catch(e){ss.textContent='التخزين غير متاح.';}
 }
-initHoloEffects();
+initStars();
+initDustBg();
+initCrystalTouch();
+window.addEventListener('beforeunload',function(){if(activeStream)activeStream.getTracks().forEach(function(t){t.stop();});});
 })();
 </script>
 </body>
