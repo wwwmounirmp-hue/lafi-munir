@@ -14,7 +14,7 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opa
 #dust{z-index:1;opacity:.75}
 #planet{position:fixed;top:-15%;left:50%;transform:translateX(-50%);width:min(90vw,700px);height:auto;z-index:0;pointer-events:none;opacity:.55;filter:blur(.3px) drop-shadow(0 0 80px #4a7aff88)}
 .app{position:relative;z-index:2;isolation:isolate;max-width:1600px;margin:auto;padding:14px;min-height:100vh;display:flex;flex-direction:column;gap:14px}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:1px solid #42dfff55;background:#0a1228cc;backdrop-filter:blur(18px);border-radius:var(--radius);box-shadow:var(--shadow),0 0 24px #42f3ff44}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:1px solid #42dfff55;background:#0a1228cc;backdrop-filter:blur(18px);border-radius:var(--radius);box-shadow:var(--shadow),0 0 24px #42f3ff44;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:12px;min-width:0}
 .logo{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:24px;font-weight:900;color:#07111a;background:linear-gradient(135deg,var(--cyan),var(--violet));box-shadow:0 0 30px #42f3ff88;position:relative;overflow:hidden}
 .logo::after{content:"";position:absolute;inset:-60% -100%;background:linear-gradient(90deg,transparent,#fff9,transparent);transform:rotate(28deg);animation:sweep 4s linear infinite}
@@ -31,7 +31,7 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opa
 .sidebar,.panel{border:1px solid #42dfff55;background:linear-gradient(160deg,#0e1830ee,#080e20f2);border-radius:var(--radius);box-shadow:var(--shadow),0 0 20px #42f3ff33;backdrop-filter:blur(18px);min-width:0}
 .sidebar{padding:12px;display:flex;flex-direction:column;gap:7px}
 .side-label{font-size:10px;color:#70809e;letter-spacing:1.4px;padding:10px 10px 4px}
-.navbtn{display:flex;align-items:center;gap:10px;text-align:right;width:100%;padding:11px;border:1px solid transparent;border-radius:12px;background:transparent;color:#c2cde0;transition:.18s}
+.navbtn{display:flex;align-items:center;gap:10px;text-align:right;width:100%;padding:11px;border:1px solid transparent;border-radius:12px;background:transparent;color:#c2cde0;transition:.18s;font:inherit;cursor:pointer}
 .navbtn .ico{width:25px;text-align:center;font-size:17px}
 .navbtn:hover,.navbtn.active{background:#42f3ff14;border-color:#42f3ff44;color:#fff}
 .navbtn.active{box-shadow:inset -3px 0 var(--cyan),0 0 18px #42f3ff44}
@@ -54,7 +54,7 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opa
 .panel-head h3{margin:0;font-size:15px}
 .subtle{color:var(--muted);font-size:12px}
 .feature-list{display:grid;gap:10px}
-.feature{display:flex;align-items:center;gap:11px;padding:12px;border:1px solid #25324a;border-radius:13px;background:#ffffff04;transition:.18s}
+.feature{display:flex;align-items:center;gap:11px;padding:12px;border:1px solid #25324a;border-radius:13px;background:#ffffff04;transition:.18s;cursor:pointer}
 .feature:hover{border-color:#42f3ff88;box-shadow:0 0 18px #42f3ff33}
 .feature-icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#42f3ff14;font-size:19px;flex-shrink:0}
 .feature strong{display:block;font-size:13px}
@@ -85,15 +85,12 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opa
 .footer{color:#687893;text-align:center;font-size:10px;padding:2px}
 .toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translate(-50%,15px);opacity:0;pointer-events:none;background:#0e1832;border:1px solid #42f3ff88;color:white;border-radius:12px;padding:11px 15px;box-shadow:0 0 24px #42f3ff66;z-index:50;transition:.2s;max-width:calc(100vw - 28px);font-size:13px}
 .toast.show{opacity:1;transform:translate(-50%,0)}
-.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-/* broadcast */
 .broadcast-box{display:flex;gap:8px;flex-wrap:wrap}
 .broadcast-box input{flex:1;min-width:200px;color:var(--text);background:#050a1c;border:1px solid #293852;border-radius:12px;padding:11px 12px}
-/* rooms */
 .rooms-shell{display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px;min-height:0}
 .rooms-side{padding:14px;display:flex;flex-direction:column;gap:10px;max-height:70vh;overflow:auto}
 .rooms-side h4{margin:0;font-size:12px;color:#8ea0bf;letter-spacing:1.2px}
-.room-item{display:flex;align-items:center;gap:10px;width:100%;text-align:right;padding:10px 11px;border:1px solid transparent;border-radius:12px;background:#ffffff04;color:#cfd9ea;cursor:pointer;transition:.18s}
+.room-item{display:flex;align-items:center;gap:10px;width:100%;text-align:right;padding:10px 11px;border:1px solid transparent;border-radius:12px;background:#ffffff04;color:#cfd9ea;cursor:pointer;transition:.18s;font:inherit}
 .room-item:hover{background:#42f3ff0f;border-color:#42f3ff44}
 .room-item.active{background:#42f3ff1c;border-color:#42f3ff88;color:#fff;box-shadow:0 0 16px #42f3ff44}
 .room-item .rico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#42f3ff14;font-size:16px;flex-shrink:0}
@@ -123,80 +120,20 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opa
 .rooms-setup input{flex:1;min-width:200px;max-width:320px}
 .room-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--green);padding:5px 9px;background:#53e6a710;border:1px solid #53e6a733;border-radius:99px}
 .rooms-count{font-size:11px;color:var(--muted);padding:8px 11px;background:#ffffff05;border-radius:10px;border:1px solid var(--line);text-align:center}
-
-/* ===== CRYSTAL DUST ===== */
-.crystal{
-  position:fixed;z-index:100;pointer-events:none;
-  width:8px;height:8px;
-  background:linear-gradient(135deg,#d9ffff,#42f3ff);
-  clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);
-  filter:drop-shadow(0 0 6px #42f3ff) drop-shadow(0 0 12px #b45cff);
-  animation:crystalFly .9s ease-out forwards;
-}
+.crystal{position:fixed;z-index:100;pointer-events:none;width:8px;height:8px;background:linear-gradient(135deg,#d9ffff,#42f3ff);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);filter:drop-shadow(0 0 6px #42f3ff) drop-shadow(0 0 12px #b45cff);animation:crystalFly .9s ease-out forwards}
 .crystal.violet{background:linear-gradient(135deg,#f0d9ff,#b45cff)}
 .crystal.white{background:linear-gradient(135deg,#fff,#d9ffff)}
-.crystal-ring{
-  position:fixed;z-index:99;pointer-events:none;
-  width:20px;height:20px;border-radius:50%;
-  border:2px solid #42f3ff;
-  box-shadow:0 0 20px #42f3ff,inset 0 0 20px #b45cff,0 0 40px #b45cff88;
-  transform:translate(-50%,-50%) scale(.2);
-  animation:crystalRing .8s ease-out forwards;
-}
-.crystal-ring::before,.crystal-ring::after{
-  content:"";position:absolute;inset:-8px;border:1px solid #b45cff88;border-radius:50%;
-}
+.crystal-ring{position:fixed;z-index:99;pointer-events:none;width:20px;height:20px;border-radius:50%;border:2px solid #42f3ff;box-shadow:0 0 20px #42f3ff,inset 0 0 20px #b45cff,0 0 40px #b45cff88;transform:translate(-50%,-50%) scale(.2);animation:crystalRing .8s ease-out forwards}
+.crystal-ring::before,.crystal-ring::after{content:"";position:absolute;inset:-8px;border:1px solid #b45cff88;border-radius:50%}
 .crystal-ring::after{inset:-16px;border-color:#42f3ff55;border-style:dashed}
-@keyframes crystalFly{
-  0%{transform:translate(-50%,-50%) rotate(0) scale(.3);opacity:1}
-  100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) rotate(var(--rot)) scale(0);opacity:0}
-}
+@keyframes crystalFly{0%{transform:translate(-50%,-50%) rotate(0) scale(.3);opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) rotate(var(--rot)) scale(0);opacity:0}}
 @keyframes crystalRing{to{transform:translate(-50%,-50%) scale(4);opacity:0}}
 @keyframes sweep{0%{transform:translateX(-60%) rotate(28deg)}100%{transform:translateX(120%) rotate(28deg)}}
 @keyframes aurora{0%{background-position:180% 0}100%{background-position:-40% 0}}
 @keyframes pulse{0%,100%{opacity:.65}50%{opacity:1}}
-@keyframes twinkle{0%,100%{opacity:.35}50%{opacity:1}}
-
 @media(min-width:1250px){.app{padding:20px}.layout{grid-template-columns:235px minmax(0,1fr)}}
-@media(max-width:850px){
-  .layout{grid-template-columns:1fr}
-  .sidebar{order:2;position:sticky;bottom:0;z-index:20;padding:7px;display:flex;flex-direction:row;justify-content:space-around;gap:4px;background:#050c1ef2;backdrop-filter:blur(16px);flex-wrap:nowrap;overflow-x:auto}
-  .side-label,.side-foot{display:none}
-  .navbtn{width:auto;flex:1;justify-content:center;flex-direction:column;gap:3px;padding:7px 3px;font-size:10px;min-width:60px}
-  .navbtn .ico{font-size:18px;width:auto}
-  .navbtn.active{box-shadow:inset 0 -2px var(--cyan)}
-  .main{order:1}
-  .app{padding:10px;gap:10px}
-  .grid2{grid-template-columns:1fr}
-  .chatbox{height:58vh;min-height:330px}
-  .cards{gap:8px}
-  .metric{padding:12px}
-  .rooms-shell{grid-template-columns:1fr}
-  .rooms-side{max-height:none;flex-direction:row;overflow-x:auto;gap:8px;padding:10px}
-  .rooms-side h4{display:none}
-  .room-item{min-width:170px;flex-shrink:0}
-  .rooms-msgs{max-height:50vh}
-  #planet{opacity:.35}
-}
-@media(max-width:520px){
-  .topbar{flex-wrap:wrap;padding:11px;gap:8px}
-  .brand{gap:8px}.logo{width:38px;height:38px;font-size:20px}
-  .brand h1{font-size:15px}.brand p{font-size:10px}
-  .top-actions .status{display:none}
-  .cards{grid-template-columns:1fr 1fr}
-  .metric:last-child{grid-column:1/-1}
-  .metric .value{font-size:22px}
-  .page-head h2{font-size:19px}
-  .panel{padding:12px}
-  .msg{max-width:94%}
-  .chatbox{min-height:300px;height:55vh}
-  .navbtn{font-size:9px;min-width:52px}
-  .notice{font-size:11px}
-  .actions .btn{flex:1}
-  .rooms-setup form{flex-direction:column}
-  .rooms-setup input{max-width:none;width:100%}
-  .rooms-form{padding:10px}
-}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.sidebar{order:2;position:sticky;bottom:0;z-index:20;padding:7px;display:flex;flex-direction:row;justify-content:space-around;gap:4px;background:#050c1ef2;backdrop-filter:blur(16px);flex-wrap:nowrap;overflow-x:auto}.side-label,.side-foot{display:none}.navbtn{width:auto;flex:1;justify-content:center;flex-direction:column;gap:3px;padding:7px 3px;font-size:10px;min-width:60px}.navbtn .ico{font-size:18px;width:auto}.navbtn.active{box-shadow:inset 0 -2px var(--cyan)}.main{order:1}.app{padding:10px;gap:10px}.grid2{grid-template-columns:1fr}.chatbox{height:58vh;min-height:330px}.cards{gap:8px}.metric{padding:12px}.rooms-shell{grid-template-columns:1fr}.rooms-side{max-height:none;flex-direction:row;overflow-x:auto;gap:8px;padding:10px}.rooms-side h4{display:none}.room-item{min-width:170px;flex-shrink:0}.rooms-msgs{max-height:50vh}#planet{opacity:.35}}
+@media(max-width:520px){.topbar{flex-wrap:wrap;padding:11px;gap:8px}.brand{gap:8px}.logo{width:38px;height:38px;font-size:20px}.brand h1{font-size:15px}.brand p{font-size:10px}.top-actions .status{display:none}.cards{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/-1}.metric .value{font-size:22px}.page-head h2{font-size:19px}.panel{padding:12px}.msg{max-width:94%}.chatbox{min-height:300px;height:55vh}.navbtn{font-size:9px;min-width:52px}.notice{font-size:11px}.actions .btn{flex:1}.rooms-setup form{flex-direction:column}.rooms-setup input{max-width:none;width:100%}.rooms-form{padding:10px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}.crystal,.crystal-ring{display:none!important}}
 </style>
 </head>
@@ -260,7 +197,7 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opa
             <div class="feature"><span class="feature-icon">✓</span><span><strong>التصميم الهولوغرامي</strong><small>خلفية فضائية + توهّج.</small></span></div>
             <div class="feature"><span class="feature-icon">💎</span><span><strong>الغبار البلوري</strong><small>المس الشاشة لترى الشظايا.</small></span></div>
             <div class="feature"><span class="feature-icon">⌁</span><span><strong>تخزين محلي</strong><small id="storageState">جارٍ الفحص…</small></span></div>
-          </div><div class="notice" style="margin-top:12px">كل شيء يعمل محليًا داخل متصفحك. لا خادم ولا اتصال بين المستخدمين.</div></div>
+          </div><div class="notice" style="margin-top:12px">كل شيء يعمل محليًا داخل متصفحك.</div></div>
         </div>
       </section>
       <section class="view" id="view-chat">
@@ -303,14 +240,13 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opa
         <div class="page-head"><div><h2>البث 📡</h2><p>شغّل فيديو من YouTube أو Vimeo أو رابط MP4 مباشر.</p></div></div>
         <div class="panel">
           <form class="broadcast-box" id="broadcastForm">
-            <input id="broadcastUrl" placeholder="الصق رابط YouTube / Vimeo / MP4 هنا…">
+            <input id="broadcastUrl" placeholder="الصق رابط YouTube / Vimeo / MP4…">
             <button class="btn primary" type="submit">🚀 بث</button>
             <button class="btn danger" type="button" id="stopBroadcast">إيقاف</button>
           </form>
           <div class="media-stage" id="broadcastStage" style="margin-top:14px">
             <div class="media-placeholder"><div class="big">📡</div><strong>لا بث نشط</strong><p>الصق رابطًا في الأعلى واضغط «بث».</p></div>
           </div>
-          <p class="subtle" style="margin-top:10px">يدعم: youtube.com / youtu.be / vimeo.com / روابط فيديو مباشرة (mp4, webm, ogg).</p>
         </div>
       </section>
       <section class="view" id="view-media">
@@ -479,7 +415,6 @@ if(termForm)termForm.addEventListener('submit',function(e){
 var clearTerm=$('#clearTerminal');
 if(clearTerm)clearTerm.addEventListener('click',function(){if(terminal)terminal.innerHTML='';});
 
-/* BROADCAST */
 function toEmbed(url){
   try{
     var u=url.trim();
@@ -515,7 +450,6 @@ if(stopBc)stopBc.addEventListener('click',function(){
   stage.innerHTML='<div class="media-placeholder"><div class="big">📡</div><strong>لا بث نشط</strong><p>الصق رابطًا واضغط «بث».</p></div>';
 });
 
-/* MEDIA */
 function startMedia(kind){
   stopMedia(false);
   if(!navigator.mediaDevices){toast('غير متاح.');return;}
@@ -545,7 +479,6 @@ var camB=$('#cameraBtn');if(camB)camB.addEventListener('click',function(){startM
 var scrB=$('#screenBtn');if(scrB)scrB.addEventListener('click',function(){startMedia('screen');});
 var stpB=$('#stopMediaBtn');if(stpB)stpB.addEventListener('click',function(){stopMedia(true);});
 
-/* CHAIN */
 function sha256(t){
   if(!crypto||!crypto.subtle)return Promise.reject(new Error('غير متاح.'));
   var d=new TextEncoder().encode(t);
@@ -606,7 +539,6 @@ if(addB)addB.addEventListener('click',function(){
 });
 var verB=$('#verifyChain');if(verB)verB.addEventListener('click',function(){verifyChain();});
 
-/* EXPORT/IMPORT */
 function downloadJSON(){
   var payload={app:'LAFI',version:2,state:state,chat:chat};
   var blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
@@ -635,7 +567,6 @@ if(impF)impF.addEventListener('change',function(e){
   reader.readAsText(f);
 });
 
-/* ROOMS */
 var setupEl=$('#roomsSetup'),appEl=$('#roomsApp'),listEl=$('#roomsList'),msgsEl=$('#roomsMsgs');
 var titleEl=$('#roomTitle'),descEl=$('#roomDesc'),iconEl=$('#roomIcon'),countEl=$('#roomCount');
 var inputEl=$('#roomsInput'),sendBtn=$('#roomsSend'),userEl=$('#roomsUserInfo');
@@ -729,7 +660,6 @@ if(leaveB)leaveB.addEventListener('click',function(){
   chat.username='';chat.activeRoom=null;saveChat();renderRoomsAll();toast('خروج.');
 });
 
-/* ===== STARS + DUST CANVAS ===== */
 function initStars(){
   var c=$('#stars');if(!c)return;
   var ctx=c.getContext('2d');if(!ctx)return;
@@ -788,18 +718,14 @@ function initDustBg(){
   resize();window.addEventListener('resize',resize,{passive:true});
   if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches)raf=requestAnimationFrame(draw);
 }
-
-/* ===== CRYSTAL DUST ON TOUCH ===== */
 function initCrystalTouch(){
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   function burst(x,y){
-    // ring
     var ring=document.createElement('span');
     ring.className='crystal-ring';
     ring.style.left=x+'px';ring.style.top=y+'px';
     document.body.appendChild(ring);
     setTimeout(function(){ring.remove();},850);
-    // crystals
     var n=10+Math.floor(Math.random()*5);
     for(var i=0;i<n;i++){
       var s=document.createElement('i');
@@ -825,7 +751,6 @@ function initCrystalTouch(){
   },{passive:true});
 }
 
-/* INIT */
 renderMessages();
 renderNotes();
 renderChain();
