@@ -4,17 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#05081a">
-<title>LAFI OMNI-SCREEN | دردشة حقيقية</title>
+<title>LAFI OMNI-SCREEN | الفضاء الهولوغرامي المباشر</title>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.4.3.min.js"></script>
 <style>
 :root{color-scheme:dark;--bg:#05081a;--line:#25324a;--text:#eef4ff;--muted:#94a3bd;--cyan:#42f3ff;--violet:#b45cff;--green:#38ffc2;--red:#ff6e88;--radius:18px;--shadow:0 14px 40px #0008}
 *{box-sizing:border-box}html{min-height:100%;background:var(--bg)}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden;background:radial-gradient(ellipse at 50% -10%,#1a3a7a 0,transparent 40%),radial-gradient(ellipse at 90% 40%,#4a1170 0,transparent 45%),radial-gradient(ellipse at 5% 80%,#0a4a5c 0,transparent 40%),#02030a;background-attachment:fixed}
-button,input,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}button:disabled{opacity:.45}
+button,input,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}button:disabled{opacity:.45}
 body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.22;background:repeating-linear-gradient(0deg,transparent 0 3px,#73f8ff08 4px 5px);mix-blend-mode:screen}
-#stars{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
-.app{position:relative;z-index:2;isolation:isolate;max-width:1200px;margin:auto;padding:14px;min-height:100vh;display:flex;flex-direction:column;gap:14px}
+#stars,#dust{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#dust{z-index:1;opacity:.75}
+#planet{position:fixed;top:-15%;left:50%;transform:translateX(-50%);width:min(90vw,700px);height:auto;z-index:0;pointer-events:none;opacity:.55;filter:blur(.3px) drop-shadow(0 0 80px #4a7aff88)}
+.app{position:relative;z-index:2;isolation:isolate;max-width:1600px;margin:auto;padding:14px;min-height:100vh;display:flex;flex-direction:column;gap:14px}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:1px solid #42dfff55;background:#0a1228cc;backdrop-filter:blur(18px);border-radius:var(--radius);box-shadow:var(--shadow),0 0 24px #42f3ff44;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:12px;min-width:0}
-.logo{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:24px;font-weight:900;color:#07111a;background:linear-gradient(135deg,var(--cyan),var(--violet));box-shadow:0 0 30px #42f3ff88}
+.logo{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:24px;font-weight:900;color:#07111a;background:linear-gradient(135deg,var(--cyan),var(--violet));box-shadow:0 0 30px #42f3ff88;position:relative;overflow:hidden}
 .brand h1{font-size:clamp(15px,2.3vw,20px);margin:0}.brand p{margin:3px 0 0;color:var(--muted);font-size:11px}
 .status{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--green);padding:8px 10px;background:#53e6a710;border:1px solid #53e6a733;border-radius:99px}
 .dot{width:7px;height:7px;background:currentColor;border-radius:50%;box-shadow:0 0 10px currentColor;animation:pulse 1.8s infinite}
@@ -23,276 +27,507 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opa
 .btn.primary{color:#07111a;font-weight:750;border:0;background:linear-gradient(120deg,var(--cyan),#a1f5ff)}
 .btn.danger{border-color:#ff6e8855;color:#ff9bae}
 .btn.small{padding:6px 9px;font-size:12px}
+.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:14px;flex:1;min-height:0}
+.sidebar,.panel{border:1px solid #42dfff55;background:linear-gradient(160deg,#0e1830ee,#080e20f2);border-radius:var(--radius);box-shadow:var(--shadow),0 0 20px #42f3ff33;backdrop-filter:blur(18px);min-width:0}
+.sidebar{padding:12px;display:flex;flex-direction:column;gap:7px}
+.side-label{font-size:10px;color:#70809e;letter-spacing:1.4px;padding:10px 10px 4px}
+.navbtn{display:flex;align-items:center;gap:10px;text-align:right;width:100%;padding:11px;border:1px solid transparent;border-radius:12px;background:transparent;color:#c2cde0;transition:.18s;font:inherit;cursor:pointer}
+.navbtn .ico{width:25px;text-align:center;font-size:17px}
+.navbtn:hover,.navbtn.active{background:#42f3ff14;border-color:#42f3ff44;color:#fff}
+.navbtn.active{box-shadow:inset -3px 0 var(--cyan),0 0 18px #42f3ff44}
+.side-foot{margin-top:auto;padding:12px;color:var(--muted);font-size:11px;line-height:1.8;border-top:1px solid var(--line)}
 .main{min-width:0;display:flex;flex-direction:column;gap:14px}
 .page-head{display:flex;align-items:end;justify-content:space-between;gap:10px;padding:2px 3px;flex-wrap:wrap}
 .page-head h2{margin:0;font-size:22px;background:linear-gradient(90deg,#fff,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
 .page-head p{margin:5px 0 0;color:var(--muted);font-size:13px}
-.panel{padding:16px;position:relative;overflow:hidden;border:1px solid #42dfff55;background:linear-gradient(160deg,#0e1830ee,#080e20f2);border-radius:var(--radius);box-shadow:var(--shadow)}
-.rooms-shell{display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px;min-height:0}
-.rooms-side{padding:14px;display:flex;flex-direction:column;gap:10px;max-height:70vh;overflow:auto}
-.rooms-side h4{margin:0;font-size:12px;color:#8ea0bf;letter-spacing:1.2px}
-.room-item{display:flex;align-items:center;gap:10px;width:100%;text-align:right;padding:10px 11px;border:1px solid transparent;border-radius:12px;background:#ffffff04;color:#cfd9ea;cursor:pointer;transition:.18s;font:inherit}
-.room-item:hover{background:#42f3ff0f;border-color:#42f3ff44}
-.room-item.active{background:#42f3ff1c;border-color:#42f3ff88;color:#fff;box-shadow:0 0 16px #42f3ff44}
-.room-item .rico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#42f3ff14;font-size:16px;flex-shrink:0}
-.room-item .rmeta{min-width:0;flex:1;text-align:right}
-.room-item .rname{font-size:13px;font-weight:600;display:block}
-.room-item .rdesc{font-size:10.5px;color:#7e8ea8;display:block}
-.rooms-main{display:flex;flex-direction:column;min-height:0;padding:0;overflow:hidden}
-.rooms-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.rooms-head .rttl{display:flex;align-items:center;gap:10px;min-width:0}
-.rooms-head .rttl h3{margin:0;font-size:15px}
-.rooms-head .rttl small{display:block;color:var(--muted);font-size:11px}
-.rooms-body{flex:1;display:flex;flex-direction:column;min-height:0}
-.rooms-msgs{flex:1;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:14px;min-height:280px;max-height:56vh;background:#02040a}
-.rmsg{max-width:85%;padding:9px 12px;border-radius:14px;line-height:1.6;font-size:13px;word-break:break-word;background:#152040;border:1px solid #2b3c5a;align-self:flex-start;border-top-left-radius:4px}
-.rmsg.mine{align-self:flex-end;background:#0b3a4a;border-color:#1c7787;border-top-right-radius:4px;border-top-left-radius:14px}
-.rmsg .rwho{font-size:10.5px;font-weight:700;color:#7be2ff;margin-bottom:3px}
-.rmsg .rtxt{white-space:pre-wrap}
-.rmsg .rtime{display:block;font-size:9.5px;color:#8ba0bd;margin-top:4px}
-.rooms-empty{margin:auto;text-align:center;color:var(--muted);font-size:13px;padding:20px}
-.rooms-form{display:flex;gap:8px;border-top:1px solid var(--line);padding:12px 14px;background:#04081aaa}
-.rooms-form input{flex:1;min-width:0;color:var(--text);background:#050a1c;border:1px solid #293852;border-radius:12px;padding:11px 12px}
-.rooms-setup{padding:30px 18px;text-align:center}
-.rooms-setup .big{font-size:48px;margin-bottom:10px;filter:drop-shadow(0 0 16px #42f3ff)}
-.rooms-setup h3{margin:0 0 6px;font-size:18px}
-.rooms-setup p{margin:0 auto 16px;max-width:420px;color:var(--muted);font-size:13px;line-height:1.7}
-.rooms-setup form{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;max-width:460px;margin:0 auto}
-.rooms-setup input{flex:1;min-width:200px;max-width:320px;color:var(--text);background:#050a1c;border:1px solid #293852;border-radius:12px;padding:11px 12px}
-.room-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--green);padding:5px 9px;background:#53e6a710;border:1px solid #53e6a733;border-radius:99px}
-.rooms-count{font-size:11px;color:var(--muted);padding:8px 11px;background:#ffffff05;border-radius:10px;border:1px solid var(--line);text-align:center}
-.field{width:100%;min-width:0;color:var(--text);background:#050a1c;border:1px solid #293852;border-radius:12px;padding:11px 12px;font:inherit}
+.view{display:none;min-width:0}.view.active{display:block}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.metric{padding:16px;border:1px solid #42dfff55;background:linear-gradient(145deg,#0e1a36,#080f22);border-radius:16px;min-width:0;box-shadow:0 0 20px #42f3ff33}
+.metric .label{font-size:12px;color:var(--muted)}
+.metric .value{font-size:clamp(21px,3vw,29px);font-weight:800;margin:8px 0 5px;color:#fff;text-shadow:0 0 18px #42f3ff88}
+.metric .hint{font-size:11px;color:var(--green)}
+.grid2{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:14px}
+.panel{padding:16px;position:relative;overflow:hidden}
+.panel::before{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(115deg,transparent 15%,#42f3ff10 35%,transparent 55%,#b45cff14 75%,transparent);background-size:220% 100%;animation:aurora 12s linear infinite}
+.panel>*{position:relative}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px;flex-wrap:wrap}
+.panel-head h3{margin:0;font-size:15px}
+.subtle{color:var(--muted);font-size:12px}
+.feature-list{display:grid;gap:10px}
+.feature{display:flex;align-items:center;gap:11px;padding:12px;border:1px solid #25324a;border-radius:13px;background:#ffffff04;transition:.18s;cursor:pointer}
+.feature:hover{border-color:#42f3ff88;box-shadow:0 0 18px #42f3ff33}
+.feature-icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#42f3ff14;font-size:19px;flex-shrink:0}
+.feature strong{display:block;font-size:13px}
+.feature small{display:block;color:var(--muted);margin-top:4px;font-size:11px}
+.chatbox{display:flex;flex-direction:column;height:min(62vh,600px);min-height:360px}
+.messages{flex:1;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:5px 2px 14px}
+.msg{max-width:88%;padding:11px 13px;border-radius:15px;line-height:1.65;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.msg.bot{align-self:flex-start;background:#152040;border:1px solid #2b3c5a;border-top-left-radius:4px}
+.msg.user{align-self:flex-end;background:#0b3a4a;border:1px solid #1c7787;border-top-right-radius:4px}
+.msg.other{align-self:flex-start;background:#2a1040;border:1px solid #5c3c8a;border-top-left-radius:4px}
+.msg time{display:block;font-size:10px;color:#90a5c2;margin-top:5px}
+.msg .who{font-size:10.5px;font-weight:700;color:#7be2ff;margin-bottom:3px}
+.composer{display:flex;gap:8px;border-top:1px solid var(--line);padding-top:12px}
+.composer input,.field,.terminal-input{width:100%;min-width:0;color:var(--text);background:#050a1c;border:1px solid #293852;border-radius:12px;padding:11px 12px;font:inherit}
+.composer input{flex:1}
+.notice{padding:11px 12px;border:1px solid #ffbd6944;background:#ffbd690d;color:#f6d4a2;border-radius:12px;font-size:12px;line-height:1.65}
+.file-list{display:grid;gap:8px}
+.file-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px;border:1px solid var(--line);border-radius:12px;background:#ffffff04;flex-wrap:wrap}
+.file-row .name{min-width:0;word-break:break-word;flex:1}
+.file-row small{display:block;color:var(--muted);font-size:11px;margin-top:4px}
+.empty{padding:25px;text-align:center;color:var(--muted);border:1px dashed #33425b;border-radius:12px;font-size:13px}
+.footer{color:#687893;text-align:center;font-size:10px;padding:2px}
+.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translate(-50%,15px);opacity:0;pointer-events:none;background:#0e1832;border:1px solid #42f3ff88;color:white;border-radius:12px;padding:11px 15px;box-shadow:0 0 24px #42f3ff66;z-index:50;transition:.2s;max-width:calc(100vw - 28px);font-size:13px}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.room-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.room-tab{padding:7px 12px;border:1px solid var(--line);background:#0a1228;color:#c2cde0;border-radius:20px;font-size:12px;cursor:pointer;transition:.18s}
+.room-tab:hover{border-color:#42f3ff88}
+.room-tab.active{background:#42f3ff1c;border-color:#42f3ff;color:#fff}
+.crystal-ring{position:fixed;z-index:99;pointer-events:none;width:20px;height:20px;border-radius:50%;border:2px solid #42f3ff;box-shadow:0 0 20px #42f3ff,inset 0 0 20px #b45cff,0 0 40px #b45cff88;transform:translate(-50%,-50%) scale(.2);animation:crystalRing .8s ease-out forwards}
+@keyframes crystalRing{to{transform:translate(-50%,-50%) scale(4);opacity:0}}
+@keyframes aurora{0%{background-position:180% 0}100%{background-position:-40% 0}}
 @keyframes pulse{0%,100%{opacity:.65}50%{opacity:1}}
-@media(max-width:850px){.rooms-shell{grid-template-columns:1fr}.rooms-side{max-height:none;flex-direction:row;overflow-x:auto;gap:8px;padding:10px}.room-item{min-width:170px;flex-shrink:0}.rooms-msgs{max-height:50vh}}
-@media(max-width:520px){.topbar{flex-wrap:wrap;padding:11px}.rooms-setup form{flex-direction:column}.rooms-setup input{max-width:none;width:100%}.rooms-form{padding:10px}}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.sidebar{order:2;position:sticky;bottom:0;z-index:20;padding:7px;display:flex;flex-direction:row;justify-content:space-around;gap:4px;background:#050c1ef2;backdrop-filter:blur(16px)}.side-label,.side-foot{display:none}.navbtn{width:auto;flex:1;justify-content:center;flex-direction:column;gap:3px;font-size:10px}}
 </style>
 </head>
 <body>
 <canvas id="stars"></canvas>
+<canvas id="dust"></canvas>
+<svg id="planet" viewBox="0 0 400 400" aria-hidden="true">
+  <defs>
+    <radialGradient id="pg" cx="35%" cy="30%">
+      <stop offset="0%" stop-color="#a8d4ff"/>
+      <stop offset="40%" stop-color="#4a7aff"/>
+      <stop offset="100%" stop-color="#050a25"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#42f3ff" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#b45cff" stop-opacity=".9"/>
+      <stop offset="100%" stop-color="#42f3ff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="200" cy="200" rx="195" ry="40" fill="none" stroke="url(#ring)" stroke-width="6" transform="rotate(-18 200 200)"/>
+  <circle cx="200" cy="200" r="140" fill="url(#pg)"/>
+</svg>
+
 <div class="app">
   <header class="topbar">
-    <div class="brand"><div class="logo">L</div><div><h1>LAFI OMNI-SCREEN</h1><p>دردشة حقيقية عبر الإنترنت</p></div></div>
-    <div class="top-actions"><span class="status"><span class="dot"></span> متصل بـ Firebase</span></div>
+    <div class="brand"><div class="logo">L</div><div><h1>LAFI OMNI-SCREEN</h1><p>الفضاء الهولوغرامي المباشر</p></div></div>
+    <span class="status"><span class="dot"></span> <span id="connStatus">جارٍ الاتصال...</span></span>
   </header>
-  <main class="main">
-    <div class="page-head"><div><h2>غرف الدردشة الحقيقية</h2><p>تحدث مع أصدقائك في الوقت الحقيقي.</p></div><span class="room-badge">● Firebase متصل</span></div>
-    
-    <div id="roomsSetup" class="panel rooms-setup" hidden>
-      <div class="big">💬</div>
-      <h3>مرحبًا بك في غرف الدردشة الحقيقية</h3>
-      <p>أدخل اسمك للانضمام. سيتم حفظ اسمك محلياً، وستظهر رسائلك لجميع من في الغرفة.</p>
-      <form id="roomsNameForm"><input class="field" id="roomsNameInput" maxlength="24" placeholder="اكتب اسمك…" required><button class="btn primary" type="submit">دخول</button></form>
-    </div>
 
-    <div id="roomsApp" class="rooms-shell" hidden>
-      <aside class="rooms-side panel">
-        <h4>الغرف</h4>
-        <div id="roomsList"></div>
-        <div class="rooms-count" id="roomsUserInfo"></div>
-        <button class="btn small danger" id="leaveRoomsBtn" style="margin-top:auto">خروج</button>
-      </aside>
-      <div class="panel rooms-main">
-        <div class="rooms-head">
-          <div class="rttl"><span class="rico" id="roomIcon">💬</span><div><h3 id="roomTitle">اختر غرفة</h3><small id="roomDesc">لم يتم اختيار غرفة</small></div></div>
-          <span class="subtle" id="roomCount">0 رسالة</span>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="side-label">WORKSPACE</div>
+      <button class="navbtn active" data-view="home"><span class="ico">◈</span><span>الرئيسية</span></button>
+      <button class="navbtn" data-view="rooms"><span class="ico">💬</span><span>غرف الدردشة</span></button>
+      <button class="navbtn" data-view="p2p"><span class="ico">📞</span><span>المكالمات</span></button>
+      <button class="navbtn" data-view="notes"><span class="ico">▤</span><span>ملفاتي</span></button>
+      <div class="side-foot">دردشة حقيقية + مكالمات P2P</div>
+    </aside>
+
+    <main class="main">
+      <!-- الرئيسية -->
+      <section class="view active" id="view-home">
+        <div class="page-head"><div><h2>المساحة الحية السيادية</h2><p>دردشة جماعية حقيقية + مكالمات P2P.</p></div></div>
+        <div class="cards">
+          <div class="metric"><div class="label">المتصلون</div><div class="value" id="userCount">0</div><div class="hint">في الغرفة الحالية</div></div>
+          <div class="metric"><div class="label">رسائل</div><div class="value" id="msgCount">0</div><div class="hint">في هذه الجلسة</div></div>
+          <div class="metric"><div class="label">الغرفة</div><div class="value" id="currentRoomLabel">عام</div><div class="hint">اختر غرفة</div></div>
         </div>
-        <div class="rooms-body">
-          <div class="rooms-msgs" id="roomsMsgs"><div class="rooms-empty">اختر غرفة من القائمة.</div></div>
-          <form class="rooms-form" id="roomsForm">
-            <input class="field" id="roomsInput" autocomplete="off" maxlength="1000" placeholder="اكتب رسالتك…" disabled required>
-            <button class="btn primary" type="submit" id="roomsSend" disabled>إرسال</button>
-          </form>
+        <div class="panel">
+          <div class="panel-head"><h3>ابدأ الآن</h3></div>
+          <div class="feature-list">
+            <button class="feature navbtn" data-view="rooms"><span class="feature-icon">💬</span><span><strong>غرف الدردشة الحقيقية</strong><small>انضم لغرفة واكتب مع الجميع</small></span></button>
+            <button class="feature navbtn" data-view="p2p"><span class="feature-icon">📞</span><span><strong>مكالمات P2P</strong><small>اتصل بأي صديق مباشرة</small></span></button>
+          </div>
         </div>
-      </div>
-    </div>
-  </main>
+      </section>
+
+      <!-- غرف الدردشة الحقيقية -->
+      <section class="view" id="view-rooms">
+        <div class="page-head">
+          <div><h2>غرف الدردشة الحقيقية</h2><p>اختر غرفة واكتب — الجميع سيرى رسالتك.</p></div>
+          <span class="subtle" id="roomStatus">جاهز</span>
+        </div>
+        <div class="panel" style="padding:0;overflow:hidden">
+          <div class="room-tabs" id="roomTabs" style="padding:14px 14px 0 14px"></div>
+          <div class="chatbox" style="padding:0 14px 14px 14px">
+            <div class="messages" id="messages"></div>
+            <form class="composer" id="chatForm">
+              <input id="chatInput" placeholder="اكتب اسمك أولاً..." autocomplete="off" maxlength="500" required>
+              <button class="btn primary" type="submit">إرسال</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- المكالمات P2P -->
+      <section class="view" id="view-p2p">
+        <div class="page-head"><div><h2>المكالمات المباشرة P2P</h2><p>اتصل بأي شخص عبر PeerJS.</p></div></div>
+        <div class="grid2">
+          <div class="panel">
+            <div class="panel-head"><h3>معرفك الخاص</h3></div>
+            <div style="display:flex;gap:8px">
+              <input class="field" id="myPeerId" readonly style="font-weight:bold;color:var(--cyan);margin:0">
+              <button class="btn primary" id="copyIdBtn">نسخ</button>
+            </div>
+            <div class="panel-head" style="margin-top:14px"><h3>اتصل بصديق</h3></div>
+            <input class="field" id="targetPeerId" placeholder="الصق معرف صديقك هنا...">
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn primary" id="callVideoBtn">📹 فيديو</button>
+              <button class="btn" id="callAudioBtn">📞 صوت</button>
+              <button class="btn danger" id="hangupBtn" disabled>إنهاء</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>شاشة العرض</h3></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div style="background:#000;border:1px solid var(--line);border-radius:12px;overflow:hidden;min-height:180px;position:relative">
+                <video id="localVideo" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover"></video>
+              </div>
+              <div style="background:#000;border:1px solid var(--line);border-radius:12px;overflow:hidden;min-height:180px;position:relative">
+                <video id="remoteVideo" autoplay playsinline style="width:100%;height:100%;object-fit:cover"></video>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- الملاحظات -->
+      <section class="view" id="view-notes">
+        <div class="page-head"><div><h2>ملفاتي وملاحظاتي</h2><p>تخزين محلي.</p></div></div>
+        <div class="grid2">
+          <div class="panel">
+            <div class="panel-head"><h3>ملاحظة جديدة</h3></div>
+            <form id="noteForm">
+              <input class="field" id="noteTitle" placeholder="العنوان" required>
+              <textarea class="field" id="noteBody" rows="6" placeholder="المحتوى..." required style="resize:vertical"></textarea>
+              <button class="btn primary" type="submit">حفظ</button>
+            </form>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>المحفوظات</h3><span class="subtle" id="fileCount">0 عنصر</span></div>
+            <div class="file-list" id="fileList"></div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">LAFI OMNI-SCREEN · دردشة حقيقية + P2P</footer>
+    </main>
+  </div>
 </div>
+<div class="toast" id="toast"></div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDatabase, ref, push, onValue, serverTimestamp, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
 
-  // مفاتيح Firebase الخاصة بك (تم وضعها هنا جاهزة)
-  const firebaseConfig = {
-    apiKey: "AIzaSyBe42Ma32m5udzqN0vlrvkc6c0z9dT9i04",
-    authDomain: "munir-lafi-8625b.firebaseapp.com",
-    databaseURL: "https://munir-lafi-8625b-default-rtdb.firebaseio.com",
-    projectId: "munir-lafi-8625b",
-    storageBucket: "munir-lafi-8625b.firebasestorage.app",
-    messagingSenderId: "346345700738",
-    appId: "1:346345700738:web:2d9a25780a79a8382ae39b"
-  };
+// ==== إعدادات PubNub (استبدل هذه بمفاتيحك) ====
+var PUBNUB_PUB_KEY='demo';
+var PUBNUB_SUB_KEY='demo';
+// ==============================================
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+// ==== بيانات محلية ====
+var NOTES_KEY='lafi_notes_v4';
+var NAME_KEY='lafi_name_v4';
+var ROOMS=['عام','تقنية','دراسة','ألعاب','رياضة'];
+var currentRoom=localStorage.getItem('lafi_room')||ROOMS[0];
+var myName=localStorage.getItem(NAME_KEY)||'';
+var myId='u_'+Math.random().toString(36).slice(2,9);
+var msgCount=0;
 
-  const $ = (s) => document.querySelector(s);
-  
-  let currentUser = localStorage.getItem('lafi_username') || '';
-  let currentRoomId = null;
-  let unsubscribeMessages = null;
-
-  const DEFAULT_ROOMS = [
-    {id: 'general', name: 'عام', icon: '🌐', desc: 'غرفة عامة للجميع'},
-    {id: 'tech', name: 'تقنية', icon: '💻', desc: 'برمجة وأجهزة'},
-    {id: 'sports', name: 'رياضة', icon: '⚽', desc: 'مباريات ومناقشات'}
-  ];
-
-  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-
-  function renderRoomsAll() {
-    const setup = $('#roomsSetup');
-    const appEl = $('#roomsApp');
-    if (!setup || !appEl) return;
-
-    if (!currentUser) {
-      setup.hidden = false;
-      appEl.hidden = true;
-      if (unsubscribeMessages) { unsubscribeMessages(); unsubscribeMessages = null; }
-    } else {
-      setup.hidden = true;
-      appEl.hidden = false;
-      $('#roomsUserInfo').textContent = '👤 ' + currentUser;
-      renderRoomList();
-      if (DEFAULT_ROOMS.length > 0 && !currentRoomId) openRoom(DEFAULT_ROOMS[0].id, false);
-    }
-  }
-
-  function renderRoomList() {
-    const list = $('#roomsList');
-    if (!list) return;
-    list.innerHTML = '';
-    DEFAULT_ROOMS.forEach(room => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'room-item' + (currentRoomId === room.id ? ' active' : '');
-      btn.innerHTML = `<span class="rico">${esc(room.icon)}</span><span class="rmeta"><span class="rname">${esc(room.name)}</span><span class="rdesc">${esc(room.desc)}</span></span>`;
-      btn.addEventListener('click', () => openRoom(room.id, true));
-      list.appendChild(btn);
-    });
-  }
-
-  function openRoom(roomId, focus) {
-    currentRoomId = roomId;
-    const room = DEFAULT_ROOMS.find(r => r.id === roomId);
-    if (!room) return;
-
-    $('#roomTitle').textContent = room.name;
-    $('#roomDesc').textContent = room.desc;
-    $('#roomIcon').textContent = room.icon;
-    renderRoomList();
-
-    const input = $('#roomsInput');
-    const sendBtn = $('#roomsSend');
-    input.disabled = false;
-    sendBtn.disabled = false;
-    if (focus) input.focus({preventScroll: true});
-
-    if (unsubscribeMessages) unsubscribeMessages();
-
-    const msgsBox = $('#roomsMsgs');
-    msgsBox.innerHTML = '<div class="rooms-empty">جارٍ تحميل الرسائل…</div>';
-
-    const messagesRef = query(ref(db, 'rooms/' + roomId), limitToLast(100));
-    
-    unsubscribeMessages = onValue(messagesRef, (snapshot) => {
-      msgsBox.innerHTML = '';
-      const data = snapshot.val();
-      
-      if (!data) {
-        msgsBox.innerHTML = '<div class="rooms-empty">لا رسائل بعد في هذه الغرفة.<br>كن أول من يكتب 👋</div>';
-        $('#roomCount').textContent = '0 رسالة';
-        return;
-      }
-
-      const messages = Object.values(data).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-      
-      messages.forEach((msg) => {
-        const div = document.createElement('div');
-        div.className = 'rmsg' + (msg.user === currentUser ? ' mine' : '');
-        const timeStr = msg.createdAt ? new Intl.DateTimeFormat('ar-DZ', {hour:'2-digit', minute:'2-digit'}).format(new Date(msg.createdAt)) : '...';
-        div.innerHTML = `<div class="rwho">${esc(msg.user)}</div><div class="rtxt">${esc(msg.text)}</div><span class="rtime">${esc(timeStr)}</span>`;
-        msgsBox.appendChild(div);
-      });
-      
-      msgsBox.scrollTop = msgsBox.scrollHeight;
-      $('#roomCount').textContent = messages.length + ' رسالة';
-    }, (error) => {
-      console.error("خطأ:", error);
-      msgsBox.innerHTML = '<div class="rooms-empty" style="color:#ff6e88">حدث خطأ في الاتصال. تأكد من مفاتيح Firebase وقواعد الأمان.</div>';
-    });
-  }
-
-  function sendMessage(text) {
-    if (!currentUser || !currentRoomId || !text.trim()) return;
-    
-    push(ref(db, 'rooms/' + currentRoomId), {
-      user: currentUser,
-      text: text.trim(),
-      createdAt: Date.now()
-    }).catch((e) => {
-      console.error("خطأ في الإرسال:", e);
-      alert("تعذر إرسال الرسالة. تأكد من اتصالك بالإنترنت.");
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    $('#roomsNameForm')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const name = $('#roomsNameInput').value.trim().slice(0, 24);
-      if (!name) return;
-      currentUser = name;
-      localStorage.setItem('lafi_username', name);
-      renderRoomsAll();
-    });
-
-    $('#roomsForm')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const input = $('#roomsInput');
-      const text = input.value;
-      input.value = '';
-      sendMessage(text);
-    });
-
-    $('#leaveRoomsBtn')?.addEventListener('click', () => {
-      if (!confirm('هل تريد الخروج؟')) return;
-      currentUser = ''; currentRoomId = null;
-      localStorage.removeItem('lafi_username');
-      if (unsubscribeMessages) { unsubscribeMessages(); unsubscribeMessages = null; }
-      renderRoomsAll();
-    });
-
-    renderRoomsAll();
+// ==== التنقل ====
+$$('.navbtn[data-view]').forEach(function(b){
+  b.addEventListener('click',function(){
+    $$('.view').forEach(function(v){v.classList.toggle('active',v.id==='view-'+b.dataset.view);});
+    $$('.navbtn[data-view]').forEach(function(x){x.classList.toggle('active',x===b);});
   });
+});
 
-  // تأثير النجوم
-  (function initStars() {
-    const c = document.getElementById('stars');
-    if (!c) return;
-    const ctx = c.getContext('2d');
-    let w, h, stars = [];
-    function resize() {
-      w = c.width = window.innerWidth;
-      h = c.height = window.innerHeight;
-      stars = Array.from({length: 100}, () => ({
-        x: Math.random() * w, y: Math.random() * h,
-        r: Math.random() * 1.4 + 0.2, a: Math.random() * 0.7 + 0.3,
-        sp: Math.random() * 0.4 + 0.1, ph: Math.random() * Math.PI * 2
-      }));
+function toast(m){
+  var el=$('#toast'); if(!el) return;
+  el.textContent=m; el.classList.add('show');
+  clearTimeout(el._t); el._t=setTimeout(function(){el.classList.remove('show');},3000);
+}
+
+// ==== غرف الدردشة ====
+var messagesEl=$('#messages');
+var roomTabsEl=$('#roomTabs');
+
+function renderRoomTabs(){
+  roomTabsEl.innerHTML='';
+  ROOMS.forEach(function(r){
+    var b=document.createElement('button');
+    b.type='button';
+    b.className='room-tab'+(r===currentRoom?' active':'');
+    b.textContent='# '+r;
+    b.addEventListener('click',function(){ switchRoom(r); });
+    roomTabsEl.appendChild(b);
+  });
+  $('#currentRoomLabel').textContent=currentRoom;
+  $('#roomStatus').textContent='الغرفة: '+currentRoom;
+}
+
+function addMessage(from,text,type){
+  var div=document.createElement('div');
+  div.className='msg '+(type==='user'?'user':(type==='other'?'other':'bot'));
+  if(from){
+    var who=document.createElement('div'); who.className='who'; who.textContent=from;
+    div.appendChild(who);
+  }
+  var body=document.createElement('div'); body.textContent=text;
+  div.appendChild(body);
+  var time=document.createElement('time');
+  time.textContent=new Date().toLocaleTimeString('ar-DZ',{hour:'2-digit',minute:'2-digit'});
+  div.appendChild(time);
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop=messagesEl.scrollHeight;
+  msgCount++; $('#msgCount').textContent=msgCount;
+}
+
+// PubNub
+var pubnub=null;
+var subscribedChannel=null;
+
+function pubnubChannel(room){ return 'lafi_room_'+room; }
+
+function initPubNub(){
+  try{
+    pubnub=new PubNub({
+      publishKey:PUBNUB_PUB_KEY,
+      subscribeKey:PUBNUB_SUB_KEY,
+      uuid:myId
+    });
+
+    pubnub.addListener({
+      message:function(e){
+        var d=e.message||{};
+        if(d.type==='chat' && d.id!==myId && d.room===currentRoom){
+          addMessage(d.from,d.text,'other');
+        }
+      },
+      presence:function(e){
+        if(e.action==='join'||e.action==='leave'){
+          updateOccupancy();
+        }
+      }
+    });
+
+    subscribeToRoom(currentRoom);
+    $('#connStatus').textContent='متصل — دردشة حقيقية';
+  }catch(e){
+    console.warn('PubNub init failed:',e);
+    $('#connStatus').textContent='الدردشة غير متاحة (PubNub)';
+    toast('PubNub غير مهيأ — استبدل المفاتيح');
+  }
+}
+
+function subscribeToRoom(room){
+  if(!pubnub) return;
+  var ch=pubnubChannel(room);
+  if(subscribedChannel){
+    try{ pubnub.unsubscribe({channels:[subscribedChannel]}); }catch(e){}
+  }
+  pubnub.subscribe({channels:[ch], withPresence:true});
+  subscribedChannel=ch;
+  setTimeout(updateOccupancy,800);
+}
+
+function updateOccupancy(){
+  if(!pubnub||!subscribedChannel) return;
+  pubnub.hereNow({channels:[subscribedChannel],includeUUIDs:false},function(status,res){
+    if(res&&res.totalOccupancy!==undefined){
+      $('#userCount').textContent=res.totalOccupancy;
     }
-    function draw(t) {
-      ctx.clearRect(0, 0, w, h);
-      stars.forEach(s => {
-        const tw = 0.5 + 0.5 * Math.sin(t * 0.001 * s.sp + s.ph);
-        ctx.beginPath();
-        ctx.fillStyle = `hsla(190, 100%, 80%, ${s.a * tw})`;
-        ctx.shadowBlur = 6; ctx.shadowColor = 'rgba(66, 243, 255, 0.7)';
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
-      });
-      requestAnimationFrame(draw);
+  });
+}
+
+function switchRoom(room){
+  if(room===currentRoom) return;
+  currentRoom=room;
+  localStorage.setItem('lafi_room',room);
+  messagesEl.innerHTML='';
+  addMessage(null,'📢 دخلت الغرفة: '+room,'bot');
+  renderRoomTabs();
+  subscribeToRoom(room);
+}
+
+// إرسال رسالة
+$('#chatForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  var input=$('#chatInput');
+  var text=input.value.trim();
+  if(!text) return;
+
+  if(!myName){
+    myName=text.slice(0,24);
+    localStorage.setItem(NAME_KEY,myName);
+    input.value='';
+    input.placeholder='اكتب رسالتك...';
+    addMessage(null,'مرحباً '+myName+'! أنت الآن في غرفة: '+currentRoom,'bot');
+    return;
+  }
+
+  if(pubnub && subscribedChannel){
+    pubnub.publish({
+      channel:subscribedChannel,
+      message:{type:'chat',from:myName,text:text,id:myId,room:currentRoom}
+    },function(status){
+      if(status.error){ toast('فشل الإرسال'); }
+    });
+  }
+  addMessage(myName,text,'user');
+  input.value='';
+});
+
+// ==== P2P Calls ====
+var peer=null, localStream=null, currentCall=null;
+
+try{
+  peer=new Peer({debug:1});
+  peer.on('open',function(id){
+    $('#myPeerId').value=id;
+  });
+  peer.on('call',function(call){
+    if(!confirm('مكالمة واردة! هل تريد الرد؟')){ call.close(); return; }
+    navigator.mediaDevices.getUserMedia({video:true,audio:true}).then(function(stream){
+      localStream=stream;
+      $('#localVideo').srcObject=stream;
+      call.answer(stream);
+      currentCall=call;
+      $('#hangupBtn').disabled=false;
+      call.on('stream',function(remote){ $('#remoteVideo').srcObject=remote; });
+    }).catch(function(err){ toast('تعذر فتح الكاميرا: '+err.message); });
+  });
+}catch(e){ console.warn('PeerJS failed',e); }
+
+$('#copyIdBtn').addEventListener('click',function(){
+  var v=$('#myPeerId').value;
+  if(!v){ toast('انتظر توليد المعرف'); return; }
+  navigator.clipboard.writeText(v).then(function(){ toast('تم نسخ المعرف'); })
+  .catch(function(){ $('#myPeerId').select(); document.execCommand('copy'); toast('تم النسخ'); });
+});
+
+function startCall(withVideo){
+  var target=$('#targetPeerId').value.trim();
+  if(!target){ toast('الصق معرف صديقك أولاً'); return; }
+  if(!peer){ toast('الاتصال غير مهيأ'); return; }
+  navigator.mediaDevices.getUserMedia({video:withVideo,audio:true}).then(function(stream){
+    localStream=stream;
+    $('#localVideo').srcObject=stream;
+    var call=peer.call(target,stream);
+    currentCall=call;
+    $('#hangupBtn').disabled=false;
+    call.on('stream',function(remote){
+      $('#remoteVideo').srcObject=remote;
+      toast('المكالمة متصلة!');
+    });
+    call.on('close',hangup);
+    toast('جاري الاتصال...');
+  }).catch(function(err){ toast('تعذر فتح الكاميرا: '+err.message); });
+}
+
+$('#callVideoBtn').addEventListener('click',function(){startCall(true);});
+$('#callAudioBtn').addEventListener('click',function(){startCall(false);});
+
+function hangup(){
+  if(currentCall){try{currentCall.close();}catch(e){} currentCall=null;}
+  if(localStream){localStream.getTracks().forEach(function(t){t.stop();}); localStream=null;}
+  $('#localVideo').srcObject=null;
+  $('#remoteVideo').srcObject=null;
+  $('#hangupBtn').disabled=true;
+  toast('تم إنهاء المكالمة');
+}
+$('#hangupBtn').addEventListener('click',hangup);
+
+// ==== الملاحظات ====
+function loadNotes(){
+  try{ return JSON.parse(localStorage.getItem(NOTES_KEY)||'[]'); }catch(e){ return []; }
+}
+function saveNotes(n){
+  localStorage.setItem(NOTES_KEY,JSON.stringify(n));
+}
+function renderNotes(){
+  var notes=loadNotes();
+  var box=$('#fileList'); box.innerHTML='';
+  $('#fileCount').textContent=notes.length+' عنصر';
+  if(!notes.length){ box.innerHTML='<div class="empty">لا ملاحظات.</div>'; return; }
+  notes.slice().reverse().forEach(function(n){
+    var row=document.createElement('div'); row.className='file-row';
+    var info=document.createElement('div'); info.className='name';
+    var t=document.createElement('strong'); t.textContent=n.title;
+    var d=document.createElement('small'); d.textContent=(n.body||'').slice(0,80);
+    info.appendChild(t); info.appendChild(d);
+    var x=document.createElement('button'); x.className='btn small danger'; x.textContent='حذف';
+    x.addEventListener('click',function(){
+      var arr=loadNotes().filter(function(y){return y.id!==n.id;});
+      saveNotes(arr); renderNotes();
+    });
+    row.appendChild(info); row.appendChild(x); box.appendChild(row);
+  });
+}
+$('#noteForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  var t=$('#noteTitle').value.trim(), b=$('#noteBody').value.trim();
+  if(!t||!b) return;
+  var notes=loadNotes();
+  notes.push({id:Date.now(),title:t,body:b});
+  saveNotes(notes); renderNotes();
+  $('#noteForm').reset();
+  toast('تم الحفظ');
+});
+
+// ==== تأثيرات بصرية ====
+function initStars(){
+  var c=$('#stars'); if(!c) return; var ctx=c.getContext('2d');
+  var w,h,stars=[];
+  function resize(){
+    w=c.width=window.innerWidth; h=c.height=window.innerHeight;
+    stars=[];
+    var count=Math.min(120,Math.max(40,Math.round(w*h/14000)));
+    for(var i=0;i<count;i++) stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.4+.2,a:Math.random()*.7+.3,ph:Math.random()*6.28,sp:Math.random()*.4+.1,hue:Math.random()<.7?190:280});
+  }
+  function draw(t){
+    ctx.clearRect(0,0,w,h);
+    for(var i=0;i<stars.length;i++){
+      var s=stars[i]; var tw=.5+.5*Math.sin(t*.001*s.sp+s.ph);
+      ctx.beginPath(); ctx.fillStyle='hsla('+s.hue+',100%,80%,'+(s.a*tw)+')';
+      ctx.shadowBlur=6; ctx.shadowColor='hsla('+s.hue+',100%,70%,.7)';
+      ctx.arc(s.x,s.y,s.r,0,6.28); ctx.fill();
     }
-    resize(); window.addEventListener('resize', resize); requestAnimationFrame(draw);
-  })();
+    ctx.shadowBlur=0; requestAnimationFrame(draw);
+  }
+  resize(); window.addEventListener('resize',resize,{passive:true});
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches) requestAnimationFrame(draw);
+}
+
+function initCrystalTouch(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.addEventListener('pointerdown',function(e){
+    var ring=document.createElement('span');
+    ring.className='crystal-ring';
+    ring.style.left=e.clientX+'px'; ring.style.top=e.clientY+'px';
+    document.body.appendChild(ring);
+    setTimeout(function(){ring.remove();},850);
+  },{passive:true});
+}
+
+// ==== تشغيل ====
+renderRoomTabs();
+if(myName){
+  $('#chatInput').placeholder='اكتب رسالتك...';
+  addMessage(null,'مرحباً بعودتك '+myName+'! أنت في غرفة: '+currentRoom,'bot');
+} else {
+  addMessage(null,'اكتب اسمك في الأسفل ثم اضغط إرسال للبدء.','bot');
+}
+renderNotes();
+initPubNub();
+initStars();
+initCrystalTouch();
+})();
 </script>
 </body>
 </html>
