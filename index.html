@@ -112,19 +112,16 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opa
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getDatabase, ref, push, onValue, serverTimestamp, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-  // =========================================================
-  // 🛑 خطوة مهمة جداً: استبدل هذه المفاتيح بمفاتيح Firebase الخاصة بك
-  // =========================================================
+  // مفاتيح Firebase الخاصة بك (تم وضعها هنا جاهزة)
   const firebaseConfig = {
-    apiKey: "<<< ضع هنا apiKey >>>",
-    authDomain: "<<< ضع هنا authDomain >>>",
-    databaseURL: "<<< ضع هنا databaseURL >>>",
-    projectId: "<<< ضع هنا projectId >>>",
-    storageBucket: "<<< ضع هنا storageBucket >>>",
-    messagingSenderId: "<<< ضع هنا messagingSenderId >>>",
-    appId: "<<< ضع هنا appId >>>"
+    apiKey: "AIzaSyBe42Ma32m5udzqN0vlrvkc6c0z9dT9i04",
+    authDomain: "munir-lafi-8625b.firebaseapp.com",
+    databaseURL: "https://munir-lafi-8625b-default-rtdb.firebaseio.com",
+    projectId: "munir-lafi-8625b",
+    storageBucket: "munir-lafi-8625b.firebasestorage.app",
+    messagingSenderId: "346345700738",
+    appId: "1:346345700738:web:2d9a25780a79a8382ae39b"
   };
-  // =========================================================
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
@@ -191,13 +188,11 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opa
     sendBtn.disabled = false;
     if (focus) input.focus({preventScroll: true});
 
-    // إلغاء الاستماع القديم
     if (unsubscribeMessages) unsubscribeMessages();
 
     const msgsBox = $('#roomsMsgs');
     msgsBox.innerHTML = '<div class="rooms-empty">جارٍ تحميل الرسائل…</div>';
 
-    // الاستماع للرسائل الجديدة من Realtime Database
     const messagesRef = query(ref(db, 'rooms/' + roomId), limitToLast(100));
     
     unsubscribeMessages = onValue(messagesRef, (snapshot) => {
