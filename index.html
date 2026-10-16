@@ -4,530 +4,423 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#05081a">
-<title>LAFI OMNI-SCREEN | الفضاء الهولوغرامي المباشر</title>
+<title>لافي منير | دردشة عشوائية</title>
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-<script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.4.3.min.js"></script>
 <style>
-:root{color-scheme:dark;--bg:#05081a;--line:#25324a;--text:#eef4ff;--muted:#94a3bd;--cyan:#42f3ff;--violet:#b45cff;--green:#38ffc2;--red:#ff6e88;--radius:18px;--shadow:0 14px 40px #0008}
-*{box-sizing:border-box}html{min-height:100%;background:var(--bg)}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden;background:radial-gradient(ellipse at 50% -10%,#1a3a7a 0,transparent 40%),radial-gradient(ellipse at 90% 40%,#4a1170 0,transparent 45%),radial-gradient(ellipse at 5% 80%,#0a4a5c 0,transparent 40%),#02030a;background-attachment:fixed}
-button,input,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}button:disabled{opacity:.45}
-body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.22;background:repeating-linear-gradient(0deg,transparent 0 3px,#73f8ff08 4px 5px);mix-blend-mode:screen}
-#stars,#dust{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
-#dust{z-index:1;opacity:.75}
-#planet{position:fixed;top:-15%;left:50%;transform:translateX(-50%);width:min(90vw,700px);height:auto;z-index:0;pointer-events:none;opacity:.55;filter:blur(.3px) drop-shadow(0 0 80px #4a7aff88)}
-.app{position:relative;z-index:2;isolation:isolate;max-width:1600px;margin:auto;padding:14px;min-height:100vh;display:flex;flex-direction:column;gap:14px}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:1px solid #42dfff55;background:#0a1228cc;backdrop-filter:blur(18px);border-radius:var(--radius);box-shadow:var(--shadow),0 0 24px #42f3ff44;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:12px;min-width:0}
-.logo{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:24px;font-weight:900;color:#07111a;background:linear-gradient(135deg,var(--cyan),var(--violet));box-shadow:0 0 30px #42f3ff88;position:relative;overflow:hidden}
-.brand h1{font-size:clamp(15px,2.3vw,20px);margin:0}.brand p{margin:3px 0 0;color:var(--muted);font-size:11px}
+:root{color-scheme:dark;--bg:#05081a;--line:#25324a;--text:#eef4ff;--muted:#94a3bd;--cyan:#42f3ff;--violet:#b45cff;--green:#38ffc2;--red:#ff6e88;--radius:18px}
+*{box-sizing:border-box}html,body{margin:0;padding:0;min-height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif}
+body{background:radial-gradient(ellipse at 50% 0%,#15244b 0,transparent 40%),radial-gradient(ellipse at 90% 40%,#4a1170 0,transparent 45%),#02030a;background-attachment:fixed;min-height:100vh}
+button,input{cursor:pointer;font:inherit}
+button:disabled{opacity:.45;cursor:not-allowed}
+#stars{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.app{position:relative;z-index:2;max-width:900px;margin:auto;padding:14px;min-height:100vh;display:flex;flex-direction:column;gap:14px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border:1px solid #42dfff55;background:#0a1228cc;backdrop-filter:blur(18px);border-radius:var(--radius);box-shadow:0 0 24px #42f3ff33;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:24px;font-weight:900;color:#07111a;background:linear-gradient(135deg,var(--cyan),var(--violet));box-shadow:0 0 30px #42f3ff88}
+.brand h1{margin:0;font-size:clamp(15px,2.3vw,20px)}
+.brand p{margin:3px 0 0;color:var(--muted);font-size:11px}
 .status{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--green);padding:8px 10px;background:#53e6a710;border:1px solid #53e6a733;border-radius:99px}
-.dot{width:7px;height:7px;background:currentColor;border-radius:50%;box-shadow:0 0 10px currentColor;animation:pulse 1.8s infinite}
-.btn{border:1px solid var(--line);background:#141e3a;color:var(--text);border-radius:11px;padding:9px 12px;transition:.18s}
-.btn:hover{border-color:#42f3ff99;transform:translateY(-1px);box-shadow:0 0 16px #42f3ff33}
-.btn.primary{color:#07111a;font-weight:750;border:0;background:linear-gradient(120deg,var(--cyan),#a1f5ff)}
+.dot{width:7px;height:7px;background:currentColor;border-radius:50%;animation:pulse 1.8s infinite}
+.panel{background:#0a1228dd;border:1px solid #42dfff55;border-radius:var(--radius);padding:20px;backdrop-filter:blur(18px)}
+.btn{border:1px solid var(--line);background:#141e3a;color:var(--text);border-radius:11px;padding:12px 18px;transition:.18s;font-weight:600}
+.btn:hover{border-color:#42f3ff99;transform:translateY(-1px)}
+.btn.primary{color:#07111a;border:0;background:linear-gradient(120deg,var(--cyan),#a1f5ff)}
 .btn.danger{border-color:#ff6e8855;color:#ff9bae}
-.btn.small{padding:6px 9px;font-size:12px}
-.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:14px;flex:1;min-height:0}
-.sidebar,.panel{border:1px solid #42dfff55;background:linear-gradient(160deg,#0e1830ee,#080e20f2);border-radius:var(--radius);box-shadow:var(--shadow),0 0 20px #42f3ff33;backdrop-filter:blur(18px);min-width:0}
-.sidebar{padding:12px;display:flex;flex-direction:column;gap:7px}
-.side-label{font-size:10px;color:#70809e;letter-spacing:1.4px;padding:10px 10px 4px}
-.navbtn{display:flex;align-items:center;gap:10px;text-align:right;width:100%;padding:11px;border:1px solid transparent;border-radius:12px;background:transparent;color:#c2cde0;transition:.18s;font:inherit;cursor:pointer}
-.navbtn .ico{width:25px;text-align:center;font-size:17px}
-.navbtn:hover,.navbtn.active{background:#42f3ff14;border-color:#42f3ff44;color:#fff}
-.navbtn.active{box-shadow:inset -3px 0 var(--cyan),0 0 18px #42f3ff44}
-.side-foot{margin-top:auto;padding:12px;color:var(--muted);font-size:11px;line-height:1.8;border-top:1px solid var(--line)}
-.main{min-width:0;display:flex;flex-direction:column;gap:14px}
-.page-head{display:flex;align-items:end;justify-content:space-between;gap:10px;padding:2px 3px;flex-wrap:wrap}
-.page-head h2{margin:0;font-size:22px;background:linear-gradient(90deg,#fff,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
-.page-head p{margin:5px 0 0;color:var(--muted);font-size:13px}
-.view{display:none;min-width:0}.view.active{display:block}
-.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:14px}
-.metric{padding:16px;border:1px solid #42dfff55;background:linear-gradient(145deg,#0e1a36,#080f22);border-radius:16px;min-width:0;box-shadow:0 0 20px #42f3ff33}
-.metric .label{font-size:12px;color:var(--muted)}
-.metric .value{font-size:clamp(21px,3vw,29px);font-weight:800;margin:8px 0 5px;color:#fff;text-shadow:0 0 18px #42f3ff88}
-.metric .hint{font-size:11px;color:var(--green)}
-.grid2{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:14px}
-.panel{padding:16px;position:relative;overflow:hidden}
-.panel::before{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(115deg,transparent 15%,#42f3ff10 35%,transparent 55%,#b45cff14 75%,transparent);background-size:220% 100%;animation:aurora 12s linear infinite}
-.panel>*{position:relative}
-.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px;flex-wrap:wrap}
-.panel-head h3{margin:0;font-size:15px}
-.subtle{color:var(--muted);font-size:12px}
-.feature-list{display:grid;gap:10px}
-.feature{display:flex;align-items:center;gap:11px;padding:12px;border:1px solid #25324a;border-radius:13px;background:#ffffff04;transition:.18s;cursor:pointer}
-.feature:hover{border-color:#42f3ff88;box-shadow:0 0 18px #42f3ff33}
-.feature-icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#42f3ff14;font-size:19px;flex-shrink:0}
-.feature strong{display:block;font-size:13px}
-.feature small{display:block;color:var(--muted);margin-top:4px;font-size:11px}
-.chatbox{display:flex;flex-direction:column;height:min(62vh,600px);min-height:360px}
-.messages{flex:1;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:5px 2px 14px}
-.msg{max-width:88%;padding:11px 13px;border-radius:15px;line-height:1.65;font-size:13px;white-space:pre-wrap;word-break:break-word}
-.msg.bot{align-self:flex-start;background:#152040;border:1px solid #2b3c5a;border-top-left-radius:4px}
-.msg.user{align-self:flex-end;background:#0b3a4a;border:1px solid #1c7787;border-top-right-radius:4px}
-.msg.other{align-self:flex-start;background:#2a1040;border:1px solid #5c3c8a;border-top-left-radius:4px}
-.msg time{display:block;font-size:10px;color:#90a5c2;margin-top:5px}
-.msg .who{font-size:10.5px;font-weight:700;color:#7be2ff;margin-bottom:3px}
-.composer{display:flex;gap:8px;border-top:1px solid var(--line);padding-top:12px}
-.composer input,.field,.terminal-input{width:100%;min-width:0;color:var(--text);background:#050a1c;border:1px solid #293852;border-radius:12px;padding:11px 12px;font:inherit}
-.composer input{flex:1}
-.notice{padding:11px 12px;border:1px solid #ffbd6944;background:#ffbd690d;color:#f6d4a2;border-radius:12px;font-size:12px;line-height:1.65}
-.file-list{display:grid;gap:8px}
-.file-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px;border:1px solid var(--line);border-radius:12px;background:#ffffff04;flex-wrap:wrap}
-.file-row .name{min-width:0;word-break:break-word;flex:1}
-.file-row small{display:block;color:var(--muted);font-size:11px;margin-top:4px}
-.empty{padding:25px;text-align:center;color:var(--muted);border:1px dashed #33425b;border-radius:12px;font-size:13px}
-.footer{color:#687893;text-align:center;font-size:10px;padding:2px}
-.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translate(-50%,15px);opacity:0;pointer-events:none;background:#0e1832;border:1px solid #42f3ff88;color:white;border-radius:12px;padding:11px 15px;box-shadow:0 0 24px #42f3ff66;z-index:50;transition:.2s;max-width:calc(100vw - 28px);font-size:13px}
+.btn.big{padding:18px 24px;font-size:16px;width:100%}
+.center{text-align:center}
+.idle-screen{text-align:center;padding:40px 20px}
+.idle-screen .big-ico{font-size:64px;margin-bottom:16px;filter:drop-shadow(0 0 20px var(--cyan))}
+.idle-screen h2{margin:0 0 8px;font-size:24px}
+.idle-screen p{color:var(--muted);margin:0 0 24px;font-size:14px;line-height:1.7}
+.waiting-screen{text-align:center;padding:40px 20px}
+.spinner{width:60px;height:60px;border:4px solid #42f3ff22;border-top-color:var(--cyan);border-radius:50%;margin:0 auto 20px;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.partner-screen{display:flex;flex-direction:column;gap:14px}
+.partner-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.partner-head .badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#53e6a715;border:1px solid #53e6a733;border-radius:99px;font-size:12px;color:var(--green)}
+.video-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.video-box{position:relative;background:#000;border:1px solid var(--line);border-radius:14px;overflow:hidden;aspect-ratio:1;display:grid;place-items:center}
+.video-box video{width:100%;height:100%;object-fit:cover}
+.video-box span{position:absolute;bottom:8px;right:8px;background:#0008;padding:3px 10px;border-radius:6px;font-size:11px;color:var(--cyan)}
+.chat-log{background:#02040a;border:1px solid var(--line);border-radius:14px;padding:12px;min-height:160px;max-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.chat-msg{padding:8px 12px;border-radius:12px;max-width:85%;font-size:13px;word-break:break-word}
+.chat-msg.them{background:#152040;border:1px solid #2b3c5a;align-self:flex-start}
+.chat-msg.me{background:#0b3a4a;border:1px solid #1c7787;align-self:flex-end}
+.chat-input{display:flex;gap:8px;margin-top:10px}
+.chat-input input{flex:1;padding:12px;border-radius:12px;border:1px solid var(--line);background:#050a1c;color:var(--text);outline:none}
+.controls{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.controls .btn{padding:14px 8px;font-size:13px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,15px);opacity:0;pointer-events:none;background:#0e1832;border:1px solid #42f3ff88;color:#fff;border-radius:12px;padding:11px 15px;box-shadow:0 0 24px #42f3ff66;z-index:50;transition:.2s;font-size:13px}
 .toast.show{opacity:1;transform:translate(-50%,0)}
-.room-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.room-tab{padding:7px 12px;border:1px solid var(--line);background:#0a1228;color:#c2cde0;border-radius:20px;font-size:12px;cursor:pointer;transition:.18s}
-.room-tab:hover{border-color:#42f3ff88}
-.room-tab.active{background:#42f3ff1c;border-color:#42f3ff;color:#fff}
-.crystal-ring{position:fixed;z-index:99;pointer-events:none;width:20px;height:20px;border-radius:50%;border:2px solid #42f3ff;box-shadow:0 0 20px #42f3ff,inset 0 0 20px #b45cff,0 0 40px #b45cff88;transform:translate(-50%,-50%) scale(.2);animation:crystalRing .8s ease-out forwards}
-@keyframes crystalRing{to{transform:translate(-50%,-50%) scale(4);opacity:0}}
-@keyframes aurora{0%{background-position:180% 0}100%{background-position:-40% 0}}
 @keyframes pulse{0%,100%{opacity:.65}50%{opacity:1}}
-@media(max-width:850px){.layout{grid-template-columns:1fr}.sidebar{order:2;position:sticky;bottom:0;z-index:20;padding:7px;display:flex;flex-direction:row;justify-content:space-around;gap:4px;background:#050c1ef2;backdrop-filter:blur(16px)}.side-label,.side-foot{display:none}.navbtn{width:auto;flex:1;justify-content:center;flex-direction:column;gap:3px;font-size:10px}}
+@media(max-width:520px){.video-grid{grid-template-columns:1fr}.controls{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 <canvas id="stars"></canvas>
-<canvas id="dust"></canvas>
-<svg id="planet" viewBox="0 0 400 400" aria-hidden="true">
-  <defs>
-    <radialGradient id="pg" cx="35%" cy="30%">
-      <stop offset="0%" stop-color="#a8d4ff"/>
-      <stop offset="40%" stop-color="#4a7aff"/>
-      <stop offset="100%" stop-color="#050a25"/>
-    </radialGradient>
-    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#42f3ff" stop-opacity="0"/>
-      <stop offset="50%" stop-color="#b45cff" stop-opacity=".9"/>
-      <stop offset="100%" stop-color="#42f3ff" stop-opacity="0"/>
-    </linearGradient>
-  </defs>
-  <ellipse cx="200" cy="200" rx="195" ry="40" fill="none" stroke="url(#ring)" stroke-width="6" transform="rotate(-18 200 200)"/>
-  <circle cx="200" cy="200" r="140" fill="url(#pg)"/>
-</svg>
-
 <div class="app">
   <header class="topbar">
-    <div class="brand"><div class="logo">L</div><div><h1>LAFI OMNI-SCREEN</h1><p>الفضاء الهولوغرامي المباشر</p></div></div>
+    <div class="brand">
+      <div class="logo">L</div>
+      <div>
+        <h1>لافي منير</h1>
+        <p>دردشة عشوائية حقيقية</p>
+      </div>
+    </div>
     <span class="status"><span class="dot"></span> <span id="connStatus">جارٍ الاتصال...</span></span>
   </header>
 
-  <div class="layout">
-    <aside class="sidebar">
-      <div class="side-label">WORKSPACE</div>
-      <button class="navbtn active" data-view="home"><span class="ico">◈</span><span>الرئيسية</span></button>
-      <button class="navbtn" data-view="rooms"><span class="ico">💬</span><span>غرف الدردشة</span></button>
-      <button class="navbtn" data-view="p2p"><span class="ico">📞</span><span>المكالمات</span></button>
-      <button class="navbtn" data-view="notes"><span class="ico">▤</span><span>ملفاتي</span></button>
-      <div class="side-foot">دردشة حقيقية + مكالمات P2P</div>
-    </aside>
-
-    <main class="main">
-      <!-- الرئيسية -->
-      <section class="view active" id="view-home">
-        <div class="page-head"><div><h2>المساحة الحية السيادية</h2><p>دردشة جماعية حقيقية + مكالمات P2P.</p></div></div>
-        <div class="cards">
-          <div class="metric"><div class="label">المتصلون</div><div class="value" id="userCount">0</div><div class="hint">في الغرفة الحالية</div></div>
-          <div class="metric"><div class="label">رسائل</div><div class="value" id="msgCount">0</div><div class="hint">في هذه الجلسة</div></div>
-          <div class="metric"><div class="label">الغرفة</div><div class="value" id="currentRoomLabel">عام</div><div class="hint">اختر غرفة</div></div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>ابدأ الآن</h3></div>
-          <div class="feature-list">
-            <button class="feature navbtn" data-view="rooms"><span class="feature-icon">💬</span><span><strong>غرف الدردشة الحقيقية</strong><small>انضم لغرفة واكتب مع الجميع</small></span></button>
-            <button class="feature navbtn" data-view="p2p"><span class="feature-icon">📞</span><span><strong>مكالمات P2P</strong><small>اتصل بأي صديق مباشرة</small></span></button>
-          </div>
-        </div>
-      </section>
-
-      <!-- غرف الدردشة الحقيقية -->
-      <section class="view" id="view-rooms">
-        <div class="page-head">
-          <div><h2>غرف الدردشة الحقيقية</h2><p>اختر غرفة واكتب — الجميع سيرى رسالتك.</p></div>
-          <span class="subtle" id="roomStatus">جاهز</span>
-        </div>
-        <div class="panel" style="padding:0;overflow:hidden">
-          <div class="room-tabs" id="roomTabs" style="padding:14px 14px 0 14px"></div>
-          <div class="chatbox" style="padding:0 14px 14px 14px">
-            <div class="messages" id="messages"></div>
-            <form class="composer" id="chatForm">
-              <input id="chatInput" placeholder="اكتب اسمك أولاً..." autocomplete="off" maxlength="500" required>
-              <button class="btn primary" type="submit">إرسال</button>
-            </form>
-          </div>
-        </div>
-      </section>
-
-      <!-- المكالمات P2P -->
-      <section class="view" id="view-p2p">
-        <div class="page-head"><div><h2>المكالمات المباشرة P2P</h2><p>اتصل بأي شخص عبر PeerJS.</p></div></div>
-        <div class="grid2">
-          <div class="panel">
-            <div class="panel-head"><h3>معرفك الخاص</h3></div>
-            <div style="display:flex;gap:8px">
-              <input class="field" id="myPeerId" readonly style="font-weight:bold;color:var(--cyan);margin:0">
-              <button class="btn primary" id="copyIdBtn">نسخ</button>
-            </div>
-            <div class="panel-head" style="margin-top:14px"><h3>اتصل بصديق</h3></div>
-            <input class="field" id="targetPeerId" placeholder="الصق معرف صديقك هنا...">
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <button class="btn primary" id="callVideoBtn">📹 فيديو</button>
-              <button class="btn" id="callAudioBtn">📞 صوت</button>
-              <button class="btn danger" id="hangupBtn" disabled>إنهاء</button>
-            </div>
-          </div>
-          <div class="panel">
-            <div class="panel-head"><h3>شاشة العرض</h3></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-              <div style="background:#000;border:1px solid var(--line);border-radius:12px;overflow:hidden;min-height:180px;position:relative">
-                <video id="localVideo" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover"></video>
-              </div>
-              <div style="background:#000;border:1px solid var(--line);border-radius:12px;overflow:hidden;min-height:180px;position:relative">
-                <video id="remoteVideo" autoplay playsinline style="width:100%;height:100%;object-fit:cover"></video>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- الملاحظات -->
-      <section class="view" id="view-notes">
-        <div class="page-head"><div><h2>ملفاتي وملاحظاتي</h2><p>تخزين محلي.</p></div></div>
-        <div class="grid2">
-          <div class="panel">
-            <div class="panel-head"><h3>ملاحظة جديدة</h3></div>
-            <form id="noteForm">
-              <input class="field" id="noteTitle" placeholder="العنوان" required>
-              <textarea class="field" id="noteBody" rows="6" placeholder="المحتوى..." required style="resize:vertical"></textarea>
-              <button class="btn primary" type="submit">حفظ</button>
-            </form>
-          </div>
-          <div class="panel">
-            <div class="panel-head"><h3>المحفوظات</h3><span class="subtle" id="fileCount">0 عنصر</span></div>
-            <div class="file-list" id="fileList"></div>
-          </div>
-        </div>
-      </section>
-
-      <footer class="footer">LAFI OMNI-SCREEN · دردشة حقيقية + P2P</footer>
-    </main>
-  </div>
+  <main id="main" class="panel"></main>
 </div>
+
 <div class="toast" id="toast"></div>
 
-<script>
-(function(){
-'use strict';
-var $=function(s){return document.querySelector(s)};
-var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, set, onValue, onDisconnect, push, remove, get, query, limitToLast }
+from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// ==== إعدادات PubNub (استبدل هذه بمفاتيحك) ====
-var PUBNUB_PUB_KEY='demo';
-var PUBNUB_SUB_KEY='demo';
-// ==============================================
+// ====== Firebase Config ======
+const firebaseConfig = {
+  databaseURL: "https://lavi-efe54-default-rtdb.firebaseio.com/"
+};
 
-// ==== بيانات محلية ====
-var NOTES_KEY='lafi_notes_v4';
-var NAME_KEY='lafi_name_v4';
-var ROOMS=['عام','تقنية','دراسة','ألعاب','رياضة'];
-var currentRoom=localStorage.getItem('lafi_room')||ROOMS[0];
-var myName=localStorage.getItem(NAME_KEY)||'';
-var myId='u_'+Math.random().toString(36).slice(2,9);
-var msgCount=0;
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
 
-// ==== التنقل ====
-$$('.navbtn[data-view]').forEach(function(b){
-  b.addEventListener('click',function(){
-    $$('.view').forEach(function(v){v.classList.toggle('active',v.id==='view-'+b.dataset.view);});
-    $$('.navbtn[data-view]').forEach(function(x){x.classList.toggle('active',x===b);});
-  });
-});
+// ====== المتغيرات ======
+const main = document.getElementById('main');
+const toastEl = document.getElementById('toast');
+function toast(m){ toastEl.textContent = m; toastEl.classList.add('show'); clearTimeout(toastEl._t); toastEl._t = setTimeout(()=>toastEl.classList.remove('show'), 2800); }
 
-function toast(m){
-  var el=$('#toast'); if(!el) return;
-  el.textContent=m; el.classList.add('show');
-  clearTimeout(el._t); el._t=setTimeout(function(){el.classList.remove('show');},3000);
-}
+let myId = 'u_' + Math.random().toString(36).slice(2,10);
+let myName = localStorage.getItem('lafi_name') || '';
+let myPeerId = null;
+let peer = null;
+let localStream = null;
+let currentCall = null;
+let partnerId = null;
+let partnerName = null;
+let unsubscribeQueue = null;
+let unsubscribeRoom = null;
+let isSearching = false;
+let myQueueRef = null;
 
-// ==== غرف الدردشة ====
-var messagesEl=$('#messages');
-var roomTabsEl=$('#roomTabs');
-
-function renderRoomTabs(){
-  roomTabsEl.innerHTML='';
-  ROOMS.forEach(function(r){
-    var b=document.createElement('button');
-    b.type='button';
-    b.className='room-tab'+(r===currentRoom?' active':'');
-    b.textContent='# '+r;
-    b.addEventListener('click',function(){ switchRoom(r); });
-    roomTabsEl.appendChild(b);
-  });
-  $('#currentRoomLabel').textContent=currentRoom;
-  $('#roomStatus').textContent='الغرفة: '+currentRoom;
-}
-
-function addMessage(from,text,type){
-  var div=document.createElement('div');
-  div.className='msg '+(type==='user'?'user':(type==='other'?'other':'bot'));
-  if(from){
-    var who=document.createElement('div'); who.className='who'; who.textContent=from;
-    div.appendChild(who);
-  }
-  var body=document.createElement('div'); body.textContent=text;
-  div.appendChild(body);
-  var time=document.createElement('time');
-  time.textContent=new Date().toLocaleTimeString('ar-DZ',{hour:'2-digit',minute:'2-digit'});
-  div.appendChild(time);
-  messagesEl.appendChild(div);
-  messagesEl.scrollTop=messagesEl.scrollHeight;
-  msgCount++; $('#msgCount').textContent=msgCount;
-}
-
-// PubNub
-var pubnub=null;
-var subscribedChannel=null;
-
-function pubnubChannel(room){ return 'lafi_room_'+room; }
-
-function initPubNub(){
-  try{
-    pubnub=new PubNub({
-      publishKey:PUBNUB_PUB_KEY,
-      subscribeKey:PUBNUB_SUB_KEY,
-      uuid:myId
-    });
-
-    pubnub.addListener({
-      message:function(e){
-        var d=e.message||{};
-        if(d.type==='chat' && d.id!==myId && d.room===currentRoom){
-          addMessage(d.from,d.text,'other');
-        }
-      },
-      presence:function(e){
-        if(e.action==='join'||e.action==='leave'){
-          updateOccupancy();
-        }
-      }
-    });
-
-    subscribeToRoom(currentRoom);
-    $('#connStatus').textContent='متصل — دردشة حقيقية';
-  }catch(e){
-    console.warn('PubNub init failed:',e);
-    $('#connStatus').textContent='الدردشة غير متاحة (PubNub)';
-    toast('PubNub غير مهيأ — استبدل المفاتيح');
-  }
-}
-
-function subscribeToRoom(room){
-  if(!pubnub) return;
-  var ch=pubnubChannel(room);
-  if(subscribedChannel){
-    try{ pubnub.unsubscribe({channels:[subscribedChannel]}); }catch(e){}
-  }
-  pubnub.subscribe({channels:[ch], withPresence:true});
-  subscribedChannel=ch;
-  setTimeout(updateOccupancy,800);
-}
-
-function updateOccupancy(){
-  if(!pubnub||!subscribedChannel) return;
-  pubnub.hereNow({channels:[subscribedChannel],includeUUIDs:false},function(status,res){
-    if(res&&res.totalOccupancy!==undefined){
-      $('#userCount').textContent=res.totalOccupancy;
-    }
-  });
-}
-
-function switchRoom(room){
-  if(room===currentRoom) return;
-  currentRoom=room;
-  localStorage.setItem('lafi_room',room);
-  messagesEl.innerHTML='';
-  addMessage(null,'📢 دخلت الغرفة: '+room,'bot');
-  renderRoomTabs();
-  subscribeToRoom(room);
-}
-
-// إرسال رسالة
-$('#chatForm').addEventListener('submit',function(e){
-  e.preventDefault();
-  var input=$('#chatInput');
-  var text=input.value.trim();
-  if(!text) return;
-
-  if(!myName){
-    myName=text.slice(0,24);
-    localStorage.setItem(NAME_KEY,myName);
-    input.value='';
-    input.placeholder='اكتب رسالتك...';
-    addMessage(null,'مرحباً '+myName+'! أنت الآن في غرفة: '+currentRoom,'bot');
-    return;
-  }
-
-  if(pubnub && subscribedChannel){
-    pubnub.publish({
-      channel:subscribedChannel,
-      message:{type:'chat',from:myName,text:text,id:myId,room:currentRoom}
-    },function(status){
-      if(status.error){ toast('فشل الإرسال'); }
-    });
-  }
-  addMessage(myName,text,'user');
-  input.value='';
-});
-
-// ==== P2P Calls ====
-var peer=null, localStream=null, currentCall=null;
-
-try{
-  peer=new Peer({debug:1});
-  peer.on('open',function(id){
-    $('#myPeerId').value=id;
-  });
-  peer.on('call',function(call){
-    if(!confirm('مكالمة واردة! هل تريد الرد؟')){ call.close(); return; }
-    navigator.mediaDevices.getUserMedia({video:true,audio:true}).then(function(stream){
-      localStream=stream;
-      $('#localVideo').srcObject=stream;
-      call.answer(stream);
-      currentCall=call;
-      $('#hangupBtn').disabled=false;
-      call.on('stream',function(remote){ $('#remoteVideo').srcObject=remote; });
-    }).catch(function(err){ toast('تعذر فتح الكاميرا: '+err.message); });
-  });
-}catch(e){ console.warn('PeerJS failed',e); }
-
-$('#copyIdBtn').addEventListener('click',function(){
-  var v=$('#myPeerId').value;
-  if(!v){ toast('انتظر توليد المعرف'); return; }
-  navigator.clipboard.writeText(v).then(function(){ toast('تم نسخ المعرف'); })
-  .catch(function(){ $('#myPeerId').select(); document.execCommand('copy'); toast('تم النسخ'); });
-});
-
-function startCall(withVideo){
-  var target=$('#targetPeerId').value.trim();
-  if(!target){ toast('الصق معرف صديقك أولاً'); return; }
-  if(!peer){ toast('الاتصال غير مهيأ'); return; }
-  navigator.mediaDevices.getUserMedia({video:withVideo,audio:true}).then(function(stream){
-    localStream=stream;
-    $('#localVideo').srcObject=stream;
-    var call=peer.call(target,stream);
-    currentCall=call;
-    $('#hangupBtn').disabled=false;
-    call.on('stream',function(remote){
-      $('#remoteVideo').srcObject=remote;
-      toast('المكالمة متصلة!');
-    });
-    call.on('close',hangup);
-    toast('جاري الاتصال...');
-  }).catch(function(err){ toast('تعذر فتح الكاميرا: '+err.message); });
-}
-
-$('#callVideoBtn').addEventListener('click',function(){startCall(true);});
-$('#callAudioBtn').addEventListener('click',function(){startCall(false);});
-
-function hangup(){
-  if(currentCall){try{currentCall.close();}catch(e){} currentCall=null;}
-  if(localStream){localStream.getTracks().forEach(function(t){t.stop();}); localStream=null;}
-  $('#localVideo').srcObject=null;
-  $('#remoteVideo').srcObject=null;
-  $('#hangupBtn').disabled=true;
-  toast('تم إنهاء المكالمة');
-}
-$('#hangupBtn').addEventListener('click',hangup);
-
-// ==== الملاحظات ====
-function loadNotes(){
-  try{ return JSON.parse(localStorage.getItem(NOTES_KEY)||'[]'); }catch(e){ return []; }
-}
-function saveNotes(n){
-  localStorage.setItem(NOTES_KEY,JSON.stringify(n));
-}
-function renderNotes(){
-  var notes=loadNotes();
-  var box=$('#fileList'); box.innerHTML='';
-  $('#fileCount').textContent=notes.length+' عنصر';
-  if(!notes.length){ box.innerHTML='<div class="empty">لا ملاحظات.</div>'; return; }
-  notes.slice().reverse().forEach(function(n){
-    var row=document.createElement('div'); row.className='file-row';
-    var info=document.createElement('div'); info.className='name';
-    var t=document.createElement('strong'); t.textContent=n.title;
-    var d=document.createElement('small'); d.textContent=(n.body||'').slice(0,80);
-    info.appendChild(t); info.appendChild(d);
-    var x=document.createElement('button'); x.className='btn small danger'; x.textContent='حذف';
-    x.addEventListener('click',function(){
-      var arr=loadNotes().filter(function(y){return y.id!==n.id;});
-      saveNotes(arr); renderNotes();
-    });
-    row.appendChild(info); row.appendChild(x); box.appendChild(row);
-  });
-}
-$('#noteForm').addEventListener('submit',function(e){
-  e.preventDefault();
-  var t=$('#noteTitle').value.trim(), b=$('#noteBody').value.trim();
-  if(!t||!b) return;
-  var notes=loadNotes();
-  notes.push({id:Date.now(),title:t,body:b});
-  saveNotes(notes); renderNotes();
-  $('#noteForm').reset();
-  toast('تم الحفظ');
-});
-
-// ==== تأثيرات بصرية ====
-function initStars(){
-  var c=$('#stars'); if(!c) return; var ctx=c.getContext('2d');
-  var w,h,stars=[];
+// ====== تأثير النجوم ======
+(function initStars(){
+  const c = document.getElementById('stars');
+  const ctx = c.getContext('2d');
+  let w,h,stars=[];
   function resize(){
-    w=c.width=window.innerWidth; h=c.height=window.innerHeight;
-    stars=[];
-    var count=Math.min(120,Math.max(40,Math.round(w*h/14000)));
-    for(var i=0;i<count;i++) stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.4+.2,a:Math.random()*.7+.3,ph:Math.random()*6.28,sp:Math.random()*.4+.1,hue:Math.random()<.7?190:280});
+    w=c.width=innerWidth; h=c.height=innerHeight;
+    stars=[]; const n=Math.min(120,Math.max(40,Math.round(w*h/14000)));
+    for(let i=0;i<n;i++) stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.4+.2,a:Math.random()*.7+.3,ph:Math.random()*6.28,sp:Math.random()*.4+.1});
   }
   function draw(t){
     ctx.clearRect(0,0,w,h);
-    for(var i=0;i<stars.length;i++){
-      var s=stars[i]; var tw=.5+.5*Math.sin(t*.001*s.sp+s.ph);
-      ctx.beginPath(); ctx.fillStyle='hsla('+s.hue+',100%,80%,'+(s.a*tw)+')';
-      ctx.shadowBlur=6; ctx.shadowColor='hsla('+s.hue+',100%,70%,.7)';
+    for(const s of stars){
+      const tw=.5+.5*Math.sin(t*.001*s.sp+s.ph);
+      ctx.beginPath(); ctx.fillStyle='rgba(66,243,255,'+(s.a*tw)+')';
+      ctx.shadowBlur=6; ctx.shadowColor='rgba(66,243,255,.7)';
       ctx.arc(s.x,s.y,s.r,0,6.28); ctx.fill();
     }
-    ctx.shadowBlur=0; requestAnimationFrame(draw);
+    ctx.shadowBlur=0;
+    requestAnimationFrame(draw);
   }
-  resize(); window.addEventListener('resize',resize,{passive:true});
-  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches) requestAnimationFrame(draw);
-}
-
-function initCrystalTouch(){
-  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  document.addEventListener('pointerdown',function(e){
-    var ring=document.createElement('span');
-    ring.className='crystal-ring';
-    ring.style.left=e.clientX+'px'; ring.style.top=e.clientY+'px';
-    document.body.appendChild(ring);
-    setTimeout(function(){ring.remove();},850);
-  },{passive:true});
-}
-
-// ==== تشغيل ====
-renderRoomTabs();
-if(myName){
-  $('#chatInput').placeholder='اكتب رسالتك...';
-  addMessage(null,'مرحباً بعودتك '+myName+'! أنت في غرفة: '+currentRoom,'bot');
-} else {
-  addMessage(null,'اكتب اسمك في الأسفل ثم اضغط إرسال للبدء.','bot');
-}
-renderNotes();
-initPubNub();
-initStars();
-initCrystalTouch();
+  resize(); addEventListener('resize',resize,{passive:true});
+  requestAnimationFrame(draw);
 })();
+
+// ====== PeerJS ======
+function initPeer(){
+  return new Promise((resolve,reject)=>{
+    try{
+      peer = new Peer(undefined, { debug: 0 });
+      let done = false;
+      peer.on('open', id => { myPeerId = id; done = true; resolve(id); });
+      peer.on('error', err => { console.warn('Peer error:', err); });
+      peer.on('call', call => {
+        if(!localStream){ call.close(); return; }
+        call.answer(localStream);
+        currentCall = call;
+        bindCall(call);
+      });
+      setTimeout(()=>{ if(!done) reject(new Error('Peer timeout')); }, 15000);
+    }catch(e){ reject(e); }
+  });
+}
+
+function bindCall(call){
+  call.on('stream', remoteStream => {
+    const rv = document.getElementById('remoteVideo');
+    if(rv) rv.srcObject = remoteStream;
+  });
+  call.on('close', () => {
+    toast('انتهت المكالمة');
+    leaveChat();
+  });
+}
+
+// ====== الشاشات ======
+function showIdle(){
+  cleanup();
+  main.innerHTML = `
+    <div class="idle-screen">
+      <div class="big-ico">🌌</div>
+      <h2>دردشة عشوائية حقيقية</h2>
+      <p>اضغط الزر أدناه لبدء البحث عن شخص للتحدث معه.<br>عند العثور على شريك، يمكنك الكتابة أو التحدث بالفيديو.</p>
+      <input id="nameInput" placeholder="اكتب اسمك (اختياري)" value="${escapeHtml(myName)}" style="width:100%;max-width:300px;padding:12px;border-radius:12px;border:1px solid var(--line);background:#050a1c;color:var(--text);outline:none;margin-bottom:14px;text-align:center">
+      <button class="btn primary big" id="startBtn">🔍 ابحث عن شريك</button>
+    </div>`;
+  document.getElementById('startBtn').onclick = startSearch;
+  document.getElementById('nameInput').addEventListener('input', e => { myName = e.target.value.trim().slice(0,24); });
+  updateConnStatus('جاهز');
+}
+
+function showWaiting(){
+  main.innerHTML = `
+    <div class="waiting-screen">
+      <div class="spinner"></div>
+      <h2>🔍 جاري البحث...</h2>
+      <p style="color:var(--muted);margin-top:12px">نبحث لك عن شريك. يرجى الانتظار...</p>
+      <button class="btn danger" id="cancelBtn" style="margin-top:20px">إلغاء البحث</button>
+    </div>`;
+  document.getElementById('cancelBtn').onclick = cancelSearch;
+}
+
+async function showPartner(){
+  main.innerHTML = `
+    <div class="partner-screen">
+      <div class="partner-head">
+        <span class="badge">🟢 متصل بـ: <b>${escapeHtml(partnerName||'مجهول')}</b></span>
+      </div>
+      <div class="video-grid">
+        <div class="video-box"><video id="localVideo" autoplay muted playsinline></video><span>أنت</span></div>
+        <div class="video-box"><video id="remoteVideo" autoplay playsinline></video><span>الشريك</span></div>
+      </div>
+      <div class="chat-log" id="chatLog"><div style="color:var(--muted);text-align:center;padding:20px">💬 ابدأ الحديث...</div></div>
+      <div class="chat-input">
+        <input id="msgInput" placeholder="اكتب رسالة..." autocomplete="off">
+        <button class="btn primary" id="sendBtn">إرسال</button>
+      </div>
+      <div class="controls">
+        <button class="btn primary" id="videoBtn">📹 فيديو</button>
+        <button class="btn primary" id="audioBtn">📞 صوت</button>
+        <button class="btn" id="skipBtn">⏭️ تخطي</button>
+        <button class="btn danger" id="endBtn">❌ إنهاء</button>
+      </div>
+    </div>`;
+
+  document.getElementById('sendBtn').onclick = sendMessage;
+  document.getElementById('msgInput').addEventListener('keydown', e => { if(e.key==='Enter') sendMessage(); });
+  document.getElementById('videoBtn').onclick = () => callPartner(true);
+  document.getElementById('audioBtn').onclick = () => callPartner(false);
+  document.getElementById('skipBtn').onclick = skipPartner;
+  document.getElementById('endBtn').onclick = leaveChat;
+  updateConnStatus('في محادثة');
+}
+
+// ====== البحث والمطابقة ======
+async function startSearch(){
+  if(isSearching) return;
+  if(!myName) myName = 'عابر-' + myId.slice(2,6);
+  localStorage.setItem('lafi_name', myName);
+  isSearching = true;
+
+  showWaiting();
+  updateConnStatus('يبحث...');
+
+  if(!peer){
+    try{ await initPeer(); toast('تم تهيئة الاتصال'); }
+    catch(e){ toast('تعذر تشغيل الاتصال'); isSearching=false; showIdle(); return; }
+  }
+
+  const queueRef = ref(db, 'queue');
+  const entry = { id: myId, name: myName, peerId: myPeerId, ts: Date.now() };
+  myQueueRef = push(queueRef);
+  await set(myQueueRef, entry);
+  onDisconnect(myQueueRef).remove();
+
+  unsubscribeQueue = onValue(queueRef, snap => {
+    if(!isSearching) return;
+    const data = snap.val() || {};
+    const others = Object.values(data).filter(u => u && u.id !== myId && u.peerId);
+
+    if(others.length === 0) return;
+
+    const partner = others.sort((a,b)=>a.ts-b.ts)[0];
+
+    if(myId < partner.id){
+      tryMatch(partner.id, partner.name, partner.peerId);
+    }
+  });
+
+  const roomsRef = ref(db, 'rooms');
+  unsubscribeRoom = onValue(roomsRef, snap => {
+    if(!isSearching) return;
+    const data = snap.val() || {};
+    for(const [roomId, room] of Object.entries(data)){
+      if(room && room.b === myId && !room.joined && Date.now() - room.ts < 30000){
+        isSearching = false;
+        if(unsubscribeQueue){ unsubscribeQueue(); unsubscribeQueue = null; }
+        if(unsubscribeRoom){ unsubscribeRoom(); unsubscribeRoom = null; }
+        if(myQueueRef){ remove(myQueueRef).catch(()=>{}); myQueueRef = null; }
+
+        partnerId = room.a; partnerName = room.aName;
+        set(ref(db, 'rooms/' + roomId + '/joined'), true);
+
+        showPartner().then(async () => {
+          await startLocalMedia(false, false);
+          listenMessages(roomId);
+        });
+        return;
+      }
+    }
+  });
+}
+
+async function tryMatch(pId, pName, pPeerId){
+  if(!isSearching) return;
+  isSearching = false;
+
+  if(myQueueRef){ await remove(myQueueRef).catch(()=>{}); myQueueRef = null; }
+  if(unsubscribeQueue){ unsubscribeQueue(); unsubscribeQueue = null; }
+  if(unsubscribeRoom){ unsubscribeRoom(); unsubscribeRoom = null; }
+
+  partnerId = pId;
+  partnerName = pName;
+
+  const roomId = [myId, pId].sort().join('__');
+  const roomRef = ref(db, 'rooms/' + roomId);
+
+  await set(roomRef, {
+    a: myId, aName: myName, aPeer: myPeerId,
+    b: pId, bName: pName, bPeer: pPeerId,
+    ts: Date.now()
+  });
+
+  await showPartner();
+  await startLocalMedia(false, false);
+
+  const call = peer.call(pPeerId, localStream);
+  currentCall = call;
+  bindCall(call);
+
+  listenMessages(roomId);
+}
+
+function listenMessages(roomId){
+  const msgsRef = query(ref(db, 'msgs/' + roomId), limitToLast(50));
+  onValue(msgsRef, snap => {
+    const data = snap.val() || {};
+    const log = document.getElementById('chatLog');
+    if(!log) return;
+    log.innerHTML = '';
+    const list = Object.values(data).sort((a,b)=>(a.ts||0)-(b.ts||0));
+    if(list.length === 0){
+      log.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px">💬 ابدأ الحديث...</div>';
+    } else {
+      for(const m of list){
+        const div = document.createElement('div');
+        div.className = 'chat-msg ' + (m.from === myId ? 'me' : 'them');
+        div.textContent = (m.from === myId ? 'أنا: ' : '') + m.text;
+        log.appendChild(div);
+      }
+      log.scrollTop = log.scrollHeight;
+    }
+  });
+}
+
+async function sendMessage(){
+  const input = document.getElementById('msgInput');
+  if(!input) return;
+  const text = input.value.trim();
+  if(!text || !partnerId) return;
+  const roomId = [myId, partnerId].sort().join('__');
+  input.value = '';
+  await push(ref(db, 'msgs/' + roomId), { from: myId, text: text, ts: Date.now() });
+}
+
+// ====== الوسائط ======
+async function startLocalMedia(video, audio){
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({ video, audio });
+    if(localStream){ localStream.getTracks().forEach(t=>t.stop()); }
+    localStream = stream;
+    const lv = document.getElementById('localVideo');
+    if(lv) lv.srcObject = stream;
+  }catch(e){
+    console.warn('media error', e);
+    toast('تعذر الوصول للكاميرا/الميكروفون');
+  }
+}
+
+async function callPartner(withVideo){
+  if(!peer) { toast('الاتصال غير جاهز'); return; }
+  if(!partnerId) { toast('لا يوجد شريك'); return; }
+
+  const roomData = (await get(ref(db, 'rooms/' + [myId,partnerId].sort().join('__')))).val() || {};
+  const partnerPeer = roomData.a === myId ? roomData.bPeer : roomData.aPeer;
+  if(!partnerPeer){ toast('تعذر تحديد شريك'); return; }
+
+  if(withVideo){
+    if(localStream) localStream.getVideoTracks().forEach(t=>t.stop());
+    await startLocalMedia(true, true);
+  } else {
+    if(!localStream || localStream.getAudioTracks().length === 0){
+      await startLocalMedia(false, true);
+    } else {
+      localStream.getVideoTracks().forEach(t=>t.stop());
+    }
+  }
+
+  if(currentCall){ try{ currentCall.close(); }catch(e){} }
+  const call = peer.call(partnerPeer, localStream);
+  currentCall = call;
+  bindCall(call);
+  toast(withVideo ? 'بدأت المكالمة المرئية' : 'بدأت المكالمة الصوتية');
+}
+
+async function skipPartner(){
+  toast('جاري البحث عن شريك جديد...');
+  if(currentCall){ try{ currentCall.close(); }catch(e){} }
+  partnerId = null; partnerName = null;
+  if(localStream){ localStream.getTracks().forEach(t=>t.stop()); localStream = null; }
+  isSearching = false;
+  showIdle();
+}
+
+async function leaveChat(){
+  cleanup();
+  showIdle();
+}
+
+async function cancelSearch(){
+  isSearching = false;
+  cleanup();
+  showIdle();
+}
+
+function cleanup(){
+  isSearching = false;
+  if(myQueueRef){ remove(myQueueRef).catch(()=>{}); myQueueRef = null; }
+  if(unsubscribeQueue){ unsubscribeQueue(); unsubscribeQueue = null; }
+  if(unsubscribeRoom){ unsubscribeRoom(); unsubscribeRoom = null; }
+  if(currentCall){ try{ currentCall.close(); }catch(e){} currentCall = null; }
+  if(localStream){ localStream.getTracks().forEach(t=>t.stop()); localStream = null; }
+  partnerId = null; partnerName = null;
+}
+
+function updateConnStatus(s){
+  const el = document.getElementById('connStatus');
+  if(el) el.textContent = s;
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+showIdle();
 </script>
 </body>
 </html>
